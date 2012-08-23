@@ -60,6 +60,32 @@ function(make_program)
 	set_target_properties(${DISASM_NAME} PROPERTIES OUTFILE "${DISASM_FILE_NAME}")
 endfunction()
 
+set(RUNTIME_SRCS
+	runtime-abi/crt.S
+	runtime-abi/divdi3.S
+	runtime-abi/idiv.S
+	runtime-abi/idivmod.S
+	runtime-abi/ldivmod.S
+	runtime-abi/moddi3.S
+	runtime-abi/modsi3.S
+	runtime-abi/umoddi3.S
+	runtime-abi/umodsi3.S
+	runtime-abi/lasr.S
+	runtime-abi/lcmp.S
+	runtime-abi/llsl.S
+	runtime-abi/llsr.S
+	runtime-abi/lmul.S
+	runtime-abi/memmove.S
+	runtime-abi/memset.S
+	runtime-abi/ulcmp.S
+	runtime-abi/uread4.S
+	runtime-abi/uread8.S
+	runtime-abi/uwrite4.S
+	runtime-abi/uwrite8.S
+)
+set_property(SOURCE ${RUNTIME_SRCS} PROPERTY LANGUAGE C)
+add_library(libaeabi OBJECT ${RUNTIME_SRCS})
+set_target_properties(libaeabi PROPERTIES OUTPUT_NAME "libaeabi-cortexm0")
 
 make_program(
 	TARGET simple_c
@@ -73,8 +99,11 @@ make_program(
 	TARGET performance_test
 	CFLAGS "-O3"
 	LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/link.ld
-	C_SOURCES performance.c system/tinyprintf.h system/tinyprintf.c
-	ASM_SOURCES boot.s div.S lmul.S uldivmod.S
+	C_SOURCES
+		performance.c
+		system/tinyprintf.h
+		system/tinyprintf.c
+	ASM_SOURCES boot.s $<TARGET_OBJECTS:libaeabi>
 )
 
 #[[
