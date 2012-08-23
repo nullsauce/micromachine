@@ -128,7 +128,6 @@ ApplicationWindow {
 			wrapMode: Text.WrapAnywhere
 			textFormat: Text.PlainText
 			font.family: "monospace"
-			maximumLineCount:10
 			Connections {
 				target: CPU
 				onIoData: {
