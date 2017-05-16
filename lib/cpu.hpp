@@ -5,17 +5,13 @@
 #ifndef MICROMACHINE_CPU_HPP
 #define MICROMACHINE_CPU_HPP
 
-#include "registers.hpp"
-#include "exec.hpp"
-#include "apsr_register.hpp"
-#include "integer_type.hpp"
 #include "types.hpp"
-#include "apsr_register.hpp"
 #include "registers.hpp"
+#include "apsr_register.hpp"
+#include "exec.hpp"
 #include "instructions.hpp"
 #include "exec.hpp"
 #include "memory.hpp"
-
 
 static bool is_siadsumoco(const halfword& instruction) {
 	return 0 == instruction.uint(14, 2);
