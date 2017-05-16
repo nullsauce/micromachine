@@ -537,14 +537,14 @@ class cpu {
 public:
 
 	void step() {
-		word next_instr = _regs.get(15);
+		word next_instr = _regs.get_pc();
 		fprintf(stderr, "exec %d\n", (uint32_t)next_instr);
 		halfword instr = _mem.read16(next_instr);
-		_regs.set(15, next_instr + 4); // prefetch 2 instructions
+		_regs.set_pc(next_instr + 4); // prefetch 2 instructions
 		_regs.reset_pc_dirty_status();
 		exec(instr, _regs, _status_reg, _mem);
 		if(!_regs.branch_occured()) {
-			_regs.set(15, next_instr + 2);
+			_regs.set_pc(next_instr + 2);
 		}
 	}
 
