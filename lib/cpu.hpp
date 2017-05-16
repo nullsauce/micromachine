@@ -1,0 +1,581 @@
+//
+// Created by fla on 17-5-9.
+//
+
+#ifndef MICROMACHINE_CPU_HPP
+#define MICROMACHINE_CPU_HPP
+
+#include "register_set.hpp"
+#include "exec.hpp"
+#include "apsr_register.hpp"
+
+
+
+#include "integer_type.hpp"
+#include "types.hpp"
+#include "apsr_register.hpp"
+#include "register_set.hpp"
+#include "instructions.hpp"
+#include "exec.hpp"
+#include "memory.hpp"
+
+
+static bool is_siadsumoco(const halfword& instruction) {
+	return 0 == instruction.uint(14, 2);
+}
+
+static bool is_data_processing(const halfword& instruction) {
+	return 0b010000 == instruction.uint(10, 6);
+}
+
+static bool is_sdibe(const halfword& instruction) {
+	return 0b010001 == instruction.uint(10, 6);
+}
+
+static bool is_lsl_imm(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b000 == instruction.uint(11, 3);
+
+}
+
+static bool is_lsr_imm(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b001 == instruction.uint(11, 3);
+}
+
+static bool is_asr_imm(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b010 == instruction.uint(11, 3);
+}
+
+static bool is_adds_reg(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b01100 == instruction.uint(9, 5);
+}
+
+static bool is_subs_reg(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b01101 == instruction.uint(9, 5);
+}
+
+static bool is_adds_imm(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b01110 == instruction.uint(9, 5);
+}
+
+static bool is_subs_imm(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b01111 == instruction.uint(9, 5);
+}
+
+static bool is_mov_imm(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b100 == instruction.uint(11, 3);
+}
+
+static bool is_cmp_imm(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b101 == instruction.uint(11, 3);
+}
+
+static bool is_adds_imm8(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b110 == instruction.uint(11, 3);
+}
+
+static bool is_subs_imm8(const halfword& instruction) {
+	return is_siadsumoco(instruction) &&
+		   0b111 == instruction.uint(11, 3);
+}
+
+
+static bool is_and_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0000 == instruction.uint(6, 4);
+}
+
+static bool is_xor_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0001 == instruction.uint(6, 4);
+}
+
+static bool is_lsl_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0010 == instruction.uint(6, 4);
+}
+
+static bool is_lsr_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0011 == instruction.uint(6, 4);
+}
+
+static bool is_asr_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0100 == instruction.uint(6, 4);
+}
+
+static bool is_add_c_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0101 == instruction.uint(6, 4);
+}
+
+static bool is_sub_c_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0110 == instruction.uint(6, 4);
+}
+
+static bool is_ror_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b0111 == instruction.uint(6, 4);
+}
+
+static bool is_tst_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1000 == instruction.uint(6, 4);
+}
+
+static bool is_rsb_imm(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1001 == instruction.uint(6, 4);
+}
+
+static bool is_cmpn_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1011 == instruction.uint(6, 4);
+}
+
+static bool is_cmp_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1010 == instruction.uint(6, 4);
+}
+
+static bool is_lor_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1100 == instruction.uint(6, 4);
+}
+
+static bool is_mul_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1101 == instruction.uint(6, 4);
+}
+
+static bool is_bitclear_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1110 == instruction.uint(6, 4);
+}
+
+static bool is_not_reg(const halfword& instruction) {
+	return is_data_processing(instruction) &&
+		   0b1111 == instruction.uint(6, 4);
+}
+
+
+static bool is_add_highreg(const halfword& instruction) {
+	return is_sdibe(instruction) &&
+		   0b00 == instruction.uint(8, 2);
+}
+
+static bool is_sdibe_unpredictable_0(const halfword& instruction) {
+	return is_sdibe(instruction) &&
+		   0b0100 == instruction.uint(6, 4);
+}
+
+static bool is_cmp_highreg(const halfword& instruction) {
+	return is_sdibe(instruction) &&
+		   (0b0101 == instruction.uint(6, 4)) ||
+		   (0b011 == instruction.uint(7, 3));
+}
+
+static bool is_mov_highreg(const halfword& instruction) {
+	return is_sdibe(instruction) &&
+		   0b10 == instruction.uint(8, 2);
+}
+
+static bool is_bx(const halfword& instruction) {
+	return is_sdibe(instruction) &&
+		   0b110 == instruction.uint(7, 3);
+}
+
+static bool is_blx(const halfword& instruction) {
+	return is_sdibe(instruction) &&
+		   0b111 == instruction.uint(7, 3);
+}
+
+static bool is_load_litteral(const halfword& instruction) {
+	return 0b01001 == instruction.uint(11, 5);
+}
+
+static bool is_store_reg_word_reg(const halfword& instruction) {
+	return 0b0101000 == instruction.uint(9, 7);
+}
+
+static bool is_store_reg_halfword_reg(const halfword& instruction) {
+	return 0b0101001 == instruction.uint(9, 7);
+}
+
+static bool is_store_reg_byte_reg(const halfword& instruction) {
+	return 0b0101010 == instruction.uint(9, 7);
+}
+
+static bool is_load_reg_sbyte_reg(const halfword& instruction) {
+	return 0b0101011 == instruction.uint(9, 7);
+}
+
+static bool is_load_reg_word_reg(const halfword& instruction) {
+	return 0b0101100 == instruction.uint(9, 7);
+}
+
+static bool is_load_reg_halfword_reg(const halfword& instruction) {
+	return 0b0101101 == instruction.uint(9, 7);
+}
+
+static bool is_load_reg_byte_reg(const halfword& instruction) {
+	return 0b0101110 == instruction.uint(9, 7);
+}
+
+static bool is_load_reg_shalfword_reg(const halfword& instruction) {
+	return 0b0101111 == instruction.uint(9, 7);
+}
+
+static bool is_store_word_imm(const halfword& instruction) {
+	return 0b01100 == instruction.uint(11, 5);
+}
+
+static bool is_load_word_imm(const halfword& instruction) {
+	return 0b01101 == instruction.uint(11, 5);
+}
+
+static bool is_store_byte_imm(const halfword& instruction) {
+	return 0b01110 == instruction.uint(11, 5);
+}
+
+static bool is_load_byte_imm(const halfword& instruction) {
+	return 0b01111 == instruction.uint(11, 5);
+}
+
+static bool is_store_halfword_imm(const halfword& instruction) {
+	return 0b10000 == instruction.uint(11, 5);
+}
+
+static bool is_load_halfword_imm(const halfword& instruction) {
+	return 0b10001 == instruction.uint(11, 5);
+}
+
+static bool is_store_word_sp_imm(const halfword& instruction) {
+	return 0b10010 == instruction.uint(11, 5);
+}
+
+static bool is_load_word_sp_imm(const halfword& instruction) {
+	return 0b10011 == instruction.uint(11, 5);
+}
+
+static bool is_adr(const halfword& instruction) {
+	return 0b10100 == instruction.uint(11, 5);
+}
+
+static bool is_add_sp_imm(const halfword& instruction) {
+	return 0b10101 == instruction.uint(11, 5);
+}
+
+static bool is_add_sp_imm_t2(const halfword& instruction) {
+	return 0b101100000 == instruction.uint(7, 9);
+}
+
+static bool is_sub_sp_imm(const halfword& instruction) {
+	return 0b101100000 == instruction.uint(7, 9);
+}
+
+static bool is_sxth(const halfword& instruction) {
+	return 0b1011001000 == instruction.uint(6, 10);
+}
+
+static bool is_sxtb(const halfword& instruction) {
+	return 0b1011001001 == instruction.uint(6, 10);
+}
+
+static bool is_uxth(const halfword& instruction) {
+	return 0b1011001010 == instruction.uint(6, 10);
+}
+
+static bool is_uxtb(const halfword& instruction) {
+	return 0b1011001011 == instruction.uint(6, 10);
+}
+
+static bool is_push(const halfword& instruction) {
+	return 0b1011010 == instruction.uint(9, 7);
+}
+
+static bool is_cps(const halfword& instruction) {
+	return 0b10110110011 == instruction.uint(5, 11);
+}
+
+static bool is_rev_word(const halfword& instruction) {
+	return 0b1011101000 == instruction.uint(6, 10);
+}
+
+static bool is_rev_packed_halfword(const halfword& instruction) {
+	return 0b1011101001 == instruction.uint(6, 10);
+}
+
+static bool is_rev_signed_halfword(const halfword& instruction) {
+	return 0b1011101011 == instruction.uint(6, 10);
+}
+
+static bool is_pop(const halfword& instruction) {
+	return 0b1011110 == instruction.uint(9, 7);
+}
+
+static bool is_breakpoint(const halfword& instruction) {
+	return 0b10111110 == instruction.uint(8, 8);
+}
+
+static bool is_hints(const halfword& instruction) {
+	return 0b10111111 == instruction.uint(8, 8);
+}
+
+static bool is_stm(const halfword& instruction) {
+	return 0b11000 == instruction.uint(11, 5);
+}
+
+static bool is_ldm(const halfword& instruction) {
+	return 0b11001 == instruction.uint(11, 5);
+}
+
+static bool is_branch(const halfword& instruction) {
+	return 0b1101 == instruction.uint(12, 4) &&
+		   (instruction.uint(9, 3) != 0b111);
+}
+
+static bool is_unconditional_branch(const halfword& instruction) {
+	return 0b11100 == instruction.uint(11, 5);
+}
+
+static
+int exec(halfword instr, register_set& regs, apsr_register& status_reg, memory& mem) {
+
+
+	fprintf(stderr, "%s\n", instr.to_string().c_str());
+
+	// Shift (immediate), add, subtract, move, and compare
+	if(is_lsl_imm(instr)) {
+		if(0 == instr.uint(9,5) && 0 == instr.uint(6, 2)) {
+			// When opcode is 0b00000 , and bits[8:6] are 0b000 , this encoding is MOV reg
+			//TODO: cps
+			precond_fail("unimplemented");
+		}
+		exec(lsl_imm(instr), regs, status_reg);
+	} else if(is_lsr_imm(instr)) {
+		exec(lsr_imm(instr), regs, status_reg);
+	} else if(is_asr_imm(instr)) {
+		exec(asr_imm(instr), regs, status_reg);
+	} else if(is_adds_reg(instr)) {
+		exec(adds_reg(instr), regs, status_reg);
+	} else if(is_subs_reg(instr)) {
+		exec(subs_reg(instr), regs, status_reg);
+	} else if(is_adds_imm(instr)) {
+		exec(adds_imm(instr), regs, status_reg);
+	} else if(is_subs_imm(instr)) {
+		exec(subs_imm(instr), regs, status_reg);
+	} else if(is_mov_imm(instr)) {
+		exec(mov_imm(instr), regs, status_reg);
+	} else if(is_cmp_imm(instr)) {
+		exec(cmp_imm(instr), regs, status_reg);
+	} else if(is_adds_imm8(instr)) {
+		exec(adds_imm8(instr), regs, status_reg);
+	} else if(is_subs_imm8(instr)) {
+		exec(subs_imm8(instr), regs, status_reg);
+
+
+
+		// Data processing
+	} else if(is_and_reg(instr)) {
+		exec(and_reg(instr), regs, status_reg);
+	} else if(is_xor_reg(instr)) {
+		exec(xor_reg(instr), regs, status_reg);
+	} else if(is_lsl_reg(instr)) {
+		exec(lsl_reg(instr), regs, status_reg);
+	} else if(is_lsr_reg(instr)) {
+		exec(lsr_reg(instr), regs, status_reg);
+	} else if(is_asr_reg(instr)) {
+		exec(asr_reg(instr), regs, status_reg);
+	} else if(is_add_c_reg(instr)) {
+		exec(add_c_reg(instr), regs, status_reg);
+	} else if(is_sub_c_reg(instr)) {
+		exec(sub_c_reg(instr), regs, status_reg);
+	} else if(is_ror_reg(instr)) {
+		exec(ror_reg(instr), regs, status_reg);
+	} else if(is_tst_reg(instr)) {
+		exec(tst_reg(instr), regs, status_reg);
+	} else if(is_rsb_imm(instr)) {
+		exec(rsb_imm(instr), regs, status_reg);
+	} else if(is_cmp_reg(instr)) {
+		exec(cmp_reg(instr), regs, status_reg);
+	} else if(is_cmpn_reg(instr)) {
+		exec(cmpn_reg(instr), regs, status_reg);
+	} else if(is_lor_reg(instr)) {
+		exec(lor_reg(instr), regs, status_reg);
+	} else if(is_mul_reg(instr)) {
+		exec(mul_reg(instr), regs, status_reg);
+	} else if(is_bitclear_reg(instr)) {
+		exec(bic_reg(instr), regs, status_reg);
+	} else if(is_not_reg(instr)) {
+		exec(not_reg(instr), regs, status_reg);
+
+
+		// Special data instructions and branch and exchange
+	} else if(is_add_highreg(instr)) {
+		exec(add_highreg(instr), regs, status_reg);
+	} else if(is_sdibe_unpredictable_0(instr)) {
+		// fault !
+	} else if(is_cmp_highreg(instr)) {
+		exec(cmp_highreg(instr), regs, status_reg);
+	} else if(is_mov_highreg(instr)) {
+		exec(mov_highreg(instr), regs, status_reg);
+	} else if(is_bx(instr)) {
+		exec(bx(instr), regs, status_reg);
+	} else if(is_blx(instr)) {
+		exec(blx(instr), regs, status_reg);
+	} else if(is_load_litteral(instr)) {
+		exec(load_literal(instr), regs, status_reg, mem);
+
+
+		// load store
+	} else if(is_store_reg_word_reg(instr)) {
+		exec(store_reg_word_reg(instr), regs, status_reg, mem);
+	} else if(is_store_reg_halfword_reg(instr)) {
+		exec(store_reg_halfword_reg(instr), regs, status_reg, mem);
+	} else if(is_store_reg_byte_reg(instr)) {
+		exec(store_reg_byte_reg(instr), regs, status_reg, mem);
+	} else if(is_load_reg_sbyte_reg(instr)) {
+		exec(load_reg_sbyte_reg(instr), regs, status_reg, mem);
+	} else if(is_load_reg_word_reg(instr)) {
+		exec(load_reg_word_reg(instr), regs, status_reg, mem);
+	} else if(is_load_reg_halfword_reg(instr)) {
+		exec(load_reg_halfword_reg(instr), regs, status_reg, mem);
+	} else if(is_load_reg_byte_reg(instr)) {
+		exec(load_reg_byte_reg(instr), regs, status_reg, mem);
+	} else if(is_load_reg_shalfword_reg(instr)) {
+		exec(load_reg_shalfword_reg(instr), regs, status_reg, mem);
+	} else if(is_store_word_imm(instr)) {
+		exec(store_word_imm(instr), regs, status_reg, mem);
+	} else if(is_load_word_imm(instr)) {
+		exec(load_word_imm(instr), regs, status_reg, mem);
+	} else if(is_store_byte_imm(instr)) {
+		exec(store_byte_imm(instr), regs, status_reg, mem);
+	} else if(is_load_byte_imm(instr)) {
+		exec(load_byte_imm(instr), regs, status_reg, mem);
+	} else if(is_store_halfword_imm(instr)) {
+		exec(store_halfword_imm(instr), regs, status_reg, mem);
+	} else if(is_load_halfword_imm(instr)) {
+		exec(load_halfword_imm(instr), regs, status_reg, mem);
+	} else if(is_store_word_sp_imm(instr)) {
+		exec(store_word_sp_imm(instr), regs, status_reg, mem);
+	} else if(is_load_word_sp_imm(instr)) {
+		exec(load_word_sp_imm(instr), regs, status_reg, mem);
+
+
+		// PC relative address
+	} else if(is_adr(instr)) {
+		exec(adr(instr), regs);
+
+		// Generate SP-relative address: ADD (SP plus immediate)
+	} else if(is_add_sp_imm(instr)) {
+		exec(add_sp_imm(instr), regs);
+
+
+		// Miscellaneous 16-bit instructions on page A5-8
+	} else if(is_add_sp_imm_t2(instr)) {
+		exec(add_sp_imm_t2(instr), regs);
+	} else if(is_sub_sp_imm(instr)) {
+		exec(sub_sp_imm(instr), regs);
+	} else if(is_sxth(instr)) {
+		exec(sxth(instr), regs);
+	} else if(is_sxtb(instr)) {
+		exec(sxtb(instr), regs);
+	} else if(is_uxth(instr)) {
+		exec(uxth(instr), regs);
+	} else if(is_uxtb(instr)) {
+		exec(uxtb(instr), regs);
+	} else if(is_push(instr)) {
+		exec(push(instr), regs, mem);
+	} else if(is_cps(instr)) {
+		//TODO: cps
+		precond_fail("unimplemented");
+	} else if(is_rev_word(instr)) {
+		exec(rev_word(instr), regs);
+	} else if(is_rev_packed_halfword(instr)) {
+		exec(rev_packed_halfword(instr), regs);
+	} else if(is_rev_signed_halfword(instr)) {
+		exec(rev_packed_signed_halfword(instr), regs);
+	} else if(is_pop(instr)) {
+		exec(pop(instr), regs, mem);
+	} else if(is_breakpoint(instr)) {
+		// TODO:
+		precond_fail("unimplemented");
+	} else if(is_hints(instr)) {
+		// TODO:
+		precond_fail("unimplemented");
+
+
+		// Store multiple registers, see STM, STMIA, STMEA on page A6-175
+	} else if(is_stm(instr)) {
+		exec(stm(instr), regs, mem);
+
+		// Load multiple registers, see LDM, LDMIA, LDMFD on page A6-137
+	} else if(is_stm(instr)) {
+		exec(ldm(instr), regs, mem);
+
+
+	} else if(is_branch(instr)) {
+		exec(branch(instr), regs, status_reg);
+	} else if(is_unconditional_branch(instr)) {
+		exec(unconditional_branch(instr), regs, status_reg);
+	} else {
+		fprintf(stderr, "unhanlded instruction %04X\n", (uint32_t)instr);
+		precond_fail("unimplemented");
+	}
+
+	return 0;
+}
+
+class cpu {
+
+
+public:
+
+	void step() {
+		word next_instr = _regs.get(15);
+		fprintf(stderr, "exec %d\n", (uint32_t)next_instr);
+		halfword instr = _mem.read16(next_instr);
+		_regs.set(15, next_instr + 4); // prefetch 2 instructions
+		_regs.reset_pc_dirty_status();
+		exec(instr, _regs, _status_reg, _mem);
+		if(!_regs.branch_occured()) {
+			_regs.set(15, next_instr + 2);
+		}
+	}
+
+	memory& mem() {
+		return _mem;
+	}
+
+	const memory& mem() const {
+		return _mem;
+	}
+
+	register_set& regs() {
+		return _regs;
+	}
+
+	const register_set& regs() const {
+		return _regs;
+	}
+
+private:
+
+	register_set 	_regs;
+	apsr_register 	_status_reg;
+	memory 			_mem;
+};
+
+#endif //MICROMACHINE_CPU_HPP
