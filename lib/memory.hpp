@@ -5,7 +5,6 @@
 #ifndef MICROMACHINE_MEMORY_HPP
 #define MICROMACHINE_MEMORY_HPP
 
-
 #include <vector>
 #include <algorithm>
 
@@ -130,11 +129,12 @@ private:
 		return const_cast<mem_mapping*>(find_const_region(address));
 	}
 
+	/*
 	region_vec find_regions(uint32_t address) const {
 		std::find_if(regions.begin(), regions.end(), [=](const mem_mapping& mm){
 			return in_range(address, mm);
 		});
-	}
+	}*/
 
 	region_vec regions;
 

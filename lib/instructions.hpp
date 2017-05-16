@@ -72,9 +72,9 @@ struct standard_imm8_rn {
 	const reg_idx rn;
 };
 
-struct standard_standard_rdn_rm {
+struct standard_rdn_rm {
 
-	standard_standard_rdn_rm(halfword field)
+	standard_rdn_rm(halfword field)
 		: rdn(binops::read_uint(field, 0, 3))
 		, rm (binops::read_uint(field, 3, 3))
 	{}
@@ -83,9 +83,9 @@ struct standard_standard_rdn_rm {
 	const reg_idx rm;
 };
 
-struct standard_standard_rdm_rn {
+struct standard_rdm_rn {
 
-	standard_standard_rdm_rn(halfword field)
+	standard_rdm_rn(halfword field)
 			: rdm(binops::read_uint(field, 0, 3))
 			, rn (binops::read_uint(field, 3, 3))
 	{}
@@ -95,9 +95,9 @@ struct standard_standard_rdm_rn {
 };
 
 // rdn can be a high register if dm is set
-struct standard_standard_rdn_rm_dm {
+struct standard_rdn_rm_dm {
 
-	standard_standard_rdn_rm_dm(halfword field)
+	standard_rdn_rm_dm(halfword field)
 		: rdn(binops::read_uint(field, 0, 3))
 		, rm (binops::read_uint(field, 3, 4))
 		, dm (binops::get_bit(field, 7))
@@ -119,9 +119,9 @@ struct standard_standard_rdn_rm_dm {
 };
 
 // rd can be a high register if dm is set
-struct standard_standard_rn_rm_dm {
+struct standard_rn_rm_dm {
 
-	standard_standard_rn_rm_dm(halfword field)
+	standard_rn_rm_dm(halfword field)
 			: rn(binops::read_uint(field, 0, 3))
 			, rm(binops::read_uint(field, 3, 4))
 			, dm(binops::get_bit(field, 7))
@@ -144,9 +144,9 @@ struct standard_standard_rn_rm_dm {
 
 
 // rd can be a high register if dm is set
-struct standard_standard_rd_rm_d {
+struct standard_rd_rm_d {
 
-	standard_standard_rd_rm_d(halfword field)
+	standard_rd_rm_d(halfword field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rm(binops::read_uint(field, 3, 4))
 		, d (binops::get_bit(field, 7))
@@ -167,9 +167,9 @@ struct standard_standard_rd_rm_d {
 	const bool d;
 };
 
-struct standard_standard_rn_rm {
+struct standard_rn_rm {
 
-	standard_standard_rn_rm(halfword field)
+	standard_rn_rm(halfword field)
 			: rn(binops::read_uint(field, 0, 3))
 			, rm(binops::read_uint(field, 3, 3))
 	{}
@@ -178,9 +178,9 @@ struct standard_standard_rn_rm {
 	const reg_idx rm;
 };
 
-struct standard_standard_rd_rn {
+struct standard_rd_rn {
 
-	standard_standard_rd_rn(halfword field)
+	standard_rd_rn(halfword field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rn(binops::read_uint(field, 3, 3))
 	{}
@@ -199,9 +199,9 @@ struct standard_rm {
 	const reg_idx rm;
 };
 
-struct standard_standard_rd_rm {
+struct standard_rd_rm {
 
-	standard_standard_rd_rm(halfword field)
+	standard_rd_rm(halfword field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rm(binops::read_uint(field, 3, 3))
 	{}
@@ -423,80 +423,80 @@ struct subs_imm8 : public standard_imm8_rdn {
 	using standard_imm8_rdn::standard_imm8_rdn;
 };
 
-struct and_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct and_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct xor_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct xor_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct lsl_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct lsl_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct lsr_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct lsr_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct asr_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct asr_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct add_c_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct add_c_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct sub_c_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct sub_c_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct ror_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct ror_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct tst_reg : public standard_standard_rn_rm {
-	using standard_standard_rn_rm::standard_standard_rn_rm;
+struct tst_reg : public standard_rn_rm {
+	using standard_rn_rm::standard_rn_rm;
 };
 
-struct rsb_imm : public standard_standard_rd_rn {
-	using standard_standard_rd_rn::standard_standard_rd_rn;
+struct rsb_imm : public standard_rd_rn {
+	using standard_rd_rn::standard_rd_rn;
 };
 
-struct cmp_reg : public standard_standard_rn_rm {
-	using standard_standard_rn_rm::standard_standard_rn_rm;
+struct cmp_reg : public standard_rn_rm {
+	using standard_rn_rm::standard_rn_rm;
 };
 
-struct cmpn_reg : public standard_standard_rn_rm {
-	using standard_standard_rn_rm::standard_standard_rn_rm;
+struct cmpn_reg : public standard_rn_rm {
+	using standard_rn_rm::standard_rn_rm;
 };
 
-struct lor_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct lor_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct mul_reg : public standard_standard_rdm_rn {
-	using standard_standard_rdm_rn::standard_standard_rdm_rn;
+struct mul_reg : public standard_rdm_rn {
+	using standard_rdm_rn::standard_rdm_rn;
 };
 
-struct bic_reg : public standard_standard_rdn_rm {
-	using standard_standard_rdn_rm::standard_standard_rdn_rm;
+struct bic_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct not_reg : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct not_reg : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
-struct add_highreg : public standard_standard_rdn_rm_dm {
-	using standard_standard_rdn_rm_dm::standard_standard_rdn_rm_dm;
+struct add_highreg : public standard_rdn_rm_dm {
+	using standard_rdn_rm_dm::standard_rdn_rm_dm;
 };
 
-struct cmp_highreg : public standard_standard_rn_rm_dm {
-	using standard_standard_rn_rm_dm::standard_standard_rn_rm_dm;
+struct cmp_highreg : public standard_rn_rm_dm {
+	using standard_rn_rm_dm::standard_rn_rm_dm;
 };
 
-struct mov_highreg : public standard_standard_rd_rm_d {
-	using standard_standard_rd_rm_d::standard_standard_rd_rm_d;
+struct mov_highreg : public standard_rd_rm_d {
+	using standard_rd_rm_d::standard_rd_rm_d;
 };
 
 struct bx : public standard_rm {
@@ -591,36 +591,36 @@ struct sub_sp_imm : public standard_imm7 {
 	using standard_imm7::standard_imm7;
 };
 
-struct sxth : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct sxth : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
-struct sxtb : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct sxtb : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
-struct uxth : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct uxth : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
-struct uxtb : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct uxtb : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
 struct push : public standard_push_register_list {
 	using standard_push_register_list::standard_push_register_list;
 };
 
-struct rev_word : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct rev_word : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
-struct rev_packed_halfword : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct rev_packed_halfword : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
-struct rev_packed_signed_halfword : public standard_standard_rd_rm {
-	using standard_standard_rd_rm::standard_standard_rd_rm;
+struct rev_packed_signed_halfword : public standard_rd_rm {
+	using standard_rd_rm::standard_rd_rm;
 };
 
 struct pop : public standard_pop_register_list {
