@@ -7,6 +7,7 @@
 
 #include "integer_type.hpp"
 
+using reg_idx 	= size_t;
 
 using word 		= integer_type<uint32_t>;
 using halfword 	= integer_type<uint16_t>;
@@ -17,5 +18,7 @@ using imm8_t 	= uint8_t;
 using imm7_t 	= uint8_t;
 using imm5_t	= uint8_t;
 using imm3_t	= uint8_t;
+
 using register_list_t = uint16_t;
+
 #endif //MICROMACHINE_TYPES_HPP

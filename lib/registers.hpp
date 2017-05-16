@@ -9,20 +9,25 @@
 #include "register.hpp"
 
 
-struct register_set {
+struct registers {
 
-	word get(reg_idx index) const {
+	static constexpr size_t NUM_REGS = 16;
+	static constexpr reg_idx SP = 13;
+	static constexpr reg_idx LR = 14;
+	static constexpr reg_idx PC = 15;
 
-		const size_t i = index & 15;
+	word get(reg_idx i) const {
+
+		precond(i < NUM_REGS, "register index too large");
 
 		word val = _registers[i];
 
 		if(i > 7) {
 			if(i < 13) {
 				// high reg
-			} else if(i == 13) {
+			} else if(i == SP) {
 				val = sp_after_read(val);
-			} else if(i == 15) {
+			} else if(i == PC) {
 				val = pc_after_read(val);
 			}
 		}
@@ -30,33 +35,33 @@ struct register_set {
 		return val;
 	}
 
-	word getSP() const {
-		return get(13);
+	word get_sp() const {
+		return get(SP);
 	}
-	void setSP(word val) {
-		set(13, val);
-	}
-
-	word getPC() const {
-		return get(15);
+	void set_sp(word val) {
+		set(SP, val);
 	}
 
-	void setPC(word val) {
-		set(15, val);
+	word get_pc() const {
+		return get(PC);
+	}
+
+	void set_pc(word val) {
+		set(PC, val);
 	}
 
 	void set(reg_idx i, word val) {
 
-		precond(i <= 15, "register index too large");
+		precond(i < NUM_REGS, "register index too large");
 
 		//fprintf(stderr, "write %02d : %s\n", i, val.to_string().c_str());
 
 		if(i > 7) {
 			if(i < 13) {
 				// high reg
-			} else if(i == 13) {
+			} else if(i == SP) {
 				val = sp_before_write(val);
-			} else if(i == 15) {
+			} else if(i == PC) {
 				pc_is_dirty = true;
 				val = pc_before_write(val);
 			}
@@ -74,7 +79,7 @@ struct register_set {
 	}
 
 	void print() {
-		for(size_t i = 0; i < 16; i++) {
+		for(size_t i = 0; i < NUM_REGS; i++) {
 			fprintf(stderr, "[%02zu] %08X\n", i, (uint32_t)get(i));
 		}
 	}
@@ -108,7 +113,7 @@ private:
 		return word & binops::make_mask<1,31>();
 	}
 
-	reg _registers[16];
+	reg _registers[NUM_REGS];
 
 	bool pc_is_dirty = false;
 };
