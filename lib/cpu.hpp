@@ -5,16 +5,13 @@
 #ifndef MICROMACHINE_CPU_HPP
 #define MICROMACHINE_CPU_HPP
 
-#include "register_set.hpp"
+#include "registers.hpp"
 #include "exec.hpp"
 #include "apsr_register.hpp"
-
-
-
 #include "integer_type.hpp"
 #include "types.hpp"
 #include "apsr_register.hpp"
-#include "register_set.hpp"
+#include "registers.hpp"
 #include "instructions.hpp"
 #include "exec.hpp"
 #include "memory.hpp"
@@ -351,7 +348,7 @@ static bool is_unconditional_branch(const halfword& instruction) {
 }
 
 static
-int exec(halfword instr, register_set& regs, apsr_register& status_reg, memory& mem) {
+int exec(halfword instr, registers& regs, apsr_register& status_reg, memory& mem) {
 
 
 	fprintf(stderr, "%s\n", instr.to_string().c_str());
@@ -563,17 +560,17 @@ public:
 		return _mem;
 	}
 
-	register_set& regs() {
+	registers& regs() {
 		return _regs;
 	}
 
-	const register_set& regs() const {
+	const registers& regs() const {
 		return _regs;
 	}
 
 private:
 
-	register_set 	_regs;
+	registers 	_regs;
 	apsr_register 	_status_reg;
 	memory 			_mem;
 };
