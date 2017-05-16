@@ -29,11 +29,5 @@ set(HEADER_FILES
 
 add_executable(micromachine ${HEADER_FILES} ${SOURCE_FILES})
 
-macro(declare_test test_name test_files)
-    add_executable(${test_name} ${HEADER_FILES} ${test_files})
-    target_link_libraries(${test_name} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-    add_test(all_tests ${test_name})
-endmacro()
-
-declare_test(integer_tests test/integer_tests.cpp)
-declare_test(alu_tests test/alu_tests.cpp)
+include_directories(lib)
+add_subdirectory(test)
