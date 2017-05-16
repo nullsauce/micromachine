@@ -7,7 +7,7 @@
 
 #include "types.hpp"
 
-using reg_idx = size_t;
+
 
 class reg {
 

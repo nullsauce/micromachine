@@ -21,7 +21,7 @@ set(HEADER_FILES
     lib/exec.hpp
     lib/alu.hpp
     lib/register.hpp
-    lib/register_set.hpp
+    lib/registers.hpp
     lib/apsr_register.hpp
     lib/memory.hpp
     lib/cpu.hpp
