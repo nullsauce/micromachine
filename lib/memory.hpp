@@ -50,7 +50,7 @@ public:
 		this->write<uint8_t>(address, val);
 	}
 
-	uint8_t read32(uint32_t address) const {
+	uint32_t read32(uint32_t address) const {
 		return read<uint32_t>(address);
 	}
 
