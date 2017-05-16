@@ -343,198 +343,204 @@ static bool is_unconditional_branch(const halfword& instruction) {
 	return 0b11100 == instruction.uint(11, 5);
 }
 
-static
-int exec(halfword instr, registers& regs, apsr_register& status_reg, memory& mem) {
-
-
-	fprintf(stderr, "%s\n", instr.to_string().c_str());
-
-	// Shift (immediate), add, subtract, move, and compare
-	if(is_lsl_imm(instr)) {
-		if(0 == instr.uint(9,5) && 0 == instr.uint(6, 2)) {
-			// When opcode is 0b00000 , and bits[8:6] are 0b000 , this encoding is MOV reg
-			//TODO: cps
-			precond_fail("unimplemented");
-		}
-		exec(lsl_imm(instr), regs, status_reg);
-	} else if(is_lsr_imm(instr)) {
-		exec(lsr_imm(instr), regs, status_reg);
-	} else if(is_asr_imm(instr)) {
-		exec(asr_imm(instr), regs, status_reg);
-	} else if(is_adds_reg(instr)) {
-		exec(adds_reg(instr), regs, status_reg);
-	} else if(is_subs_reg(instr)) {
-		exec(subs_reg(instr), regs, status_reg);
-	} else if(is_adds_imm(instr)) {
-		exec(adds_imm(instr), regs, status_reg);
-	} else if(is_subs_imm(instr)) {
-		exec(subs_imm(instr), regs, status_reg);
-	} else if(is_mov_imm(instr)) {
-		exec(mov_imm(instr), regs, status_reg);
-	} else if(is_cmp_imm(instr)) {
-		exec(cmp_imm(instr), regs, status_reg);
-	} else if(is_adds_imm8(instr)) {
-		exec(adds_imm8(instr), regs, status_reg);
-	} else if(is_subs_imm8(instr)) {
-		exec(subs_imm8(instr), regs, status_reg);
-
-
-
-		// Data processing
-	} else if(is_and_reg(instr)) {
-		exec(and_reg(instr), regs, status_reg);
-	} else if(is_xor_reg(instr)) {
-		exec(xor_reg(instr), regs, status_reg);
-	} else if(is_lsl_reg(instr)) {
-		exec(lsl_reg(instr), regs, status_reg);
-	} else if(is_lsr_reg(instr)) {
-		exec(lsr_reg(instr), regs, status_reg);
-	} else if(is_asr_reg(instr)) {
-		exec(asr_reg(instr), regs, status_reg);
-	} else if(is_add_c_reg(instr)) {
-		exec(add_c_reg(instr), regs, status_reg);
-	} else if(is_sub_c_reg(instr)) {
-		exec(sub_c_reg(instr), regs, status_reg);
-	} else if(is_ror_reg(instr)) {
-		exec(ror_reg(instr), regs, status_reg);
-	} else if(is_tst_reg(instr)) {
-		exec(tst_reg(instr), regs, status_reg);
-	} else if(is_rsb_imm(instr)) {
-		exec(rsb_imm(instr), regs, status_reg);
-	} else if(is_cmp_reg(instr)) {
-		exec(cmp_reg(instr), regs, status_reg);
-	} else if(is_cmpn_reg(instr)) {
-		exec(cmpn_reg(instr), regs, status_reg);
-	} else if(is_lor_reg(instr)) {
-		exec(lor_reg(instr), regs, status_reg);
-	} else if(is_mul_reg(instr)) {
-		exec(mul_reg(instr), regs, status_reg);
-	} else if(is_bitclear_reg(instr)) {
-		exec(bic_reg(instr), regs, status_reg);
-	} else if(is_not_reg(instr)) {
-		exec(not_reg(instr), regs, status_reg);
-
-
-		// Special data instructions and branch and exchange
-	} else if(is_add_highreg(instr)) {
-		exec(add_highreg(instr), regs, status_reg);
-	} else if(is_sdibe_unpredictable_0(instr)) {
-		// fault !
-	} else if(is_cmp_highreg(instr)) {
-		exec(cmp_highreg(instr), regs, status_reg);
-	} else if(is_mov_highreg(instr)) {
-		exec(mov_highreg(instr), regs, status_reg);
-	} else if(is_bx(instr)) {
-		exec(bx(instr), regs, status_reg);
-	} else if(is_blx(instr)) {
-		exec(blx(instr), regs, status_reg);
-	} else if(is_load_litteral(instr)) {
-		exec(load_literal(instr), regs, status_reg, mem);
-
-
-		// load store
-	} else if(is_store_reg_word_reg(instr)) {
-		exec(store_reg_word_reg(instr), regs, status_reg, mem);
-	} else if(is_store_reg_halfword_reg(instr)) {
-		exec(store_reg_halfword_reg(instr), regs, status_reg, mem);
-	} else if(is_store_reg_byte_reg(instr)) {
-		exec(store_reg_byte_reg(instr), regs, status_reg, mem);
-	} else if(is_load_reg_sbyte_reg(instr)) {
-		exec(load_reg_sbyte_reg(instr), regs, status_reg, mem);
-	} else if(is_load_reg_word_reg(instr)) {
-		exec(load_reg_word_reg(instr), regs, status_reg, mem);
-	} else if(is_load_reg_halfword_reg(instr)) {
-		exec(load_reg_halfword_reg(instr), regs, status_reg, mem);
-	} else if(is_load_reg_byte_reg(instr)) {
-		exec(load_reg_byte_reg(instr), regs, status_reg, mem);
-	} else if(is_load_reg_shalfword_reg(instr)) {
-		exec(load_reg_shalfword_reg(instr), regs, status_reg, mem);
-	} else if(is_store_word_imm(instr)) {
-		exec(store_word_imm(instr), regs, status_reg, mem);
-	} else if(is_load_word_imm(instr)) {
-		exec(load_word_imm(instr), regs, status_reg, mem);
-	} else if(is_store_byte_imm(instr)) {
-		exec(store_byte_imm(instr), regs, status_reg, mem);
-	} else if(is_load_byte_imm(instr)) {
-		exec(load_byte_imm(instr), regs, status_reg, mem);
-	} else if(is_store_halfword_imm(instr)) {
-		exec(store_halfword_imm(instr), regs, status_reg, mem);
-	} else if(is_load_halfword_imm(instr)) {
-		exec(load_halfword_imm(instr), regs, status_reg, mem);
-	} else if(is_store_word_sp_imm(instr)) {
-		exec(store_word_sp_imm(instr), regs, status_reg, mem);
-	} else if(is_load_word_sp_imm(instr)) {
-		exec(load_word_sp_imm(instr), regs, status_reg, mem);
-
-
-		// PC relative address
-	} else if(is_adr(instr)) {
-		exec(adr(instr), regs);
-
-		// Generate SP-relative address: ADD (SP plus immediate)
-	} else if(is_add_sp_imm(instr)) {
-		exec(add_sp_imm(instr), regs);
-
-
-		// Miscellaneous 16-bit instructions on page A5-8
-	} else if(is_add_sp_imm_t2(instr)) {
-		exec(add_sp_imm_t2(instr), regs);
-	} else if(is_sub_sp_imm(instr)) {
-		exec(sub_sp_imm(instr), regs);
-	} else if(is_sxth(instr)) {
-		exec(sxth(instr), regs);
-	} else if(is_sxtb(instr)) {
-		exec(sxtb(instr), regs);
-	} else if(is_uxth(instr)) {
-		exec(uxth(instr), regs);
-	} else if(is_uxtb(instr)) {
-		exec(uxtb(instr), regs);
-	} else if(is_push(instr)) {
-		exec(push(instr), regs, mem);
-	} else if(is_cps(instr)) {
-		//TODO: cps
-		precond_fail("unimplemented");
-	} else if(is_rev_word(instr)) {
-		exec(rev_word(instr), regs);
-	} else if(is_rev_packed_halfword(instr)) {
-		exec(rev_packed_halfword(instr), regs);
-	} else if(is_rev_signed_halfword(instr)) {
-		exec(rev_packed_signed_halfword(instr), regs);
-	} else if(is_pop(instr)) {
-		exec(pop(instr), regs, mem);
-	} else if(is_breakpoint(instr)) {
-		// TODO:
-		precond_fail("unimplemented");
-	} else if(is_hints(instr)) {
-		// TODO:
-		precond_fail("unimplemented");
-
-
-		// Store multiple registers, see STM, STMIA, STMEA on page A6-175
-	} else if(is_stm(instr)) {
-		exec(stm(instr), regs, mem);
-
-		// Load multiple registers, see LDM, LDMIA, LDMFD on page A6-137
-	} else if(is_stm(instr)) {
-		exec(ldm(instr), regs, mem);
-
-
-	} else if(is_branch(instr)) {
-		exec(branch(instr), regs, status_reg);
-	} else if(is_unconditional_branch(instr)) {
-		exec(unconditional_branch(instr), regs, status_reg);
-	} else {
-		fprintf(stderr, "unhanlded instruction %04X\n", (uint32_t)instr);
-		precond_fail("unimplemented");
-	}
-
-	return 0;
-}
-
 class cpu {
 
-
 public:
+
+
+	void dispatch_and_exec(halfword instr) {
+		cpu::dispatch_and_exec(instr, _regs, _status_reg, _mem);
+	}
+
+	static
+	void dispatch_and_exec(halfword instr, registers& regs, apsr_register& status_reg, memory& mem) {
+
+
+		//fprintf(stderr, "%s\n", instr.to_string().c_str());
+
+		// Shift (immediate), add, subtract, move, and compare
+		if(is_lsl_imm(instr)) {
+			if(0 == instr.uint(9,5) && 0 == instr.uint(6, 2)) {
+				// When opcode is 0b00000 , and bits[8:6] are 0b000 , this encoding is MOV reg
+				//TODO: cps
+				precond_fail("unimplemented");
+			}
+			exec(lsl_imm(instr), regs, status_reg);
+		} else if(is_lsr_imm(instr)) {
+			exec(lsr_imm(instr), regs, status_reg);
+		} else if(is_asr_imm(instr)) {
+			exec(asr_imm(instr), regs, status_reg);
+		} else if(is_adds_reg(instr)) {
+			exec(adds_reg(instr), regs, status_reg);
+		} else if(is_subs_reg(instr)) {
+			exec(subs_reg(instr), regs, status_reg);
+		} else if(is_adds_imm(instr)) {
+			exec(adds_imm(instr), regs, status_reg);
+		} else if(is_subs_imm(instr)) {
+			exec(subs_imm(instr), regs, status_reg);
+		} else if(is_mov_imm(instr)) {
+			exec(mov_imm(instr), regs, status_reg);
+		} else if(is_cmp_imm(instr)) {
+			exec(cmp_imm(instr), regs, status_reg);
+		} else if(is_adds_imm8(instr)) {
+			exec(adds_imm8(instr), regs, status_reg);
+		} else if(is_subs_imm8(instr)) {
+			exec(subs_imm8(instr), regs, status_reg);
+
+
+
+			// Data processing
+		} else if(is_and_reg(instr)) {
+			exec(and_reg(instr), regs, status_reg);
+		} else if(is_xor_reg(instr)) {
+			exec(xor_reg(instr), regs, status_reg);
+		} else if(is_lsl_reg(instr)) {
+			exec(lsl_reg(instr), regs, status_reg);
+		} else if(is_lsr_reg(instr)) {
+			exec(lsr_reg(instr), regs, status_reg);
+		} else if(is_asr_reg(instr)) {
+			exec(asr_reg(instr), regs, status_reg);
+		} else if(is_add_c_reg(instr)) {
+			exec(add_c_reg(instr), regs, status_reg);
+		} else if(is_sub_c_reg(instr)) {
+			exec(sub_c_reg(instr), regs, status_reg);
+		} else if(is_ror_reg(instr)) {
+			exec(ror_reg(instr), regs, status_reg);
+		} else if(is_tst_reg(instr)) {
+			exec(tst_reg(instr), regs, status_reg);
+		} else if(is_rsb_imm(instr)) {
+			exec(rsb_imm(instr), regs, status_reg);
+		} else if(is_cmp_reg(instr)) {
+			exec(cmp_reg(instr), regs, status_reg);
+		} else if(is_cmpn_reg(instr)) {
+			exec(cmpn_reg(instr), regs, status_reg);
+		} else if(is_lor_reg(instr)) {
+			exec(lor_reg(instr), regs, status_reg);
+		} else if(is_mul_reg(instr)) {
+			exec(mul_reg(instr), regs, status_reg);
+		} else if(is_bitclear_reg(instr)) {
+			exec(bic_reg(instr), regs, status_reg);
+		} else if(is_not_reg(instr)) {
+			exec(not_reg(instr), regs, status_reg);
+
+
+			// Special data instructions and branch and exchange
+		} else if(is_add_highreg(instr)) {
+			exec(add_highreg(instr), regs, status_reg);
+		} else if(is_sdibe_unpredictable_0(instr)) {
+			// fault !
+		} else if(is_cmp_highreg(instr)) {
+			exec(cmp_highreg(instr), regs, status_reg);
+		} else if(is_mov_highreg(instr)) {
+			exec(mov_highreg(instr), regs, status_reg);
+		} else if(is_bx(instr)) {
+			exec(bx(instr), regs, status_reg);
+		} else if(is_blx(instr)) {
+			exec(blx(instr), regs, status_reg);
+		} else if(is_load_litteral(instr)) {
+			exec(load_literal(instr), regs, status_reg, mem);
+
+
+			// load store
+		} else if(is_store_reg_word_reg(instr)) {
+			exec(store_reg_word_reg(instr), regs, status_reg, mem);
+		} else if(is_store_reg_halfword_reg(instr)) {
+			exec(store_reg_halfword_reg(instr), regs, status_reg, mem);
+		} else if(is_store_reg_byte_reg(instr)) {
+			exec(store_reg_byte_reg(instr), regs, status_reg, mem);
+		} else if(is_load_reg_sbyte_reg(instr)) {
+			exec(load_reg_sbyte_reg(instr), regs, status_reg, mem);
+		} else if(is_load_reg_word_reg(instr)) {
+			exec(load_reg_word_reg(instr), regs, status_reg, mem);
+		} else if(is_load_reg_halfword_reg(instr)) {
+			exec(load_reg_halfword_reg(instr), regs, status_reg, mem);
+		} else if(is_load_reg_byte_reg(instr)) {
+			exec(load_reg_byte_reg(instr), regs, status_reg, mem);
+		} else if(is_load_reg_shalfword_reg(instr)) {
+			exec(load_reg_shalfword_reg(instr), regs, status_reg, mem);
+		} else if(is_store_word_imm(instr)) {
+			exec(store_word_imm(instr), regs, status_reg, mem);
+		} else if(is_load_word_imm(instr)) {
+			exec(load_word_imm(instr), regs, status_reg, mem);
+		} else if(is_store_byte_imm(instr)) {
+			exec(store_byte_imm(instr), regs, status_reg, mem);
+		} else if(is_load_byte_imm(instr)) {
+			exec(load_byte_imm(instr), regs, status_reg, mem);
+		} else if(is_store_halfword_imm(instr)) {
+			exec(store_halfword_imm(instr), regs, status_reg, mem);
+		} else if(is_load_halfword_imm(instr)) {
+			exec(load_halfword_imm(instr), regs, status_reg, mem);
+		} else if(is_store_word_sp_imm(instr)) {
+			exec(store_word_sp_imm(instr), regs, status_reg, mem);
+		} else if(is_load_word_sp_imm(instr)) {
+			exec(load_word_sp_imm(instr), regs, status_reg, mem);
+
+
+			// PC relative address
+		} else if(is_adr(instr)) {
+			exec(adr(instr), regs);
+
+			// Generate SP-relative address: ADD (SP plus immediate)
+		} else if(is_add_sp_imm(instr)) {
+			exec(add_sp_imm(instr), regs);
+
+
+			// Miscellaneous 16-bit instructions on page A5-8
+		} else if(is_add_sp_imm_t2(instr)) {
+			exec(add_sp_imm_t2(instr), regs);
+		} else if(is_sub_sp_imm(instr)) {
+			exec(sub_sp_imm(instr), regs);
+		} else if(is_sxth(instr)) {
+			exec(sxth(instr), regs);
+		} else if(is_sxtb(instr)) {
+			exec(sxtb(instr), regs);
+		} else if(is_uxth(instr)) {
+			exec(uxth(instr), regs);
+		} else if(is_uxtb(instr)) {
+			exec(uxtb(instr), regs);
+		} else if(is_push(instr)) {
+			exec(push(instr), regs, mem);
+		} else if(is_cps(instr)) {
+			//TODO: cps
+			precond_fail("unimplemented");
+		} else if(is_rev_word(instr)) {
+			exec(rev_word(instr), regs);
+		} else if(is_rev_packed_halfword(instr)) {
+			exec(rev_packed_halfword(instr), regs);
+		} else if(is_rev_signed_halfword(instr)) {
+			exec(rev_packed_signed_halfword(instr), regs);
+		} else if(is_pop(instr)) {
+			exec(pop(instr), regs, mem);
+		} else if(is_breakpoint(instr)) {
+			// TODO:
+			precond_fail("unimplemented");
+		} else if(is_hints(instr)) {
+			// TODO:
+			precond_fail("unimplemented");
+
+
+			// Store multiple registers, see STM, STMIA, STMEA on page A6-175
+		} else if(is_stm(instr)) {
+			exec(stm(instr), regs, mem);
+
+			// Load multiple registers, see LDM, LDMIA, LDMFD on page A6-137
+		} else if(is_stm(instr)) {
+			exec(ldm(instr), regs, mem);
+
+
+		} else if(is_branch(instr)) {
+			exec(branch(instr), regs, status_reg);
+		} else if(is_unconditional_branch(instr)) {
+			exec(unconditional_branch(instr), regs, status_reg);
+		} else {
+			fprintf(stderr, "unhanlded instruction %04X\n", (uint32_t)instr);
+			precond_fail("unimplemented");
+		}
+
+	}
+
+
+
 
 	void step() {
 		word next_instr = _regs.get_pc();
@@ -542,7 +548,7 @@ public:
 		halfword instr = _mem.read16(next_instr);
 		_regs.set_pc(next_instr + 4); // prefetch 2 instructions
 		_regs.reset_pc_dirty_status();
-		exec(instr, _regs, _status_reg, _mem);
+		dispatch_and_exec(instr);
 		if(!_regs.branch_occured()) {
 			_regs.set_pc(next_instr + 2);
 		}

@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <assert.h>
 
-#include "../lib/cpu.hpp"
+#include "cpu.hpp"
 
 
 class CPUTest : public ::testing::Test {
@@ -37,14 +37,14 @@ protected:
 
 
 TEST_F(CPUTest, TestExecLDR_NegativeOffset) {
-	_cpu.regs()[0] = 0;   // dest
-	_cpu.regs()[1] = 10;  // base addr
-	_cpu.regs()[2]	= -6; // offset
+	_cpu.regs().set(1, 0xffffffff);   // dest
+	_cpu.regs().set_pc(14);
 
-	// equivalent to *(uint32_t*)mem[10 + -6]
-	exec_ldr(0, 1, 2, _cpu.regs(), _cpu.mem());
+	// ldr r0 -8
+	halfword ins = 0b0100100100000010;//   (0b01001 << 11 ) | (0b001 << 5) | (uint8_t)2;
+	_cpu.dispatch_and_exec(ins);
 
-	EXPECT_EQ(1, _cpu.regs()[0]); // mem[4] == 1
-	EXPECT_EQ(10,_cpu.regs()[1]); // didnt change
-	EXPECT_EQ(-6,_cpu.regs()[2]); // didnt change
+	// pc should have aligned to 12
+	EXPECT_EQ(5, _cpu.regs().get(1)); // mem[(12+(2<<2))] == 5
+
 }

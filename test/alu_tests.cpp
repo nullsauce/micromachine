@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "../lib/alu.hpp"
+#include "alu.hpp"
 
 template <typename u_type>
 static void test_lsl(const u_type initial, const u_type expected_result, const size_t offset, bool expected_carry) {

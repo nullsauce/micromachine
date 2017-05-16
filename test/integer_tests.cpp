@@ -2,7 +2,7 @@
 // Created by fla on 17-5-8.
 //
 
-#include "../lib/types.hpp"
+#include "types.hpp"
 #include <gtest/gtest.h>
 
 #define ANY_MSG ".*"
