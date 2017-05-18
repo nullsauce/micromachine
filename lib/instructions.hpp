@@ -268,6 +268,14 @@ struct standard_imm7 {
 	const imm7_t  imm7;
 };
 
+struct standard_imm8 {
+
+	standard_imm8(halfword field)
+		: imm8(binops::read_uint(field, 0, 8))
+	{}
+
+	const imm8_t imm8;
+};
 
 struct standard_imm11 {
 
@@ -641,6 +649,41 @@ struct ldm : public standard_register_list_rn {
 
 struct unconditional_branch : public standard_imm11 {
 	using standard_imm11::standard_imm11;
+};
+
+struct svc : public standard_imm8 {
+	using standard_imm8::standard_imm8;
+};
+
+
+struct bl_imm {
+
+	bl_imm(halfword first, halfword second)
+		: j1(second.bit(13))
+		, j2(second.bit(11))
+		, s(first.bit(10))
+		, imm10(first.uint(0, 10))
+		, imm11(second.uint(0, 11))
+	{
+		fprintf(stderr, "%s %s\n", first.to_string().c_str(), second.to_string().c_str());
+
+	}
+
+
+	int32_t offset() const {
+
+		const bool i1 = !((!j1) != (!s)); // logical xor i1 = j1 xor s
+		const bool i2 = !((!j2) != (!s)); // logical xor i2 = not(j2 xor s)
+		uint32_t uint25_offset =
+			(imm11 | (imm10 << 11) | (i2 << 21) | (i1 << 22) | (s << 23)) << 1;
+		return binops::sign<int32_t>(uint25_offset, 25);
+	}
+
+	const bool j1;
+	const bool j2;
+	const bool s;
+	const halfword imm10;
+	const halfword imm11;
 };
 
 #endif //THUMBEMU_INSTRUCTIONS_HPP
