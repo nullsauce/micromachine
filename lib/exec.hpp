@@ -812,4 +812,19 @@ void exec(const ldm& instruction, registers& regs, memory& mem) {
 	}
 }
 
+void exec(const bl_imm& instruction, registers& regs) {
+	// pc is 4 bytes ahead, so already poiting to the next instruction
+	word next_instr_addr = regs.get_pc();
+	next_instr_addr.set_bit(0); // force thumb mode
+	regs.set_lr(next_instr_addr);
+	int32_t offset = instruction.offset();
+	int32_t new_pc = regs.get_pc() + offset;
+	regs.set_pc(new_pc);
+}
+
+void exec(const svc& instruction) {
+	fprintf(stderr, "SVC %02X\n", instruction.imm8);
+}
+
 #endif //THUMBEMU_EXEC_HPP
+
