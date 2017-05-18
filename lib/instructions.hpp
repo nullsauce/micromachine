@@ -672,7 +672,7 @@ struct bl_imm {
 
 	int32_t offset() const {
 
-		const bool i1 = !((!j1) != (!s)); // logical xor i1 = j1 xor s
+		const bool i1 = !((!j1) != (!s)); // logical xor i1 = not(j1 xor s)
 		const bool i2 = !((!j2) != (!s)); // logical xor i2 = not(j2 xor s)
 		uint32_t uint25_offset =
 			(imm11 | (imm10 << 11) | (i2 << 21) | (i1 << 22) | (s << 23)) << 1;
