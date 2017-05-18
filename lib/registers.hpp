@@ -7,39 +7,79 @@
 
 
 #include "register.hpp"
+#include "exec_mode.hpp"
 
 
 struct registers {
 
-	static constexpr size_t NUM_REGS = 16;
+	registers(exec_mode& exec_mode)
+		: _sp(exec_mode, _control_register){
+
+	}
+
+	static constexpr size_t NUM_GP_REGS = 13; // general purpose registers
+	static constexpr size_t NUM_REGS = NUM_GP_REGS + 3;
 	static constexpr reg_idx SP = 13;
 	static constexpr reg_idx LR = 14;
 	static constexpr reg_idx PC = 15;
+
+	void reset() {
+		for(reg_idx i = 0; i < NUM_GP_REGS; i++) {
+			set(i, 0);
+		}
+	}
 
 	word get(reg_idx i) const {
 
 		precond(i < NUM_REGS, "register index too large");
 
-		word val = _registers[i];
-
-		if(i > 7) {
-			if(i < 13) {
-				// high reg
-			} else if(i == SP) {
-				val = sp_after_read(val);
-			} else if(i == PC) {
-				val = pc_after_read(val);
-			}
+		if(i < NUM_GP_REGS) {
+			return _gp_registers[i];
+		} else if(i == SP) {
+			return _sp;
+		} else if(i == LR) {
+			return _lr;
+		} else if(i == PC) {
+			return _pc;
+		} else {
+			precond_fail("invalid register index %lu", i);
 		}
 
-		return val;
+		return 0;
+	}
+
+	void set(reg_idx i, word val) {
+
+		precond(i < NUM_REGS, "register index too large");
+
+		if(i < NUM_GP_REGS) {
+			_gp_registers[i] = val;
+		} else if(i == SP) {
+			_sp = val;
+		} else if(i == LR) {
+			_lr = val;
+		} else if(i == PC) {
+			_pc = val;
+		} else {
+			precond_fail("invalid register index %lu", i);
+		}
+
 	}
 
 	word get_sp() const {
 		return get(SP);
 	}
+
 	void set_sp(word val) {
 		set(SP, val);
+	}
+
+	word get_lr() const {
+		return get(LR);
+	}
+
+	void set_lr(word val) {
+		set(LR, val);
 	}
 
 	word get_pc() const {
@@ -50,36 +90,20 @@ struct registers {
 		set(PC, val);
 	}
 
-	void set(reg_idx i, word val) {
-
-		precond(i < NUM_REGS, "register index too large");
-
-		//fprintf(stderr, "write %02d : %s\n", i, val.to_string().c_str());
-
-		if(i > 7) {
-			if(i < 13) {
-				// high reg
-			} else if(i == SP) {
-				val = sp_before_write(val);
-			} else if(i == PC) {
-				pc_is_dirty = true;
-				val = pc_before_write(val);
-			}
-		}
-
-		_registers[i] = val;
-	}
-
 	void reset_pc_dirty_status() {
-		pc_is_dirty = false;
+		_pc.dirty_status = false;
 	}
 
 	bool branch_occured() const {
-		return pc_is_dirty;
+		return _pc.dirty_status;
 	}
 
 	void print() {
-		for(size_t i = 0; i < NUM_REGS; i++) {
+		fprintf(stderr, "[SP] %08x\n", (uint32_t)get(SP));
+		fprintf(stderr, "[LR] %08x\n", (uint32_t)get(LR));
+		fprintf(stderr, "[PC] %08x\n", (uint32_t)get(PC));
+
+		for(size_t i = 0; i < NUM_GP_REGS; i++) {
 			fprintf(stderr, "[%02zu] %08X\n", i, (uint32_t)get(i));
 		}
 	}
@@ -87,35 +111,12 @@ struct registers {
 
 private:
 
-	static word sp_before_write(word word) {
-		// these two bits should always be zero, or UNPREDICTABLE
-		if(word.any_bits_set(0, 2)) {
-			// unpredicatable
-		}
-	}
+	standard_reg 	_gp_registers[13];
+	control_reg 	_control_register;
+	sp_reg 			_sp;
+	standard_reg 	_lr;
+	pc_reg 			_pc;
 
-	static word sp_after_read(word word) {
-		return word & binops::make_mask<2, 30>();
-	}
-
-	static word pc_before_write(word word) {
-
-		// if EPSR.T == 0, a UsageFault('Invalid State')
-		// is taken on the next instruction
-		if(word.bit(0) == 0) {
-			// usage fault
-		}
-
-		return word & binops::make_mask<1,31>();
-	}
-
-	static word pc_after_read(word word) {
-		return word & binops::make_mask<1,31>();
-	}
-
-	reg _registers[NUM_REGS];
-
-	bool pc_is_dirty = false;
 };
 
 

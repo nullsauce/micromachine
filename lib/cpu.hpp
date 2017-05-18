@@ -12,6 +12,7 @@
 #include "instructions.hpp"
 #include "exec.hpp"
 #include "memory.hpp"
+#include "exec_mode.hpp"
 
 static bool is_siadsumoco(const halfword& instruction) {
 	return 0 == instruction.uint(14, 2);
@@ -617,10 +618,37 @@ public:
 
 
 
+	cpu()
+		: _exec_mode(exec_mode::thread)
+		, _regs(_exec_mode) {
+
+		reset();
+	}
+
+	void reset() {
+		_exec_mode = exec_mode::thread;
+		/*
+		SP_main = MemA[vectortable,4] & 0xFFFFFFFC;
+		SP_process = ((bits(30) UNKNOWN):’00’);
+		LR = bits(32) UNKNOWN; // Value must be initialised by software
+		CurrentMode = Mode_Thread;
+		APSR = bits(32) UNKNOWN; // Flags UNPREDICTABLE from reset
+		IPSR<5:0> = 0x0; // Exception number clearedat reset
+		PRIMASK.PM = '0'; // Priority mask cleared at reset
+		CONTROL.SPSEL = '0'; // Current stack is Main
+		CONTROL.nPRIV = '0'; // Thread is privileged
+		ResetSCSRegs(); // Catch-all function for System Control Space reset
+		ExceptionActive[*] = '0'; // All exceptions Inactive
+		ClearEventRegister(); // See WFE instruction for more information
+		start = MemA[vectortable+4,4]; // Load address of reset routine
+		BLXWritePC(start); // Start execution of reset routin
+	 */
+	}
+
 
 	void step() {
 		word next_instr = _regs.get_pc();
-		fprintf(stderr, "exec %d\n", (uint32_t)next_instr);
+		fprintf(stderr, "exec %08x %d\n", (uint32_t)next_instr, (uint32_t)next_instr);
 		halfword instr = _mem.read16(next_instr);
 		_regs.set_pc(next_instr + 4); // prefetch 2 instructions
 		_regs.reset_pc_dirty_status();
@@ -648,9 +676,11 @@ public:
 
 private:
 
-	registers 	_regs;
+	registers 		_regs;
 	apsr_register 	_status_reg;
 	memory 			_mem;
+	exec_mode 		_exec_mode;
+
 };
 
 #endif //MICROMACHINE_CPU_HPP
