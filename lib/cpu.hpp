@@ -326,6 +326,10 @@ static bool is_hints(const halfword& instruction) {
 	return 0b10111111 == instruction.uint(8, 8);
 }
 
+static bool is_nop(const halfword& instruction) {
+	return 0b1011111100000000 == instruction;
+}
+
 static bool is_stm(const halfword& instruction) {
 	return 0b11000 == instruction.uint(11, 5);
 }
@@ -339,9 +343,51 @@ static bool is_branch(const halfword& instruction) {
 		   (instruction.uint(9, 3) != 0b111);
 }
 
+static bool is_svc(const halfword& instruction) {
+	return 0b1101 == instruction.uint(12, 4) &&
+		   0b1111 == instruction.uint(8, 4);
+}
+
+
 static bool is_unconditional_branch(const halfword& instruction) {
 	return 0b11100 == instruction.uint(11, 5);
 }
+
+static bool is_32bit_thumb_encoding(const halfword& instruction) {
+	return 0b111 == instruction.uint(13, 3) &&
+		   0b00 !=  instruction.uint(11, 2);
+}
+
+
+static bool is_32bit_thumb_br_misc_ctl(const halfword& first, const halfword& second) {
+	return is_32bit_thumb_encoding(first) &&
+		   0b10 == first.uint(11, 2) &&
+		   0b1  == second.uint(15, 1);
+}
+
+static bool is_32bit_thumb_msr(const halfword& first, const halfword& second) {
+	return is_32bit_thumb_br_misc_ctl(first, second) &&
+		   0b011100 == first.uint(5, 6) &&
+		   0b000 	== (second.uint(12, 3) & 0b101);
+}
+
+static bool is_32bit_thumb_misc_ctl(const halfword& first, const halfword& second) {
+	return is_32bit_thumb_br_misc_ctl(first, second) &&
+		   0b0111011 == first.uint(4, 7) &&
+		   0b000 	== (second.uint(12, 3) & 0b101);
+}
+
+static bool is_32bit_thumb_mrs(const halfword& first, const halfword& second) {
+	return is_32bit_thumb_br_misc_ctl(first, second) &&
+		   0b011111 == first.uint(5, 6) &&
+		   0b000 	== (second.uint(12, 3) & 0b101);
+}
+
+static bool is_32bit_thumb_bl(const halfword& first, const halfword& second) {
+	return is_32bit_thumb_br_misc_ctl(first, second) &&
+		   0b101 	== (second.uint(12, 3) & 0b101);
+}
+
 
 class cpu {
 
@@ -355,6 +401,7 @@ public:
 	static
 	void dispatch_and_exec(halfword instr, registers& regs, apsr_register& status_reg, memory& mem) {
 
+		if(is_nop(instr)) return;
 
 		//fprintf(stderr, "%s\n", instr.to_string().c_str());
 
@@ -530,8 +577,37 @@ public:
 
 		} else if(is_branch(instr)) {
 			exec(branch(instr), regs, status_reg);
+		} else if(is_svc(instr)) {
+			exec(svc(instr));
 		} else if(is_unconditional_branch(instr)) {
 			exec(unconditional_branch(instr), regs, status_reg);
+
+
+		// 32bit encodings
+		} else if(is_32bit_thumb_encoding(instr)) {
+
+			// fetch next instruction
+			halfword second_instruction = mem.read16(regs.get_pc() - 2);
+
+			if(is_32bit_thumb_br_misc_ctl(instr, second_instruction)) {
+
+				if(is_32bit_thumb_msr(instr, second_instruction)) {
+					precond_fail("unimplemented msr");
+				} else if(is_32bit_thumb_misc_ctl(instr, second_instruction)) {
+					precond_fail("unimplemented 32 bit misc ctl intructions");
+				} else if(is_32bit_thumb_mrs(instr, second_instruction)) {
+					precond_fail("unimplemented mrs");
+				} else if(is_32bit_thumb_bl(instr, second_instruction)) {
+					exec(bl_imm(instr, second_instruction), regs);
+				} else {
+					precond_fail("unimplemented 32bit misc br and ctrl instruction")
+				}
+
+
+			} else {
+				precond_fail("unimplemented 32bit instruction");
+			}
+
 		} else {
 			fprintf(stderr, "unhanlded instruction %04X\n", (uint32_t)instr);
 			precond_fail("unimplemented");
