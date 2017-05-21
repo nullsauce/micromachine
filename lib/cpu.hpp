@@ -13,6 +13,8 @@
 #include "exec.hpp"
 #include "memory.hpp"
 #include "exec_mode.hpp"
+#include "exception.hpp"
+#include "exception_vector.hpp"
 
 static bool is_siadsumoco(const halfword& instruction) {
 	return 0 == instruction.uint(14, 2);
@@ -620,13 +622,17 @@ public:
 
 	cpu()
 		: _exec_mode(exec_mode::thread)
-		, _regs(_exec_mode) {
+		, _regs(_exec_mode, _active_exceptions[exception::HARDFAULT])
+		, _mem(_active_exceptions[exception::HARDFAULT]){
 
 		reset();
 	}
 
 	void reset() {
+		_active_exceptions.clear();
 		_exec_mode = exec_mode::thread;
+		_regs.reset();
+		_status_reg = 0;
 		/*
 		SP_main = MemA[vectortable,4] & 0xFFFFFFFC;
 		SP_process = ((bits(30) UNKNOWN):’00’);
@@ -647,15 +653,34 @@ public:
 
 
 	void step() {
-		word next_instr = _regs.get_pc();
-		fprintf(stderr, "exec %08x %d\n", (uint32_t)next_instr, (uint32_t)next_instr);
-		halfword instr = _mem.read16(next_instr);
-		_regs.set_pc(next_instr + 4); // prefetch 2 instructions
-		_regs.reset_pc_dirty_status();
-		dispatch_and_exec(instr);
-		if(!_regs.branch_occured()) {
-			_regs.set_pc(next_instr + 2);
+
+		if(_active_exceptions.any_signaled()) {
+			fprintf(stderr, "Exception signaled\n");
+		} else {
+
+
+			word current_instr = _regs.get_pc();
+			halfword instr = _mem.read16(current_instr);
+			fprintf(stderr, "exec %08x %d %s\n",
+					(uint32_t) current_instr,
+					(uint32_t) current_instr,
+					instr.to_string().c_str()
+			);
+			_regs.set_pc(current_instr + 4); // prefetch 2 instructions
+			_regs.reset_pc_dirty_status();
+			dispatch_and_exec(instr);
+
+			// TODO: how does this behaves with exceptions
+			if(active_exceptions().is_signaled(exception::HARDFAULT)) {
+				_regs.set_pc(current_instr);
+			} else if (!_regs.branch_occured()) {
+				_regs.set_pc(current_instr + 2);
+			}
 		}
+	}
+
+	const exception_vector& active_exceptions() const {
+		return _active_exceptions;
 	}
 
 	memory& mem() {
@@ -674,12 +699,102 @@ public:
 		return _regs;
 	}
 
+	// for testing
+	apsr_register& xpsr() {
+		return _status_reg;
+	}
+
+	apsr_register& flags() {
+		return _status_reg;
+	}
+
 private:
 
-	registers 		_regs;
-	apsr_register 	_status_reg;
-	memory 			_mem;
-	exec_mode 		_exec_mode;
+	bool is_handler_mode() const {
+		return exec_mode::handler == _exec_mode;
+	}
+
+	bool is_thread_mode() const {
+		return exec_mode::thread == _exec_mode;
+	}
+
+	bool is_priviledged_mode() const {
+		return is_handler_mode() &&
+			!_regs.control_register().n_priv();
+	}
+
+	void push_stack() {
+
+		const size_t stack_frame_size = 32;
+		const uint32_t sp_mask = ~((uint32_t)0b100);
+		const bool frame_ptr_align = _regs.get_sp().bit(2);
+
+		uint32_t frame_ptr = (_regs.get_sp() - stack_frame_size) & sp_mask;
+		_regs.set_sp(frame_ptr);
+
+		// TODO: ReturnAddress()
+		uint32_t return_address = regs().get_pc() - 2;
+
+		uint xpsr_status = 	_status_reg.uint(0, 8) |
+							(frame_ptr_align << 8) |
+							_status_reg.uint(10, 22) << 10;
+
+		_mem.write32(frame_ptr+0,  _regs.get(0));
+		_mem.write32(frame_ptr+4,  _regs.get(1));
+		_mem.write32(frame_ptr+8,  _regs.get(2));
+		_mem.write32(frame_ptr+12, _regs.get(3));
+		_mem.write32(frame_ptr+16, _regs.get(12));
+		_mem.write32(frame_ptr+20, _regs.get_lr());
+		_mem.write32(frame_ptr+24, return_address);
+		_mem.write32(frame_ptr+28, xpsr_status);
+
+
+		if(is_handler_mode()) {
+			_regs.set_lr(0xFFFFFFF1);
+		} else if(_regs.control_register().sp_sel()) {
+			_regs.set_lr(0xFFFFFFF9);
+		} else {
+			_regs.set_lr(0xFFFFFFFD);
+		}
+	}
+
+	void signal_exception(exception ex)  {
+		precond(exception::INVALID != ex, "Bad exception identifier");
+		_active_exceptions[ex] = true;
+	}
+
+
+
+	void take_exception(exception exception) {
+		// enter handler mode
+		_exec_mode = exec_mode::handler;
+
+		// set ipsr with exception number
+		_status_reg = (_status_reg & ~binops::make_mask<uint32_t>(5))
+						| (size_t)exception;
+
+		// stack is now SP_main
+		_regs.control_register().set_sp_sel(0);
+
+		_active_exceptions[exception] = true;
+
+		// TODO: SCS_UpdateStatusRegs()
+		// TODO: SetEventRegister()
+		// TODO: InstructionSynchronizationBarrier()
+
+
+		static const uint32_t vector_table = 4;
+		uint32_t handler_address = _mem.read32(vector_table + ((size_t)exception*4));
+
+		_regs.branch(handler_address);
+	}
+
+	exception_vector	_active_exceptions;
+	registers 			_regs;
+	apsr_register 		_status_reg;
+	memory 				_mem;
+	exec_mode 			_exec_mode;
+
 
 };
 

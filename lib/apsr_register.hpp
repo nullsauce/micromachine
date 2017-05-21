@@ -16,6 +16,8 @@ struct apsr_register : public word {
 	static const size_t FLAG_OVERFLOW 	= 28;
 
 
+	using word::integer_type;
+
 	void print() {
 		fprintf(stderr, "Z:%d, N:%d, C:%d, V:%d\n", zero_flag(), neg_flag(), carry_flag(), overflow_flag());
 	}

@@ -8,12 +8,14 @@
 
 #include "register.hpp"
 #include "exec_mode.hpp"
+#include "exception_vector.hpp"
 
 
 struct registers {
 
-	registers(exec_mode& exec_mode)
-		: _sp(exec_mode, _control_register){
+	registers(exec_mode& exec_mode, exception_vector::bitref_t& hardfault_signal)
+		: _sp(exec_mode, _control_register)
+		, _pc(exec_mode, hardfault_signal) {
 
 	}
 
@@ -31,7 +33,7 @@ struct registers {
 
 	word get(reg_idx i) const {
 
-		precond(i < NUM_REGS, "register index too large");
+		precond(i < NUM_REGS, "register index too large %zu", i);
 
 		if(i < NUM_GP_REGS) {
 			return _gp_registers[i];
@@ -66,6 +68,14 @@ struct registers {
 
 	}
 
+	void branch(word address) {
+		_pc.branch(address);
+	}
+
+	void branch_thumb(word address) {
+		_pc.branch(address | 1);
+	}
+
 	word get_sp() const {
 		return get(SP);
 	}
@@ -91,11 +101,11 @@ struct registers {
 	}
 
 	void reset_pc_dirty_status() {
-		_pc.dirty_status = false;
+		_pc._dirty_status = false;
 	}
 
 	bool branch_occured() const {
-		return _pc.dirty_status;
+		return _pc._dirty_status;
 	}
 
 	void print() {
@@ -106,6 +116,14 @@ struct registers {
 		for(size_t i = 0; i < NUM_GP_REGS; i++) {
 			fprintf(stderr, "[%02zu] %08X\n", i, (uint32_t)get(i));
 		}
+	}
+
+	const control_reg& control_register() const {
+		return _control_register;
+	}
+
+	control_reg& control_register() {
+		return _control_register;
 	}
 
 

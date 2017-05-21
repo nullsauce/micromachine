@@ -7,6 +7,7 @@
 
 #include "types.hpp"
 #include "exec_mode.hpp"
+#include "exception_vector.hpp"
 
 
 class ireg {
@@ -19,11 +20,6 @@ public:
 	}
 
 	operator word() const {
-		return get();
-	}
-
-	// explicit conversion to underlying type
-	operator word::bits_t() const {
 		return get();
 	}
 
@@ -140,26 +136,51 @@ public:
 	using standard_reg::standard_reg;
 	using standard_reg::operator=;
 
-	bool dirty_status;
+	bool _dirty_status;
+
+	pc_reg(const exec_mode& exec_mode, exception_vector::bitref_t& hardfault_signal)
+		: _exec_mode(exec_mode)
+		, _hardfault_signal(hardfault_signal) {
+
+	}
+
+	void branch(word address) {
+
+		// if EPSR.T == 0, a UsageFault('Invalid State')
+		// is taken on the next instruction
+
+		if(exec_mode::handler == _exec_mode &&
+			0b1111 == address.uint(28,4)) {
+			// TODO ExceptionReturn
+			precond_fail("ExceptionReturn unimplemented")
+		}
+
+		if(0 == (address & 1)) {
+			// TODO: better this
+			_hardfault_signal = true;
+			// TODO: better fault signaling
+			fprintf(stderr, "UsageFault. Thumb bit not set\n");;
+		}
+
+		set(address);
+	}
 
 private:
 
 	static const uint32_t MASK = binops::make_mask<1, 31>();
 
 	virtual void set(word word)  {
-
-		// if EPSR.T == 0, a UsageFault('Invalid State')
-		// is taken on the next instruction
-		if(word & MASK) {
-			// usage fault
-		}
 		_word = word;
-		dirty_status = true;
+		_dirty_status = true;
 	}
 
 	virtual const word get() const  {
-		return _word & MASK;
+		word val = _word & MASK;
+		return val;
 	}
+
+	const exec_mode& 			_exec_mode;
+	exception_vector::bitref_t&	_hardfault_signal;
 };
 
 
