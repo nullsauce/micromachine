@@ -387,6 +387,48 @@ struct standard_imm8_cond {
 	const uint8_t cond;
 };
 
+
+
+
+struct adc : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
+
+};
+
+struct add_imm : public standard_rd_rm_imm3 {
+	using standard_rd_rm_imm3::standard_rd_rm_imm3;
+
+};
+
+struct add_imm_t2 : public standard_imm8_rdn {
+	// T2 version of ADD immediate
+	using standard_imm8_rdn::standard_imm8_rdn;
+
+};
+
+struct add_reg : public standard_rd_rm_rn {
+	using standard_rd_rm_rn::standard_rd_rm_rn;
+
+};
+
+// TODO: should herit fromstandard_rdn_rm_dN
+struct add_highreg : public standard_rdn_rm_dm {
+	// Note: encoding t2 of add reg
+	using standard_rdn_rm_dm::standard_rdn_rm_dm;
+
+};
+
+struct add_sp_imm : public standard_imm8_rd {
+	using standard_imm8_rd::standard_imm8_rd;
+
+};
+
+struct add_sp_imm_t2 : public standard_imm7 {
+	using standard_imm7::standard_imm7;
+
+};
+
+
 struct lsl_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
 	imm5_t shift_offset() const {
@@ -410,17 +452,11 @@ struct asr_imm : public standard_rd_rm_imm5 {
 	}
 };
 
-struct adds_reg : public standard_rd_rm_rn {
-	using standard_rd_rm_rn::standard_rd_rm_rn;
-};
 
 struct subs_reg : public standard_rd_rn_rm {
 	using standard_rd_rn_rm::standard_rd_rn_rm;
 };
 
-struct adds_imm : public standard_rd_rm_imm3 {
-	using standard_rd_rm_imm3::standard_rd_rm_imm3;
-};
 
 struct subs_imm : public standard_rd_rm_imm3 {
 	using standard_rd_rm_imm3::standard_rd_rm_imm3;
@@ -434,10 +470,7 @@ struct cmp_imm : public standard_imm8_rn {
 	using standard_imm8_rn::standard_imm8_rn;
 };
 
-struct adds_imm8 : public standard_imm8_rdn {
-	// T2 version of ADD immediate
-	using standard_imm8_rdn::standard_imm8_rdn;
-};
+
 
 struct subs_imm8 : public standard_imm8_rdn {
 	// T2 version of SUB immediate
@@ -464,9 +497,6 @@ struct asr_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct add_c_reg : public standard_rdn_rm {
-	using standard_rdn_rm::standard_rdn_rm;
-};
 
 struct sub_c_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
@@ -508,9 +538,7 @@ struct not_reg : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
 
-struct add_highreg : public standard_rdn_rm_dm {
-	using standard_rdn_rm_dm::standard_rdn_rm_dm;
-};
+
 
 struct cmp_highreg : public standard_rn_rm_dm {
 	using standard_rn_rm_dm::standard_rn_rm_dm;
@@ -606,13 +634,8 @@ struct adr : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 };
 
-struct add_sp_imm : public standard_imm8_rd {
-	using standard_imm8_rd::standard_imm8_rd;
-};
 
-struct add_sp_imm_t2 : public standard_imm7 {
-	using standard_imm7::standard_imm7;
-};
+
 
 struct sub_sp_imm : public standard_imm7 {
 	using standard_imm7::standard_imm7;
