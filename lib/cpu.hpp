@@ -44,7 +44,7 @@ static bool is_asr_imm(const halfword& instruction) {
 		   0b010 == instruction.uint(11, 3);
 }
 
-static bool is_adds_reg(const halfword& instruction) {
+static bool is_add_reg(const halfword& instruction) {
 	return is_siadsumoco(instruction) &&
 		   0b01100 == instruction.uint(9, 5);
 }
@@ -54,7 +54,7 @@ static bool is_subs_reg(const halfword& instruction) {
 		   0b01101 == instruction.uint(9, 5);
 }
 
-static bool is_adds_imm(const halfword& instruction) {
+static bool is_add_imm(const halfword& instruction) {
 	return is_siadsumoco(instruction) &&
 		   0b01110 == instruction.uint(9, 5);
 }
@@ -74,7 +74,7 @@ static bool is_cmp_imm(const halfword& instruction) {
 		   0b101 == instruction.uint(11, 3);
 }
 
-static bool is_adds_imm8(const halfword& instruction) {
+static bool is_add_imm_t2(const halfword& instruction) {
 	return is_siadsumoco(instruction) &&
 		   0b110 == instruction.uint(11, 3);
 }
@@ -110,7 +110,7 @@ static bool is_asr_reg(const halfword& instruction) {
 		   0b0100 == instruction.uint(6, 4);
 }
 
-static bool is_add_c_reg(const halfword& instruction) {
+static bool is_adc_reg(const halfword& instruction) {
 	return is_data_processing(instruction) &&
 		   0b0101 == instruction.uint(6, 4);
 }
@@ -434,20 +434,20 @@ public:
 			exec(lsr_imm(instr), regs, status_reg);
 		} else if(is_asr_imm(instr)) {
 			exec(asr_imm(instr), regs, status_reg);
-		} else if(is_adds_reg(instr)) {
-			exec(adds_reg(instr), regs, status_reg);
+		} else if(is_add_reg(instr)) {
+			exec(add_reg(instr), regs, status_reg);
 		} else if(is_subs_reg(instr)) {
 			exec(subs_reg(instr), regs, status_reg);
-		} else if(is_adds_imm(instr)) {
-			exec(adds_imm(instr), regs, status_reg);
+		} else if(is_add_imm(instr)) {
+			exec(add_imm(instr), regs, status_reg);
 		} else if(is_subs_imm(instr)) {
 			exec(subs_imm(instr), regs, status_reg);
 		} else if(is_mov_imm(instr)) {
 			exec(mov_imm(instr), regs, status_reg);
 		} else if(is_cmp_imm(instr)) {
 			exec(cmp_imm(instr), regs, status_reg);
-		} else if(is_adds_imm8(instr)) {
-			exec(adds_imm8(instr), regs, status_reg);
+		} else if(is_add_imm_t2(instr)) {
+			exec(add_imm_t2(instr), regs, status_reg);
 		} else if(is_subs_imm8(instr)) {
 			exec(subs_imm8(instr), regs, status_reg);
 
@@ -464,8 +464,8 @@ public:
 			exec(lsr_reg(instr), regs, status_reg);
 		} else if(is_asr_reg(instr)) {
 			exec(asr_reg(instr), regs, status_reg);
-		} else if(is_add_c_reg(instr)) {
-			exec(add_c_reg(instr), regs, status_reg);
+		} else if(is_adc_reg(instr)) {
+			exec(adc(instr), regs, status_reg);
 		} else if(is_sub_c_reg(instr)) {
 			exec(sub_c_reg(instr), regs, status_reg);
 		} else if(is_ror_reg(instr)) {

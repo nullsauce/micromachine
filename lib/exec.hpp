@@ -48,7 +48,7 @@ static void exec(const asr_imm& instruction, registers& regs, apsr_register& sta
 
 }
 
-static void exec(const adds_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const add_reg& instruction, registers& regs, apsr_register& status_reg) {
 	word rm = regs.get(instruction.rm);
 	word rn = regs.get(instruction.rn);
 	// left shift of zero is omitted here
@@ -83,7 +83,7 @@ static void exec(const subs_reg& instruction, registers& regs, apsr_register& st
 }
 
 
-static void exec(const adds_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const add_imm& instruction, registers& regs, apsr_register& status_reg) {
 
 	word rn 	= regs.get(instruction.rm);
 	word imm32 	= instruction.imm3;
@@ -146,7 +146,7 @@ static void exec(const cmp_imm& instruction, const registers& regs, apsr_registe
 	status_reg.apply_neg(result);
 }
 
-static void exec(const adds_imm8& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const add_imm_t2& instruction, registers& regs, apsr_register& status_reg) {
 
 	word rn 	= regs.get(instruction.rdn);
 	word imm32 	= instruction.imm8;
@@ -248,7 +248,7 @@ static void exec(const asr_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_zero(value);
 }
 
-static void exec(const add_c_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const adc& instruction, registers& regs, apsr_register& status_reg) {
 	word rn 	= regs.get(instruction.rdn);
 	word rm 	= regs.get(instruction.rm);
 
