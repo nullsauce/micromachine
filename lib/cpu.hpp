@@ -177,9 +177,10 @@ static bool is_sdibe_unpredictable_0(const halfword& instruction) {
 }
 
 static bool is_cmp_highreg(const halfword& instruction) {
-	return is_sdibe(instruction) &&
-		   (0b0101 == instruction.uint(6, 4)) ||
-		   (0b011 == instruction.uint(7, 3));
+	return is_sdibe(instruction) && (
+		(0b0101 == instruction.uint(6, 4)) ||
+		(0b011 == instruction.uint(7, 3))
+	);
 }
 
 static bool is_mov_highreg(const halfword& instruction) {
@@ -278,7 +279,7 @@ static bool is_add_sp_imm_t2(const halfword& instruction) {
 }
 
 static bool is_sub_sp_imm(const halfword& instruction) {
-	return 0b101100000 == instruction.uint(7, 9);
+	return 0b101100001 == instruction.uint(7, 9);
 }
 
 static bool is_sxth(const halfword& instruction) {
@@ -391,18 +392,29 @@ static bool is_32bit_thumb_bl(const halfword& first, const halfword& second) {
 		   0b101 	== (second.uint(12, 3) & 0b101);
 }
 
+static bool is_undefined(const halfword& instr) {
+	return 0b11011110 == instr.uint(8, 8);
+}
+
+static bool is_undefined32(const halfword& first, const halfword& second) {
+	return is_32bit_thumb_encoding(first) &&
+			0b111101111111 == first.uint(4, 12) &&
+			0b1010 == second.uint(12, 4);
+}
 
 class cpu {
+
+
 
 public:
 
 
 	void dispatch_and_exec(halfword instr) {
-		cpu::dispatch_and_exec(instr, _regs, _status_reg, _mem);
+		cpu::dispatch_and_exec(instr, _regs, _status_reg, _mem, _active_exceptions);
 	}
 
 	static
-	void dispatch_and_exec(halfword instr, registers& regs, apsr_register& status_reg, memory& mem) {
+	void dispatch_and_exec(halfword instr, registers& regs, apsr_register& status_reg, memory& mem, exception_vector exceptions) {
 
 		if(is_nop(instr)) return;
 
@@ -413,7 +425,9 @@ public:
 			if(0 == instr.uint(9,5) && 0 == instr.uint(6, 2)) {
 				// When opcode is 0b00000 , and bits[8:6] are 0b000 , this encoding is MOV reg
 				//TODO: cps
-				precond_fail("unimplemented");
+
+				exec(movs(instr), regs, status_reg);
+
 			}
 			exec(lsl_imm(instr), regs, status_reg);
 		} else if(is_lsr_imm(instr)) {
@@ -574,7 +588,7 @@ public:
 			exec(stm(instr), regs, mem);
 
 			// Load multiple registers, see LDM, LDMIA, LDMFD on page A6-137
-		} else if(is_stm(instr)) {
+		} else if(is_ldm(instr)) {
 			exec(ldm(instr), regs, mem);
 
 
@@ -592,7 +606,13 @@ public:
 			// fetch next instruction
 			halfword second_instruction = mem.read16(regs.get_pc() - 2);
 
-			if(is_32bit_thumb_br_misc_ctl(instr, second_instruction)) {
+			// TODO: check if necessary
+			// advance pc to keep the 4 bytes ahead
+			// regs.set_pc(regs.get_pc()+2);
+
+			if(is_undefined32(instr, second_instruction)) {
+				exceptions[exception::HARDFAULT] = true;
+			} else if(is_32bit_thumb_br_misc_ctl(instr, second_instruction)) {
 
 				if(is_32bit_thumb_msr(instr, second_instruction)) {
 					precond_fail("unimplemented msr");
@@ -611,6 +631,8 @@ public:
 				precond_fail("unimplemented 32bit instruction");
 			}
 
+		} else if(is_undefined(instr)) {
+			exceptions[exception::HARDFAULT] = true;
 		} else {
 			fprintf(stderr, "unhanlded instruction %04X\n", (uint32_t)instr);
 			precond_fail("unimplemented");
