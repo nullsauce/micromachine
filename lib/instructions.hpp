@@ -29,7 +29,7 @@ struct standard_rd_rm_rn {
 	standard_rd_rm_rn(halfword field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rm(binops::read_uint(field, 3, 3))
-		, rn(binops::read_uint(field, 6, 9))
+		, rn(binops::read_uint(field, 6, 3))
 	{}
 
 	const reg_idx rd;
@@ -37,12 +37,25 @@ struct standard_rd_rm_rn {
 	const reg_idx rn;
 };
 
+struct standard_rd_rn_rm {
+
+	standard_rd_rn_rm(halfword field)
+			: rd(binops::read_uint(field, 0, 3))
+			, rn(binops::read_uint(field, 3, 3))
+			, rm(binops::read_uint(field, 6, 3))
+	{}
+
+	const reg_idx rd;
+	const reg_idx rn;
+	const reg_idx rm;
+};
+
 struct standard_rd_rm_imm3 {
 
 	standard_rd_rm_imm3(halfword field)
 			: rd  (binops::read_uint(field, 0, 3))
 			, rm  (binops::read_uint(field, 3, 3))
-			, imm3(binops::read_uint(field, 6, 9))
+			, imm3(binops::read_uint(field, 6, 3))
 	{}
 
 	const reg_idx rd;
@@ -401,8 +414,8 @@ struct adds_reg : public standard_rd_rm_rn {
 	using standard_rd_rm_rn::standard_rd_rm_rn;
 };
 
-struct subs_reg : public standard_rd_rm_rn {
-	using standard_rd_rm_rn::standard_rd_rm_rn;
+struct subs_reg : public standard_rd_rn_rm {
+	using standard_rd_rn_rm::standard_rd_rn_rm;
 };
 
 struct adds_imm : public standard_rd_rm_imm3 {
@@ -505,6 +518,12 @@ struct cmp_highreg : public standard_rn_rm_dm {
 
 struct mov_highreg : public standard_rd_rm_d {
 	using standard_rd_rm_d::standard_rd_rm_d;
+};
+
+struct movs: public standard_rd_rm {
+	// encoding t2 of mov register
+	// lsl imm with imm = 0 redirects here
+	using standard_rd_rm::standard_rd_rm;
 };
 
 struct bx : public standard_rm {
