@@ -686,7 +686,7 @@ static void exec(const adr& instruction, registers& regs) {
 
 static void exec(const add_sp_imm& instruction, registers& regs) {
 	// TODO check if other instructions should go here
-	word imm32 = instruction.imm8 << 2;
+	word imm32 = instruction.imm32();
 	word sp = regs.get_sp();
 	word result = alu::add_with_carry(sp, imm32, false);
 	regs.set(instruction.rd, result);
@@ -694,7 +694,7 @@ static void exec(const add_sp_imm& instruction, registers& regs) {
 
 static void exec(const add_sp_imm_t2& instruction, registers& regs) {
 	// TODO check if other instructions should go here
-	word imm32 = instruction.imm7 << 2;
+	word imm32 = instruction.imm32();
 	word sp = regs.get_sp();
 	word result = alu::add_with_carry(sp, imm32, false);
 	regs.set_sp(result);
