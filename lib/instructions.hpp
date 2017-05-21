@@ -9,6 +9,7 @@
 #include <string>
 #include "types.hpp"
 #include "register.hpp"
+#include "string_format.hpp"
 
 struct standard_rd_rm_imm5 {
 
@@ -393,22 +394,34 @@ struct standard_imm8_cond {
 struct adc : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 
+	std::string to_string() {
+		return string_format("adcs r%d, r%d\n", rdn, rm);
+	}
 };
 
 struct add_imm : public standard_rd_rm_imm3 {
 	using standard_rd_rm_imm3::standard_rd_rm_imm3;
 
+	std::string to_string() {
+		return string_format("adds r%d, r%d, #%d\n", rd, rd, imm3);
+	}
 };
 
 struct add_imm_t2 : public standard_imm8_rdn {
 	// T2 version of ADD immediate
 	using standard_imm8_rdn::standard_imm8_rdn;
 
+	std::string to_string() {
+		return string_format("adds r%d, r%d\n", rdn, imm8);
+	}
 };
 
 struct add_reg : public standard_rd_rm_rn {
 	using standard_rd_rm_rn::standard_rd_rm_rn;
 
+	std::string to_string() {
+		return string_format("adds r%d, r%d, r%d\n", rd, rn, rm);
+	}
 };
 
 // TODO: should herit fromstandard_rdn_rm_dN
@@ -416,16 +429,42 @@ struct add_highreg : public standard_rdn_rm_dm {
 	// Note: encoding t2 of add reg
 	using standard_rdn_rm_dm::standard_rdn_rm_dm;
 
+	std::string to_string() {
+
+		// variants of add SP plus register
+		if(dm && high_rm() == 13) {
+			return string_format("add r%d, SP, r%d\n", rdn);
+		} else if(high_rd() == 13) {
+			return string_format("add SP, r%d\n", high_rm());
+		} else {
+			return string_format("add r%d, r%d\n", high_rd(), high_rm());
+		}
+
+	}
 };
 
 struct add_sp_imm : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 
+	word imm32() const {
+		return imm8 << 2;
+	}
+
+	std::string to_string() {
+		return string_format("add r%d, sp, #%d\n", rd, imm32());
+	}
 };
 
 struct add_sp_imm_t2 : public standard_imm7 {
 	using standard_imm7::standard_imm7;
 
+	word imm32() const {
+		return imm7 << 2;
+	}
+
+	std::string to_string() {
+		return string_format("add sp, sp, #%d\n", imm32());
+	}
 };
 
 
@@ -434,6 +473,10 @@ struct lsl_imm : public standard_rd_rm_imm5 {
 	imm5_t shift_offset() const {
 		return imm5;
 	}
+
+	std::string to_string() {
+		return string_format("lsls r%d, r%d, #%d\n", rd, rm, imm5);
+	}
 };
 
 struct lsr_imm : public standard_rd_rm_imm5 {
@@ -441,6 +484,10 @@ struct lsr_imm : public standard_rd_rm_imm5 {
 	imm5_t shift_offset() const {
 		if(0 == imm5) return 32;
 		return imm5;
+	}
+
+	std::string to_string() {
+		return string_format("lsrs r%d, r%d, #%d\n", rd, rm, imm5);
 	}
 };
 
