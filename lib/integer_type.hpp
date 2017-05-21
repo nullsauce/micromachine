@@ -45,6 +45,11 @@ public:
 		binops::set_bit(*this, offset);
 	}
 
+	void clear_bit(size_t offset) {
+		binops::clear_bit(*this, offset);
+	}
+
+
 	void write_bit(size_t offset, bool value) {
 		binops::write_bit(*this, offset, value);
 	}

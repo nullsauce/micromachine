@@ -25,7 +25,10 @@ set(HEADER_FILES
     lib/apsr_register.hpp
     lib/memory.hpp
     lib/cpu.hpp
-        lib/exec_mode.hpp)
+    lib/exec_mode.hpp
+    lib/exception_vector.hpp
+    lib/exception.hpp
+)
 
 add_executable(micromachine ${HEADER_FILES} ${SOURCE_FILES})
 
