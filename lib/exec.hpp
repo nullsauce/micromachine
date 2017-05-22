@@ -677,7 +677,7 @@ static void exec(const load_word_sp_imm& instruction, registers& regs, apsr_regi
 }
 
 static void exec(const adr& instruction, registers& regs) {
-	word offset = instruction.imm8 << 2;
+	word offset = instruction.imm32();
 	word base 	= regs.get_pc().aligned(4); // PC
 	word address = base + offset;
 	regs.set(instruction.rd, address);
@@ -802,18 +802,13 @@ static void exec(const branch& instruction, registers& regs, apsr_register& flag
 		return;
 	}
 
-	uint32_t offset = (instruction.imm8 << 1);
-	int32_t delta = binops::sign<int32_t>(offset, 9);
-
+	int32_t delta = instruction.offset();
 	uint32_t pc = regs.get_pc();
 	regs.set_pc(pc + delta);
 };
 
 static void exec(const unconditional_branch& instruction, registers& regs, apsr_register& flags) {
-
-	uint32_t offset = (instruction.imm11 << 1);
-	int32_t delta = binops::sign<int32_t>(offset, 12);
-
+	int32_t delta = instruction.offset();
 	uint32_t pc = regs.get_pc();
 	regs.set_pc(pc + delta);
 };
