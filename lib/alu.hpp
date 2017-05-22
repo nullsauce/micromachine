@@ -119,9 +119,17 @@ namespace alu {
 	bool ror_c(u_type& value, uint32_t offset, bool carry_in) {
 		if(0 == offset) return carry_in;
 		const size_t binsize = binops::binsize(value);
-		precond(offset <= binsize, "shift offset too large");
+
+		const uint8_t offsetLower5bits = binops::read_uint(offset, 0, 5);
+		const bool msb = binops::get_bit(value, binsize - 1U);
+
+		bool carry = msb;
+		if(offsetLower5bits) {
+			carry = value.bit(offsetLower5bits - 1);
+		}
+
 		value = ((value >> offset) | (value << (binsize - offset)));
-		const bool carry = binops::get_bit(value, binsize - 1U);
+
 		return carry;
 	}
 
