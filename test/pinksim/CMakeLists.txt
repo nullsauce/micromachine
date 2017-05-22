@@ -23,7 +23,7 @@ macro(declare_pinksim_test test_name)
     list(APPEND ALL_TESTS_SRC "${TEST_SRC_FILE}")
 
     # clear tmp list
-    unset(TEST_SRCS)
+    unset(STANDALONE_TEST_SRCS)
 endmacro()
 
 declare_pinksim_test(adcRegisterInstr)
