@@ -467,6 +467,126 @@ struct add_sp_imm_t2 : public standard_imm7 {
 	}
 };
 
+struct adr : public standard_imm8_rd {
+	using standard_imm8_rd::standard_imm8_rd;
+
+	word imm32() const {
+		return imm8 << 2;
+	}
+
+	std::string to_string() {
+		return string_format("adr r%d, %04X\n", rd, imm32());
+	}
+};
+
+struct and_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
+
+	std::string to_string() {
+		return string_format("ands r%d, r%d\n", rdn, rm);
+	}
+};
+
+struct asr_imm : public standard_rd_rm_imm5 {
+	using standard_rd_rm_imm5::standard_rd_rm_imm5;
+	imm5_t shift_offset() const {
+		if(0 == imm5) return 32;
+		return imm5;
+	}
+
+	std::string to_string() {
+		return string_format("asrs r%d, r%d #%d\n", rd, rm, imm5);
+	}
+};
+
+struct asr_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
+
+	std::string to_string() {
+		return string_format("asrs r%d, r%d\n", rdn, rm);
+	}
+};
+
+static
+const char* condition_string(uint8_t condition) {
+	static const char* cond_names = "eqnecsccmiplvsvchilsgeltgtle";
+	return cond_names + (condition * 2U);
+}
+
+struct branch : public standard_imm8_cond {
+	using standard_imm8_cond::standard_imm8_cond;
+
+	word imm32() const {
+		return imm8 << 1;
+	}
+
+	int32_t offset() const {
+		uint32_t signed_offset = imm32();
+		return binops::sign<int32_t>(signed_offset, 9);
+	}
+
+	std::string to_string() {
+		return string_format("b%2.2s %c%i\n", condition_string(cond), (offset() >= 0 ? '+' : ' '), offset());
+	}
+};
+
+struct unconditional_branch : public standard_imm11 {
+	using standard_imm11::standard_imm11;
+
+	word imm32() const {
+		return imm11 << 1;
+	}
+
+	int32_t offset() const {
+		uint32_t signed_offset = imm32();
+		return binops::sign<int32_t>(signed_offset, 12);
+	}
+
+	std::string to_string() {
+		return string_format("b %c%i\n", (offset() >= 0 ? '+' : ' '), offset());
+	}
+};
+
+struct bic_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
+
+	std::string to_string() {
+		return string_format("bics r%d, r%d\n", rdn, rm);
+	}
+};
+
+struct bl_imm {
+
+	bl_imm(halfword first, halfword second)
+			: j1(second.bit(13))
+			, j2(second.bit(11))
+			, s(first.bit(10))
+			, imm10(first.uint(0, 10))
+			, imm11(second.uint(0, 11))
+	{
+		fprintf(stderr, "%s %s\n", first.to_string().c_str(), second.to_string().c_str());
+
+	}
+
+	int32_t offset() const {
+
+		const bool i1 = !((!j1) != (!s)); // logical xor i1 = not(j1 xor s)
+		const bool i2 = !((!j2) != (!s)); // logical xor i2 = not(j2 xor s)
+		uint32_t uint25_offset =
+				(imm11 | (imm10 << 11) | (i2 << 21) | (i1 << 22) | (s << 23)) << 1;
+		return binops::sign<int32_t>(uint25_offset, 25);
+	}
+
+	std::string to_string() {
+		return string_format("bl %c%i\n", (offset() >= 0 ? '+' : ' '), offset());
+	}
+
+	const bool j1;
+	const bool j2;
+	const bool s;
+	const halfword imm10;
+	const halfword imm11;
+};
 
 struct lsl_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
@@ -491,13 +611,6 @@ struct lsr_imm : public standard_rd_rm_imm5 {
 	}
 };
 
-struct asr_imm : public standard_rd_rm_imm5 {
-	using standard_rd_rm_imm5::standard_rd_rm_imm5;
-	imm5_t shift_offset() const {
-		if(0 == imm5) return 32;
-		return imm5;
-	}
-};
 
 
 struct subs_reg : public standard_rd_rn_rm {
@@ -524,9 +637,7 @@ struct subs_imm8 : public standard_imm8_rdn {
 	using standard_imm8_rdn::standard_imm8_rdn;
 };
 
-struct and_reg : public standard_rdn_rm {
-	using standard_rdn_rm::standard_rdn_rm;
-};
+
 
 struct xor_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
@@ -540,9 +651,7 @@ struct lsr_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 };
 
-struct asr_reg : public standard_rdn_rm {
-	using standard_rdn_rm::standard_rdn_rm;
-};
+
 
 
 struct sub_c_reg : public standard_rdn_rm {
@@ -577,9 +686,6 @@ struct mul_reg : public standard_rdm_rn {
 	using standard_rdm_rn::standard_rdm_rn;
 };
 
-struct bic_reg : public standard_rdn_rm {
-	using standard_rdn_rm::standard_rdn_rm;
-};
 
 struct not_reg : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
@@ -677,11 +783,6 @@ struct load_word_sp_imm : public standard_imm8_rt {
 	using standard_imm8_rt::standard_imm8_rt;
 };
 
-struct adr : public standard_imm8_rd {
-	using standard_imm8_rd::standard_imm8_rd;
-};
-
-
 
 
 struct sub_sp_imm : public standard_imm7 {
@@ -724,9 +825,7 @@ struct pop : public standard_pop_register_list {
 	using standard_pop_register_list::standard_pop_register_list;
 };
 
-struct branch : public standard_imm8_cond {
-	using standard_imm8_cond::standard_imm8_cond;
-};
+
 
 struct stm : public standard_register_list_rn {
 	using standard_register_list_rn::standard_register_list_rn;
@@ -736,43 +835,13 @@ struct ldm : public standard_register_list_rn {
 	using standard_register_list_rn::standard_register_list_rn;
 };
 
-struct unconditional_branch : public standard_imm11 {
-	using standard_imm11::standard_imm11;
-};
+
 
 struct svc : public standard_imm8 {
 	using standard_imm8::standard_imm8;
 };
 
 
-struct bl_imm {
 
-	bl_imm(halfword first, halfword second)
-		: j1(second.bit(13))
-		, j2(second.bit(11))
-		, s(first.bit(10))
-		, imm10(first.uint(0, 10))
-		, imm11(second.uint(0, 11))
-	{
-		fprintf(stderr, "%s %s\n", first.to_string().c_str(), second.to_string().c_str());
-
-	}
-
-
-	int32_t offset() const {
-
-		const bool i1 = !((!j1) != (!s)); // logical xor i1 = not(j1 xor s)
-		const bool i2 = !((!j2) != (!s)); // logical xor i2 = not(j2 xor s)
-		uint32_t uint25_offset =
-			(imm11 | (imm10 << 11) | (i2 << 21) | (i1 << 22) | (s << 23)) << 1;
-		return binops::sign<int32_t>(uint25_offset, 25);
-	}
-
-	const bool j1;
-	const bool j2;
-	const bool s;
-	const halfword imm10;
-	const halfword imm11;
-};
 
 #endif //THUMBEMU_INSTRUCTIONS_HPP
