@@ -135,7 +135,7 @@ static bool is_rsb_imm(const halfword& instruction) {
 		   0b1001 == instruction.uint(6, 4);
 }
 
-static bool is_cmpn_reg(const halfword& instruction) {
+static bool is_cmn_reg(const halfword& instruction) {
 	return is_data_processing(instruction) &&
 		   0b1011 == instruction.uint(6, 4);
 }
@@ -198,7 +198,7 @@ static bool is_blx(const halfword& instruction) {
 		   0b111 == instruction.uint(7, 3);
 }
 
-static bool is_load_litteral(const halfword& instruction) {
+static bool is_ldr_literal(const halfword& instruction) {
 	return 0b01001 == instruction.uint(11, 5);
 }
 
@@ -218,7 +218,7 @@ static bool is_load_reg_sbyte_reg(const halfword& instruction) {
 	return 0b0101011 == instruction.uint(9, 7);
 }
 
-static bool is_load_reg_word_reg(const halfword& instruction) {
+static bool is_ldr_reg(const halfword& instruction) {
 	return 0b0101100 == instruction.uint(9, 7);
 }
 
@@ -238,7 +238,7 @@ static bool is_store_word_imm(const halfword& instruction) {
 	return 0b01100 == instruction.uint(11, 5);
 }
 
-static bool is_load_word_imm(const halfword& instruction) {
+static bool is_ldr_imm(const halfword& instruction) {
 	return 0b01101 == instruction.uint(11, 5);
 }
 
@@ -262,7 +262,7 @@ static bool is_store_word_sp_imm(const halfword& instruction) {
 	return 0b10010 == instruction.uint(11, 5);
 }
 
-static bool is_load_word_sp_imm(const halfword& instruction) {
+static bool is_ldr_imm_sp(const halfword& instruction) {
 	return 0b10011 == instruction.uint(11, 5);
 }
 
@@ -457,7 +457,7 @@ public:
 		} else if(is_and_reg(instr)) {
 			exec(and_reg(instr), regs, status_reg);
 		} else if(is_xor_reg(instr)) {
-			exec(xor_reg(instr), regs, status_reg);
+			exec(eor_reg(instr), regs, status_reg);
 		} else if(is_lsl_reg(instr)) {
 			exec(lsl_reg(instr), regs, status_reg);
 		} else if(is_lsr_reg(instr)) {
@@ -476,8 +476,8 @@ public:
 			exec(rsb_imm(instr), regs, status_reg);
 		} else if(is_cmp_reg(instr)) {
 			exec(cmp_reg(instr), regs, status_reg);
-		} else if(is_cmpn_reg(instr)) {
-			exec(cmpn_reg(instr), regs, status_reg);
+		} else if(is_cmn_reg(instr)) {
+			exec(cmn_reg(instr), regs, status_reg);
 		} else if(is_lor_reg(instr)) {
 			exec(lor_reg(instr), regs, status_reg);
 		} else if(is_mul_reg(instr)) {
@@ -501,8 +501,8 @@ public:
 			exec(bx(instr), regs, status_reg);
 		} else if(is_blx(instr)) {
 			exec(blx(instr), regs, status_reg);
-		} else if(is_load_litteral(instr)) {
-			exec(load_literal(instr), regs, status_reg, mem);
+		} else if(is_ldr_literal(instr)) {
+			exec(ldr_literal(instr), regs, status_reg, mem);
 
 
 			// load store
@@ -514,8 +514,8 @@ public:
 			exec(store_reg_byte_reg(instr), regs, status_reg, mem);
 		} else if(is_load_reg_sbyte_reg(instr)) {
 			exec(load_reg_sbyte_reg(instr), regs, status_reg, mem);
-		} else if(is_load_reg_word_reg(instr)) {
-			exec(load_reg_word_reg(instr), regs, status_reg, mem);
+		} else if(is_ldr_reg(instr)) {
+			exec(ldr_reg(instr), regs, status_reg, mem);
 		} else if(is_load_reg_halfword_reg(instr)) {
 			exec(load_reg_halfword_reg(instr), regs, status_reg, mem);
 		} else if(is_load_reg_byte_reg(instr)) {
@@ -524,8 +524,8 @@ public:
 			exec(load_reg_shalfword_reg(instr), regs, status_reg, mem);
 		} else if(is_store_word_imm(instr)) {
 			exec(store_word_imm(instr), regs, status_reg, mem);
-		} else if(is_load_word_imm(instr)) {
-			exec(load_word_imm(instr), regs, status_reg, mem);
+		} else if(is_ldr_imm(instr)) {
+			exec(ldr_imm(instr), regs, status_reg, mem);
 		} else if(is_store_byte_imm(instr)) {
 			exec(store_byte_imm(instr), regs, status_reg, mem);
 		} else if(is_load_byte_imm(instr)) {
@@ -536,8 +536,8 @@ public:
 			exec(load_halfword_imm(instr), regs, status_reg, mem);
 		} else if(is_store_word_sp_imm(instr)) {
 			exec(store_word_sp_imm(instr), regs, status_reg, mem);
-		} else if(is_load_word_sp_imm(instr)) {
-			exec(load_word_sp_imm(instr), regs, status_reg, mem);
+		} else if(is_ldr_imm_sp(instr)) {
+			exec(ldr_imm_sp(instr), regs, status_reg, mem);
 
 
 			// PC relative address
@@ -593,6 +593,7 @@ public:
 
 
 		} else if(is_branch(instr)) {
+			fprintf(stderr, "%s\n", branch(instr).to_string().c_str());
 			exec(branch(instr), regs, status_reg);
 		} else if(is_svc(instr)) {
 			exec(svc(instr));
