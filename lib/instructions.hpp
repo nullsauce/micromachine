@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <sstream>
 #include "types.hpp"
 #include "register.hpp"
 #include "string_format.hpp"
@@ -588,6 +589,124 @@ struct bl_imm {
 	const halfword imm11;
 };
 
+struct bx : public standard_rm {
+	using standard_rm::standard_rm;
+
+	std::string to_string() {
+		return string_format("bx %d\n", rm);
+	}
+};
+
+struct blx : public standard_rm {
+	using standard_rm::standard_rm;
+
+	std::string to_string() {
+		return string_format("blx %d\n", rm);
+	}
+};
+
+struct cmn_reg : public standard_rn_rm {
+	using standard_rn_rm::standard_rn_rm;
+
+	std::string to_string() {
+		return string_format("cmn r%d, r%d\n", rn, rm);
+	}
+};
+
+struct cmp_imm : public standard_imm8_rn {
+	using standard_imm8_rn::standard_imm8_rn;
+
+	std::string to_string() {
+		return string_format("cmp r%d, #%d\n", rn, imm8);
+	}
+};
+
+struct cmp_reg : public standard_rn_rm {
+	using standard_rn_rm::standard_rn_rm;
+
+	std::string to_string() {
+		return string_format("cmp r%d, r%d\n", rn, rm);
+	}
+};
+
+struct eor_reg : public standard_rdn_rm {
+	using standard_rdn_rm::standard_rdn_rm;
+
+	std::string to_string() {
+		return string_format("eors r%d, r%d\n", rdn, rm);
+	}
+};
+
+static
+std::string reglist(uint8_t mask) {
+	static const char* reg_names[] = {
+		"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12",
+		"sp", "lr", "pc"
+	};
+	std::stringstream ss;
+	ss << "{";
+	for(reg_idx i = 0; i < 16; i++) {
+		if (mask & (1 << i)) {
+			ss << reg_names[i] << " ";
+		}
+	}
+	ss << "}";
+	return ss.str();
+}
+
+struct ldm : public standard_register_list_rn {
+	using standard_register_list_rn::standard_register_list_rn;
+
+	std::string to_string() {
+		return string_format("lsdm r%d%c %s\n", rn, is_set(rn) ? '!' : ' ', reglist(reg_list).c_str());
+	}
+};
+
+struct ldr_imm : public standard_rt_rn_imm5 {
+	using standard_rt_rn_imm5::standard_rt_rn_imm5;
+
+	uint32_t imm32() const {
+		return imm5 << 2;
+	}
+	std::string to_string() {
+		return string_format("ldr r%d, [r%d, #%d]\n", rt, rn, imm32());
+	}
+};
+
+
+struct ldr_imm_sp : public standard_imm8_rt {
+	using standard_imm8_rt::standard_imm8_rt;
+
+	uint32_t imm32() const {
+		return imm8 << 2;
+	}
+
+	std::string to_string() {
+		return string_format("ldr r%d, [SP, #%d]\n", rt, imm32());
+	}
+};
+
+struct ldr_literal : public standard_imm8_rt {
+	using standard_imm8_rt::standard_imm8_rt;
+
+	uint32_t imm32() const {
+		return imm8 << 2;
+	}
+
+	std::string to_string() {
+		return string_format("ldr r%d %d\n", rt, imm32());
+	}
+};
+
+struct ldr_reg : public standard_rt_rn_rm {
+	using standard_rt_rn_rm::standard_rt_rn_rm;
+
+	std::string to_string() {
+		return string_format("ldr r%d, r%d, r%d\n", rt, rn, rm);
+	}
+};
+
+
 struct lsl_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
 	imm5_t shift_offset() const {
@@ -610,9 +729,6 @@ struct lsr_imm : public standard_rd_rm_imm5 {
 		return string_format("lsrs r%d, r%d, #%d\n", rd, rm, imm5);
 	}
 };
-
-
-
 struct subs_reg : public standard_rd_rn_rm {
 	using standard_rd_rn_rm::standard_rd_rn_rm;
 };
@@ -626,9 +742,7 @@ struct mov_imm : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 };
 
-struct cmp_imm : public standard_imm8_rn {
-	using standard_imm8_rn::standard_imm8_rn;
-};
+
 
 
 
@@ -639,9 +753,6 @@ struct subs_imm8 : public standard_imm8_rdn {
 
 
 
-struct xor_reg : public standard_rdn_rm {
-	using standard_rdn_rm::standard_rdn_rm;
-};
 
 struct lsl_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
@@ -670,13 +781,9 @@ struct rsb_imm : public standard_rd_rn {
 	using standard_rd_rn::standard_rd_rn;
 };
 
-struct cmp_reg : public standard_rn_rm {
-	using standard_rn_rm::standard_rn_rm;
-};
 
-struct cmpn_reg : public standard_rn_rm {
-	using standard_rn_rm::standard_rn_rm;
-};
+
+
 
 struct lor_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
@@ -707,17 +814,9 @@ struct movs: public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
 
-struct bx : public standard_rm {
-	using standard_rm::standard_rm;
-};
 
-struct blx : public standard_rm {
-	using standard_rm::standard_rm;
-};
 
-struct load_literal : public standard_imm8_rt {
-	using standard_imm8_rt::standard_imm8_rt;
-};
+
 
 struct store_reg_word_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
@@ -735,9 +834,7 @@ struct load_reg_sbyte_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-struct load_reg_word_reg : public standard_rt_rn_rm {
-	using standard_rt_rn_rm::standard_rt_rn_rm;
-};
+
 
 struct load_reg_halfword_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
@@ -755,9 +852,6 @@ struct store_word_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 };
 
-struct load_word_imm : public standard_rt_rn_imm5 {
-	using standard_rt_rn_imm5::standard_rt_rn_imm5;
-};
 
 struct store_byte_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
@@ -779,9 +873,6 @@ struct store_word_sp_imm : public standard_imm8_rt {
 	using standard_imm8_rt::standard_imm8_rt;
 };
 
-struct load_word_sp_imm : public standard_imm8_rt {
-	using standard_imm8_rt::standard_imm8_rt;
-};
 
 
 
@@ -831,9 +922,7 @@ struct stm : public standard_register_list_rn {
 	using standard_register_list_rn::standard_register_list_rn;
 };
 
-struct ldm : public standard_register_list_rn {
-	using standard_register_list_rn::standard_register_list_rn;
-};
+
 
 
 
