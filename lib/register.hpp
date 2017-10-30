@@ -155,11 +155,9 @@ public:
 			precond_fail("ExceptionReturn unimplemented")
 		}
 
-		if(0 == (address & 1)) {
-			// TODO: better this
+		if(!address.bit(0)) {
+			// Thumb bit not set, triggers a fault
 			_hardfault_signal = true;
-			// TODO: better fault signaling
-			fprintf(stderr, "UsageFault. Thumb bit not set\n");;
 		}
 
 		set(address);
