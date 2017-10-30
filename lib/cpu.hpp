@@ -689,15 +689,17 @@ public:
 					(uint32_t) current_instr,
 					instr.to_string().c_str()
 			);
+
 			_regs.set_pc(current_instr + 4); // prefetch 2 instructions
 			_regs.reset_pc_dirty_status();
 			dispatch_and_exec(instr);
 
-			// TODO: how does this behaves with exceptions
-			if(active_exceptions().is_signaled(exception::HARDFAULT)) {
-				_regs.set_pc(current_instr);
-			} else if (!_regs.branch_occured()) {
-				_regs.set_pc(current_instr + 2);
+			if(!_regs.branch_occured()) {
+				if(active_exceptions().is_signaled(exception::HARDFAULT)) {
+					_regs.set_pc(current_instr);
+				} else {
+					_regs.set_pc(current_instr + 2);
+				}
 			}
 		}
 	}
