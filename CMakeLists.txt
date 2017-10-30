@@ -3,10 +3,10 @@ project(micromachine)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-enable_testing()
-find_package(GTest REQUIRED)
+
+
 find_package(Threads)
-include_directories(${GTEST_INCLUDE_DIRS})
+
 
 set(SOURCE_FILES
     main.cpp

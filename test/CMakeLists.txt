@@ -1,13 +1,26 @@
 
+
+include(ExternalProject)
+
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+
+ExternalProject_Add(googletest
+    GIT_REPOSITORY https://github.com/google/googletest
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+)
+
+link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
+
+
 enable_testing()
-find_package(GTest REQUIRED)
 find_package(Threads)
-include_directories(${GTEST_INCLUDE_DIRS})
+
 
 macro(declare_test test_name test_files)
-    message(STATUS "declare_test ${test_name} ${test_files}")
     add_executable(${test_name} ${test_files})
-    target_link_libraries(${test_name} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    add_dependencies(${test_name} googletest)
+    target_include_directories(${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
+    target_link_libraries(${test_name} gtest_main gtest ${CMAKE_THREAD_LIBS_INIT})
     add_test(all_tests ${test_name})
 endmacro()
 
