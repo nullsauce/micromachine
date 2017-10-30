@@ -496,8 +496,8 @@ static void exec(const blx& instruction, registers& regs, apsr_register& status_
 	word jump_addr = regs.get(instruction.rm);
 	// pc - 2
 	word next_instr_addr = regs.get_pc() - 2; // PC is two instruction ahead because of prefetch
-	next_instr_addr.write_bit(0, 1); // thumb bit
 
+	next_instr_addr.write_bit(0, 1); // force thumb bit for lr
 	regs.set_lr(next_instr_addr);
 
 	regs.branch(jump_addr);
