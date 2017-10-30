@@ -675,32 +675,36 @@ public:
 	}
 
 
-	void step() {
+	bool step() {
 
 		if(_active_exceptions.any_signaled()) {
 			fprintf(stderr, "Exception signaled\n");
+			return true;
 		} else {
 
 
 			word current_instr = _regs.get_pc();
 			halfword instr = _mem.read16(current_instr);
+			/*
 			fprintf(stderr, "exec %08x %d %s\n",
 					(uint32_t) current_instr,
 					(uint32_t) current_instr,
 					instr.to_string().c_str()
-			);
+			);*/
 
 			_regs.set_pc(current_instr + 4); // prefetch 2 instructions
 			_regs.reset_pc_dirty_status();
 			dispatch_and_exec(instr);
-
+			bool hard_fault = active_exceptions().is_signaled(exception::HARDFAULT);
+			bool fault = hard_fault;
 			if(!_regs.branch_occured()) {
-				if(active_exceptions().is_signaled(exception::HARDFAULT)) {
+				if(hard_fault) {
 					_regs.set_pc(current_instr);
 				} else {
 					_regs.set_pc(current_instr + 2);
 				}
 			}
+			return hard_fault;
 		}
 	}
 

@@ -138,15 +138,15 @@ private:
 	template <typename access_t>
 	access_t read(uint32_t address, bool& ok) const {
 		if(!is_aligned<access_t>(address)) {
-			memory_hardfault("unaligned memory access. read word at 0x%08X", address);
+			memory_hardfault("unaligned memory access. read word at 0x%08X\n", address);
 			ok = false;
 			return 0;
 		}
-		precond(is_aligned<access_t>(address),"unaligned memory access. read word at 0x%08X", address);
+		precond(is_aligned<access_t>(address),"unaligned memory access. read word at 0x%08X\n", address);
 		const mem_mapping* region = find_const_region(address);
 		//precond(region, "invalid memory access (unmapped) when reading word at 0x%08X", address);
 		if(!region) {
-			memory_hardfault("invalid memory access (unmapped) when reading word at 0x%08X", address);
+			memory_hardfault("invalid memory access (unmapped) when reading word at 0x%08X\n", address);
 			ok = false;
 			return 0;
 		}
@@ -180,14 +180,6 @@ private:
 	mem_mapping* find_region(uint32_t address) {
 		return const_cast<mem_mapping*>(find_const_region(address));
 	}
-
-	/*
-	region_vec find_regions(uint32_t address) const {
-		std::find_if(regions.begin(), regions.end(), [=](const mem_mapping& mm){
-			return in_range(address, mm);
-		});
-	}*/
-
 
 	region_vec regions;
 	mutable exception_vector::bitref_t _hardfault_signal;
