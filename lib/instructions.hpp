@@ -527,7 +527,7 @@ struct branch : public standard_imm8_cond {
 	}
 
 	std::string to_string() {
-		return string_format("b%2.2s %c%i\n", condition_string(cond), (offset() >= 0 ? '+' : ' '), offset());
+		return string_format("b%2.2s %c%i", condition_string(cond), (offset() >= 0 ? '+' : ' '), offset());
 	}
 };
 
