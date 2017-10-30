@@ -158,6 +158,7 @@ public:
 		if(!address.bit(0)) {
 			// Thumb bit not set, triggers a fault
 			_hardfault_signal = true;
+			fprintf(stderr, "PC: Thumb bit not set\n");
 		}
 
 		set(address);

@@ -118,7 +118,6 @@ struct apsr_register : public word {
 	}
 
 	bool condition_passed(uint8_t condition) {
-		print();
 		switch(condition) {
 			case 0b0000: return is_eq();
 			case 0b0001: return is_ne();
