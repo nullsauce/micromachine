@@ -2,6 +2,7 @@
 include_directories(framework)
 
 set(HEADER_FILES
+    framework/pinkySimBaseTest.h
     framework/pinksim.hpp
     framework/pinkysim_glue.hpp
     framework/SimpleMemory_glue.hpp
@@ -18,7 +19,7 @@ macro(declare_pinksim_test test_name)
     list(APPEND STANDALONE_TEST_SRCS ${TEST_SRC_FILE})
     declare_test(${test_name} "${STANDALONE_TEST_SRCS}")
     add_test(${test_name} ${test_name})
-
+    target_include_directories(${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
     # append the est src file to the global test executable
     list(APPEND ALL_TESTS_SRC "${TEST_SRC_FILE}")
 
