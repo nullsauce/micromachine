@@ -12,7 +12,7 @@
 #include "instructions.hpp"
 #include "exec.hpp"
 #include "memory.hpp"
-#include "exec_mode.hpp"
+#include "exec_mode_register.hpp"
 #include "exception.hpp"
 #include "exception_vector.hpp"
 
@@ -644,16 +644,16 @@ public:
 
 
 	cpu()
-		: _exec_mode(exec_mode::thread)
-		, _regs(_exec_mode, _active_exceptions[exception::HARDFAULT])
+		: _regs(_exec_mode_reg, _active_exceptions[exception::HARDFAULT])
 		, _mem(_active_exceptions[exception::HARDFAULT]){
 
 		reset();
 	}
 
 	void reset() {
+
 		_active_exceptions.clear();
-		_exec_mode = exec_mode::thread;
+		_exec_mode_reg.set_thread_mode();
 		_regs.reset();
 		_status_reg = 0;
 		/*
@@ -729,7 +729,7 @@ public:
 	}
 
 	// for testing
-	apsr_register& xpsr() {
+	apsr_register& apsr() {
 		return _status_reg;
 	}
 
@@ -739,16 +739,10 @@ public:
 
 private:
 
-	bool is_handler_mode() const {
-		return exec_mode::handler == _exec_mode;
-	}
 
-	bool is_thread_mode() const {
-		return exec_mode::thread == _exec_mode;
-	}
 
 	bool is_priviledged_mode() const {
-		return is_handler_mode() &&
+		return _exec_mode_reg.is_handler_mode() &&
 			!_regs.control_register().n_priv();
 	}
 
@@ -778,7 +772,7 @@ private:
 		_mem.write32(frame_ptr+28, xpsr_status);
 
 
-		if(is_handler_mode()) {
+		if(_exec_mode_reg.is_handler_mode()) {
 			_regs.set_lr(0xFFFFFFF1);
 		} else if(_regs.control_register().sp_sel()) {
 			_regs.set_lr(0xFFFFFFF9);
@@ -796,7 +790,7 @@ private:
 
 	void take_exception(exception exception) {
 		// enter handler mode
-		_exec_mode = exec_mode::handler;
+		_exec_mode_reg.set_handler_mode();
 
 		// set ipsr with exception number
 		_status_reg = (_status_reg & ~binops::make_mask<uint32_t>(5))
@@ -822,7 +816,7 @@ private:
 	registers 			_regs;
 	apsr_register 		_status_reg;
 	memory 				_mem;
-	exec_mode 			_exec_mode;
+	exec_mode_register 	_exec_mode_reg;
 
 
 };

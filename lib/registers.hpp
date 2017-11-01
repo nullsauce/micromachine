@@ -7,15 +7,15 @@
 
 
 #include "register.hpp"
-#include "exec_mode.hpp"
+#include "exec_mode_register.hpp"
 #include "exception_vector.hpp"
 
 
 struct registers {
 
-	registers(exec_mode& exec_mode, exception_vector::bitref_t& hardfault_signal)
-		: _sp(exec_mode, _control_register)
-		, _pc(exec_mode, hardfault_signal) {
+	registers(const exec_mode_register& exec_mode_reg, exception_vector::bitref_t& hardfault_signal)
+		: _sp(exec_mode_reg, _control_register)
+		, _pc(exec_mode_reg, hardfault_signal) {
 
 	}
 
