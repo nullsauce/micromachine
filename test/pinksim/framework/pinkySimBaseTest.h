@@ -112,7 +112,7 @@ protected:
 		_cpu.mem().write32(INITIAL_PC, 0);
 
 		/* By default we will place the processor in Thumb mode. */
-		_cpu.xpsr() = EPSR_T;
+		_cpu.apsr() = EPSR_T;
 		m_expectedXPSRflags |= EPSR_T;
 
 		/* Expect the interrupt number to be 0 by default. */
@@ -125,12 +125,12 @@ protected:
 			int setOrClear = rand() & 1;
 			if (setOrClear)
 			{
-				_cpu.xpsr().set_bit(bit);
+				_cpu.apsr().set_bit(bit);
 				m_expectedXPSRflags |= (1 << bit);
 			}
 			else
 			{
-				_cpu.xpsr().clear_bit(bit);
+				_cpu.apsr().clear_bit(bit);
 				m_expectedXPSRflags &= ~(1 << bit);
 			}
 		}
@@ -170,56 +170,56 @@ protected:
     {
         // Remember what expected APSR flags should be after instruction execution and flip initial flag state to make
         // sure that simular correctly flips the state and doesn't just get lucky to match a pre-existing condition.
-        //uint32_t xpsr = 0;
+        //uint32_t apsr = 0;
 		while (*pExpectedFlags)
         {
             switch (*pExpectedFlags)
             {
             case 'n':
                 m_expectedXPSRflags &= ~APSR_N;
-				_cpu.xpsr().write_neg_flag(false);
-				//xpsr |= APSR_N;
+					_cpu.apsr().write_neg_flag(false);
+				//apsr |= APSR_N;
                 break;
             case 'N':
                 m_expectedXPSRflags |= APSR_N;
-				_cpu.xpsr().write_neg_flag(true);
-				//xpsr &= ~APSR_N;
+					_cpu.apsr().write_neg_flag(true);
+				//apsr &= ~APSR_N;
                 break;
             case 'z':
                 m_expectedXPSRflags &= ~APSR_Z;
-				_cpu.xpsr().write_zero_flag(false);
-				//xpsr |= APSR_Z;
+					_cpu.apsr().write_zero_flag(false);
+				//apsr |= APSR_Z;
                 break;
             case 'Z':
                 m_expectedXPSRflags |= APSR_Z;
-				_cpu.xpsr().write_zero_flag(true);
-				//xpsr &= ~APSR_Z;
+					_cpu.apsr().write_zero_flag(true);
+				//apsr &= ~APSR_Z;
                 break;
             case 'c':
                 m_expectedXPSRflags &= ~APSR_C;
-				_cpu.xpsr().write_carry_flag(false);
-				//xpsr |= APSR_C;
+					_cpu.apsr().write_carry_flag(false);
+				//apsr |= APSR_C;
                 break;
             case 'C':
                 m_expectedXPSRflags |= APSR_C;
-				_cpu.xpsr().write_carry_flag(true);
-                //xpsr &= ~APSR_C;
+					_cpu.apsr().write_carry_flag(true);
+                //apsr &= ~APSR_C;
                 break;
             case 'v':
                 m_expectedXPSRflags &= ~APSR_V;
-				_cpu.xpsr().write_overflow_flag(false);
-				//xpsr |= APSR_V;
+					_cpu.apsr().write_overflow_flag(false);
+				//apsr |= APSR_V;
                 break;
             case 'V':
                 m_expectedXPSRflags |= APSR_V;
-				_cpu.xpsr().write_overflow_flag(true);
-				//xpsr &= ~APSR_V;
+					_cpu.apsr().write_overflow_flag(true);
+				//apsr &= ~APSR_V;
                 break;
             case 't':
-				//xpsr &= ~EPSR_T;
+				//apsr &= ~EPSR_T;
                 break;
             case 'T':
-				//xpsr |= EPSR_T;
+				//apsr |= EPSR_T;
                 break;
             }
 
@@ -394,19 +394,19 @@ protected:
 		};
 
 		char currentFlagsStr[6] = {
-			(_cpu.xpsr() & APSR_N) ? 'N' : 'n',
-			(_cpu.xpsr() & APSR_Z) ? 'Z' : 'z',
-			(_cpu.xpsr() & APSR_C) ? 'C' : 'c',
-			(_cpu.xpsr() & APSR_V) ? 'V' : 'v',
-			(_cpu.xpsr() & EPSR_T) ? 'T' : 't',
+			(_cpu.apsr() & APSR_N) ? 'N' : 'n',
+			(_cpu.apsr() & APSR_Z) ? 'Z' : 'z',
+			(_cpu.apsr() & APSR_C) ? 'C' : 'c',
+			(_cpu.apsr() & APSR_V) ? 'V' : 'v',
+			(_cpu.apsr() & EPSR_T) ? 'T' : 't',
 			0
 		};
 
 		//fprintf(stderr, "%s, %s\n", expectedFlagsStr, currentFlagsStr);
 
 		EXPECT_STREQ(expectedFlagsStr, currentFlagsStr);
-        EXPECT_EQ(m_expectedXPSRflags, _cpu.xpsr() & (APSR_NZCV | EPSR_T));
-		EXPECT_EQ(m_expectedIPSR, _cpu.xpsr() & IPSR_MASK);
+        EXPECT_EQ(m_expectedXPSRflags, _cpu.apsr() & (APSR_NZCV | EPSR_T));
+		EXPECT_EQ(m_expectedIPSR, _cpu.apsr() & IPSR_MASK);
     }
 
     void validateRegisters()
@@ -460,6 +460,6 @@ protected:
 
     void setIPSR(uint32_t ipsr)
     {
-		_cpu.xpsr() = (_cpu.xpsr() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
+		_cpu.apsr() = (_cpu.apsr() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
     }
 };
