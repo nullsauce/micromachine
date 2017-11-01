@@ -6,8 +6,9 @@
 #define MICROMACHINE_REGISTER_HPP
 
 #include "types.hpp"
-#include "exec_mode.hpp"
+#include "exec_mode_register.hpp"
 #include "exception_vector.hpp"
+#include "exec_mode_register.hpp"
 
 
 class ireg {
@@ -74,8 +75,8 @@ public:
 class sp_reg : public ireg {
 public:
 
-	sp_reg(const exec_mode& exec_mode, const control_reg& control_reg)
-		: _exec_mode(exec_mode)
+	sp_reg(const exec_mode_register& exec_mode_reg, const control_reg& control_reg)
+		: _exec_mode_reg(exec_mode_reg)
 		, _ctl_reg(control_reg) {
 
 	}
@@ -100,22 +101,18 @@ private:
 
 
 	word& banked() {
-		switch (_exec_mode) {
-			case exec_mode::thread:
-				return _sps[_ctl_reg.sp_sel()];
-			case exec_mode::handler:
-				return _sps[0];
-			default: precond_fail("invalid execution mode")
+		if(_exec_mode_reg.is_thread_mode()) {
+			return _sps[_ctl_reg.sp_sel()];
+		} else if(_exec_mode_reg.is_handler_mode()) {
+			return _sps[0];
 		}
 	}
 
 	const word& banked() const {
-		switch (_exec_mode) {
-			case exec_mode::thread:
-				return _sps[_ctl_reg.sp_sel()];
-			case exec_mode::handler:
-				return _sps[0];
-			default: precond_fail("invalid execution mode")
+		if(_exec_mode_reg.is_thread_mode()) {
+			return _sps[_ctl_reg.sp_sel()];
+		} else if(_exec_mode_reg.is_handler_mode()) {
+			return _sps[0];
 		}
 	}
 
@@ -125,7 +122,7 @@ private:
 	word _sps[2];
 
 
-	const exec_mode& _exec_mode;
+	const exec_mode_register& _exec_mode_reg;
 	const control_reg& _ctl_reg;
 };
 
@@ -138,8 +135,8 @@ public:
 
 	bool _dirty_status;
 
-	pc_reg(const exec_mode& exec_mode, exception_vector::bitref_t& hardfault_signal)
-		: _exec_mode(exec_mode)
+	pc_reg(const exec_mode_register& exec_mode_reg, exception_vector::bitref_t& hardfault_signal)
+		: _exec_mode_reg(exec_mode_reg)
 		, _hardfault_signal(hardfault_signal) {
 
 	}
@@ -149,7 +146,7 @@ public:
 		// if EPSR.T == 0, a UsageFault('Invalid State')
 		// is taken on the next instruction
 
-		if(exec_mode::handler == _exec_mode &&
+		if(_exec_mode_reg.is_handler_mode() &&
 			0b1111 == address.uint(28,4)) {
 			// TODO ExceptionReturn
 			precond_fail("ExceptionReturn unimplemented")
@@ -178,7 +175,7 @@ private:
 		return val;
 	}
 
-	const exec_mode& 			_exec_mode;
+	const exec_mode_register& 			_exec_mode_reg;
 	exception_vector::bitref_t&	_hardfault_signal;
 };
 
