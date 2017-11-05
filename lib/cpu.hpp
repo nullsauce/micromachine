@@ -8,7 +8,7 @@
 #include "types.hpp"
 #include "instruction_pair.hpp"
 #include "registers.hpp"
-#include "apsr_register.hpp"
+#include "apsr_reg.hpp"
 #include "exec.hpp"
 #include "instructions.hpp"
 #include "exec.hpp"
@@ -40,7 +40,7 @@ public:
 		_active_exceptions.clear();
 		enter_thread_mode();
 		_regs.reset();
-		_regs.status_register().reset();
+		_regs.app_status_register().reset();
 
 		// set sp to vector+0
 		/*

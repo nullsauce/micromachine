@@ -9,7 +9,7 @@
 #include "instructions.hpp"
 #include "alu.hpp"
 #include "memory.hpp"
-#include "apsr_register.hpp"
+#include "apsr_reg.hpp"
 #include "registers.hpp"
 
 static void unpredictable() {
@@ -18,7 +18,7 @@ static void unpredictable() {
 
 
 
-static void exec(const lsl_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const lsl_imm& instruction, registers& regs, apsr_reg& status_reg) {
 	word rm = regs.get(instruction.rm);
 	const bool carry = alu::lsl_c(rm, instruction.shift_offset(), status_reg.carry_flag());
 	status_reg.apply_neg(rm);
@@ -27,7 +27,7 @@ static void exec(const lsl_imm& instruction, registers& regs, apsr_register& sta
 	regs.set(instruction.rd, rm);
 }
 
-static void exec(const lsr_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const lsr_imm& instruction, registers& regs, apsr_reg& status_reg) {
 	word rm = regs.get(instruction.rm);
 	uint32_t applied_offset = instruction.shift_offset();
 	const bool carry = alu::lsr_c(rm, applied_offset, status_reg.carry_flag());
@@ -37,7 +37,7 @@ static void exec(const lsr_imm& instruction, registers& regs, apsr_register& sta
 	regs.set(instruction.rd, rm);
 }
 
-static void exec(const asr_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const asr_imm& instruction, registers& regs, apsr_reg& status_reg) {
 	word rm = regs.get(instruction.rm);
 	uint32_t applied_offset = instruction.shift_offset();
 	const bool carry = alu::asr_c(rm, applied_offset, status_reg.carry_flag());
@@ -48,7 +48,7 @@ static void exec(const asr_imm& instruction, registers& regs, apsr_register& sta
 
 }
 
-static void exec(const add_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const add_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word rm = regs.get(instruction.rm);
 	word rn = regs.get(instruction.rn);
 	// left shift of zero is omitted here
@@ -65,7 +65,7 @@ static void exec(const add_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_neg(result);
 }
 
-static void exec(const subs_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const subs_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word rm = regs.get(instruction.rm);
 	word rn = regs.get(instruction.rn);
 	// left shift of zero is omitted here
@@ -83,7 +83,7 @@ static void exec(const subs_reg& instruction, registers& regs, apsr_register& st
 }
 
 
-static void exec(const add_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const add_imm& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rn 	= regs.get(instruction.rm);
 	word imm32 	= instruction.imm3;
@@ -101,7 +101,7 @@ static void exec(const add_imm& instruction, registers& regs, apsr_register& sta
 }
 
 
-static void exec(const subs_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const subs_imm& instruction, registers& regs, apsr_reg& status_reg) {
 	word rn 	= regs.get(instruction.rm);
 	word imm32 	= instruction.imm3;
 
@@ -117,21 +117,21 @@ static void exec(const subs_imm& instruction, registers& regs, apsr_register& st
 	status_reg.apply_neg(result);
 }
 
-static void exec(const mov_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const mov_imm& instruction, registers& regs, apsr_reg& status_reg) {
 	word imm32 	= instruction.imm8;
 	regs.set(instruction.rd, instruction.imm8);
 	status_reg.apply_zero(imm32);
 	status_reg.apply_neg(imm32);
 }
 
-static void exec(const movs& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const movs& instruction, registers& regs, apsr_reg& status_reg) {
 	word val = regs.get(instruction.rm);
 	regs.set(instruction.rd, val);
 	status_reg.apply_zero(val);
 	status_reg.apply_neg(val);
 }
 
-static void exec(const cmp_imm& instruction, const registers& regs, apsr_register& status_reg) {
+static void exec(const cmp_imm& instruction, const registers& regs, apsr_reg& status_reg) {
 	// like subtraction, but discard the result
 	word imm32 	= instruction.imm8;
 	word rn 	= regs.get(instruction.rn);
@@ -146,7 +146,7 @@ static void exec(const cmp_imm& instruction, const registers& regs, apsr_registe
 	status_reg.apply_neg(result);
 }
 
-static void exec(const add_imm_t2& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const add_imm_t2& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rn 	= regs.get(instruction.rdn);
 	word imm32 	= instruction.imm8;
@@ -164,7 +164,7 @@ static void exec(const add_imm_t2& instruction, registers& regs, apsr_register& 
 }
 
 
-static void exec(const subs_imm8& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const subs_imm8& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rn 	= regs.get(instruction.rdn);
 	word imm32 	= instruction.imm8;
@@ -181,7 +181,7 @@ static void exec(const subs_imm8& instruction, registers& regs, apsr_register& s
 	status_reg.apply_neg(result);
 }
 
-static void exec(const and_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const and_reg& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rd = regs.get(instruction.rdn);
 	word rm = regs.get(instruction.rm);
@@ -195,7 +195,7 @@ static void exec(const and_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_neg(result);
 }
 
-static void exec(const eor_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const eor_reg& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rd = regs.get(instruction.rdn);
 	word rm = regs.get(instruction.rm);
@@ -209,7 +209,7 @@ static void exec(const eor_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_neg(result);
 }
 
-static void exec(const lsl_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const lsl_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
 	word shift_offset 	= regs.get(instruction.rm).uint(0, 8);
 
@@ -222,7 +222,7 @@ static void exec(const lsl_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_zero(value);
 }
 
-static void exec(const lsr_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const lsr_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
 	word shift_offset 	= regs.get(instruction.rm).uint(0, 8);
 
@@ -235,7 +235,7 @@ static void exec(const lsr_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_zero(value);
 }
 
-static void exec(const asr_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const asr_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
 	word shift_offset 	= regs.get(instruction.rm).uint(0, 8); // max 255
 
@@ -248,7 +248,7 @@ static void exec(const asr_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_zero(value);
 }
 
-static void exec(const adc& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const adc& instruction, registers& regs, apsr_reg& status_reg) {
 	word rn 	= regs.get(instruction.rdn);
 	word rm 	= regs.get(instruction.rm);
 
@@ -265,7 +265,7 @@ static void exec(const adc& instruction, registers& regs, apsr_register& status_
 	status_reg.apply_zero(result);
 }
 
-static void exec(const sub_c_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const sub_c_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word rn 	= regs.get(instruction.rdn);
 	word rm 	= regs.get(instruction.rm);
 
@@ -282,7 +282,7 @@ static void exec(const sub_c_reg& instruction, registers& regs, apsr_register& s
 	status_reg.apply_zero(result);
 }
 
-static void exec(const ror_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const ror_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
 	word shift_offset 	= regs.get(instruction.rm).uint(0, 8);
 
@@ -295,7 +295,7 @@ static void exec(const ror_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_zero(value);
 }
 
-static void exec(const tst_reg& instruction, const registers& regs, apsr_register& status_reg) {
+static void exec(const tst_reg& instruction, const registers& regs, apsr_reg& status_reg) {
 	word rn = regs.get(instruction.rn);
 	word rm = regs.get(instruction.rm);
 
@@ -306,7 +306,7 @@ static void exec(const tst_reg& instruction, const registers& regs, apsr_registe
 	status_reg.apply_neg(result);
 }
 
-static void exec(const rsb_imm& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const rsb_imm& instruction, registers& regs, apsr_reg& status_reg) {
 	word rn 	= regs.get(instruction.rn);
 	word imm32	= 0; // ARMv6-M only supports a value of 0.
 
@@ -322,7 +322,7 @@ static void exec(const rsb_imm& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_zero(result);
 }
 
-static void exec(const cmp_reg& instruction, const registers& regs, apsr_register& status_reg) {
+static void exec(const cmp_reg& instruction, const registers& regs, apsr_reg& status_reg) {
 	word rn 	= regs.get(instruction.rn);
 	word rm 	= regs.get(instruction.rm);
 
@@ -338,7 +338,7 @@ static void exec(const cmp_reg& instruction, const registers& regs, apsr_registe
 }
 
 
-static void exec(const cmn_reg& instruction, const registers& regs, apsr_register& status_reg) {
+static void exec(const cmn_reg& instruction, const registers& regs, apsr_reg& status_reg) {
 	word rn 	= regs.get(instruction.rn);
 	word rm 	= regs.get(instruction.rm);
 
@@ -353,7 +353,7 @@ static void exec(const cmn_reg& instruction, const registers& regs, apsr_registe
 	status_reg.apply_zero(result);
 }
 
-static void exec(const lor_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const lor_reg& instruction, registers& regs, apsr_reg& status_reg) {
 	word rd = regs.get(instruction.rdn);
 	word rm = regs.get(instruction.rm);
 
@@ -366,7 +366,7 @@ static void exec(const lor_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_neg(result);
 }
 
-static void exec(const mul_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const mul_reg& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rm = regs.get(instruction.rdm);
 	word rn = regs.get(instruction.rn);
@@ -380,7 +380,7 @@ static void exec(const mul_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_neg(result);
 }
 
-static void exec(const bic_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const bic_reg& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rn = regs.get(instruction.rdn);
 	word rm = regs.get(instruction.rm);
@@ -394,7 +394,7 @@ static void exec(const bic_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_neg(result);
 }
 
-static void exec(const not_reg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const not_reg& instruction, registers& regs, apsr_reg& status_reg) {
 
 	word rm = regs.get(instruction.rm);
 
@@ -407,7 +407,7 @@ static void exec(const not_reg& instruction, registers& regs, apsr_register& sta
 	status_reg.apply_neg(result);
 }
 
-static void exec(const add_highreg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const add_highreg& instruction, registers& regs, apsr_reg& status_reg) {
 
 	//TODO:
 	/* if (DN:Rdn) == '1101' || Rm == '1101' then SEE ADD (SP plus register);
@@ -436,7 +436,7 @@ static void exec(const add_highreg& instruction, registers& regs, apsr_register&
 
 }
 
-static void exec(const cmp_highreg& instruction, const registers& regs, apsr_register& status_reg) {
+static void exec(const cmp_highreg& instruction, const registers& regs, apsr_reg& status_reg) {
 
 	if(instruction.high_rn() < 8 && instruction.high_rm() < 8) {
 		unpredictable();
@@ -463,7 +463,7 @@ static void exec(const cmp_highreg& instruction, const registers& regs, apsr_reg
 
 
 
-static void exec(const mov_highreg& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const mov_highreg& instruction, registers& regs, apsr_reg& status_reg) {
 
 	reg_idx high_rm = instruction.high_rm();
 	word result = regs.get(high_rm);
@@ -481,14 +481,14 @@ static void exec(const mov_highreg& instruction, registers& regs, apsr_register&
 	}
 }
 
-static void exec(const bx& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const bx& instruction, registers& regs, apsr_reg& status_reg) {
 	if(registers::PC == instruction.rm) {
 		unpredictable();
 	}
 	regs.branch(regs.get(instruction.rm));
 }
 
-static void exec(const blx& instruction, registers& regs, apsr_register& status_reg) {
+static void exec(const blx& instruction, registers& regs, apsr_reg& status_reg) {
 	if(registers::PC == instruction.rm) {
 		unpredictable();
 	}
@@ -503,7 +503,7 @@ static void exec(const blx& instruction, registers& regs, apsr_register& status_
 	regs.branch(jump_addr);
 }
 
-static void exec(const ldr_literal& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const ldr_literal& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	word offset = instruction.imm32();
 	word base 	= regs.get_pc().aligned(4);
 	word address = base + offset;
@@ -511,7 +511,7 @@ static void exec(const ldr_literal& instruction, registers& regs, apsr_register&
 	regs.set(instruction.rt, value);
 }
 
-static void exec(const store_reg_word_reg& instruction, const registers& regs, apsr_register& status_reg, memory& mem) {
+static void exec(const store_reg_word_reg& instruction, const registers& regs, apsr_reg& status_reg, memory& mem) {
 
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
@@ -521,7 +521,7 @@ static void exec(const store_reg_word_reg& instruction, const registers& regs, a
 	mem.write32(address, value);
 }
 
-static void exec(const store_reg_halfword_reg& instruction, const registers& regs, apsr_register& status_reg, memory& mem) {
+static void exec(const store_reg_halfword_reg& instruction, const registers& regs, apsr_reg& status_reg, memory& mem) {
 
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
@@ -531,7 +531,7 @@ static void exec(const store_reg_halfword_reg& instruction, const registers& reg
 	mem.write16(address, (uint16_t)value.uint(0, 16));
 }
 
-static void exec(const store_reg_byte_reg& instruction, const registers& regs, apsr_register& status_reg, memory& mem) {
+static void exec(const store_reg_byte_reg& instruction, const registers& regs, apsr_reg& status_reg, memory& mem) {
 
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
@@ -541,7 +541,7 @@ static void exec(const store_reg_byte_reg& instruction, const registers& regs, a
 	mem.write8(address, (uint8_t)value.uint(0, 8));
 }
 
-static void exec(const load_reg_sbyte_reg& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const load_reg_sbyte_reg& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
 	word base 	= regs.get(instruction.rn);
@@ -553,7 +553,7 @@ static void exec(const load_reg_sbyte_reg& instruction, registers& regs, apsr_re
 	}
 }
 
-static void exec(const ldr_reg& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const ldr_reg& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
 	word base 	= regs.get(instruction.rn);
@@ -565,7 +565,7 @@ static void exec(const ldr_reg& instruction, registers& regs, apsr_register& sta
 	}
 }
 
-static void exec(const load_reg_halfword_reg& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const load_reg_halfword_reg& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
 	word base = regs.get(instruction.rn);
@@ -577,7 +577,7 @@ static void exec(const load_reg_halfword_reg& instruction, registers& regs, apsr
 	}
 }
 
-static void exec(const load_reg_byte_reg& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const load_reg_byte_reg& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
 	word base = regs.get(instruction.rn);
@@ -589,7 +589,7 @@ static void exec(const load_reg_byte_reg& instruction, registers& regs, apsr_reg
 	}
 }
 
-static void exec(const load_reg_shalfword_reg& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const load_reg_shalfword_reg& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	// left shift of zero is omitted here
 	word offset = regs.get(instruction.rm);
 	word base = regs.get(instruction.rn);
@@ -602,7 +602,7 @@ static void exec(const load_reg_shalfword_reg& instruction, registers& regs, aps
 }
 
 
-static void exec(const store_word_imm& instruction, const registers& regs, apsr_register& status_reg, memory& mem) {
+static void exec(const store_word_imm& instruction, const registers& regs, apsr_reg& status_reg, memory& mem) {
 	word offset = instruction.imm5 << 2;
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
@@ -610,7 +610,7 @@ static void exec(const store_word_imm& instruction, const registers& regs, apsr_
 	mem.write32(address, value);
 }
 
-static void exec(const ldr_imm& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const ldr_imm& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	word offset = instruction.imm32();
 	word base = regs.get(instruction.rn);
 	word address = base + offset;
@@ -621,7 +621,7 @@ static void exec(const ldr_imm& instruction, registers& regs, apsr_register& sta
 	}
 }
 
-static void exec(const store_byte_imm& instruction, const registers& regs, apsr_register& status_reg, memory& mem) {
+static void exec(const store_byte_imm& instruction, const registers& regs, apsr_reg& status_reg, memory& mem) {
 	word offset = instruction.imm5;
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
@@ -629,7 +629,7 @@ static void exec(const store_byte_imm& instruction, const registers& regs, apsr_
 	mem.write8(address, (uint8_t)value.uint(0, 8));
 }
 
-static void exec(const load_byte_imm& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const load_byte_imm& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	word offset = instruction.imm5;
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
@@ -641,7 +641,7 @@ static void exec(const load_byte_imm& instruction, registers& regs, apsr_registe
 	}
 }
 
-static void exec(const store_halfword_imm& instruction, const registers& regs, apsr_register& status_reg, memory& mem) {
+static void exec(const store_halfword_imm& instruction, const registers& regs, apsr_reg& status_reg, memory& mem) {
 	word offset = instruction.imm5 << 1;
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
@@ -649,7 +649,7 @@ static void exec(const store_halfword_imm& instruction, const registers& regs, a
 	mem.write16(address, (uint16_t)value.uint(0, 16));
 }
 
-static void exec(const load_halfword_imm& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const load_halfword_imm& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	word offset = instruction.imm5 << 1;
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
@@ -660,7 +660,7 @@ static void exec(const load_halfword_imm& instruction, registers& regs, apsr_reg
 	}
 }
 
-static void exec(const store_word_sp_imm& instruction, const registers& regs, apsr_register& status_reg, memory& mem) {
+static void exec(const store_word_sp_imm& instruction, const registers& regs, apsr_reg& status_reg, memory& mem) {
 	word offset = instruction.imm8 << 2;
 	word base 	= regs.get_sp(); // SP
 	word address = base + offset;
@@ -668,7 +668,7 @@ static void exec(const store_word_sp_imm& instruction, const registers& regs, ap
 	mem.write32(address, value);
 }
 
-static void exec(const ldr_imm_sp& instruction, registers& regs, apsr_register& status_reg, const memory& mem) {
+static void exec(const ldr_imm_sp& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
 	word offset = instruction.imm8 << 2;
 	word base 	= regs.get_sp(); // SP
 	word address = base + offset;
@@ -795,7 +795,7 @@ static void exec(const rev_packed_signed_halfword& instruction, registers& regs)
 	regs.set(instruction.rd, res);
 }
 
-static void exec(const branch& instruction, registers& regs, apsr_register& flags) {
+static void exec(const branch& instruction, registers& regs, apsr_reg& flags) {
 
 
 	if(!flags.condition_passed(instruction.cond)) {
@@ -807,7 +807,7 @@ static void exec(const branch& instruction, registers& regs, apsr_register& flag
 	regs.set_pc(pc + delta);
 };
 
-static void exec(const unconditional_branch& instruction, registers& regs, apsr_register& flags) {
+static void exec(const unconditional_branch& instruction, registers& regs, apsr_reg& flags) {
 	int32_t delta = instruction.offset();
 	uint32_t pc = regs.get_pc();
 	regs.set_pc(pc + delta);
@@ -853,7 +853,7 @@ static void exec(const ldm& instruction, registers& regs, memory& mem) {
 }
 
 
-static void exec(const mrs& instruction, registers& regs, apsr_register& apsr) {
+static void exec(const mrs& instruction, registers& regs, apsr_reg& apsr) {
 	// do not keep the value initially present in the register
 	word val = 0;
 
@@ -897,7 +897,7 @@ static void exec(const mrs& instruction, registers& regs, apsr_register& apsr) {
 	regs.set(instruction.rd, val);
 }
 
-static void exec(const msr& instruction, registers& regs, apsr_register& apsr) {
+static void exec(const msr& instruction, registers& regs, apsr_reg& apsr) {
 	switch(instruction.sysn) {
 		case msr::SpecialRegister::APSR:
 		case msr::SpecialRegister::IAPSR:
