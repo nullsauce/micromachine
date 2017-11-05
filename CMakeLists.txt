@@ -4,9 +4,7 @@ project(micromachine)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-
 find_package(Threads)
-
 
 set(SOURCE_FILES
     main.cpp
@@ -25,7 +23,8 @@ set(HEADER_FILES
     lib/apsr_register.hpp
     lib/memory.hpp
     lib/cpu.hpp
-    lib/exec_mode.hpp
+		lib/exec_mode_reg.hpp
+		lib/exec_mode_reg.cpp
     lib/exception_vector.hpp
     lib/exception.hpp
 	lib/string_format.hpp

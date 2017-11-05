@@ -112,7 +112,8 @@ protected:
 		_cpu.mem().write32(INITIAL_PC, 0);
 
 		/* By default we will place the processor in Thumb mode. */
-		_cpu.apsr() = EPSR_T;
+		_cpu.regs().execution_status_register().set_thumb_bit(true);
+		// all tests are expected to run in thumb mode
 		m_expectedXPSRflags |= EPSR_T;
 
 		/* Expect the interrupt number to be 0 by default. */
@@ -125,12 +126,12 @@ protected:
 			int setOrClear = rand() & 1;
 			if (setOrClear)
 			{
-				_cpu.apsr().set_bit(bit);
+				_cpu.regs().xpsr_register().set_bit(bit);
 				m_expectedXPSRflags |= (1 << bit);
 			}
 			else
 			{
-				_cpu.apsr().clear_bit(bit);
+				_cpu.regs().xpsr_register().clear_bit(bit);
 				m_expectedXPSRflags &= ~(1 << bit);
 			}
 		}
@@ -177,48 +178,52 @@ protected:
             {
             case 'n':
                 m_expectedXPSRflags &= ~APSR_N;
-					_cpu.apsr().write_neg_flag(false);
+					_cpu.regs().status_register().write_neg_flag(false);
 				//apsr |= APSR_N;
                 break;
             case 'N':
                 m_expectedXPSRflags |= APSR_N;
-					_cpu.apsr().write_neg_flag(true);
+					_cpu.regs().status_register().write_neg_flag(true);
 				//apsr &= ~APSR_N;
                 break;
             case 'z':
                 m_expectedXPSRflags &= ~APSR_Z;
-					_cpu.apsr().write_zero_flag(false);
+					_cpu.regs().status_register().write_zero_flag(false);
 				//apsr |= APSR_Z;
                 break;
             case 'Z':
                 m_expectedXPSRflags |= APSR_Z;
-					_cpu.apsr().write_zero_flag(true);
+					_cpu.regs().status_register().write_zero_flag(true);
 				//apsr &= ~APSR_Z;
                 break;
             case 'c':
                 m_expectedXPSRflags &= ~APSR_C;
-					_cpu.apsr().write_carry_flag(false);
+					_cpu.regs().status_register().write_carry_flag(false);
 				//apsr |= APSR_C;
                 break;
             case 'C':
                 m_expectedXPSRflags |= APSR_C;
-					_cpu.apsr().write_carry_flag(true);
+					_cpu.regs().status_register().write_carry_flag(true);
                 //apsr &= ~APSR_C;
                 break;
             case 'v':
                 m_expectedXPSRflags &= ~APSR_V;
-					_cpu.apsr().write_overflow_flag(false);
+					_cpu.regs().status_register().write_overflow_flag(false);
 				//apsr |= APSR_V;
                 break;
             case 'V':
                 m_expectedXPSRflags |= APSR_V;
-					_cpu.apsr().write_overflow_flag(true);
+					_cpu.regs().status_register().write_overflow_flag(true);
 				//apsr &= ~APSR_V;
                 break;
             case 't':
+             	m_expectedXPSRflags &= ~EPSR_T;
+					_cpu.regs().execution_status_register().set_thumb_bit(false);
 				//apsr &= ~EPSR_T;
                 break;
             case 'T':
+            	m_expectedXPSRflags |= EPSR_T;
+					_cpu.regs().execution_status_register().set_thumb_bit(true);
 				//apsr |= EPSR_T;
                 break;
             }
@@ -394,19 +399,19 @@ protected:
 		};
 
 		char currentFlagsStr[6] = {
-			(_cpu.apsr() & APSR_N) ? 'N' : 'n',
-			(_cpu.apsr() & APSR_Z) ? 'Z' : 'z',
-			(_cpu.apsr() & APSR_C) ? 'C' : 'c',
-			(_cpu.apsr() & APSR_V) ? 'V' : 'v',
-			(_cpu.apsr() & EPSR_T) ? 'T' : 't',
+			(_cpu.regs().xpsr_register() & APSR_N) ? 'N' : 'n',
+			(_cpu.regs().xpsr_register() & APSR_Z) ? 'Z' : 'z',
+			(_cpu.regs().xpsr_register() & APSR_C) ? 'C' : 'c',
+			(_cpu.regs().xpsr_register() & APSR_V) ? 'V' : 'v',
+			(_cpu.regs().xpsr_register() & EPSR_T) ? 'T' : 't',
 			0
 		};
 
 		//fprintf(stderr, "%s, %s\n", expectedFlagsStr, currentFlagsStr);
 
 		EXPECT_STREQ(expectedFlagsStr, currentFlagsStr);
-        EXPECT_EQ(m_expectedXPSRflags, _cpu.apsr() & (APSR_NZCV | EPSR_T));
-		EXPECT_EQ(m_expectedIPSR, _cpu.apsr() & IPSR_MASK);
+        EXPECT_EQ(m_expectedXPSRflags, _cpu.regs().xpsr_register() & (APSR_NZCV | EPSR_T));
+		EXPECT_EQ(m_expectedIPSR, _cpu.regs().xpsr_register() & IPSR_MASK);
     }
 
     void validateRegisters()
@@ -420,46 +425,46 @@ protected:
 
     void setCarry()
     {
-		_cpu.flags().write_carry_flag(true);
+		_cpu.regs().status_register().write_carry_flag(true);
     }
 
     void clearCarry()
     {
-		_cpu.flags().write_carry_flag(false);
+		_cpu.regs().status_register().write_carry_flag(false);
     }
 
     void setZero()
     {
-		_cpu.flags().write_zero_flag(true);
+		_cpu.regs().status_register().write_zero_flag(true);
     }
 
     void clearZero()
     {
-		_cpu.flags().write_zero_flag(false);
+		_cpu.regs().status_register().write_zero_flag(false);
     }
 
     void setNegative()
     {
-		_cpu.flags().write_neg_flag(true);
+		_cpu.regs().status_register().write_neg_flag(true);
     }
 
     void clearNegative()
     {
-		_cpu.flags().write_neg_flag(false);
+		_cpu.regs().status_register().write_neg_flag(false);
     }
 
     void setOverflow()
     {
-		_cpu.flags().write_overflow_flag(true);
+		_cpu.regs().status_register().write_overflow_flag(true);
     }
 
     void clearOverflow()
     {
-		_cpu.flags().write_overflow_flag(false);
+		_cpu.regs().status_register().write_overflow_flag(false);
     }
 
     void setIPSR(uint32_t ipsr)
     {
-		_cpu.apsr() = (_cpu.apsr() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
+		_cpu.regs().xpsr_register() = (_cpu.regs().xpsr_register() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
     }
 };
