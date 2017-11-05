@@ -6,6 +6,7 @@
 #define MICROMACHINE_CPU_HPP
 
 #include "types.hpp"
+#include "instruction_pair.hpp"
 #include "registers.hpp"
 #include "apsr_register.hpp"
 #include "exec.hpp"
@@ -30,8 +31,8 @@ public:
 		, _exec_dispatcher(_regs, _mem, _active_exceptions)
 	{}
 
-	void execute(const halfword instr, const halfword second_instr) {
-		_exec_dispatcher.dispatch_instruction(instr, second_instr);
+	void execute(const instruction_pair instr) {
+		_exec_dispatcher.dispatch_instruction(instr);
 	}
 
 	void reset() {
@@ -90,18 +91,18 @@ public:
 					(uint32_t) current_instr
 			);
 
-			halfword instr = _mem.read16(current_instr);
-			halfword second_instruction = 0;
-			if(is_32bit_thumb_encoding(instr)) {
-				second_instruction = _mem.read16(current_instr + sizeof(halfword));
+			halfword first_instr = _mem.read16(current_instr);
+			halfword second_instr = 0;
+
+			if(is_32bit_thumb_encoding(first_instr)) {
+				second_instr = _mem.read16(current_instr + sizeof(halfword));
 				instruction_size = instruction_size + sizeof(halfword);
 			}
-
 
 			_regs.set_pc(current_instr + 4);  // simulate prefetch of 2 instructions
 			_regs.reset_pc_dirty_status();
 
-			execute(instr, second_instruction);
+			execute(instruction_pair(first_instr, second_instr));
 
 			bool hard_fault = active_exceptions().is_signaled(exception::HARDFAULT);
 			bool fault = hard_fault;

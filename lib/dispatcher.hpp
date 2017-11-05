@@ -361,43 +361,43 @@ namespace {
 	}
 
 
-	static bool is_32bit_thumb_br_misc_ctl(const halfword& first, const halfword& second) {
-		return is_32bit_thumb_encoding(first) &&
-			   0b10 == first.uint(11, 2) &&
-			   0b1  == second.uint(15, 1);
+	static bool is_32bit_thumb_br_misc_ctl(const instruction_pair& instr) {
+		return is_32bit_thumb_encoding(instr.first) &&
+			   0b10 == instr.first.uint(11, 2) &&
+			   0b1  == instr.second.uint(15, 1);
 	}
 
-	static bool is_32bit_thumb_msr(const halfword& first, const halfword& second) {
-		return is_32bit_thumb_br_misc_ctl(first, second) &&
-			   0b011100 == first.uint(5, 6) &&
-			   0b000 	== (second.uint(12, 3) & 0b101);
+	static bool is_32bit_thumb_msr(const instruction_pair& instr) {
+		return is_32bit_thumb_br_misc_ctl(instr) &&
+			   0b011100 == instr.first.uint(5, 6) &&
+			   0b000 	== (instr.second.uint(12, 3) & 0b101);
 	}
 
-	static bool is_32bit_thumb_misc_ctl(const halfword& first, const halfword& second) {
-		return is_32bit_thumb_br_misc_ctl(first, second) &&
-			   0b0111011 == first.uint(4, 7) &&
-			   0b000 	== (second.uint(12, 3) & 0b101);
+	static bool is_32bit_thumb_misc_ctl(const instruction_pair& instr) {
+		return is_32bit_thumb_br_misc_ctl(instr) &&
+			   0b0111011 == instr.first.uint(4, 7) &&
+			   0b000 	== (instr.second.uint(12, 3) & 0b101);
 	}
 
-	static bool is_32bit_thumb_mrs(const halfword& first, const halfword& second) {
-		return is_32bit_thumb_br_misc_ctl(first, second) &&
-			   0b011111 == first.uint(5, 6) &&
-			   0b000 	== (second.uint(12, 3) & 0b101);
+	static bool is_32bit_thumb_mrs(const instruction_pair& instr) {
+		return is_32bit_thumb_br_misc_ctl(instr) &&
+			   0b011111 == instr.first.uint(5, 6) &&
+			   0b000 	== (instr.second.uint(12, 3) & 0b101);
 	}
 
-	static bool is_32bit_thumb_bl(const halfword& first, const halfword& second) {
-		return is_32bit_thumb_br_misc_ctl(first, second) &&
-			   0b101 	== (second.uint(12, 3) & 0b101);
+	static bool is_32bit_thumb_bl(const instruction_pair& instr) {
+		return is_32bit_thumb_br_misc_ctl(instr) &&
+			   0b101 	== (instr.second.uint(12, 3) & 0b101);
 	}
 
 	static bool is_undefined(const halfword& instr) {
 		return 0b11011110 == instr.uint(8, 8);
 	}
 
-	static bool is_undefined32(const halfword& first, const halfword& second) {
-		return is_32bit_thumb_encoding(first) &&
-				0b111101111111 == first.uint(4, 12) &&
-				0b1010 == second.uint(12, 4);
+	static bool is_undefined32(const instruction_pair& instr) {
+		return is_32bit_thumb_encoding(instr.first) &&
+				0b111101111111 == instr.first.uint(4, 12) &&
+				0b1010 == instr.second.uint(12, 4);
 	}
 }
 
@@ -421,8 +421,9 @@ public:
 
 	}
 
-	void dispatch_instruction(const halfword instr, const halfword second_instruction) {
+	void dispatch_instruction(const instruction_pair instruction_pair) {
 
+		const halfword& instr = instruction_pair.first;
 		if(is_nop(instr)) dispatch(nop());
 		//fprintf(stderr, "%s\n", instr.to_string().c_str());
 
@@ -608,18 +609,18 @@ public:
 		// 32bit encodings
 		} else if(is_32bit_thumb_encoding(instr)) {
 
-			if(is_undefined32(instr, second_instruction)) {
+			if(is_undefined32(instruction_pair)) {
 				signal_exception(exception::HARDFAULT);
-			} else if(is_32bit_thumb_br_misc_ctl(instr, second_instruction)) {
+			} else if(is_32bit_thumb_br_misc_ctl(instruction_pair)) {
 
-				if(is_32bit_thumb_msr(instr, second_instruction)) {
-					dispatch(msr(instr, second_instruction));
-				} else if(is_32bit_thumb_misc_ctl(instr, second_instruction)) {
+				if(is_32bit_thumb_msr(instruction_pair)) {
+					dispatch(msr(instruction_pair));
+				} else if(is_32bit_thumb_misc_ctl(instruction_pair)) {
 					fprintf(stderr, "unimplemented 32 bit misc ctl intructions\n");
-				} else if(is_32bit_thumb_mrs(instr, second_instruction)) {
-					dispatch(mrs(instr, second_instruction));
-				} else if(is_32bit_thumb_bl(instr, second_instruction)) {
-					dispatch(bl_imm(instr, second_instruction));
+				} else if(is_32bit_thumb_mrs(instruction_pair)) {
+					dispatch(mrs(instruction_pair));
+				} else if(is_32bit_thumb_bl(instruction_pair)) {
+					dispatch(bl_imm(instruction_pair));
 				} else {
 					fprintf(stderr, "unimplemented 32bit misc br and ctrl instruction\n");
 				}
