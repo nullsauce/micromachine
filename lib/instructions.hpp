@@ -389,8 +389,11 @@ struct standard_imm8_cond {
 	const uint8_t cond;
 };
 
-
-
+struct nop {
+	std::string to_string() {
+		return "nop\n";
+	}
+};
 
 struct adc : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
