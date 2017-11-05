@@ -26,6 +26,11 @@ static constexpr size_t binsize(T val) {
 }
 
 template <typename u_type>
+static u_type rlshift(const u_type& source, size_t right_offset, size_t left_offset) {
+	return (source >> right_offset) << left_offset;
+}
+
+template <typename u_type>
 static bool get_bit(const u_type& source, size_t bit_offset) {
 	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
 	return source & (1 << bit_offset);
