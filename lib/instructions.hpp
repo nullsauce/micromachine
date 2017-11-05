@@ -927,12 +927,7 @@ struct svc : public standard_imm8 {
 	using standard_imm8::standard_imm8;
 };
 
-struct msr {
-	msr(halfword first, halfword second)
-		: rn(first.uint(0, 4))
-		, sysn((SpecialRegister)second.uint(0, 8)) {
-
-	}
+struct special_reg_instr {
 	enum class SpecialRegister : imm8_t {
 		APSR 	= 0b00000000,
 		IAPSR 	= 0b00000001,
@@ -946,10 +941,24 @@ struct msr {
 		PRIMASK	= 0b00010000,
 		CONROL	= 0b00010100,
 	};
+};
+
+struct msr : special_reg_instr{
+	msr(halfword first, halfword second)
+		: rn(first.uint(0, 4))
+		, sysn((SpecialRegister)second.uint(0, 8)) {
+	}
 	const reg_idx rn;
 	const SpecialRegister sysn;
 };
 
-
+struct mrs : special_reg_instr{
+	mrs(halfword first, halfword second)
+		: rd(second.uint(8, 4))
+		, sysn(second.uint(0, 8)) {
+	}
+	const reg_idx rd;
+	const byte sysn;
+};
 
 #endif //THUMBEMU_INSTRUCTIONS_HPP

@@ -239,6 +239,9 @@ private:
 	void dispatch(const ldm& instruction) override {
 		exec(ldm(instruction), _regs, _mem);
 	}
+	void dispatch(const mrs& instruction) override {
+		exec(mrs(instruction), _regs, _regs.status_register());
+	}
 	void dispatch(const msr& instruction) override {
 		exec(msr(instruction), _regs, _regs.status_register());
 	}

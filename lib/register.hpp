@@ -96,6 +96,10 @@ public:
 		_sps[(size_t)type] = word;
 	}
 
+	word get_specific_banked_sp(StackType type) {
+		return _sps[(size_t)type];
+	}
+
 private:
 
 	static const uint32_t MASK = binops::make_mask<2, 30>();

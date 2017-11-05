@@ -96,7 +96,7 @@ declare_pinksim_test(uxtbInstr)
 declare_pinksim_test(uxthInstr)
 
 # these tests have yet to be integrated
-#declare_pinksim_test(mrsInstr)
+declare_pinksim_test(mrsInstr)
 declare_pinksim_test(msrInstr)
 #declare_pinksim_test(isbInstr)
 #declare_pinksim_test(dmbInstr)
