@@ -7,15 +7,22 @@
 
 
 #include "register.hpp"
-#include "exec_mode_register.hpp"
+#include "exec_mode_reg.hpp"
 #include "exception_vector.hpp"
+#include "apsr_register.hpp"
+#include "ipsr_reg.hpp"
+#include "epsr_reg.hpp"
 
 
 struct registers {
 
-	registers(const exec_mode_register& exec_mode_reg, exception_vector::bitref_t& hardfault_signal)
-		: _sp(exec_mode_reg, _control_register)
-		, _pc(exec_mode_reg, hardfault_signal) {
+	registers(exception_vector::bitref_t& hardfault_signal)
+		: _xpsr_register(0)
+		, _status_register(_xpsr_register)
+		, _interrupt_status_register(_xpsr_register)
+		, _execution_status_register(_xpsr_register)
+		, _sp(_exec_mode_register, _control_register)
+		, _pc(_exec_mode_register, hardfault_signal) {
 
 	}
 
@@ -126,14 +133,64 @@ struct registers {
 		return _control_register;
 	}
 
+	// to be used only for system instructions such as MSR
+	sp_reg& sp_register() {
+		return _sp;
+	}
+
+	exec_mode_reg& exec_mode_register() {
+		return _exec_mode_register;
+	}
+
+	const exec_mode_reg& exec_mode_register() const {
+		return _exec_mode_register;
+	}
+
+	apsr_register& status_register() {
+		return _status_register;
+	}
+
+	const apsr_register& status_register() const {
+		return _status_register;
+	}
+
+	ipsr_reg& interrupt_status_register() {
+		return _interrupt_status_register;
+	}
+
+	const ipsr_reg& interrupt_status_register() const {
+		return _interrupt_status_register;
+	}
+
+	epsr_reg& execution_status_register() {
+		return _execution_status_register;
+	}
+
+	const epsr_reg& execution_status_register() const {
+		return _execution_status_register;
+	}
+
+	word& xpsr_register() {
+		return _xpsr_register;
+	}
+
+	const word& xpsr_register() const {
+		return _xpsr_register;
+	}
 
 private:
 
 	standard_reg 	_gp_registers[13];
 	control_reg 	_control_register;
+	exec_mode_reg 	_exec_mode_register;
+	word 			_xpsr_register;
+	apsr_register 	_status_register;
+	ipsr_reg 		_interrupt_status_register;
+	epsr_reg		_execution_status_register;
 	sp_reg 			_sp;
 	standard_reg 	_lr;
 	pc_reg 			_pc;
+
 
 };
 

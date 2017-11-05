@@ -12,7 +12,7 @@
 #include "instructions.hpp"
 #include "exec.hpp"
 #include "memory.hpp"
-#include "exec_mode_register.hpp"
+#include "exec_mode_reg.hpp"
 #include "exception.hpp"
 #include "exception_vector.hpp"
 #include "exec_dispatcher.hpp"
@@ -25,9 +25,9 @@ class cpu {
 public:
 
 	cpu()
-		: _regs(_exec_mode_reg, _active_exceptions[exception::HARDFAULT])
+		: _regs(_active_exceptions[exception::HARDFAULT])
 		, _mem(_active_exceptions[exception::HARDFAULT])
-		, _exec_dispatcher(_regs, _status_reg, _mem, _active_exceptions)
+		, _exec_dispatcher(_regs, _mem, _active_exceptions)
 	{}
 
 	void execute(const halfword instr, const halfword second_instr) {
@@ -37,9 +37,9 @@ public:
 	void reset() {
 
 		_active_exceptions.clear();
-		_exec_mode_reg.set_thread_mode();
+		enter_thread_mode();
 		_regs.reset();
-		_status_reg = 0;
+		_regs.status_register().reset();
 
 		// set sp to vector+0
 		/*
@@ -83,18 +83,22 @@ public:
 		} else {
 
 
-			word current_instr = _regs.get_pc();
-			halfword instr = _mem.read16(current_instr);
-			halfword second_instruction = 0;
-			if(is_32bit_thumb_encoding(instr)) {
-				second_instruction = _mem.read16(current_instr + sizeof(halfword));
-			}
+			word instruction_size = 2;
 
+			word current_instr = _regs.get_pc();
 			fprintf(stderr, "exec PC:%08x\n",
 					(uint32_t) current_instr
 			);
 
-			_regs.set_pc(current_instr + 4); // prefetch 2 instructions
+			halfword instr = _mem.read16(current_instr);
+			halfword second_instruction = 0;
+			if(is_32bit_thumb_encoding(instr)) {
+				second_instruction = _mem.read16(current_instr + sizeof(halfword));
+				instruction_size = instruction_size + sizeof(halfword);
+			}
+
+
+			_regs.set_pc(current_instr + 4);  // simulate prefetch of 2 instructions
 			_regs.reset_pc_dirty_status();
 
 			execute(instr, second_instruction);
@@ -105,7 +109,7 @@ public:
 				if(hard_fault) {
 					_regs.set_pc(current_instr);
 				} else {
-					_regs.set_pc(current_instr + 2);
+					_regs.set_pc(current_instr + instruction_size);
 				}
 			}
 
@@ -137,23 +141,7 @@ public:
 		return _regs;
 	}
 
-	// for testing
-	apsr_register& apsr() {
-		return _status_reg;
-	}
-
-	apsr_register& flags() {
-		return _status_reg;
-	}
-
 private:
-
-
-
-	bool is_priviledged_mode() const {
-		return _exec_mode_reg.is_handler_mode() &&
-			!_regs.control_register().n_priv();
-	}
 
 	void push_stack() {
 
@@ -167,9 +155,9 @@ private:
 		// TODO: ReturnAddress()
 		uint32_t return_address = regs().get_pc() - 2;
 
-		uint xpsr_status = 	_status_reg.uint(0, 8) |
+		uint xpsr_status = 	_regs.xpsr_register().uint(0, 8) |
 							(frame_ptr_align << 8) |
-							_status_reg.uint(10, 22) << 10;
+							_regs.xpsr_register().uint(10, 22) << 10;
 
 		_mem.write32(frame_ptr+0,  _regs.get(0));
 		_mem.write32(frame_ptr+4,  _regs.get(1));
@@ -181,7 +169,7 @@ private:
 		_mem.write32(frame_ptr+28, xpsr_status);
 
 
-		if(_exec_mode_reg.is_handler_mode()) {
+		if(_regs.exec_mode_register().is_handler_mode()) {
 			_regs.set_lr(0xFFFFFFF1);
 		} else if(_regs.control_register().sp_sel()) {
 			_regs.set_lr(0xFFFFFFF9);
@@ -200,14 +188,25 @@ private:
 		take_exception(ex);
 	}
 
+	void enter_handler_mode() {
+		_regs.exec_mode_register().set_handler_mode();
+	}
+
+	void enter_thread_mode() {
+		_regs.exec_mode_register().set_thread_mode();
+	}
+
+	bool is_priviledged_mode() const {
+		return _regs.exec_mode_register().is_handler_mode() &&
+			!_regs.control_register().n_priv();
+	}
 
 	void take_exception(exception exception) {
 		// enter handler mode
-		_exec_mode_reg.set_handler_mode();
+		enter_handler_mode();
 
 		// set ipsr with exception number
-		_status_reg = (_status_reg & ~binops::make_mask<uint32_t>(5))
-						| (size_t)exception;
+		_regs.interrupt_status_register().set_exception(exception);
 
 		// stack is now SP_main
 		_regs.control_register().set_sp_sel(0);
@@ -223,10 +222,8 @@ private:
 
 	exception_vector	_active_exceptions;
 	registers 			_regs;
-	apsr_register 		_status_reg;
 	memory 				_mem;
-	exec_mode_register 	_exec_mode_reg;
-	exec_dispatcher _exec_dispatcher;
+	exec_dispatcher 	_exec_dispatcher;
 
 
 };

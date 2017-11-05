@@ -49,9 +49,15 @@ public:
 		binops::clear_bit(*this, offset);
 	}
 
-
 	void write_bit(size_t offset, bool value) {
 		binops::write_bit(*this, offset, value);
+	}
+
+	void write_bits(size_t dst_offset, size_t src_offset, integer_type<bits_t> src) {
+		integer_type<bits_t> to_place = (src >> src_offset) << dst_offset;
+		integer_type<bits_t> mask = integer_type<bits_t>::make_mask(binops::binsize(to_place));
+		mask = (mask >> src_offset) << mask;
+		_val = (_val & mask) | to_place;
 	}
 
 	bool bit(size_t offset) const {

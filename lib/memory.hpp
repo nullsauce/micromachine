@@ -144,7 +144,7 @@ private:
 		}
 		precond(is_aligned<access_t>(address),"unaligned memory access. read word at 0x%08X\n", address);
 		const mem_mapping* region = find_const_region(address);
-		//precond(region, "invalid memory access (unmapped) when reading word at 0x%08X", address);
+
 		if(!region) {
 			memory_hardfault("invalid memory access (unmapped) when reading word at 0x%08X\n", address);
 			ok = false;

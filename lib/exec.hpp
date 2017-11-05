@@ -852,6 +852,40 @@ static void exec(const ldm& instruction, registers& regs, memory& mem) {
 	}
 }
 
+static void exec(const msr& instruction, registers& regs, apsr_register& apsr) {
+	switch(instruction.sysn) {
+		case msr::SpecialRegister::APSR:
+		case msr::SpecialRegister::IAPSR:
+		case msr::SpecialRegister::EAPSR:
+		case msr::SpecialRegister::XPSR: {
+			// TODO: Write a word.copy_bits
+			apsr.copy_bits(regs.get(instruction.rn).uint(0, 5));
+		} break;
+		case msr::SpecialRegister::MSP: {
+			// TODO: Should fail if not in privileged mode
+			word sp = regs.get(instruction.rn).uint(2, 30);
+			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main, sp);
+		} break;
+		case msr::SpecialRegister::PSP: {
+			// TODO: Should fail if not in privileged mode
+			word sp = regs.get(instruction.rn).uint(2, 30);
+			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process, sp);
+		} break;
+		case msr::SpecialRegister::PRIMASK: {
+			// TODO: MSR SpecialRegister::PRIMASK
+			//regs.control_register().n_priv()
+		} break;
+		case msr::SpecialRegister::CONROL: {
+			if(regs.exec_mode_register().is_thread_mode()) {
+				word val = regs.get(instruction.rn);
+				regs.control_register().set_n_priv(val.bit(0));
+				regs.control_register().set_sp_sel(val.bit(1));
+			}
+		} break;
+	}
+}
+
+
 static void exec(const bl_imm& instruction, registers& regs) {
 	// pc is 4 bytes ahead, so already poiting to the next instruction
 	word next_instr_addr = regs.get_pc();

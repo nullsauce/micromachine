@@ -6,9 +6,9 @@
 #define MICROMACHINE_REGISTER_HPP
 
 #include "types.hpp"
-#include "exec_mode_register.hpp"
+#include "exec_mode_reg.hpp"
 #include "exception_vector.hpp"
-#include "exec_mode_register.hpp"
+#include "exec_mode_reg.hpp"
 
 
 class ireg {
@@ -62,6 +62,10 @@ public:
 		return _word.bit(0);
 	}
 
+	bool set_n_priv(bool priv) {
+		_word.write_bit(0, priv);
+	}
+
 	bool sp_sel() const {
 		return _word.bit(1);
 	}
@@ -75,7 +79,7 @@ public:
 class sp_reg : public ireg {
 public:
 
-	sp_reg(const exec_mode_register& exec_mode_reg, const control_reg& control_reg)
+	sp_reg(const exec_mode_reg& exec_mode_reg, const control_reg& control_reg)
 		: _exec_mode_reg(exec_mode_reg)
 		, _ctl_reg(control_reg) {
 
@@ -83,11 +87,20 @@ public:
 
 	using ireg::operator=;
 
+	enum class StackType : size_t {
+		Main = 0,
+		Process = 1
+	};
+
+	void set_specific_banked_sp(StackType type, word word) {
+		_sps[(size_t)type] = word;
+	}
+
 private:
 
 	static const uint32_t MASK = binops::make_mask<2, 30>();
 
-	virtual void set(word word)  {
+	void set(word word) override {
 		// these two bits should always be zero, or UNPREDICTABLE
 		if(word & MASK) {
 			// unpredicatable
@@ -95,7 +108,7 @@ private:
 		banked() = word;
 	}
 
-	virtual const word get() const  {
+	const word get() const override {
 		return banked() & MASK;
 	}
 
@@ -122,7 +135,7 @@ private:
 	word _sps[2];
 
 
-	const exec_mode_register& _exec_mode_reg;
+	const exec_mode_reg& _exec_mode_reg;
 	const control_reg& _ctl_reg;
 };
 
@@ -135,7 +148,7 @@ public:
 
 	bool _dirty_status;
 
-	pc_reg(const exec_mode_register& exec_mode_reg, exception_vector::bitref_t& hardfault_signal)
+	pc_reg(const exec_mode_reg& exec_mode_reg, exception_vector::bitref_t& hardfault_signal)
 		: _exec_mode_reg(exec_mode_reg)
 		, _hardfault_signal(hardfault_signal) {
 
@@ -165,17 +178,17 @@ private:
 
 	static const uint32_t MASK = binops::make_mask<1, 31>();
 
-	virtual void set(word word)  {
+	void set(word word) override {
 		_word = word;
 		_dirty_status = true;
 	}
 
-	virtual const word get() const  {
+	const word get() const override {
 		word val = _word & MASK;
 		return val;
 	}
 
-	const exec_mode_register& 			_exec_mode_reg;
+	const exec_mode_reg& 			_exec_mode_reg;
 	exception_vector::bitref_t&	_hardfault_signal;
 };
 
