@@ -9,8 +9,8 @@
 #include "instructions.hpp"
 #include "alu.hpp"
 #include "memory.hpp"
-#include "apsr_reg.hpp"
-#include "registers.hpp"
+#include "registers/apsr_reg.hpp"
+#include "registers/registers.hpp"
 
 static void unpredictable() {
 	std::abort();
