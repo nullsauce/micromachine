@@ -37,6 +37,7 @@ set(HEADER_FILES
     lib/string_format.hpp
     lib/exec_dispatcher.hpp
     lib/dispatcher.hpp
+    lib/disasm.hpp
 )
 
 add_executable(micromachine ${HEADER_FILES} ${SOURCE_FILES})

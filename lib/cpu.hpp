@@ -17,7 +17,7 @@
 #include "exception.hpp"
 #include "exception_vector.hpp"
 #include "exec_dispatcher.hpp"
-
+#include "disasm.hpp"
 
 class cpu {
 
@@ -102,7 +102,10 @@ public:
 			_regs.set_pc(current_instr + 4);  // simulate prefetch of 2 instructions
 			_regs.reset_pc_dirty_status();
 
-			execute(instruction_pair(first_instr, second_instr));
+			instruction_pair instr(first_instr, second_instr);
+			execute(instr);
+
+			fprintf(stderr, "disasm: %s\n", disasm::disassemble_instruction(instr).c_str());
 
 			bool hard_fault = active_exceptions().is_signaled(exception::HARDFAULT);
 			bool fault = hard_fault;

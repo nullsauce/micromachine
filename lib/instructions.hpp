@@ -65,6 +65,21 @@ struct standard_rd_rm_imm3 {
 	const imm3_t  imm3;
 };
 
+
+struct standard_rd_rn_imm3 {
+
+	standard_rd_rn_imm3(halfword field)
+			: rd  (binops::read_uint(field, 0, 3))
+			, rn  (binops::read_uint(field, 3, 3))
+			, imm3(binops::read_uint(field, 6, 3))
+	{}
+
+	const reg_idx rd;
+	const reg_idx rn;
+	const imm3_t  imm3;
+};
+
+
 struct standard_imm8_rd {
 
 	standard_imm8_rd(halfword field)
@@ -362,19 +377,19 @@ struct standard_register_list_rm {
 
 struct standard_register_list_rn {
 	standard_register_list_rn(halfword field)
-			: reg_list(binops::read_uint(field, 0, 8))
+			: register_list(binops::read_uint(field, 0, 8))
 			, rn(binops::read_uint(field, 8, 3))
 	{}
 
 	bool is_set(reg_idx reg) const {
-		return binops::get_bit(reg_list, reg);
+		return binops::get_bit(register_list, reg);
 	}
 
 	size_t pop_count() const {
-		return __builtin_popcount(reg_list);
+		return __builtin_popcount(register_list);
 	}
 
-	const register_list_t reg_list;
+	const register_list_t register_list;
 	const reg_idx rn;
 };
 
@@ -390,61 +405,34 @@ struct standard_imm8_cond {
 };
 
 struct nop {
-	std::string to_string() {
-		return "nop\n";
-	}
+
 };
 
 struct adc : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 
-	std::string to_string() {
-		return string_format("adcs r%d, r%d\n", rdn, rm);
-	}
 };
 
-struct add_imm : public standard_rd_rm_imm3 {
-	using standard_rd_rm_imm3::standard_rd_rm_imm3;
+struct add_imm : public standard_rd_rn_imm3 {
+	using standard_rd_rn_imm3::standard_rd_rn_imm3;
 
-	std::string to_string() {
-		return string_format("adds r%d, r%d, #%d\n", rd, rd, imm3);
-	}
 };
 
 struct add_imm_t2 : public standard_imm8_rdn {
 	// T2 version of ADD immediate
 	using standard_imm8_rdn::standard_imm8_rdn;
 
-	std::string to_string() {
-		return string_format("adds r%d, r%d\n", rdn, imm8);
-	}
 };
 
 struct add_reg : public standard_rd_rm_rn {
 	using standard_rd_rm_rn::standard_rd_rm_rn;
 
-	std::string to_string() {
-		return string_format("adds r%d, r%d, r%d\n", rd, rn, rm);
-	}
 };
 
 // TODO: should herit fromstandard_rdn_rm_dN
 struct add_highreg : public standard_rdn_rm_dm {
 	// Note: encoding t2 of add reg
 	using standard_rdn_rm_dm::standard_rdn_rm_dm;
-
-	std::string to_string() {
-
-		// variants of add SP plus register
-		if(dm && high_rm() == 13) {
-			return string_format("add r%d, SP, r%d\n", rdn);
-		} else if(high_rd() == 13) {
-			return string_format("add SP, r%d\n", high_rm());
-		} else {
-			return string_format("add r%d, r%d\n", high_rd(), high_rm());
-		}
-
-	}
 };
 
 struct add_sp_imm : public standard_imm8_rd {
@@ -453,22 +441,15 @@ struct add_sp_imm : public standard_imm8_rd {
 	word imm32() const {
 		return imm8 << 2;
 	}
-
-	std::string to_string() {
-		return string_format("add r%d, sp, #%d\n", rd, imm32());
-	}
 };
 
 struct add_sp_imm_t2 : public standard_imm7 {
 	using standard_imm7::standard_imm7;
-
+	// encoding t2
 	word imm32() const {
 		return imm7 << 2;
 	}
 
-	std::string to_string() {
-		return string_format("add sp, sp, #%d\n", imm32());
-	}
 };
 
 struct adr : public standard_imm8_rd {
@@ -477,18 +458,10 @@ struct adr : public standard_imm8_rd {
 	word imm32() const {
 		return imm8 << 2;
 	}
-
-	std::string to_string() {
-		return string_format("adr r%d, %04X\n", rd, imm32());
-	}
 };
 
 struct and_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
-
-	std::string to_string() {
-		return string_format("ands r%d, r%d\n", rdn, rm);
-	}
 };
 
 struct asr_imm : public standard_rd_rm_imm5 {
@@ -497,18 +470,10 @@ struct asr_imm : public standard_rd_rm_imm5 {
 		if(0 == imm5) return 32;
 		return imm5;
 	}
-
-	std::string to_string() {
-		return string_format("asrs r%d, r%d #%d\n", rd, rm, imm5);
-	}
 };
 
 struct asr_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
-
-	std::string to_string() {
-		return string_format("asrs r%d, r%d\n", rdn, rm);
-	}
 };
 
 static
@@ -528,15 +493,11 @@ struct branch : public standard_imm8_cond {
 		uint32_t signed_offset = imm32();
 		return binops::sign<int32_t>(signed_offset, 9);
 	}
-
-	std::string to_string() {
-		return string_format("b%2.2s %c%i", condition_string(cond), (offset() >= 0 ? '+' : ' '), offset());
-	}
 };
 
 struct unconditional_branch : public standard_imm11 {
 	using standard_imm11::standard_imm11;
-
+	// t2 encoding of B
 	word imm32() const {
 		return imm11 << 1;
 	}
@@ -545,18 +506,10 @@ struct unconditional_branch : public standard_imm11 {
 		uint32_t signed_offset = imm32();
 		return binops::sign<int32_t>(signed_offset, 12);
 	}
-
-	std::string to_string() {
-		return string_format("b %c%i\n", (offset() >= 0 ? '+' : ' '), offset());
-	}
 };
 
 struct bic_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
-
-	std::string to_string() {
-		return string_format("bics r%d, r%d\n", rdn, rm);
-	}
 };
 
 struct bl_imm {
@@ -567,22 +520,14 @@ struct bl_imm {
 			, s(instr.first.bit(10))
 			, imm10(instr.first.uint(0, 10))
 			, imm11(instr.second.uint(0, 11))
-	{
-		fprintf(stderr, "%s %s\n", instr.first.to_string().c_str(), instr.second.to_string().c_str());
-
-	}
+	{}
 
 	int32_t offset() const {
-
 		const bool i1 = !((!j1) != (!s)); // logical xor i1 = not(j1 xor s)
 		const bool i2 = !((!j2) != (!s)); // logical xor i2 = not(j2 xor s)
 		uint32_t uint25_offset =
 				(imm11 | (imm10 << 11) | (i2 << 21) | (i1 << 22) | (s << 23)) << 1;
 		return binops::sign<int32_t>(uint25_offset, 25);
-	}
-
-	std::string to_string() {
-		return string_format("bl %c%i\n", (offset() >= 0 ? '+' : ' '), offset());
 	}
 
 	const bool j1;
@@ -594,50 +539,26 @@ struct bl_imm {
 
 struct bx : public standard_rm {
 	using standard_rm::standard_rm;
-
-	std::string to_string() {
-		return string_format("bx %d\n", rm);
-	}
 };
 
 struct blx : public standard_rm {
 	using standard_rm::standard_rm;
-
-	std::string to_string() {
-		return string_format("blx %d\n", rm);
-	}
 };
 
 struct cmn_reg : public standard_rn_rm {
 	using standard_rn_rm::standard_rn_rm;
-
-	std::string to_string() {
-		return string_format("cmn r%d, r%d\n", rn, rm);
-	}
 };
 
 struct cmp_imm : public standard_imm8_rn {
 	using standard_imm8_rn::standard_imm8_rn;
-
-	std::string to_string() {
-		return string_format("cmp r%d, #%d\n", rn, imm8);
-	}
 };
 
 struct cmp_reg : public standard_rn_rm {
 	using standard_rn_rm::standard_rn_rm;
-
-	std::string to_string() {
-		return string_format("cmp r%d, r%d\n", rn, rm);
-	}
 };
 
 struct eor_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
-
-	std::string to_string() {
-		return string_format("eors r%d, r%d\n", rdn, rm);
-	}
 };
 
 static
@@ -659,10 +580,6 @@ std::string reglist(uint8_t mask) {
 
 struct ldm : public standard_register_list_rn {
 	using standard_register_list_rn::standard_register_list_rn;
-
-	std::string to_string() {
-		return string_format("lsdm r%d%c %s\n", rn, is_set(rn) ? '!' : ' ', reglist(reg_list).c_str());
-	}
 };
 
 struct ldr_imm : public standard_rt_rn_imm5 {
@@ -671,21 +588,14 @@ struct ldr_imm : public standard_rt_rn_imm5 {
 	uint32_t imm32() const {
 		return imm5 << 2;
 	}
-	std::string to_string() {
-		return string_format("ldr r%d, [r%d, #%d]\n", rt, rn, imm32());
-	}
 };
 
 
-struct ldr_imm_sp : public standard_imm8_rt {
+struct ldr_sp_imm : public standard_imm8_rt {
 	using standard_imm8_rt::standard_imm8_rt;
-
+	// encoding t2 of ldr (imm)
 	uint32_t imm32() const {
 		return imm8 << 2;
-	}
-
-	std::string to_string() {
-		return string_format("ldr r%d, [SP, #%d]\n", rt, imm32());
 	}
 };
 
@@ -695,18 +605,10 @@ struct ldr_literal : public standard_imm8_rt {
 	uint32_t imm32() const {
 		return imm8 << 2;
 	}
-
-	std::string to_string() {
-		return string_format("ldr r%d %d\n", rt, imm32());
-	}
 };
 
 struct ldr_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
-
-	std::string to_string() {
-		return string_format("ldr r%d, r%d, r%d\n", rt, rn, rm);
-	}
 };
 
 
@@ -714,10 +616,6 @@ struct lsl_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
 	imm5_t shift_offset() const {
 		return imm5;
-	}
-
-	std::string to_string() {
-		return string_format("lsls r%d, r%d, #%d\n", rd, rm, imm5);
 	}
 };
 
@@ -727,35 +625,24 @@ struct lsr_imm : public standard_rd_rm_imm5 {
 		if(0 == imm5) return 32;
 		return imm5;
 	}
-
-	std::string to_string() {
-		return string_format("lsrs r%d, r%d, #%d\n", rd, rm, imm5);
-	}
 };
 struct subs_reg : public standard_rd_rn_rm {
 	using standard_rd_rn_rm::standard_rd_rn_rm;
 };
 
 
-struct subs_imm : public standard_rd_rm_imm3 {
-	using standard_rd_rm_imm3::standard_rd_rm_imm3;
+struct subs_imm : public standard_rd_rn_imm3 {
+	using standard_rd_rn_imm3::standard_rd_rn_imm3;
 };
 
 struct mov_imm : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 };
 
-
-
-
-
 struct subs_imm8 : public standard_imm8_rdn {
 	// T2 version of SUB immediate
 	using standard_imm8_rdn::standard_imm8_rdn;
 };
-
-
-
 
 struct lsl_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
@@ -765,10 +652,7 @@ struct lsr_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 };
 
-
-
-
-struct sub_c_reg : public standard_rdn_rm {
+struct sbc : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 };
 
@@ -784,11 +668,7 @@ struct rsb_imm : public standard_rd_rn {
 	using standard_rd_rn::standard_rd_rn;
 };
 
-
-
-
-
-struct lor_reg : public standard_rdn_rm {
+struct orr_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 };
 
@@ -796,18 +676,16 @@ struct mul_reg : public standard_rdm_rn {
 	using standard_rdm_rn::standard_rdm_rn;
 };
 
-
 struct not_reg : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
-
-
 
 struct cmp_highreg : public standard_rn_rm_dm {
 	using standard_rn_rm_dm::standard_rn_rm_dm;
 };
 
 struct mov_highreg : public standard_rd_rm_d {
+	// encoding t1 of mov register
 	using standard_rd_rm_d::standard_rd_rm_d;
 };
 
@@ -817,71 +695,63 @@ struct movs: public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
 
-
-
-
-
-struct store_reg_word_reg : public standard_rt_rn_rm {
+struct str_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-struct store_reg_halfword_reg : public standard_rt_rn_rm {
+struct strh_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-struct store_reg_byte_reg : public standard_rt_rn_rm {
+struct strb_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-struct load_reg_sbyte_reg : public standard_rt_rn_rm {
+struct ldrsb_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-
-
-struct load_reg_halfword_reg : public standard_rt_rn_rm {
+struct ldrh_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-struct load_reg_byte_reg : public standard_rt_rn_rm {
+struct ldrb_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-struct load_reg_shalfword_reg : public standard_rt_rn_rm {
+struct ldrsh_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-struct store_word_imm : public standard_rt_rn_imm5 {
+struct str_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 };
 
-
-struct store_byte_imm : public standard_rt_rn_imm5 {
+struct strb_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 };
 
-struct load_byte_imm : public standard_rt_rn_imm5 {
+struct ldrb_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 };
 
-struct store_halfword_imm : public standard_rt_rn_imm5 {
+struct strh_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 };
 
-struct load_halfword_imm : public standard_rt_rn_imm5 {
+struct ldrh_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 };
 
-struct store_word_sp_imm : public standard_imm8_rt {
+struct str_sp_imm : public standard_imm8_rt {
+	// T2 encoding of str (immediate)
 	using standard_imm8_rt::standard_imm8_rt;
 };
-
-
-
 
 struct sub_sp_imm : public standard_imm7 {
 	using standard_imm7::standard_imm7;
 };
+
 
 struct sxth : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
@@ -907,11 +777,11 @@ struct rev_word : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
 
-struct rev_packed_halfword : public standard_rd_rm {
+struct rev16 : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
 
-struct rev_packed_signed_halfword : public standard_rd_rm {
+struct revsh : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
 
@@ -939,7 +809,7 @@ struct special_reg_instr {
 		MSP 	= 0b00001000,
 		PSP 	= 0b00001001,
 		PRIMASK	= 0b00010000,
-		CONROL	= 0b00010100,
+		CONTROL	= 0b00010100,
 	};
 };
 

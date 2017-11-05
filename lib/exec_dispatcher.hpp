@@ -92,8 +92,8 @@ private:
 	void dispatch(const adc& instruction) override {
 		exec(adc(instruction), _regs, _regs.app_status_register());
 	}
-	void dispatch(const sub_c_reg& instruction) override {
-		exec(sub_c_reg(instruction), _regs, _regs.app_status_register());
+	void dispatch(const sbc& instruction) override {
+		exec(sbc(instruction), _regs, _regs.app_status_register());
 	}
 	void dispatch(const ror_reg& instruction) override {
 		exec(ror_reg(instruction), _regs, _regs.app_status_register());
@@ -110,8 +110,8 @@ private:
 	void dispatch(const cmn_reg& instruction) override {
 		exec(cmn_reg(instruction), _regs, _regs.app_status_register());
 	}
-	void dispatch(const lor_reg& instruction) override {
-		exec(lor_reg(instruction), _regs, _regs.app_status_register());
+	void dispatch(const orr_reg& instruction) override {
+		exec(orr_reg(instruction), _regs, _regs.app_status_register());
 	}
 	void dispatch(const mul_reg& instruction) override {
 		exec(mul_reg(instruction), _regs, _regs.app_status_register());
@@ -140,56 +140,56 @@ private:
 	void dispatch(const ldr_literal& instruction) override {
 		exec(ldr_literal(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const store_reg_word_reg& instruction) override {
-		exec(store_reg_word_reg(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const str_reg& instruction) override {
+		exec(str_reg(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const store_reg_halfword_reg& instruction) override {
-		exec(store_reg_halfword_reg(instruction), _regs,
+	void dispatch(const strh_reg& instruction) override {
+		exec(strh_reg(instruction), _regs,
 			 _regs.app_status_register(), _mem);
 	}
-	void dispatch(const store_reg_byte_reg& instruction) override {
-		exec(store_reg_byte_reg(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const strb_reg& instruction) override {
+		exec(strb_reg(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const load_reg_sbyte_reg& instruction) override {
-		exec(load_reg_sbyte_reg(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const ldrsb_reg& instruction) override {
+		exec(ldrsb_reg(instruction), _regs, _regs.app_status_register(), _mem);
 	}
 	void dispatch(const ldr_reg& instruction) override {
 		exec(ldr_reg(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const load_reg_halfword_reg& instruction) override {
-		exec(load_reg_halfword_reg(instruction), _regs,
+	void dispatch(const ldrh_reg& instruction) override {
+		exec(ldrh_reg(instruction), _regs,
 			 _regs.app_status_register(), _mem);
 	}
-	void dispatch(const load_reg_byte_reg& instruction) override {
-		exec(load_reg_byte_reg(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const ldrb_reg& instruction) override {
+		exec(ldrb_reg(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const load_reg_shalfword_reg& instruction) override {
-		exec(load_reg_shalfword_reg(instruction), _regs,
+	void dispatch(const ldrsh_reg& instruction) override {
+		exec(ldrsh_reg(instruction), _regs,
 			 _regs.app_status_register(), _mem);
 	}
-	void dispatch(const store_word_imm& instruction) override {
-		exec(store_word_imm(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const str_imm& instruction) override {
+		exec(str_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
 	void dispatch(const ldr_imm& instruction) override {
 		exec(ldr_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const store_byte_imm& instruction) override {
-		exec(store_byte_imm(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const strb_imm& instruction) override {
+		exec(strb_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const load_byte_imm& instruction) override {
-		exec(load_byte_imm(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const ldrb_imm& instruction) override {
+		exec(ldrb_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const store_halfword_imm& instruction) override {
-		exec(store_halfword_imm(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const strh_imm& instruction) override {
+		exec(strh_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const load_halfword_imm& instruction) override {
-		exec(load_halfword_imm(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const ldrh_imm& instruction) override {
+		exec(ldrh_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const store_word_sp_imm& instruction) override {
-		exec(store_word_sp_imm(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const str_sp_imm& instruction) override {
+		exec(str_sp_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
-	void dispatch(const ldr_imm_sp& instruction) override {
-		exec(ldr_imm_sp(instruction), _regs, _regs.app_status_register(), _mem);
+	void dispatch(const ldr_sp_imm& instruction) override {
+		exec(ldr_sp_imm(instruction), _regs, _regs.app_status_register(), _mem);
 	}
 	void dispatch(const adr& instruction) override {
 		exec(adr(instruction), _regs);
@@ -224,11 +224,11 @@ private:
 	void dispatch(const rev_word& instruction) override {
 		exec(rev_word(instruction), _regs);
 	}
-	void dispatch(const rev_packed_halfword& instruction) override {
-		exec(rev_packed_halfword(instruction), _regs);
+	void dispatch(const rev16& instruction) override {
+		exec(rev16(instruction), _regs);
 	}
-	void dispatch(const rev_packed_signed_halfword& instruction) override {
-		exec(rev_packed_signed_halfword(instruction), _regs);
+	void dispatch(const revsh& instruction) override {
+		exec(revsh(instruction), _regs);
 	}
 	void dispatch(const branch& instruction) override {
 		exec(branch(instruction), _regs, _regs.app_status_register());

@@ -29,3 +29,4 @@ declare_test(alu_tests alu_tests.cpp)
 declare_test(cpu_tests cpu_tests.cpp)
 
 add_subdirectory(pinksim)
+add_subdirectory(disasm)
