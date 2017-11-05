@@ -561,14 +561,14 @@ struct bic_reg : public standard_rdn_rm {
 
 struct bl_imm {
 
-	bl_imm(halfword first, halfword second)
-			: j1(second.bit(13))
-			, j2(second.bit(11))
-			, s(first.bit(10))
-			, imm10(first.uint(0, 10))
-			, imm11(second.uint(0, 11))
+	bl_imm(const instruction_pair& instr)
+			: j1(instr.second.bit(13))
+			, j2(instr.second.bit(11))
+			, s(instr.first.bit(10))
+			, imm10(instr.first.uint(0, 10))
+			, imm11(instr.second.uint(0, 11))
 	{
-		fprintf(stderr, "%s %s\n", first.to_string().c_str(), second.to_string().c_str());
+		fprintf(stderr, "%s %s\n", instr.first.to_string().c_str(), instr.second.to_string().c_str());
 
 	}
 
@@ -944,18 +944,18 @@ struct special_reg_instr {
 };
 
 struct msr : special_reg_instr{
-	msr(halfword first, halfword second)
-		: rn(first.uint(0, 4))
-		, sysn((SpecialRegister)second.uint(0, 8)) {
+	msr(const instruction_pair& instr)
+		: rn(instr.first.uint(0, 4))
+		, sysn((SpecialRegister)instr.second.uint(0, 8)) {
 	}
 	const reg_idx rn;
 	const SpecialRegister sysn;
 };
 
 struct mrs : special_reg_instr{
-	mrs(halfword first, halfword second)
-		: rd(second.uint(8, 4))
-		, sysn(second.uint(0, 8)) {
+	mrs(const instruction_pair& instr)
+		: rd(instr.second.uint(8, 4))
+		, sysn(instr.second.uint(0, 8)) {
 	}
 	const reg_idx rd;
 	const byte sysn;
