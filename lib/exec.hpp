@@ -852,6 +852,51 @@ static void exec(const ldm& instruction, registers& regs, memory& mem) {
 	}
 }
 
+
+static void exec(const mrs& instruction, registers& regs, apsr_register& apsr) {
+	// do not keep the value initially present in the register
+	word val = 0;
+
+	switch(instruction.sysn.uint(3, 5)) {
+		case 0b00000: {
+			if(instruction.sysn.bit(0)) {
+				val.write_bits(0, 0, regs.interrupt_status_register().exception(), 8);
+			}
+			if(instruction.sysn.bit(1)) {
+				// T-bit reads as zero
+				val.write_bit(epsr_reg::THUMB_BIT, 0);
+			}
+			if(!instruction.sysn.bit(2)) {
+				// T-bit reads as zero
+				// copy 5 bits from APS
+				// TODO: Why 5 and not 4 ???
+				val.write_bits(27, 27, regs.xpsr_register(), 5);
+			}
+		} break;
+		case 0b00001: {
+			switch(instruction.sysn.uint(0, 3)) {
+				case 000: {
+					val = regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
+				} break;
+				case 001: {
+					val = regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
+				} break;
+			}
+		} break;
+		case 0b00010: {
+			switch(instruction.sysn.uint(0, 3)) {
+				case 000: {
+					// TODO: MRS SpecialRegister::PRIMASK
+				} break;
+				case 001: {
+					val.write_bits(0, 0, regs.control_register(), 2);
+				} break;
+			}
+		} break;
+	}
+	regs.set(instruction.rd, val);
+}
+
 static void exec(const msr& instruction, registers& regs, apsr_register& apsr) {
 	switch(instruction.sysn) {
 		case msr::SpecialRegister::APSR:
@@ -884,7 +929,6 @@ static void exec(const msr& instruction, registers& regs, apsr_register& apsr) {
 		} break;
 	}
 }
-
 
 static void exec(const bl_imm& instruction, registers& regs) {
 	// pc is 4 bytes ahead, so already poiting to the next instruction

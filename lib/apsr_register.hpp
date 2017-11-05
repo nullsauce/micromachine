@@ -22,11 +22,11 @@ struct apsr_register : public xpsr_reg {
 
 	void copy_bits(const word& val) {
 		// TODO: Check why we must copy a reserved bit (No 27) instead of only 28-31
-		_xpsr.write_bits(28, 0, val);
+		_xpsr.write_bits(27, 0, val, 4);
 	}
 
 	void reset() {
-		_xpsr.write_bits(27, 0, 0);
+		_xpsr.write_bits(27, 0, 0, 4);
 	}
 
 	void apply_zero(const word& val) {

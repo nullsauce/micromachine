@@ -53,10 +53,11 @@ public:
 		binops::write_bit(*this, offset, value);
 	}
 
-	void write_bits(size_t dst_offset, size_t src_offset, integer_type<bits_t> src) {
+	void write_bits(size_t dst_offset, size_t src_offset, integer_type<bits_t> src, size_t num_bits) {
 		auto all_ones   = binops::make_mask<sizeof(bits_t)>();
 		auto to_place 	= binops::rlshift(src, src_offset, dst_offset);
-		auto mask 		= binops::rlshift(all_ones, src_offset, dst_offset);
+		//auto mask 		= binops::rlshift(all_ones, src_offset, dst_offset);
+		auto mask = binops::make_mask<bits_t>(num_bits) << dst_offset;
 		_val = (_val & (~mask)) | to_place;
 	}
 

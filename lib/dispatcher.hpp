@@ -617,7 +617,7 @@ public:
 				} else if(is_32bit_thumb_misc_ctl(instr, second_instruction)) {
 					fprintf(stderr, "unimplemented 32 bit misc ctl intructions\n");
 				} else if(is_32bit_thumb_mrs(instr, second_instruction)) {
-					fprintf(stderr, "unimplemented mrs\n");
+					dispatch(mrs(instr, second_instruction));
 				} else if(is_32bit_thumb_bl(instr, second_instruction)) {
 					dispatch(bl_imm(instr, second_instruction));
 				} else {
@@ -706,6 +706,7 @@ private:
 	virtual void dispatch(const unconditional_branch& instruction) = 0;
 	virtual void dispatch(const stm& instruction) = 0;
 	virtual void dispatch(const ldm& instruction) = 0;
+	virtual void dispatch(const mrs& instruction) = 0;
 	virtual void dispatch(const msr& instruction) = 0;
 	virtual void dispatch(const bl_imm& instruction) = 0;
 	virtual void dispatch(const svc& instruction) = 0;
