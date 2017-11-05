@@ -78,7 +78,7 @@ public:
 	}
 
 
-	std::string to_string() {
+	std::string to_string() const {
 		const size_t binsize = binops::binsize(*this);
 		std::string str(binsize, '0');
 		for(size_t i = 0; i < binsize; i++) {
