@@ -10,7 +10,9 @@ and/or distributed without the express permission of The Micromachine project.
 #ifndef MICROMACHINE_DISPATCH_HPP
 #define MICROMACHINE_DISPATCH_HPP
 
+#include "instruction_pair.hpp"
 #include "instructions.hpp"
+#include "exception_vector.hpp"
 
 namespace {
 
@@ -113,7 +115,7 @@ namespace {
 			   0b0101 == instruction.uint(6, 4);
 	}
 
-	static bool is_sub_c_reg(const halfword& instruction) {
+	static bool is_sbc(const halfword &instruction) {
 		return is_data_processing(instruction) &&
 			   0b0110 == instruction.uint(6, 4);
 	}
@@ -143,7 +145,7 @@ namespace {
 			   0b1010 == instruction.uint(6, 4);
 	}
 
-	static bool is_lor_reg(const halfword& instruction) {
+	static bool is_orr_reg(const halfword &instruction) {
 		return is_data_processing(instruction) &&
 			   0b1100 == instruction.uint(6, 4);
 	}
@@ -200,19 +202,19 @@ namespace {
 		return 0b01001 == instruction.uint(11, 5);
 	}
 
-	static bool is_store_reg_word_reg(const halfword& instruction) {
+	static bool is_str_reg(const halfword &instruction) {
 		return 0b0101000 == instruction.uint(9, 7);
 	}
 
-	static bool is_store_reg_halfword_reg(const halfword& instruction) {
+	static bool is_strh_reg(const halfword &instruction) {
 		return 0b0101001 == instruction.uint(9, 7);
 	}
 
-	static bool is_store_reg_byte_reg(const halfword& instruction) {
+	static bool is_strb_reg(const halfword &instruction) {
 		return 0b0101010 == instruction.uint(9, 7);
 	}
 
-	static bool is_load_reg_sbyte_reg(const halfword& instruction) {
+	static bool is_ldrsb_reg(const halfword &instruction) {
 		return 0b0101011 == instruction.uint(9, 7);
 	}
 
@@ -220,19 +222,19 @@ namespace {
 		return 0b0101100 == instruction.uint(9, 7);
 	}
 
-	static bool is_load_reg_halfword_reg(const halfword& instruction) {
+	static bool is_ldrh_reg(const halfword &instruction) {
 		return 0b0101101 == instruction.uint(9, 7);
 	}
 
-	static bool is_load_reg_byte_reg(const halfword& instruction) {
+	static bool is_ldrb_reg(const halfword &instruction) {
 		return 0b0101110 == instruction.uint(9, 7);
 	}
 
-	static bool is_load_reg_shalfword_reg(const halfword& instruction) {
+	static bool is_ldrsh_reg(const halfword &instruction) {
 		return 0b0101111 == instruction.uint(9, 7);
 	}
 
-	static bool is_store_word_imm(const halfword& instruction) {
+	static bool is_str_imm(const halfword &instruction) {
 		return 0b01100 == instruction.uint(11, 5);
 	}
 
@@ -240,27 +242,27 @@ namespace {
 		return 0b01101 == instruction.uint(11, 5);
 	}
 
-	static bool is_store_byte_imm(const halfword& instruction) {
+	static bool is_strb_imm(const halfword &instruction) {
 		return 0b01110 == instruction.uint(11, 5);
 	}
 
-	static bool is_load_byte_imm(const halfword& instruction) {
+	static bool is_ldrb_imm(const halfword &instruction) {
 		return 0b01111 == instruction.uint(11, 5);
 	}
 
-	static bool is_store_halfword_imm(const halfword& instruction) {
+	static bool is_strh_imm(const halfword &instruction) {
 		return 0b10000 == instruction.uint(11, 5);
 	}
 
-	static bool is_load_halfword_imm(const halfword& instruction) {
+	static bool is_ldrh_imm(const halfword &instruction) {
 		return 0b10001 == instruction.uint(11, 5);
 	}
 
-	static bool is_store_word_sp_imm(const halfword& instruction) {
+	static bool is_str_sp_imm(const halfword &instruction) {
 		return 0b10010 == instruction.uint(11, 5);
 	}
 
-	static bool is_ldr_imm_sp(const halfword& instruction) {
+	static bool is_ldr_sp_imm(const halfword &instruction) {
 		return 0b10011 == instruction.uint(11, 5);
 	}
 
@@ -308,11 +310,11 @@ namespace {
 		return 0b1011101000 == instruction.uint(6, 10);
 	}
 
-	static bool is_rev_packed_halfword(const halfword& instruction) {
+	static bool is_rev16(const halfword &instruction) {
 		return 0b1011101001 == instruction.uint(6, 10);
 	}
 
-	static bool is_rev_signed_halfword(const halfword& instruction) {
+	static bool is_revsh(const halfword &instruction) {
 		return 0b1011101011 == instruction.uint(6, 10);
 	}
 
@@ -401,8 +403,6 @@ namespace {
 	}
 }
 
-#include "exception_vector.hpp"
-
 class dispatcher {
 
 private:
@@ -471,8 +471,8 @@ public:
 			dispatch(asr_reg(instr));
 		} else if(is_adc_reg(instr)) {
 			dispatch(adc(instr));
-		} else if(is_sub_c_reg(instr)) {
-			dispatch(sub_c_reg(instr));
+		} else if(is_sbc(instr)) {
+			dispatch(sbc(instr));
 		} else if(is_ror_reg(instr)) {
 			dispatch(ror_reg(instr));
 		} else if(is_tst_reg(instr)) {
@@ -483,8 +483,8 @@ public:
 			dispatch(cmp_reg(instr));
 		} else if(is_cmn_reg(instr)) {
 			dispatch(cmn_reg(instr));
-		} else if(is_lor_reg(instr)) {
-			dispatch(lor_reg(instr));
+		} else if(is_orr_reg(instr)) {
+			dispatch(orr_reg(instr));
 		} else if(is_mul_reg(instr)) {
 			dispatch(mul_reg(instr));
 		} else if(is_bitclear_reg(instr)) {
@@ -511,38 +511,38 @@ public:
 
 
 			// load store
-		} else if(is_store_reg_word_reg(instr)) {
-			dispatch(store_reg_word_reg(instr));
-		} else if(is_store_reg_halfword_reg(instr)) {
-			dispatch(store_reg_halfword_reg(instr));
-		} else if(is_store_reg_byte_reg(instr)) {
-			dispatch(store_reg_byte_reg(instr));
-		} else if(is_load_reg_sbyte_reg(instr)) {
-			dispatch(load_reg_sbyte_reg(instr));
+		} else if(is_str_reg(instr)) {
+			dispatch(str_reg(instr));
+		} else if(is_strh_reg(instr)) {
+			dispatch(strh_reg(instr));
+		} else if(is_strb_reg(instr)) {
+			dispatch(strb_reg(instr));
+		} else if(is_ldrsb_reg(instr)) {
+			dispatch(ldrsb_reg(instr));
 		} else if(is_ldr_reg(instr)) {
 			dispatch(ldr_reg(instr));
-		} else if(is_load_reg_halfword_reg(instr)) {
-			dispatch(load_reg_halfword_reg(instr));
-		} else if(is_load_reg_byte_reg(instr)) {
-			dispatch(load_reg_byte_reg(instr));
-		} else if(is_load_reg_shalfword_reg(instr)) {
-			dispatch(load_reg_shalfword_reg(instr));
-		} else if(is_store_word_imm(instr)) {
-			dispatch(store_word_imm(instr));
+		} else if(is_ldrh_reg(instr)) {
+			dispatch(ldrh_reg(instr));
+		} else if(is_ldrb_reg(instr)) {
+			dispatch(ldrb_reg(instr));
+		} else if(is_ldrsh_reg(instr)) {
+			dispatch(ldrsh_reg(instr));
+		} else if(is_str_imm(instr)) {
+			dispatch(str_imm(instr));
 		} else if(is_ldr_imm(instr)) {
 			dispatch(ldr_imm(instr));
-		} else if(is_store_byte_imm(instr)) {
-			dispatch(store_byte_imm(instr));
-		} else if(is_load_byte_imm(instr)) {
-			dispatch(load_byte_imm(instr));
-		} else if(is_store_halfword_imm(instr)) {
-			dispatch(store_halfword_imm(instr));
-		} else if(is_load_halfword_imm(instr)) {
-			dispatch(load_halfword_imm(instr));
-		} else if(is_store_word_sp_imm(instr)) {
-			dispatch(store_word_sp_imm(instr));
-		} else if(is_ldr_imm_sp(instr)) {
-			dispatch(ldr_imm_sp(instr));
+		} else if(is_strb_imm(instr)) {
+			dispatch(strb_imm(instr));
+		} else if(is_ldrb_imm(instr)) {
+			dispatch(ldrb_imm(instr));
+		} else if(is_strh_imm(instr)) {
+			dispatch(strh_imm(instr));
+		} else if(is_ldrh_imm(instr)) {
+			dispatch(ldrh_imm(instr));
+		} else if(is_str_sp_imm(instr)) {
+			dispatch(str_sp_imm(instr));
+		} else if(is_ldr_sp_imm(instr)) {
+			dispatch(ldr_sp_imm(instr));
 
 
 			// PC relative address
@@ -574,10 +574,10 @@ public:
 			fprintf(stderr, "CPS is unimplemented\n");
 		} else if(is_rev_word(instr)) {
 			dispatch(rev_word(instr));
-		} else if(is_rev_packed_halfword(instr)) {
-			dispatch(rev_packed_halfword(instr));
-		} else if(is_rev_signed_halfword(instr)) {
-			dispatch(rev_packed_signed_halfword(instr));
+		} else if(is_rev16(instr)) {
+			dispatch(rev16(instr));
+		} else if(is_revsh(instr)) {
+			dispatch(revsh(instr));
 		} else if(is_pop(instr)) {
 			dispatch(pop(instr));
 		} else if(is_breakpoint(instr)) {
@@ -598,7 +598,7 @@ public:
 
 
 		} else if(is_branch(instr)) {
-			fprintf(stderr, "%s\n", branch(instr).to_string().c_str());
+			//fprintf(stderr, "%s\n", branch(instr).to_string().c_str());
 			dispatch(branch(instr));
 		} else if(is_svc(instr)) {
 			dispatch(svc(instr));
@@ -658,13 +658,13 @@ private:
 	virtual void dispatch(const lsr_reg& instruction) = 0;
 	virtual void dispatch(const asr_reg& instruction) = 0;
 	virtual void dispatch(const adc& instruction) = 0;
-	virtual void dispatch(const sub_c_reg& instruction) = 0;
+	virtual void dispatch(const sbc& instruction) = 0;
 	virtual void dispatch(const ror_reg& instruction) = 0;
 	virtual void dispatch(const tst_reg& instruction) = 0;
 	virtual void dispatch(const rsb_imm& instruction) = 0;
 	virtual void dispatch(const cmp_reg& instruction) = 0;
 	virtual void dispatch(const cmn_reg& instruction) = 0;
-	virtual void dispatch(const lor_reg& instruction) = 0;
+	virtual void dispatch(const orr_reg& instruction) = 0;
 	virtual void dispatch(const mul_reg& instruction) = 0;
 	virtual void dispatch(const bic_reg& instruction) = 0;
 	virtual void dispatch(const not_reg& instruction) = 0;
@@ -674,22 +674,22 @@ private:
 	virtual void dispatch(const bx& instruction) = 0;
 	virtual void dispatch(const blx& instruction) = 0;
 	virtual void dispatch(const ldr_literal& instruction) = 0;
-	virtual void dispatch(const store_reg_word_reg& instruction) = 0;
-	virtual void dispatch(const store_reg_halfword_reg& instruction) = 0;
-	virtual void dispatch(const store_reg_byte_reg& instruction) = 0;
-	virtual void dispatch(const load_reg_sbyte_reg& instruction) = 0;
+	virtual void dispatch(const str_reg& instruction) = 0;
+	virtual void dispatch(const strh_reg& instruction) = 0;
+	virtual void dispatch(const strb_reg& instruction) = 0;
+	virtual void dispatch(const ldrsb_reg& instruction) = 0;
 	virtual void dispatch(const ldr_reg& instruction) = 0;
-	virtual void dispatch(const load_reg_halfword_reg& instruction) = 0;
-	virtual void dispatch(const load_reg_byte_reg& instruction) = 0;
-	virtual void dispatch(const load_reg_shalfword_reg& instruction) = 0;
-	virtual void dispatch(const store_word_imm& instruction) = 0;
+	virtual void dispatch(const ldrh_reg& instruction) = 0;
+	virtual void dispatch(const ldrb_reg& instruction) = 0;
+	virtual void dispatch(const ldrsh_reg& instruction) = 0;
+	virtual void dispatch(const str_imm& instruction) = 0;
 	virtual void dispatch(const ldr_imm& instruction) = 0;
-	virtual void dispatch(const store_byte_imm& instruction) = 0;
-	virtual void dispatch(const load_byte_imm& instruction) = 0;
-	virtual void dispatch(const store_halfword_imm& instruction) = 0;
-	virtual void dispatch(const load_halfword_imm& instruction) = 0;
-	virtual void dispatch(const store_word_sp_imm& instruction) = 0;
-	virtual void dispatch(const ldr_imm_sp& instruction) = 0;
+	virtual void dispatch(const strb_imm& instruction) = 0;
+	virtual void dispatch(const ldrb_imm& instruction) = 0;
+	virtual void dispatch(const strh_imm& instruction) = 0;
+	virtual void dispatch(const ldrh_imm& instruction) = 0;
+	virtual void dispatch(const str_sp_imm& instruction) = 0;
+	virtual void dispatch(const ldr_sp_imm& instruction) = 0;
 	virtual void dispatch(const adr& instruction) = 0;
 	virtual void dispatch(const add_sp_imm& instruction) = 0;
 	virtual void dispatch(const add_sp_imm_t2& instruction) = 0;
@@ -701,8 +701,8 @@ private:
 	virtual void dispatch(const push& instruction) = 0;
 	virtual void dispatch(const pop& instruction) = 0;
 	virtual void dispatch(const rev_word& instruction) = 0;
-	virtual void dispatch(const rev_packed_halfword& instruction) = 0;
-	virtual void dispatch(const rev_packed_signed_halfword& instruction) = 0;
+	virtual void dispatch(const rev16& instruction) = 0;
+	virtual void dispatch(const revsh& instruction) = 0;
 	virtual void dispatch(const branch& instruction) = 0;
 	virtual void dispatch(const unconditional_branch& instruction) = 0;
 	virtual void dispatch(const stm& instruction) = 0;
