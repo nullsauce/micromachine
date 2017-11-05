@@ -57,7 +57,7 @@ public:
 		integer_type<bits_t> to_place = (src >> src_offset) << dst_offset;
 		integer_type<bits_t> mask = integer_type<bits_t>::make_mask(binops::binsize(to_place));
 		mask = (mask >> src_offset) << mask;
-		_val = (_val & mask) | to_place;
+		_val = (_val & (~mask)) | to_place;
 	}
 
 	bool bit(size_t offset) const {

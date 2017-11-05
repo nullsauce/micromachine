@@ -863,7 +863,7 @@ static void exec(const msr& instruction, registers& regs, apsr_register& apsr) {
 		} break;
 		case msr::SpecialRegister::MSP: {
 			// TODO: Should fail if not in privileged mode
-			word sp = regs.get(instruction.rn).uint(2, 30);
+			word sp = regs.get(instruction.rn).uint(2, 30) << 2;
 			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main, sp);
 		} break;
 		case msr::SpecialRegister::PSP: {
