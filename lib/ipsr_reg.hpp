@@ -21,6 +21,10 @@ struct ipsr_reg : public xpsr_reg {
 	void set_exception(exception e) {
 		//write_bits(0, 0, static_cast<word>(e));
 	}
+
+	uint8_t exception() const {
+		return _xpsr.uint(0, 8);
+	}
 };
 
 
