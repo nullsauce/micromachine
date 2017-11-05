@@ -7,5 +7,5 @@ and/or distributed without the express permission of The Micromachine project.
 
 */
 
-#include "exec_mode_register.hpp"
+#include "exec_mode_reg.hpp"
 

@@ -5,23 +5,30 @@
 #ifndef MICROMACHINE_STATUS_FLAGS_HPP
 #define MICROMACHINE_STATUS_FLAGS_HPP
 
-#include "types.hpp"
+#include "xpsr_reg.hpp"
 
-
-struct apsr_register : public word {
+struct apsr_register : public xpsr_reg {
 
 	static const size_t FLAG_NEGATIVE 	= 31;
 	static const size_t FLAG_ZERO 		= 30;
 	static const size_t FLAG_CARRY 		= 29;
 	static const size_t FLAG_OVERFLOW 	= 28;
 
-	using word::integer_type;
-
-
+	using xpsr_reg::xpsr_reg;
 
 	void print() {
 		fprintf(stderr, "Z:%d, N:%d, C:%d, V:%d\n", zero_flag(), neg_flag(), carry_flag(), overflow_flag());
 	}
+
+	void copy_bits(const word& val) {
+		// TODO: Check why we must copy a reserved bit (No 27) instead of only 28-31
+		_xpsr.write_bits(27, 0, val);
+	}
+
+	void reset() {
+		_xpsr.write_bits(27, 0, 0);
+	}
+
 	void apply_zero(const word& val) {
 		write_zero_flag(val == 0);
 	}
@@ -136,18 +143,6 @@ struct apsr_register : public word {
 			case 0b1101: return is_le();
 			default: return true;
 		}
-
-		return false;
-
-		/*
-		when '000' result = (APSR.Z == '1'); // EQ or NE
-		when '001' result = (APSR.C == '1'); // CS or CC
-		when '010' result = (APSR.N == '1'); // MI or PL
-		when '011' result = (APSR.V == '1'); // VS or VC
-		when '100' result = (APSR.C == '1') && (APSR.Z == '0'); // HI or LS
-		when '101' result = (APSR.N == APSR.V); // GE or LT
-		when '110' result = (APSR.N == APSR.V) && (APSR.Z == '0'); // GT or LE
-		when '111' result = TRUE;*/
 	}
 
 };

@@ -10,44 +10,44 @@ and/or distributed without the express permission of The Micromachine project.
 #ifndef MICROMACHINE_MODE_REGISTER_HPP
 #define MICROMACHINE_MODE_REGISTER_HPP
 
-enum class exec_mode {
+enum class execution_mode {
 	thread,
 	handler
 };
 
-class exec_mode_register {
+class exec_mode_reg {
 
 public:
 
 
-	exec_mode_register()
-		: _exec_mode(exec_mode::thread) {
+	exec_mode_reg()
+		: _exec_mode(execution_mode::thread) {
 
 	}
 
 	bool is_handler_mode() const {
-		return exec_mode::handler == _exec_mode;
+		return execution_mode::handler == _exec_mode;
 	}
 
 	bool is_thread_mode() const {
-		return exec_mode::thread == _exec_mode;
+		return execution_mode::thread == _exec_mode;
 	}
 
 	void set_handler_mode() {
-		set_mode(exec_mode::handler);
+		set_mode(execution_mode::handler);
 	}
 
 	void set_thread_mode() {
-		set_mode(exec_mode::thread);
+		set_mode(execution_mode::thread);
 	}
 
 private:
 
-	void set_mode(exec_mode mode) {
+	void set_mode(execution_mode mode) {
 		_exec_mode = mode;
 	}
 
-	exec_mode _exec_mode;
+	execution_mode _exec_mode;
 
 };
 

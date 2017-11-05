@@ -406,12 +406,18 @@ namespace {
 class dispatcher {
 
 private:
-	exception_vector& exceptions;
+	exception_vector& _exception_vector;
+
+protected:
+
+	void signal_exception(exception type) {
+		_exception_vector[type] = true;
+	}
 
 public:
 
-	dispatcher(exception_vector& _exceptions)
-		: exceptions(_exceptions) {
+	dispatcher(exception_vector& exception_vector)
+		: _exception_vector(exception_vector) {
 
 	}
 
@@ -603,11 +609,11 @@ public:
 		} else if(is_32bit_thumb_encoding(instr)) {
 
 			if(is_undefined32(instr, second_instruction)) {
-				exceptions[exception::HARDFAULT] = true;
+				signal_exception(exception::HARDFAULT);
 			} else if(is_32bit_thumb_br_misc_ctl(instr, second_instruction)) {
 
 				if(is_32bit_thumb_msr(instr, second_instruction)) {
-					fprintf(stderr, "uMSR unimplemented\n");
+					dispatch(msr(instr, second_instruction));
 				} else if(is_32bit_thumb_misc_ctl(instr, second_instruction)) {
 					fprintf(stderr, "unimplemented 32 bit misc ctl intructions\n");
 				} else if(is_32bit_thumb_mrs(instr, second_instruction)) {
@@ -619,11 +625,11 @@ public:
 				}
 			} else {
 				fprintf(stderr, "undefined 32bit instruction\n");
-				exceptions[exception::HARDFAULT] = true;
+				signal_exception(exception::HARDFAULT);
 			}
 
 		} else if(is_undefined(instr)) {
-			exceptions[exception::HARDFAULT] = true;
+			signal_exception(exception::HARDFAULT);
 		} else {
 			fprintf(stderr, "unhandled instruction %04X\n", (uint32_t)instr);
 			fprintf(stderr, "unimplemented\n");
@@ -700,6 +706,7 @@ private:
 	virtual void dispatch(const unconditional_branch& instruction) = 0;
 	virtual void dispatch(const stm& instruction) = 0;
 	virtual void dispatch(const ldm& instruction) = 0;
+	virtual void dispatch(const msr& instruction) = 0;
 	virtual void dispatch(const bl_imm& instruction) = 0;
 	virtual void dispatch(const svc& instruction) = 0;
 };

@@ -919,20 +919,36 @@ struct pop : public standard_pop_register_list {
 	using standard_pop_register_list::standard_pop_register_list;
 };
 
-
-
 struct stm : public standard_register_list_rn {
 	using standard_register_list_rn::standard_register_list_rn;
 };
-
-
-
-
 
 struct svc : public standard_imm8 {
 	using standard_imm8::standard_imm8;
 };
 
+struct msr {
+	msr(halfword first, halfword second)
+		: rn(first.uint(0, 4))
+		, sysn((SpecialRegister)second.uint(0, 8)) {
+
+	}
+	enum class SpecialRegister : imm8_t {
+		APSR 	= 0b00000000,
+		IAPSR 	= 0b00000001,
+		EAPSR 	= 0b00000010,
+		XPSR 	= 0b00000011,
+		IPSR 	= 0b00000101,
+		EPSR 	= 0b00000110,
+		IEPSR 	= 0b00000111,
+		MSP 	= 0b00001000,
+		PSP 	= 0b00001001,
+		PRIMASK	= 0b00010000,
+		CONROL	= 0b00010100,
+	};
+	const reg_idx rn;
+	const SpecialRegister sysn;
+};
 
 
 
