@@ -28,7 +28,9 @@ set(HEADER_FILES
     lib/exec_mode.hpp
     lib/exception_vector.hpp
     lib/exception.hpp
-        lib/string_format.hpp)
+	lib/string_format.hpp
+	lib/exec_dispatcher.hpp
+	lib/dispatcher.hpp)
 
 add_executable(micromachine ${HEADER_FILES} ${SOURCE_FILES})
 

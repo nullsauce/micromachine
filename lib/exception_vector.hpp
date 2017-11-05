@@ -101,6 +101,10 @@ public:
 		return 0 != _storage;
 	}
 
+	const storage_t& storage() const {
+		return _storage;
+	}
+
 	void clear() {
 		_storage = 0;
 	}
