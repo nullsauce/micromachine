@@ -7,7 +7,7 @@
 
 #include "xpsr_reg.hpp"
 
-struct apsr_register : public xpsr_reg {
+struct apsr_reg : public xpsr_reg {
 
 	static const size_t FLAG_NEGATIVE 	= 31;
 	static const size_t FLAG_ZERO 		= 30;

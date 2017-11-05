@@ -178,42 +178,42 @@ protected:
             {
             case 'n':
                 m_expectedXPSRflags &= ~APSR_N;
-					_cpu.regs().status_register().write_neg_flag(false);
+					_cpu.regs().app_status_register().write_neg_flag(false);
 				//apsr |= APSR_N;
                 break;
             case 'N':
                 m_expectedXPSRflags |= APSR_N;
-					_cpu.regs().status_register().write_neg_flag(true);
+					_cpu.regs().app_status_register().write_neg_flag(true);
 				//apsr &= ~APSR_N;
                 break;
             case 'z':
                 m_expectedXPSRflags &= ~APSR_Z;
-					_cpu.regs().status_register().write_zero_flag(false);
+					_cpu.regs().app_status_register().write_zero_flag(false);
 				//apsr |= APSR_Z;
                 break;
             case 'Z':
                 m_expectedXPSRflags |= APSR_Z;
-					_cpu.regs().status_register().write_zero_flag(true);
+					_cpu.regs().app_status_register().write_zero_flag(true);
 				//apsr &= ~APSR_Z;
                 break;
             case 'c':
                 m_expectedXPSRflags &= ~APSR_C;
-					_cpu.regs().status_register().write_carry_flag(false);
+					_cpu.regs().app_status_register().write_carry_flag(false);
 				//apsr |= APSR_C;
                 break;
             case 'C':
                 m_expectedXPSRflags |= APSR_C;
-					_cpu.regs().status_register().write_carry_flag(true);
+					_cpu.regs().app_status_register().write_carry_flag(true);
                 //apsr &= ~APSR_C;
                 break;
             case 'v':
                 m_expectedXPSRflags &= ~APSR_V;
-					_cpu.regs().status_register().write_overflow_flag(false);
+					_cpu.regs().app_status_register().write_overflow_flag(false);
 				//apsr |= APSR_V;
                 break;
             case 'V':
                 m_expectedXPSRflags |= APSR_V;
-					_cpu.regs().status_register().write_overflow_flag(true);
+					_cpu.regs().app_status_register().write_overflow_flag(true);
 				//apsr &= ~APSR_V;
                 break;
             case 't':
@@ -425,42 +425,42 @@ protected:
 
     void setCarry()
     {
-		_cpu.regs().status_register().write_carry_flag(true);
+		_cpu.regs().app_status_register().write_carry_flag(true);
     }
 
     void clearCarry()
     {
-		_cpu.regs().status_register().write_carry_flag(false);
+		_cpu.regs().app_status_register().write_carry_flag(false);
     }
 
     void setZero()
     {
-		_cpu.regs().status_register().write_zero_flag(true);
+		_cpu.regs().app_status_register().write_zero_flag(true);
     }
 
     void clearZero()
     {
-		_cpu.regs().status_register().write_zero_flag(false);
+		_cpu.regs().app_status_register().write_zero_flag(false);
     }
 
     void setNegative()
     {
-		_cpu.regs().status_register().write_neg_flag(true);
+		_cpu.regs().app_status_register().write_neg_flag(true);
     }
 
     void clearNegative()
     {
-		_cpu.regs().status_register().write_neg_flag(false);
+		_cpu.regs().app_status_register().write_neg_flag(false);
     }
 
     void setOverflow()
     {
-		_cpu.regs().status_register().write_overflow_flag(true);
+		_cpu.regs().app_status_register().write_overflow_flag(true);
     }
 
     void clearOverflow()
     {
-		_cpu.regs().status_register().write_overflow_flag(false);
+		_cpu.regs().app_status_register().write_overflow_flag(false);
     }
 
     void setIPSR(uint32_t ipsr)

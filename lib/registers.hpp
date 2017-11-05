@@ -9,7 +9,7 @@
 #include "register.hpp"
 #include "exec_mode_reg.hpp"
 #include "exception_vector.hpp"
-#include "apsr_register.hpp"
+#include "apsr_reg.hpp"
 #include "ipsr_reg.hpp"
 #include "epsr_reg.hpp"
 
@@ -18,7 +18,7 @@ struct registers {
 
 	registers(exception_vector::bitref_t& hardfault_signal)
 		: _xpsr_register(0)
-		, _status_register(_xpsr_register)
+		, _app_status_register(_xpsr_register)
 		, _interrupt_status_register(_xpsr_register)
 		, _execution_status_register(_xpsr_register)
 		, _sp(_exec_mode_register, _control_register)
@@ -43,7 +43,7 @@ struct registers {
 		precond(i < NUM_REGS, "register index too large %zu", i);
 
 		if(i < NUM_GP_REGS) {
-			return _gp_registers[i];
+			return _gen_pupose_registers[i];
 		} else if(i == SP) {
 			return _sp;
 		} else if(i == LR) {
@@ -62,7 +62,7 @@ struct registers {
 		precond(i < NUM_REGS, "register index too large");
 
 		if(i < NUM_GP_REGS) {
-			_gp_registers[i] = val;
+			_gen_pupose_registers[i] = val;
 		} else if(i == SP) {
 			_sp = val;
 		} else if(i == LR) {
@@ -146,12 +146,12 @@ struct registers {
 		return _exec_mode_register;
 	}
 
-	apsr_register& status_register() {
-		return _status_register;
+	apsr_reg& app_status_register() {
+		return _app_status_register;
 	}
 
-	const apsr_register& status_register() const {
-		return _status_register;
+	const apsr_reg& app_status_register() const {
+		return _app_status_register;
 	}
 
 	ipsr_reg& interrupt_status_register() {
@@ -180,11 +180,11 @@ struct registers {
 
 private:
 
-	standard_reg 	_gp_registers[13];
+	standard_reg 	_gen_pupose_registers[13];
 	control_reg 	_control_register;
 	exec_mode_reg 	_exec_mode_register;
 	word 			_xpsr_register;
-	apsr_register 	_status_register;
+	apsr_reg 		_app_status_register;
 	ipsr_reg 		_interrupt_status_register;
 	epsr_reg		_execution_status_register;
 	sp_reg 			_sp;
