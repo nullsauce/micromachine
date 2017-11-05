@@ -14,8 +14,8 @@ and/or distributed without the express permission of MindMaze SA.
 #include "exec.hpp"
 #include "exception_vector.hpp"
 #include "memory.hpp"
-#include "registers.hpp"
-#include "apsr_reg.hpp"
+#include "registers/registers.hpp"
+#include "registers/apsr_reg.hpp"
 
 class exec_dispatcher : public dispatcher {
 public:

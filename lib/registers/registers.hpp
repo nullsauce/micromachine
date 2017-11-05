@@ -6,12 +6,16 @@
 #define MICROMACHINE_REGISTER_TYPES_HPP
 
 
-#include "register.hpp"
-#include "exec_mode_reg.hpp"
+
 #include "exception_vector.hpp"
-#include "apsr_reg.hpp"
-#include "ipsr_reg.hpp"
-#include "epsr_reg.hpp"
+#include "registers/exec_mode_reg.hpp"
+#include "registers/control_reg.hpp"
+#include "registers/standard_reg.hpp"
+#include "registers/sp_reg.hpp"
+#include "registers/pc_reg.hpp"
+#include "registers/apsr_reg.hpp"
+#include "registers/ipsr_reg.hpp"
+#include "registers/epsr_reg.hpp"
 
 
 struct registers {

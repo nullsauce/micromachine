@@ -9,7 +9,7 @@
 #include <string>
 #include <sstream>
 #include "types.hpp"
-#include "register.hpp"
+#include "registers/registers.hpp"
 #include "string_format.hpp"
 
 struct standard_rd_rm_imm5 {

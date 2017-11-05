@@ -19,21 +19,25 @@ set(HEADER_FILES
     lib/precond.hpp
     lib/exec.hpp
     lib/alu.hpp
-    lib/register.hpp
-    lib/registers.hpp
-    lib/xpsr_reg.hpp
-    lib/apsr_reg.hpp
-    lib/ipsr_reg.hpp
-    lib/epsr_reg.hpp
+    lib/registers/registers.hpp
+    lib/registers/xpsr_reg.hpp
+    lib/registers/apsr_reg.hpp
+    lib/registers/ipsr_reg.hpp
+    lib/registers/epsr_reg.hpp
+    lib/registers/exec_mode_reg.hpp
+    lib/registers/ireg.hpp
+    lib/registers/pc_reg.hpp
+    lib/registers/sp_reg.hpp
+    lib/registers/standard_reg.hpp
+    lib/registers/control_reg.hpp
     lib/memory.hpp
     lib/cpu.hpp
-    lib/exec_mode_reg.hpp
-    lib/exec_mode_reg.cpp
     lib/exception_vector.hpp
     lib/exception.hpp
     lib/string_format.hpp
     lib/exec_dispatcher.hpp
-    lib/dispatcher.hpp)
+    lib/dispatcher.hpp
+)
 
 add_executable(micromachine ${HEADER_FILES} ${SOURCE_FILES})
 
