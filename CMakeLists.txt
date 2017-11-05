@@ -13,6 +13,7 @@ set(SOURCE_FILES
 set(HEADER_FILES
     lib/binops.hpp
     lib/types.hpp
+    lib/instruction_pair.hpp
     lib/integer_type.hpp
     lib/instructions.hpp
     lib/precond.hpp
@@ -20,16 +21,19 @@ set(HEADER_FILES
     lib/alu.hpp
     lib/register.hpp
     lib/registers.hpp
-    lib/apsr_register.hpp
+    lib/xpsr_reg.hpp
+    lib/apsr_reg.hpp
+    lib/ipsr_reg.hpp
+    lib/epsr_reg.hpp
     lib/memory.hpp
     lib/cpu.hpp
-		lib/exec_mode_reg.hpp
-		lib/exec_mode_reg.cpp
+    lib/exec_mode_reg.hpp
+    lib/exec_mode_reg.cpp
     lib/exception_vector.hpp
     lib/exception.hpp
-	lib/string_format.hpp
-	lib/exec_dispatcher.hpp
-	lib/dispatcher.hpp)
+    lib/string_format.hpp
+    lib/exec_dispatcher.hpp
+    lib/dispatcher.hpp)
 
 add_executable(micromachine ${HEADER_FILES} ${SOURCE_FILES})
 
