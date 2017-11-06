@@ -1,7 +1,3 @@
-// @mindmaze_header@
-// Created by roth on 04.05.17.
-//
-
 #include <gtest/gtest.h>
 #include <assert.h>
 
