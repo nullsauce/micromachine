@@ -1,7 +1,3 @@
-// @mindmaze_header@
-// Created by roth on 04.05.17.
-//
-
 #ifndef MICROMACHINE_BINOPS_HPP
 #define MICROMACHINE_BINOPS_HPP
 
