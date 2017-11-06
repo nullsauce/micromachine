@@ -7,8 +7,10 @@
 
 
 #include "binops.hpp"
+#include "bitslice.hpp"
 #include <string>
 #include <type_traits>
+#include <iostream>
 
 template <typename bits_type>
 class integer_type {
@@ -18,11 +20,16 @@ public:
 
 	using bits_t 	= bits_type;
 	using sbits_t 	= typename std::make_signed<bits_t>::type;
-
+	using u_type 	= integer_type<bits_type>;
 	integer_type() : _val(0) {}
 
 	integer_type(bits_t v)
 			: _val(to_host_order(v))
+	{}
+
+	template <size_t slice_offset, size_t slice_len>
+	integer_type(const bitslice<u_type, slice_offset, slice_len>& bits)
+			: _val((u_type)bits)
 	{}
 
 	operator bits_t() const {
@@ -54,12 +61,15 @@ public:
 	}
 
 	void write_bits(size_t dst_offset, size_t src_offset, integer_type<bits_t> src, size_t num_bits) {
-		auto all_ones   = binops::make_mask<sizeof(bits_t)>();
 		auto to_place 	= binops::rlshift(src, src_offset, dst_offset);
-		//auto mask 		= binops::rlshift(all_ones, src_offset, dst_offset);
 		auto mask = binops::make_mask<bits_t>(num_bits) << dst_offset;
 		_val = (_val & (~mask)) | to_place;
 	}
+
+	template<size_t offset, size_t len>
+	bitslice<u_type, offset, len> bits() {
+		return bitslice<u_type, offset, len>(*this);
+	};
 
 	bool bit(size_t offset) const {
 		return binops::get_bit<bits_t>(*this, offset);

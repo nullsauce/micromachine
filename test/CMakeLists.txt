@@ -24,6 +24,7 @@ macro(declare_test test_name test_files)
     add_test(all_tests ${test_name})
 endmacro()
 
+declare_test(bits_tests bits_tests.cpp)
 declare_test(integer_tests integer_tests.cpp)
 declare_test(alu_tests alu_tests.cpp)
 declare_test(cpu_tests cpu_tests.cpp)
