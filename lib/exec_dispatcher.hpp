@@ -25,6 +25,16 @@ private:
 	memory& _mem;
 	exception_vector _exceptions;
 
+	void invalid_instruction(const halfword& instr) override {
+		(void)instr;
+		signal_exception(exception::HARDFAULT);
+	}
+
+	void invalid_instruction(const instruction_pair& instr) override {
+		(void)instr;
+		signal_exception(exception::HARDFAULT);
+	}
+
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
 	void dispatch(const nop& instruction) override {
 	
@@ -209,6 +219,9 @@ private:
 	void dispatch(const push& instruction) override {
 		exec(push(instruction), _regs, _mem);
 	}
+	void dispatch(const cps& instruction) override {
+		exec(cps(instruction), _regs);
+	}
 	void dispatch(const pop& instruction) override {
 		exec(pop(instruction), _regs, _mem);
 	}
@@ -246,7 +259,15 @@ private:
 	void dispatch(const svc& instruction) override {
 		exec(svc(instruction));
 	}
-
+	void dispatch(const udf& instr) override {
+		(void)instr;
+		// undefined instruction
+		signal_exception(exception::HARDFAULT);
+	}
+	void dispatch(const udfw& instr) override {
+		// undefined instruction
+		signal_exception(exception::HARDFAULT);
+	}
 };
 
 #endif //MICROMACHINE_INTRUCTION_DISPATCHER_HPP

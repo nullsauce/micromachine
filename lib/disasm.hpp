@@ -8,19 +8,22 @@ class disasm : public dispatcher {
 
 public:
 
-	static std::string disassemble_instruction(const instruction_pair& instr) {
+	static std::string disassemble_instruction(const instruction_pair& instr, word address) {
 		exception_vector dummy;
-		disasm d(dummy);
+		disasm d(dummy, address);
 		d.dispatch_instruction(instr);
 		return d.instruction_string;
 	}
 
 private:
 
-	disasm(exception_vector& exception_vector)
+	disasm(exception_vector& exception_vector, size_t address)
 	 : dispatcher(exception_vector)
-	 , instruction_string(128, '\0') {
-	 }
+	 , instruction_string(128, '\0')
+	 , _addr(address) {
+	}
+
+	word _addr;
 
 	std::string instruction_string;
 
@@ -33,25 +36,42 @@ private:
 		write(string_format(format, std::forward<Args>(args)...));
 	}
 
-	static std::string reg_list_str(const register_list_t& reg_list) {
-		std::stringstream ss;
-		const reg_idx end = registers::NUM_REGS-1;
-		for(reg_idx rid = 0; rid < end; rid++) {
-			if(binops::get_bit(reg_list, rid)) {
-				ss << "r" << rid;
-				if(rid < end-1)
-					ss << ", ";
-			}
-		}
-		return ss.str();
+	const char* const reg_names[16] = {
+		"r0","r1","r2","r3",
+		"r4","r5","r6","r7",
+		"r8","r9","r10","r11",
+		"r12","sp","lr","pc"
+	};
+
+	const char* R(size_t i) {
+		return reg_names[i];
 	}
 
-	static const char* condition_string(uint8_t condition) {
+	std::string join(const std::vector<std::string>& strings, const char* delim = ", ") {
+		return std::accumulate(std::begin(strings), std::end(strings), std::string(), [=](const std::string &l, const std::string &r) {
+			return l.empty() ? r : l + delim + r;
+		});
+	}
+
+	std::string reg_list_str(const register_list_t& reg_list) {
+		std::stringstream ss;
+		std::vector<std::string> register_names;
+		register_names.reserve(16);
+		const reg_idx end = registers::NUM_REGS;
+		for(reg_idx rid = 0; rid < end; rid++) {
+			if(binops::get_bit(reg_list, rid)) {
+				register_names.emplace_back(reg_names[rid]);
+			}
+		}
+		return join(register_names, ", ");
+	}
+
+	const char* condition_string(uint8_t condition) {
 		static const char* cond_names = "eqnecsccmiplvsvchilsgeltgtle";
 		return cond_names + (condition * 2U);
 	}
 
-	static std::string special_register(special_reg_instr::SpecialRegister sr) {
+	std::string special_register(special_reg_instr::SpecialRegister sr) {
 		switch(sr) {
 			case msr::SpecialRegister::APSR: 	return "apsr";
 			case msr::SpecialRegister::IAPSR: 	return "iapsr";
@@ -68,8 +88,16 @@ private:
 		}
 	}
 
-	static std::string special_register(uint8_t val) {
+	std::string special_register(uint8_t val) {
 		return special_register((special_reg_instr::SpecialRegister)val);
+	}
+
+	void invalid_instruction(const halfword& instr) override {
+		format("<UNDEFINED> instruction: 0x%04x", (uint16_t)instr);
+	}
+
+	void invalid_instruction(const instruction_pair& instr) override {
+		format("<UNDEFINED> instruction: 0x%08x", instr.first << 16 | instr.second);
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
@@ -78,229 +106,254 @@ private:
 	}
 
 	void dispatch(const lsl_imm& instruction) override {
-		format("lsls r%d, r%d, #%d", instruction.rd, instruction.rm, instruction.imm5);
+		format("lsls %s, %s, #%d", R(instruction.rd), R(instruction.rm), instruction.imm5);
 	}
 	void dispatch(const lsr_imm& instruction) override {
-		format("lsrs r%d, r%d, #%d", instruction.rd, instruction.rm, instruction.imm5);
+		format("lsrs %s, %s, #%d", R(instruction.rd), R(instruction.rm), instruction.imm5);
 	}
 	void dispatch(const asr_imm& instruction) override {
-		format("asrs r%d, r%d #%d", instruction.rd, instruction.rm, instruction.imm5);
+		format("asrs %s, %s, #%d", R(instruction.rd), R(instruction.rm), instruction.imm5);
 	}
 	void dispatch(const add_reg& instruction) override {
-		format("adds r%d, r%d, r%d", instruction.rd, instruction.rn, instruction.rm);
+		format("adds %s, %s, %s", R(instruction.rd), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const subs_reg& instruction) override {
-		format("subs r%d, r%d, r%d", instruction.rd, instruction.rn, instruction.rm);
+		format("subs %s, %s, %s", R(instruction.rd), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const add_imm& instruction) override {
-		format("adds r%d, r%d, #%d", instruction.rd, instruction.rn, instruction.imm3);
+		format("adds %s, %s, #%d", R(instruction.rd), R(instruction.rn), instruction.imm3);
 	}
 	void dispatch(const subs_imm& instruction) override {
-		format("subs r%d, r%d, #%d", instruction.rd, instruction.rn, instruction.imm3);
+		format("subs %s, %s, #%d", R(instruction.rd), R(instruction.rn), instruction.imm3);
 	}
 	void dispatch(const mov_imm& instruction) override {
-		format("movs r%d, #%x", instruction.rd, instruction.imm8);
+		format("movs %s, #%d", R(instruction.rd), instruction.imm8);
 	}
 	void dispatch(const movs& instruction) override {
-		format("movs r%d, r%d", instruction.rd, instruction.rm);
+		format("movs %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const cmp_imm& instruction) override {
-		format("cmp r%d, #%x", instruction.rn, instruction.imm8);
+		format("cmp %s, #%d", R(instruction.rn), instruction.imm8);
 	}
 	void dispatch(const add_imm_t2& instruction) override {
-		format("adds r%d, #%x", instruction.rdn, instruction.imm8);
+		format("adds %s, #%d", R(instruction.rdn), instruction.imm8);
 	}
 	void dispatch(const subs_imm8& instruction) override {
-		format("subs r%d, #%x", instruction.rdn, instruction.imm8);
+		format("subs %s, #%d", R(instruction.rdn), instruction.imm8);
 	}
 	void dispatch(const and_reg& instruction) override {
-		format("ands r%d, r%d", instruction.rdn, instruction.rm);
+		format("ands %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const eor_reg& instruction) override {
-		format("eors r%d, r%d", instruction.rdn, instruction.rm);
+		format("eors %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const lsl_reg& instruction) override {
-		format("lsls r%d, r%d", instruction.rdn, instruction.rm);
+		format("lsls %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const lsr_reg& instruction) override {
-		format("lsrs r%d, r%d", instruction.rdn, instruction.rm);
+		format("lsrs %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const asr_reg& instruction) override {
-		format("asrs r%d, r%d", instruction.rdn, instruction.rm);
+		format("asrs %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const adc& instruction) override {
-		format("adcs r%d, r%d", instruction.rdn, instruction.rm);
+		format("adcs %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const sbc& instruction) override {
-		format("sbcs r%d, r%d", instruction.rdn, instruction.rm);
+		format("sbcs %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const ror_reg& instruction) override {
-		format("rors r%d, r%d", instruction.rdn, instruction.rm);
+		format("rors %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const tst_reg& instruction) override {
-		format("test r%d, r%d", instruction.rn, instruction.rm);
+		format("tst %s, %s", R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const rsb_imm& instruction) override {
-		format("rsbs r%d, r%d, #0", instruction.rd, instruction.rn);
+		format("rsbs %s, %s, #0", R(instruction.rd), R(instruction.rn));
 	}
 	void dispatch(const cmp_reg& instruction) override {
-		format("cmp r%d, r%d", instruction.rn, instruction.rm);
+		format("cmp %s, %s", R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const cmn_reg& instruction) override {
-		format("cmn r%d, r%d", instruction.rn, instruction.rm);
+		format("cmn %s, %s", R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const orr_reg& instruction) override {
-		format("orrs r%d, r%d", instruction.rdn, instruction.rm);
+		format("orrs %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const mul_reg& instruction) override {
-		format("muls r%d, r%d, r%d", instruction.rdm, instruction.rn, instruction.rdm);
+		format("muls %s, %s", R(instruction.rdm), R(instruction.rn));
 	}
 	void dispatch(const bic_reg& instruction) override {
-		format("bics r%d, r%d", instruction.rdn, instruction.rm);
+		format("bics %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
 	void dispatch(const not_reg& instruction) override {
-		format("mvns r%d, r%d", instruction.rd, instruction.rm);
+		format("mvns %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const add_highreg& instruction) override {
 		// variants of add SP plus register
 		if(instruction.dm && instruction.high_rm() == 13) {
-			format("add r%d, sp, r%d", instruction.rdn);
+			format("add %s, sp, %s", R(instruction.rdn));
 		} else if(instruction.high_rd() == 13) {
-			format("add sp, r%d", instruction.high_rm());
+			format("add sp, %s", R(instruction.high_rm()));
 		} else {
-			format("add r%d, r%d", instruction.high_rd(), instruction.high_rm());
+			format("add %s, %s", R(instruction.high_rd()), R(instruction.high_rm()));
 		}
 	}
 	void dispatch(const cmp_highreg& instruction) override {
-		format("cmp r%d, r%d\n", instruction.high_rn(), instruction.high_rm());
+		format("cmp %s, %s", R(instruction.high_rn()), R(instruction.high_rm()));
 	}
 	void dispatch(const mov_highreg& instruction) override {
-		format("mov r%d, r%d", instruction.high_rd(), instruction.high_rm());
+		format("mov %s, %s", R(instruction.high_rd()), R(instruction.high_rm()));
 	}
 	void dispatch(const bx& instruction) override {
-		format("bx %d", instruction.rm);
+		format("bx %d", R(instruction.rm));
 	}
 	void dispatch(const blx& instruction) override {
-		format("blx %d", instruction.rm);
+		format("blx %s", R(instruction.rm));
 	}
 	void dispatch(const ldr_literal& instruction) override {
-		format("ldr r%d, [pc, #%x]", instruction.rt, instruction.imm32(), instruction.imm32());
+		// normal syntax
+		//format("ldr %s, %x", R(instruction.rt), instruction.imm32()+_addr);
+		// alternative syntax
+		format("ldr %s, [pc, #%d]", R(instruction.rt), instruction.imm32());
 	}
 	void dispatch(const str_reg& instruction) override {
-		format("str r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("str %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const strh_reg& instruction) override {
-		format("strh r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("strh %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const strb_reg& instruction) override {
-		format("strb r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("strb %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const ldrsb_reg& instruction) override {
-		format("ldrsb r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("ldrsb %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const ldr_reg& instruction) override {
-		format("ldr r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("ldr %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const ldrh_reg& instruction) override {
-		format("ldrh r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("ldrh %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const ldrb_reg& instruction) override {
-		format("ldrb r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("ldrb %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const ldrsh_reg& instruction) override {
-		format("ldrsh r%d, [r%d, r%d]", instruction.rt, instruction.rn, instruction.rm);
+		format("ldrsh %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const str_imm& instruction) override {
-		format("str r%d, [r%d, #%x]", instruction.rt, instruction.rn, instruction.imm5);
+		format("str %s, [%s, #%d]", R(instruction.rt), R(instruction.rn), instruction.imm32());
 	}
 	void dispatch(const ldr_imm& instruction) override {
-		format("str r%d, [r%d, #%x]", instruction.rt, instruction.rn, instruction.imm5);
+		format("ldr %s, [%s, #%d]", R(instruction.rt), R(instruction.rn), instruction.imm32());
 	}
 	void dispatch(const strb_imm& instruction) override {
-		format("strb r%d, [r%d, #%x]", instruction.rt, instruction.rn, instruction.imm5);
+		format("strb %s, [%s, #%d]", R(instruction.rt), R(instruction.rn), instruction.imm5);
 	}
 	void dispatch(const ldrb_imm& instruction) override {
-		format("ldrb r%d, [r%d, #%x]", instruction.rt, instruction.rn, instruction.imm5);
+		format("ldrb %s, [%s, #%d]", R(instruction.rt), R(instruction.rn), instruction.imm5);
 	}
 	void dispatch(const strh_imm& instruction) override {
-		format("strh r%d, [r%d, #%x]", instruction.rt, instruction.rn, instruction.imm5);
+		format("strh %s, [%s, #%d]", R(instruction.rt), R(instruction.rn), instruction.imm32());
 	}
 	void dispatch(const ldrh_imm& instruction) override {
-		format("ldrh r%d, [r%d, #%x]", instruction.rt, instruction.rn, instruction.imm5);
+		format("ldrh %s, [%s, #%d]", R(instruction.rt), R(instruction.rn), instruction.imm32());
 	}
 	void dispatch(const str_sp_imm& instruction) override {
-		format("str r%d, [sp, #%x]", instruction.rt, instruction.imm8);
+		format("str %s, [sp, #%d]", R(instruction.rt), instruction.imm32());
 	}
 	void dispatch(const ldr_sp_imm& instruction) override {
-		format("ldr r%d, [sp, #%x]", instruction.rt, instruction.imm8);
+		format("ldr %s, [sp, #%d]", R(instruction.rt), instruction.imm32());
 	}
 	void dispatch(const adr& instruction) override {
-		format("adr r%d, #%x", instruction.rd, instruction.imm32());
+		// normal syntax
+		//format("adr %s, #%d", R(instruction.rd), instruction.imm32());
+
+		// alternate syntax
+		format("add %s, pc, #%d", R(instruction.rd), instruction.imm32());
 	}
 	void dispatch(const add_sp_imm& instruction) override {
-		format("add r%d, sp, #%x", instruction.rd, instruction.imm32());
+		format("add %s, sp, #%d", R(instruction.rd), instruction.imm32());
 	}
 	void dispatch(const add_sp_imm_t2& instruction) override {
-		format("add sp, sp, #%x", instruction.imm32());
+		format("add sp, #%d", instruction.imm32());
 	}
 	void dispatch(const sub_sp_imm& instruction) override {
-		format("sub sp, sp, #%x", instruction.imm7);
+		format("sub sp, sp, #%d", instruction.imm7);
 	}
 	void dispatch(const sxth& instruction) override {
-		format("sxth r%d, r%d", instruction.rd, instruction.rm);
+		format("sxth %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const sxtb& instruction) override {
-		format("sxtb r%d, r%d", instruction.rd, instruction.rm);
+		format("sxtb %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const uxth& instruction) override {
-		format("uxth r%d, r%d", instruction.rd, instruction.rm);
+		format("uxth %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const uxtb& instruction) override {
-		format("uxtb r%d, r%d", instruction.rd, instruction.rm);
+		format("uxtb %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const push& instruction) override {
 		format("push {%s}", reg_list_str(instruction.register_list).c_str());
+	}
+	void dispatch(const cps& instruction) override {
+		format("cps%s i", instruction.im ? "id" : "ie");
 	}
 	void dispatch(const pop& instruction) override {
 		format("pop {%s}", reg_list_str(instruction.register_list).c_str());
 	}
 	void dispatch(const rev_word& instruction) override {
-		format("rev r%d, r%d", instruction.rd, instruction.rm);
+		format("rev %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const rev16& instruction) override {
-		format("rev16 r%d, r%d", instruction.rd, instruction.rm);
+		format("rev16 %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const revsh& instruction) override {
-		format("revsh r%d, r%d", instruction.rd, instruction.rm);
+		format("revsh %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const branch& instruction) override {
-		format("b%2.2s.n 0x%x", condition_string(instruction.cond), instruction.offset());
+		int32_t offset = instruction.offset();
+		uint32_t label = (_addr + 4) + offset;
+		format("b%2.2s.n 0x%x", condition_string(instruction.cond), label);
 	}
 	void dispatch(const unconditional_branch& instruction) override {
-		format("b %c%i", (instruction.offset() >= 0 ? '+' : ' '), instruction.offset());
+		int32_t offset = instruction.offset();
+		uint32_t label = (_addr + 4) + offset;
+		format("b.n 0x%x", label);
 	}
 	void dispatch(const stm& instruction) override {
-		format("stm! r%d {%s}", instruction.rn, reg_list_str(instruction.register_list).c_str());
+		format("stmia %s!, {%s}"
+			, R(instruction.rn)
+			, reg_list_str(instruction.register_list).c_str()
+		);
 	}
 	void dispatch(const ldm& instruction) override {
 		bool list_contains_rn = binops::get_bit(instruction.register_list, instruction.rn);
-		format("ldm r%d%s, {%s}"
-			, instruction.rn
-			, list_contains_rn ? "!" : ""
+		format("ldmia %s%s, {%s}"
+			, R(instruction.rn)
+			, list_contains_rn ? "" : "!"
 			, reg_list_str(instruction.register_list).c_str()
 		);
 	}
 	void dispatch(const mrs& instruction) override {
-		format("mrs r%d, %s", instruction.rd, special_register(instruction.sysn));
+		format("mrs %s, %s", R(instruction.rd), special_register(instruction.sysn));
 	}
 	void dispatch(const msr& instruction) override {
-		format("mrs %s, r%d", special_register(instruction.sysn), instruction.rn);
+		format("mrs %s, %s", special_register(instruction.sysn), R(instruction.rn));
 	}
 	void dispatch(const bl_imm& instruction) override {
-		format("bl #%x", instruction.offset());
+		int32_t offset = instruction.offset();
+		uint32_t label = (_addr + 4) + offset;
+		format("bl 0x%x", label);
 	}
 	void dispatch(const svc& instruction) override {
-		format("svc #%x", instruction.imm8);
+		format("svc %d", instruction.imm8);
+	}
+	void dispatch(const udf& instr) override {
+		format("udf #%d", instr.imm32);
+	}
+	void dispatch(const udfw& instr) override {
+		format("udf.w #%d", instr.imm32);
 	}
 };
 

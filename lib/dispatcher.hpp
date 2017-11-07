@@ -379,8 +379,9 @@ namespace {
 	}
 
 	static bool is_32bit_thumb_bl(const instruction_pair& instr) {
+		auto op2 = instr.second.uint(12, 3) & 0b101;
 		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b101 	== (instr.second.uint(12, 3) & 0b101);
+			 0b101 	== op2 ;
 	}
 
 	static bool is_undefined(const halfword& instr) {
@@ -561,8 +562,7 @@ public:
 		} else if(is_push(instr)) {
 			dispatch(push(instr));
 		} else if(is_cps(instr)) {
-			//TODO: cps
-			fprintf(stderr, "CPS is unimplemented\n");
+			dispatch(cps(instr));
 		} else if(is_rev_word(instr)) {
 			dispatch(rev_word(instr));
 		} else if(is_rev16(instr)) {
@@ -601,7 +601,7 @@ public:
 		} else if(is_32bit_thumb_encoding(instr)) {
 
 			if(is_undefined32(instruction_pair)) {
-				signal_exception(exception::HARDFAULT);
+				dispatch(udfw(instruction_pair));
 			} else if(is_32bit_thumb_br_misc_ctl(instruction_pair)) {
 
 				if(is_32bit_thumb_msr(instruction_pair)) {
@@ -614,22 +614,25 @@ public:
 					dispatch(bl_imm(instruction_pair));
 				} else {
 					fprintf(stderr, "unimplemented 32bit misc br and ctrl instruction\n");
+					invalid_instruction(instruction_pair);
 				}
 			} else {
 				fprintf(stderr, "undefined 32bit instruction\n");
-				signal_exception(exception::HARDFAULT);
+				invalid_instruction(instruction_pair);
 			}
 
 		} else if(is_undefined(instr)) {
-			signal_exception(exception::HARDFAULT);
+			dispatch(udf(instr));
 		} else {
 			fprintf(stderr, "unhandled instruction %04X\n", (uint32_t)instr);
 			fprintf(stderr, "unimplemented\n");
+			invalid_instruction(instr);
 		}
 	}
 
 private:
-
+	virtual void invalid_instruction(const halfword& instr) = 0;
+	virtual void invalid_instruction(const instruction_pair& instr) = 0;
 	virtual void dispatch(const nop& instruction) = 0;
 	virtual void dispatch(const lsl_imm& instruction) = 0;
 	virtual void dispatch(const lsr_imm& instruction) = 0;
@@ -690,6 +693,7 @@ private:
 	virtual void dispatch(const uxth& instruction) = 0;
 	virtual void dispatch(const uxtb& instruction) = 0;
 	virtual void dispatch(const push& instruction) = 0;
+	virtual void dispatch(const cps& instruction) = 0;
 	virtual void dispatch(const pop& instruction) = 0;
 	virtual void dispatch(const rev_word& instruction) = 0;
 	virtual void dispatch(const rev16& instruction) = 0;
@@ -702,6 +706,8 @@ private:
 	virtual void dispatch(const msr& instruction) = 0;
 	virtual void dispatch(const bl_imm& instruction) = 0;
 	virtual void dispatch(const svc& instruction) = 0;
+	virtual void dispatch(const udf& instr) = 0;
+	virtual void dispatch(const udfw& instr) = 0;
 };
 
 
