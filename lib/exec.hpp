@@ -750,6 +750,10 @@ static void exec(const push& instruction, registers& regs, memory& mem) {
 	regs.set_sp(start_address);
 }
 
+static void exec(const cps& instruction, registers& regs) {
+	regs.primask_register().set_bit(0, instruction.im);
+}
+
 static void exec(const pop& instruction, registers& regs, memory& mem) {
 	precond(instruction.pop_count() > 0, "must push at least one register");
 	const uint32_t frame_start = regs.get_sp(); // sp
@@ -886,7 +890,7 @@ static void exec(const mrs& instruction, registers& regs, apsr_reg& apsr) {
 		case 0b00010: {
 			switch(instruction.sysn.uint(0, 3)) {
 				case 000: {
-					// TODO: MRS SpecialRegister::PRIMASK
+					val = regs.primask_register().bit(0);
 				} break;
 				case 001: {
 					val.write_bits(0, 0, regs.control_register(), 2);
@@ -903,7 +907,6 @@ static void exec(const msr& instruction, registers& regs, apsr_reg& apsr) {
 		case msr::SpecialRegister::IAPSR:
 		case msr::SpecialRegister::EAPSR:
 		case msr::SpecialRegister::XPSR: {
-			// TODO: Write a word.copy_bits
 			apsr.copy_bits(regs.get(instruction.rn).uint(0, 5));
 		} break;
 		case msr::SpecialRegister::MSP: {
@@ -918,7 +921,8 @@ static void exec(const msr& instruction, registers& regs, apsr_reg& apsr) {
 		} break;
 		case msr::SpecialRegister::PRIMASK: {
 			// TODO: MSR SpecialRegister::PRIMASK
-			//regs.control_register().n_priv()
+			regs.primask_register().set_bit(0, regs.get(instruction.rn).bit(0));
+
 		} break;
 		case msr::SpecialRegister::CONTROL: {
 			if(regs.exec_mode_register().is_thread_mode()) {

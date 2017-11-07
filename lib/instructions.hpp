@@ -424,8 +424,8 @@ struct add_imm_t2 : public standard_imm8_rdn {
 
 };
 
-struct add_reg : public standard_rd_rm_rn {
-	using standard_rd_rm_rn::standard_rd_rm_rn;
+struct add_reg : public standard_rd_rn_rm {
+	using standard_rd_rn_rm::standard_rd_rn_rm;
 
 };
 
@@ -725,6 +725,10 @@ struct ldrsh_reg : public standard_rt_rn_rm {
 
 struct str_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
+	// encoding t1
+	uint32_t imm32() const {
+		return imm5 << 2;
+	}
 };
 
 struct strb_imm : public standard_rt_rn_imm5 {
@@ -737,15 +741,25 @@ struct ldrb_imm : public standard_rt_rn_imm5 {
 
 struct strh_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
+	uint32_t imm32() const {
+		return imm5 << 1;
+	}
 };
 
 struct ldrh_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
+	uint32_t imm32() const {
+		return imm5 << 1;
+	}
 };
 
 struct str_sp_imm : public standard_imm8_rt {
 	// T2 encoding of str (immediate)
 	using standard_imm8_rt::standard_imm8_rt;
+
+	uint32_t imm32() const {
+		return imm8 << 2;
+	}
 };
 
 struct sub_sp_imm : public standard_imm7 {
@@ -831,4 +845,27 @@ struct mrs : special_reg_instr{
 	const byte sysn;
 };
 
+
+struct udf {
+	udf(const halfword& instruction)
+		: imm32(instruction.uint(0, 8)) {
+	}
+	const uint32_t imm32;
+};
+
+struct udfw {
+	udfw(const instruction_pair& instr)
+		: imm32(
+			(instr.first.uint(0, 4) << 12) |
+			(instr.second.uint(0, 12))
+		){
+	}
+	const uint32_t imm32;
+};
+
+struct cps {
+	cps(halfword instruction)
+	 : im(instruction.bit(4)){}
+	const bool im;
+};
 #endif //THUMBEMU_INSTRUCTIONS_HPP

@@ -174,6 +174,14 @@ struct registers {
 		return _execution_status_register;
 	}
 
+	word& primask_register() {
+		return _primask_register;
+	}
+
+	const word& primask_register() const {
+		return _primask_register;
+	}
+
 	word& xpsr_register() {
 		return _xpsr_register;
 	}
@@ -191,6 +199,7 @@ private:
 	apsr_reg 		_app_status_register;
 	ipsr_reg 		_interrupt_status_register;
 	epsr_reg		_execution_status_register;
+	word 			_primask_register;
 	sp_reg 			_sp;
 	standard_reg 	_lr;
 	pc_reg 			_pc;

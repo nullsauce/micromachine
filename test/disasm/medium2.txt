@@ -1,0 +1,433 @@
+   0: 79af       ldrb r7, [r5, #6]
+   2: 7341       strb r1, [r0, #13]
+   4: 759a       strb r2, [r3, #22]
+   6: cbfa       ldmia r3, {r1, r3, r4, r5, r6, r7}
+   8: 68c7       ldr r7, [r0, #12]
+   a: 1bc5       subs r5, r0, r7
+   c: 2270       movs r2, #112
+   e: d6db       bvs.n 0xffffffc8
+  10: d760       bvc.n 0xd4
+  12: d08f       beq.n 0xffffff34
+  14: e6b0       b.n 0xfffffd78
+  16: 344b       adds r4, #75
+  1c: 7a57       ldrb r7, [r2, #9]
+  22: 9c64       ldr r4, [sp, #400]
+  24: 621b       str r3, [r3, #32]
+  26: 0845       lsrs r5, r0, #1
+  28: 393d       subs r1, #61
+  2a: 6c46       ldr r6, [r0, #68]
+  2c: 317a       adds r1, #122
+  2e: 0a3a       lsrs r2, r7, #8
+  30: 9061       str r0, [sp, #388]
+  32: b81c       <UNDEFINED> instruction: 0xb81c
+  34: 04ea       lsls r2, r5, #19
+  38: 4abc       ldr r2, [pc, #752]
+  3a: c702       stmia r7!, {r1}
+  3c: 92c7       str r2, [sp, #796]
+  3e: e455       b.n 0xfffff8ec
+  40: 57db       ldrsb r3, [r3, r7]
+  42: 16fa       asrs r2, r7, #27
+  44: ea8c c872  <UNDEFINED> instruction: 0xea8cc872
+  48: e3f5       b.n 0x836
+  4a: 6213       str r3, [r2, #32]
+  4c: eb25 4da4  <UNDEFINED> instruction: 0xeb254da4
+  50: 8c16       ldrh r6, [r2, #32]
+  52: 1bc7       subs r7, r0, r7
+  54: 3c52       subs r4, #82
+  56: a497       add r4, pc, #604
+  58: cc33       ldmia r4, {r0, r1, r4, r5}
+  5a: 76d6       strb r6, [r2, #27]
+  5c: 324e       adds r2, #78
+  62: ae75       add r6, sp, #468
+  64: 9400       str r4, [sp, #0]
+  66: e18b       b.n 0x380
+  68: d898       bhi.n 0xffffff9c
+  6a: 0eb9       lsrs r1, r7, #26
+  6c: 035c       lsls r4, r3, #13
+  6e: 405e       eors r6, r3
+  70: 208c       movs r0, #140
+  72: 028c       lsls r4, r1, #10
+  74: c691       stmia r6!, {r0, r4, r7}
+  76: 8f98       ldrh r0, [r3, #60]
+  78: 6884       ldr r4, [r0, #8]
+  7a: 1b29       subs r1, r5, r4
+  7c: dbb1       blt.n 0xffffffe2
+  7e: 9216       str r2, [sp, #88]
+  80: d97c       bls.n 0x17c
+  82: e232       b.n 0x4ea
+  84: 80e9       strh r1, [r5, #6]
+  8a: b29c       uxth r4, r3
+  8c: 79bc       ldrb r4, [r7, #6]
+  8e: 9fd1       ldr r7, [sp, #836]
+  90: b7e5       <UNDEFINED> instruction: 0xb7e5
+  92: ab6c       add r3, sp, #432
+  94: 3039       adds r0, #57
+  96: 6530       str r0, [r6, #80]
+  98: a0f1       add r0, pc, #964
+  9a: 25ba       movs r5, #186
+  9c: 1a6f       subs r7, r5, r1
+  9e: fb23 d1c4  <UNDEFINED> instruction: 0xfb23d1c4
+  a2: 7d21       ldrb r1, [r4, #20]
+  a4: 04f6       lsls r6, r6, #19
+  a6: 92cb       str r2, [sp, #812]
+  a8: a80c       add r0, sp, #48
+  aa: 7f14       ldrb r4, [r2, #28]
+  ac: 37e0       adds r7, #224
+  ae: daf4       bge.n 0x9a
+  b0: e6b3       b.n 0xfffffe1a
+  b2: 2fca       cmp r7, #202
+  b4: 7ea0       ldrb r0, [r4, #26]
+  b6: b69d       <UNDEFINED> instruction: 0xb69d
+  b8: 3530       adds r5, #48
+  bc: e154       b.n 0x368
+  be: 06ee       lsls r6, r5, #27
+  c0: 43a6       bics r6, r4
+  c2: 0939       lsrs r1, r7, #4
+  c4: 0a8a       lsrs r2, r1, #10
+  c6: 9fb7       ldr r7, [sp, #732]
+  c8: 8a7b       ldrh r3, [r7, #18]
+  ca: 4a21       ldr r2, [pc, #132]
+  cc: 8282       strh r2, [r0, #20]
+  ce: 5bad       ldrh r5, [r5, r6]
+  d0: 2329       movs r3, #41
+  d2: 347f       adds r4, #127
+  d4: b787       <UNDEFINED> instruction: 0xb787
+  d6: 2d47       cmp r5, #71
+  d8: 0c65       lsrs r5, r4, #17
+  da: 5e82       ldrsh r2, [r0, r2]
+  dc: 1861       adds r1, r4, r1
+  e2: 0898       lsrs r0, r3, #2
+  e4: aab1       add r2, sp, #708
+  e6: 7ae4       ldrb r4, [r4, #11]
+  e8: 0319       lsls r1, r3, #12
+  ea: a7d1       add r7, pc, #836
+  ec: 22f1       movs r2, #241
+  ee: 813f       strh r7, [r7, #8]
+  f0: 3ae1       subs r2, #225
+  f2: 6230       str r0, [r6, #32]
+  f4: a850       add r0, sp, #320
+  f6: 1180       asrs r0, r0, #6
+  f8: 4601       mov r1, r0
+  fa: b006       add sp, #24
+  fc: 41b3       sbcs r3, r6
+  fe: 97e2       str r7, [sp, #904]
+ 100: 3c25       subs r4, #37
+ 102: 8815       ldrh r5, [r2, #0]
+ 104: 7b99       ldrb r1, [r3, #14]
+ 106: 32c2       adds r2, #194
+ 108: e429       b.n 0xfffff95e
+ 10a: 0922       lsrs r2, r4, #4
+ 10e: 03a6       lsls r6, r4, #14
+ 110: 5fce       ldrsh r6, [r1, r7]
+ 112: df01       svc 1
+ 114: 7696       strb r6, [r2, #26]
+ 116: afc6       add r7, sp, #792
+ 118: 0118       lsls r0, r3, #4
+ 11a: 0374       lsls r4, r6, #13
+ 11c: 898a       ldrh r2, [r1, #12]
+ 11e: 1d2c       adds r4, r5, #4
+ 124: 7555       strb r5, [r2, #21]
+ 12a: e989 e99b  <UNDEFINED> instruction: 0xe989e99b
+ 12e: 803d       strh r5, [r7, #0]
+ 130: 3e12       subs r6, #18
+ 136: 01e2       lsls r2, r4, #7
+ 138: 03eb       lsls r3, r5, #15
+ 13a: e0af       b.n 0x29c
+ 13c: caa9       ldmia r2!, {r0, r3, r5, r7}
+ 13e: 6b22       ldr r2, [r4, #48]
+ 140: f283 f050  bl 0x6831e4
+ 148: 547e       strb r6, [r7, r1]
+ 14a: 9bf9       ldr r3, [sp, #996]
+ 14c: 76d4       strb r4, [r2, #27]
+ 14e: 4591       cmp r9, r2
+ 150: 6460       str r0, [r4, #68]
+ 152: 6f3e       ldr r6, [r7, #112]
+ 154: e9b6 113e  <UNDEFINED> instruction: 0xe9b6113e
+ 158: eb10 9d49  <UNDEFINED> instruction: 0xeb109d49
+ 15c: d48c       bmi.n 0x78
+ 162: 37d9       adds r7, #217
+ 164: 1406       asrs r6, r0, #16
+ 166: 25a7       movs r5, #167
+ 168: 281b       cmp r0, #27
+ 16a: 709d       strb r5, [r3, #2]
+ 16c: 20ce       movs r0, #206
+ 16e: 0dd2       lsrs r2, r2, #23
+ 170: 907e       str r0, [sp, #504]
+ 172: 2232       movs r2, #50
+ 174: 3511       adds r5, #17
+ 176: 5191       str r1, [r2, r6]
+ 178: 1fae       subs r6, r5, #6
+ 17a: 4309       orrs r1, r1
+ 17c: 6197       str r7, [r2, #24]
+ 17e: 8ffe       ldrh r6, [r7, #62]
+ 180: e817 8252  <UNDEFINED> instruction: 0xe8178252
+ 188: d225       bcs.n 0x1d6
+ 18a: 53cc       strh r4, [r1, r7]
+ 18c: 7108       strb r0, [r1, #4]
+ 18e: cfd6       ldmia r7, {r1, r2, r4, r6, r7}
+ 190: 2dbb       cmp r5, #187
+ 192: e0e6       b.n 0x362
+ 194: 4366       muls r6, r4
+ 196: 0187       lsls r7, r0, #6
+ 198: c442       stmia r4!, {r1, r6}
+ 19a: 69a8       ldr r0, [r5, #24]
+ 19c: cd6f       ldmia r5, {r0, r1, r2, r3, r5, r6}
+ 19e: 6f8b       ldr r3, [r1, #120]
+ 1a0: 303e       adds r0, #62
+ 1a2: 513e       str r6, [r7, r4]
+ 1a4: 7877       ldrb r7, [r6, #1]
+ 1a6: 9bb9       ldr r3, [sp, #740]
+ 1b0: 0f6c       lsrs r4, r5, #29
+ 1b2: 502b       str r3, [r5, r0]
+ 1b8: 9f02       ldr r7, [sp, #8]
+ 1ba: 5907       ldr r7, [r0, r4]
+ 1bc: 4798       blx r3
+ 1be: 1ebf       subs r7, r7, #2
+ 1c0: 6317       str r7, [r2, #48]
+ 1c6: 416c       adcs r4, r5
+ 1c8: c9fc       ldmia r1!, {r2, r3, r4, r5, r6, r7}
+ 1ca: b677       cpsid i
+ 1cc: 0944       lsrs r4, r0, #5
+ 1ce: 830c       strh r4, [r1, #24]
+ 1d0: ce4f       ldmia r6, {r0, r1, r2, r3, r6}
+ 1d2: d11a       bne.n 0x20a
+ 1d4: 1ba0       subs r0, r4, r6
+ 1d6: 8cf7       ldrh r7, [r6, #38]
+ 1d8: 0e86       lsrs r6, r0, #26
+ 1da: 44f5       add sp, lr
+ 1e0: 256e       movs r5, #110
+ 1e2: b51b       push {r0, r1, r3, r4, lr}
+ 1e4: 0504       lsls r4, r0, #20
+ 1e6: 4b49       ldr r3, [pc, #292]
+ 1e8: 7119       strb r1, [r3, #4]
+ 1ea: 1727       asrs r7, r4, #28
+ 1ec: 8dc5       ldrh r5, [r0, #46]
+ 1ee: 7690       strb r0, [r2, #26]
+ 1f0: 53f6       strh r6, [r6, r7]
+ 1f2: 762c       strb r4, [r5, #24]
+ 1f4: 062c       lsls r4, r5, #24
+ 1f6: 679b       str r3, [r3, #120]
+ 1fc: 04ba       lsls r2, r7, #18
+ 1fe: f7d3 5068  <UNDEFINED> instruction: 0xf7d35068
+ 202: 3473       adds r4, #115
+ 204: 4c1f       ldr r4, [pc, #124]
+ 206: ad88       add r5, sp, #544
+ 208: 013c       lsls r4, r7, #4
+ 20a: 6b2a       ldr r2, [r5, #48]
+ 20c: 6637       str r7, [r6, #96]
+ 20e: e786       b.n 0x11e
+ 210: 31f2       adds r1, #242
+ 212: f754 3716  <UNDEFINED> instruction: 0xf7543716
+ 216: 5943       ldr r3, [r0, r5]
+ 218: a95c       add r1, sp, #368
+ 21a: 6d9f       ldr r7, [r3, #88]
+ 21c: 4322       orrs r2, r4
+ 21e: 54d7       strb r7, [r2, r3]
+ 220: bdfb       pop {r0, r1, r3, r4, r5, r6, r7, pc}
+ 222: d423       bmi.n 0x26c
+ 224: 15d3       asrs r3, r2, #23
+ 226: 90af       str r0, [sp, #700]
+ 228: 8004       strh r4, [r0, #0]
+ 22a: 147a       asrs r2, r7, #17
+ 22c: 089a       lsrs r2, r3, #2
+ 22e: 4850       ldr r0, [pc, #320]
+ 234: 4956       ldr r1, [pc, #344]
+ 236: 9a42       ldr r2, [sp, #264]
+ 238: c9c0       ldmia r1!, {r6, r7}
+ 23a: 4199       sbcs r1, r3
+ 23c: a95e       add r1, sp, #376
+ 23e: 5f96       ldrsh r6, [r2, r6]
+ 248: 53cd       strh r5, [r1, r7]
+ 24a: e7eb       b.n 0x224
+ 24c: 1703       asrs r3, r0, #28
+ 24e: 24cc       movs r4, #204
+ 250: dd00       ble.n 0x254
+ 252: 4be4       ldr r3, [pc, #912]
+ 254: 147b       asrs r3, r7, #17
+ 256: 1513       asrs r3, r2, #20
+ 258: 2089       movs r0, #137
+ 25a: dd0e       ble.n 0x27a
+ 25c: 007b       lsls r3, r7, #1
+ 25e: 4b89       ldr r3, [pc, #548]
+ 260: 4bcf       ldr r3, [pc, #828]
+ 262: bd6f       pop {r0, r1, r2, r3, r5, r6, pc}
+ 264: 5897       ldr r7, [r2, r2]
+ 266: e6c8       b.n 0xfffffffa
+ 268: 76b5       strb r5, [r6, #26]
+ 26a: 16c6       asrs r6, r0, #27
+ 26c: 2a9b       cmp r2, #155
+ 26e: f460 c5ed  <UNDEFINED> instruction: 0xf460c5ed
+ 272: d4d6       bmi.n 0x222
+ 274: 8dea       ldrh r2, [r5, #46]
+ 276: 6790       str r0, [r2, #120]
+ 27c: 2933       cmp r1, #51
+ 27e: 32d1       adds r2, #209
+ 280: 52d7       strh r7, [r2, r3]
+ 286: 9f7c       ldr r7, [sp, #496]
+ 288: 6363       str r3, [r4, #52]
+ 28a: 2405       movs r4, #5
+ 28c: 8cef       ldrh r7, [r5, #38]
+ 28e: 08ef       lsrs r7, r5, #3
+ 290: 6f2f       ldr r7, [r5, #112]
+ 292: aaf3       add r2, sp, #972
+ 294: 9af4       ldr r2, [sp, #976]
+ 29a: 26eb       movs r6, #235
+ 29c: 44c1       add r9, r8
+ 29e: 3b33       subs r3, #51
+ 2a0: d062       beq.n 0x368
+ 2a2: 1d45       adds r5, r0, #5
+ 2a4: 7e93       ldrb r3, [r2, #26]
+ 2a6: 865b       strh r3, [r3, #50]
+ 2a8: 7ffc       ldrb r4, [r7, #31]
+ 2aa: 3867       subs r0, #103
+ 2ac: 0fa3       lsrs r3, r4, #30
+ 2ae: fb40 43c9  <UNDEFINED> instruction: 0xfb4043c9
+ 2b2: 2b25       cmp r3, #37
+ 2ba: bce4       pop {r2, r5, r6, r7}
+ 2bc: 29c2       cmp r1, #194
+ 2be: 2717       movs r7, #23
+ 2c0: e407       b.n 0xfffffad2
+ 2c2: 238c       movs r3, #140
+ 2c4: 8ece       ldrh r6, [r1, #54]
+ 2c6: df79       svc 121
+ 2c8: 9c0b       ldr r4, [sp, #44]
+ 2ca: 328a       adds r2, #138
+ 2cc: 80eb       strh r3, [r5, #6]
+ 2ce: 487c       ldr r0, [pc, #496]
+ 2d4: a841       add r0, sp, #260
+ 2d6: 478d       <UNDEFINED> instruction: 0x478d
+ 2d8: 1d32       adds r2, r6, #4
+ 2da: a209       add r2, pc, #36
+ 2dc: 4ec9       ldr r6, [pc, #804]
+ 2de: 4c3b       ldr r4, [pc, #236]
+ 2e0: 4a46       ldr r2, [pc, #280]
+ 2e2: 82a1       strh r1, [r4, #20]
+ 2e4: 0528       lsls r0, r5, #20
+ 2e6: 1d7a       adds r2, r7, #5
+ 2e8: de60       udf #96
+ 2ea: 4acf       ldr r2, [pc, #828]
+ 2ec: 3b06       subs r3, #6
+ 2ee: 0a0d       lsrs r5, r1, #8
+ 2f0: 614d       str r5, [r1, #20]
+ 2f2: 934d       str r3, [sp, #308]
+ 2f4: 1ad4       subs r4, r2, r3
+ 2f6: 784a       ldrb r2, [r1, #1]
+ 2f8: 1714       asrs r4, r2, #28
+ 2fa: 69b7       ldr r7, [r6, #24]
+ 2fc: 177a       asrs r2, r7, #29
+ 2fe: c642       stmia r6!, {r1, r6}
+ 300: 9a81       ldr r2, [sp, #516]
+ 302: 991c       ldr r1, [sp, #112]
+ 304: 1dba       adds r2, r7, #6
+ 306: eb82 b5f5  <UNDEFINED> instruction: 0xeb82b5f5
+ 30a: 61fd       str r5, [r7, #28]
+ 30c: b6f2       <UNDEFINED> instruction: 0xb6f2
+ 30e: 77e6       strb r6, [r4, #31]
+ 310: 6952       ldr r2, [r2, #20]
+ 312: f798 ec1d  <UNDEFINED> instruction: 0xf798ec1d
+ 316: 800e       strh r6, [r1, #0]
+ 318: 464c       mov r4, r9
+ 31a: b88f       <UNDEFINED> instruction: 0xb88f
+ 31c: 7b76       ldrb r6, [r6, #13]
+ 31e: d12c       bne.n 0x37a
+ 320: e80e 4c80  <UNDEFINED> instruction: 0xe80e4c80
+ 32a: 480d       ldr r0, [pc, #52]
+ 32c: ddb1       ble.n 0x292
+ 32e: 6e3d       ldr r5, [r7, #96]
+ 330: cd83       ldmia r5!, {r0, r1, r7}
+ 332: 5daf       ldrb r7, [r5, r6]
+ 334: 26b0       movs r6, #176
+ 336: 292b       cmp r1, #43
+ 338: 798f       ldrb r7, [r1, #6]
+ 33a: bd44       pop {r2, r6, pc}
+ 33c: 0919       lsrs r1, r3, #4
+ 33e: 689a       ldr r2, [r3, #8]
+ 340: ce6b       ldmia r6, {r0, r1, r3, r5, r6}
+ 342: af70       add r7, sp, #448
+ 344: 83fe       strh r6, [r7, #30]
+ 346: 8df3       ldrh r3, [r6, #46]
+ 348: 602b       str r3, [r5, #0]
+ 34c: a5e3       add r5, pc, #908
+ 34e: ba26       rev r6, r4
+ 350: 574d       ldrsb r5, [r1, r5]
+ 352: a875       add r0, sp, #468
+ 354: 1716       asrs r6, r2, #28
+ 356: 21f5       movs r1, #245
+ 358: c7b7       stmia r7!, {r0, r1, r2, r4, r5, r7}
+ 35a: 8f77       ldrh r7, [r6, #58]
+ 360: d2da       bcs.n 0x318
+ 362: a16a       add r1, pc, #424
+ 364: 15f7       asrs r7, r6, #23
+ 366: 600c       str r4, [r1, #0]
+ 368: 45da       cmp r10, r11
+ 36a: 1e0c       subs r4, r1, #0
+ 36c: 586c       ldr r4, [r5, r1]
+ 36e: 232b       movs r3, #43
+ 370: ace1       add r4, sp, #900
+ 374: 331c       addle r3, #28
+ 376: 1865       addgt r5, r4, r1
+ 378: a0ea       addle r0, pc, #936
+ 37a: c0fb       stmiagt r0!, {r0, r1, r3, r4, r5, r6, r7}
+ 37c: bc8d       pop {r0, r2, r3, r7}
+ 37e: 3308       adds r3, #8
+ 380: 043f       lsls r7, r7, #16
+ 382: 43b9       bics r1, r7
+ 384: dadf       bge.n 0x346
+ 386: 990f       ldr r1, [sp, #60]
+ 388: 1ac4       subs r4, r0, r3
+ 38a: c9bc       ldmia r1!, {r2, r3, r4, r5, r7}
+ 38c: a16a       add r1, pc, #424
+ 38e: 1723       asrs r3, r4, #28
+ 390: 3dec       subs r5, #236
+ 392: 86a9       strh r1, [r5, #52]
+ 394: 7a5b       ldrb r3, [r3, #9]
+ 396: 74d9       strb r1, [r3, #19]
+ 398: c443       stmia r4!, {r0, r1, r6}
+ 39a: 80ec       strh r4, [r5, #6]
+ 39c: 00e6       lsls r6, r4, #3
+ 39e: 14f1       asrs r1, r6, #19
+ 3a0: 0a78       lsrs r0, r7, #9
+ 3a2: c703       stmia r7!, {r0, r1}
+ 3a4: 174f       asrs r7, r1, #29
+ 3a6: 49be       ldr r1, [pc, #760]
+ 3a8: c9ba       ldmia r1, {r1, r3, r4, r5, r7}
+ 3aa: 679b       str r3, [r3, #120]
+ 3ac: c64e       stmia r6!, {r1, r2, r3, r6}
+ 3ae: 24df       movs r4, #223
+ 3b0: b047       add sp, #284
+ 3b2: 840b       strh r3, [r1, #32]
+ 3b4: 71ad       strb r5, [r5, #6]
+ 3b6: 42ee       cmn r6, r5
+ 3b8: 0f6e       lsrs r6, r5, #29
+ 3ba: 479d       <UNDEFINED> instruction: 0x479d
+ 3bc: fbd5 9bfe  <UNDEFINED> instruction: 0xfbd59bfe
+ 3c0: e196       b.n 0x6f0
+ 3c2: 96f5       str r6, [sp, #980]
+ 3c4: b7c2       <UNDEFINED> instruction: 0xb7c2
+ 3c6: e725       b.n 0x214
+ 3c8: d8ea       bhi.n 0x3a0
+ 3ca: d94e       bls.n 0x46a
+ 3cc: 83d3       strh r3, [r2, #30]
+ 3ce: 853a       strh r2, [r7, #40]
+ 3d0: 77b5       strb r5, [r6, #30]
+ 3d2: 5136       str r6, [r6, r4]
+ 3d4: afd7       add r7, sp, #860
+ 3d6: b618       setpan #1
+ 3d8: 4657       mov r7, r10
+ 3da: 692d       ldr r5, [r5, #16]
+ 3dc: 6b27       ldr r7, [r4, #48]
+ 3de: 128b       asrs r3, r1, #10
+ 3e0: 4b1e       ldr r3, [pc, #120]
+ 3e2: a711       add r7, pc, #68
+ 3e4: 74be       strb r6, [r7, #18]
+ 3e6: 28d3       cmp r0, #211
+ 3e8: e3ee       b.n 0xbc8
+ 3ea: b6d0       <UNDEFINED> instruction: 0xb6d0
+ 3f0: 04a8       lsls r0, r5, #18
+ 3f2: 8fa1       ldrh r1, [r4, #60]
+ 3f4: 606a       str r2, [r5, #4]
+ 3f6: 5973       ldr r3, [r6, r5]
+ 3f8: dd62       ble.n 0x4c0
+ 3fa: 48b9       ldr r0, [pc, #740]
+ 3fc: 17dd       asrs r5, r3, #31
+ 3fe: 656a       str r2, [r5, #84]
