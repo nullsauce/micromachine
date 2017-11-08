@@ -397,21 +397,8 @@ namespace {
 
 class dispatcher {
 
-private:
-	exception_vector& _exception_vector;
-
-protected:
-
-	void signal_exception(exception type) {
-		_exception_vector[type] = true;
-	}
 
 public:
-
-	dispatcher(exception_vector& exception_vector)
-		: _exception_vector(exception_vector) {
-
-	}
 
 	void dispatch_instruction(const instruction_pair instruction_pair) {
 
