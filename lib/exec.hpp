@@ -751,7 +751,7 @@ static void exec(const push& instruction, registers& regs, memory& mem) {
 }
 
 static void exec(const cps& instruction, registers& regs) {
-	regs.primask_register().set_bit(0, instruction.im);
+	regs.primask_register().write_bit(0, instruction.im);
 }
 
 static void exec(const pop& instruction, registers& regs, memory& mem) {
@@ -921,7 +921,7 @@ static void exec(const msr& instruction, registers& regs, apsr_reg& apsr) {
 		} break;
 		case msr::SpecialRegister::PRIMASK: {
 			// TODO: MSR SpecialRegister::PRIMASK
-			regs.primask_register().set_bit(0, regs.get(instruction.rn).bit(0));
+			regs.primask_register().write_bit(0, regs.get(instruction.rn).bit(0));
 
 		} break;
 		case msr::SpecialRegister::CONTROL: {
