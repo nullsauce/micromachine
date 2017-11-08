@@ -14,16 +14,21 @@ public:
 		registers& regs,
 		memory& mem,
 		exception_vector& exceptions)
-	: dispatcher(exceptions)
+	: _exception_vector(exceptions)
 	, _regs(regs)
 	, _mem(mem)
 	{}
 
+
 private:
 
+	exception_vector& _exception_vector;
 	registers& _regs;
 	memory& _mem;
-	exception_vector _exceptions;
+
+	void signal_exception(exception type) {
+		_exception_vector[type] = true;
+	}
 
 	void invalid_instruction(const halfword& instr) override {
 		(void)instr;
