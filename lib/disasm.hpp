@@ -9,22 +9,19 @@ class disasm : public dispatcher {
 public:
 
 	static std::string disassemble_instruction(const instruction_pair& instr, word address) {
-		exception_vector dummy;
-		disasm d(dummy, address);
+		disasm d(address);
 		d.dispatch_instruction(instr);
 		return d.instruction_string;
 	}
 
 private:
 
-	disasm(exception_vector& exception_vector, size_t address)
-	 : dispatcher(exception_vector)
-	 , instruction_string(128, '\0')
+	disasm(size_t address)
+	 : instruction_string(128, '\0')
 	 , _addr(address) {
 	}
 
 	word _addr;
-
 	std::string instruction_string;
 
 	void write(const std::string& str) {
