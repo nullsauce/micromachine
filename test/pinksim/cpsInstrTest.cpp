@@ -29,23 +29,24 @@ TEST_GROUP_BASE(cps, pinkySimBase)
 
 /* CPS
    Encoding: 1011 0110 011 im:1 (0)(0)(1)(0) */
-/*
-TEST_SIM_ONLY(cps, InterruptEnable)
+
+PINKY_TEST(cps, InterruptEnable)
 {
     emitInstruction16("10110110011i0010", 0);
-    m_context.PRIMASK |= PRIMASK_PM;
+    PRIMASK |= PRIMASK_PM;
     pinkySimStep(&m_context);
-    CHECK_FALSE(m_context.PRIMASK & PRIMASK_PM);
+    EXPECT_FALSE(PRIMASK & PRIMASK_PM);
 }
-*//*
-TEST_SIM_ONLY(cps, InterruptDisable)
+
+PINKY_TEST(cps, InterruptDisable)
 {
     emitInstruction16("10110110011i0010", 1);
-    m_context.PRIMASK &= ~PRIMASK_PM;
+    PRIMASK &= ~PRIMASK_PM;
     pinkySimStep(&m_context);
-    CHECK_TRUE(m_context.PRIMASK & PRIMASK_PM);
+    EXPECT_TRUE(PRIMASK & PRIMASK_PM);
 }
-*//*
+
+/*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit0)
 {
     emitInstruction16("10110110011i0011", 0);

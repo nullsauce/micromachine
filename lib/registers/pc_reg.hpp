@@ -4,6 +4,7 @@
 #include "standard_reg.hpp"
 #include "exec_mode_reg.hpp"
 #include "exception_vector.hpp"
+#include "epsr_reg.hpp"
 
 class pc_reg : public standard_reg {
 public:
@@ -13,30 +14,55 @@ public:
 
 	bool _dirty_status;
 
-	pc_reg(const exec_mode_reg& exec_mode_reg, exception_vector::bitref_t& hardfault_signal)
+	pc_reg(const exec_mode_reg& exec_mode_reg,
+			epsr_reg& epsr_reg,
+			exception_vector::bitref_t& hardfault_signal)
 		: _exec_mode_reg(exec_mode_reg)
+		, _epsr_reg(epsr_reg)
 		, _hardfault_signal(hardfault_signal) {
 
 	}
 
 	void branch(word address) {
+		set(address & 0xFFFFFFFE);
+	}
 
-		// if EPSR.T == 0, a UsageFault('Invalid State')
-		// is taken on the next instruction
+	void branch_interworking(word address) {
+		// force thumb bit in interworking since we only support thumb
+		address.set_bit(0);
 
 		if(_exec_mode_reg.is_handler_mode() &&
 			0b1111 == address.uint(28,4)) {
 			// TODO ExceptionReturn
 			precond_fail("ExceptionReturn unimplemented")
+		} else {
+
+			if(!address.bit(0)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
+			// trigger a hard fault on next instruction if Thumb bit is not set
+			_epsr_reg.set_thumb_bit(address.bit(0));
+
+			/*
+			if(!address.bit(0)) {
+				// Thumb bit not set, triggers a fault
+				_hardfault_signal = true;
+				fprintf(stderr, "PC: Thumb bit not set\n");
+			}*/
+
+			// Inter-working branch, thumb bit is always cleared
+			branch(address);
 		}
 
-		if(!address.bit(0)) {
-			// Thumb bit not set, triggers a fault
-			_hardfault_signal = true;
-			fprintf(stderr, "PC: Thumb bit not set\n");
-		}
+	}
 
-		set(address);
+	void branch_link_interworking(word address) {
+		// force thumb bit in interworking since we only support thumb
+		address.set_bit(0);
+
+		if(!address.bit(0)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
+		// trigger a hard fault on next instruction if Thumb bit is not set
+		_epsr_reg.set_thumb_bit(address.bit(0));
+		// Inter-working branch, thumb bit is always cleared
+		branch(address);
 	}
 
 private:
@@ -54,6 +80,7 @@ private:
 	}
 
 	const exec_mode_reg& 			_exec_mode_reg;
+	epsr_reg& 						_epsr_reg;
 	exception_vector::bitref_t&	_hardfault_signal;
 };
 

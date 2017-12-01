@@ -101,31 +101,32 @@ PINKY_TEST(msr, ToPSP)
     setRegisterValue(R12, 0xFFFFFFFF);
     pinkySimStep(&m_context);
 }
-/*
-TEST_SIM_ONLY(msr, PRIMASKto1)
+
+PINKY_TEST(msr, PRIMASKto1)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
     setRegisterValue(R12, 0xFFFFFFFF);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(1, m_context.PRIMASK);
+    EXPECT_EQ(1, PRIMASK);
 }
 
-TEST_SIM_ONLY(msr, PRIMASKto0)
+PINKY_TEST(msr, PRIMASKto0)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
     setRegisterValue(R12, 0xFFFFFFFE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0, m_context.PRIMASK);
+    EXPECT_EQ(0, PRIMASK);
 }
-
-TEST_SIM_ONLY(msr, CONTROLIgnored)
+/*
+PINKY_TEST(msr, CONTROLIgnored)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_CONTROL);
     setRegisterValue(R12, 0xFFFFFFFF);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0, m_context.CONTROL);
+    EXPECT_EQ(0, CONTROL);
 }
-
+*/
+/*
 TEST_SIM_ONLY(msr, R13IsUnpredictable)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", SP, SYS_XPSR);
