@@ -30,4 +30,4 @@ set(SRCS
     cpu.hpp
 )
 
-add_library(libmicro ${SRCS})
+add_library(micro INTERFACE)

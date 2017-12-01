@@ -51,7 +51,7 @@ public:
 		// branch to entry point
 		word reset_handler = _mem.read32(4);
 		fprintf(stderr, "reset handler : %08x\n", reset_handler);
-		_regs.set_pc(reset_handler);*/
+		_regs.branch_link_interworking(reset_handler);*/
 
 		/*
 		SP_main = MemA[vectortable,4] & 0xFFFFFFFC;
@@ -68,52 +68,54 @@ public:
 		ClearEventRegister(); // See WFE instruction for more information
 		start = MemA[vectortable+4,4]; // Load address of reset routine
 		BLXWritePC(start); // Start execution of reset routin
+
 	 */
 	}
 
-	static bool is_32bit_thumb_encoding(const halfword& instruction) {
-		return 0b111 == instruction.uint(13, 3) &&
-			   0b00 !=  instruction.uint(11, 2);
+
+	instruction_pair fetch_instruction(word address) const {
+		halfword first_instr = _mem.read16(address);
+		halfword second_instr = _mem.read16(address + sizeof(halfword)); // always prefetch
+		return instruction_pair(first_instr, second_instr);
+	}
+
+	instruction_pair fetch_current_instruction() const {
+		word current_addr = _regs.get_pc();
+		return fetch_instruction(current_addr);
 	}
 
 	bool step() {
 
+		if(!_regs.execution_status_register().thumb_bit_set()) {
+			// Thumb bit not set
+			// all instructions in this state are UNDEFINED .
+			signal_exception(exception::HARDFAULT);
+		}
 		if(_active_exceptions.any_signaled()) {
 			fprintf(stderr, "Exception signaled\n");
 			return true;
 		} else {
 
+			const word current_addr = _regs.get_pc();
+			instruction_pair instr = fetch_instruction(current_addr);
 
-			word instruction_size = 2;
-
-			word current_instr = _regs.get_pc();
-			fprintf(stderr, "exec PC:%08x\n",
-					(uint32_t) current_instr
-			);
-
-			halfword first_instr = _mem.read16(current_instr);
-			halfword second_instr = 0;
-
-			if(is_32bit_thumb_encoding(first_instr)) {
-				second_instr = _mem.read16(current_instr + sizeof(halfword));
-				instruction_size = instruction_size + sizeof(halfword);
-			}
-
-			_regs.set_pc(current_instr + 4);  // simulate prefetch of 2 instructions
+			_regs.set_pc(current_addr + 4);  // simulate prefetch of 2 instructions
 			_regs.reset_pc_dirty_status();
 
-			instruction_pair instr(first_instr, second_instr);
 			execute(instr);
 
-			//fprintf(stderr, "disasm: %s\n", disasm::disassemble_instruction(instr).c_str());
+			fprintf(stderr, "%08x: %s\n",
+				current_addr,
+				disasm::disassemble_instruction(instr, current_addr).c_str()
+			);
 
 			bool hard_fault = active_exceptions().is_signaled(exception::HARDFAULT);
 			bool fault = hard_fault;
 			if(!_regs.branch_occured()) {
 				if(hard_fault) {
-					_regs.set_pc(current_instr);
+					_regs.set_pc(current_addr);
 				} else {
-					_regs.set_pc(current_instr + instruction_size);
+					_regs.set_pc(current_addr + instr.size());
 				}
 			}
 
@@ -221,7 +223,7 @@ private:
 		//SetEventRegister();
 		//InstructionSynchronizationBarrier();
 		uint32_t handler_address = _mem.read32(4*(size_t)exception);
-		_regs.branch(handler_address);
+		_regs.branch_link_interworking(handler_address);
 	}
 
 	exception_vector	_active_exceptions;

@@ -425,8 +425,7 @@ static void exec(const add_highreg& instruction, registers& regs, apsr_reg& stat
 
 
 	if(registers::PC == instruction.high_rd()) {
-		// TODO: branch thumb
-		regs.branch_thumb(result);
+		regs.branch_alu(result);
 	} else {
 		regs.set(instruction.high_rd(), result);
 	}
@@ -471,7 +470,7 @@ static void exec(const mov_highreg& instruction, registers& regs, apsr_reg& stat
 	// if rd is PC, just branch
 	if(registers::PC == instruction.high_rd()) {
 
-		regs.branch_thumb(result);
+		regs.branch_alu(result);
 
 	} else {
 
@@ -485,7 +484,7 @@ static void exec(const bx& instruction, registers& regs, apsr_reg& status_reg) {
 	if(registers::PC == instruction.rm) {
 		unpredictable();
 	}
-	regs.branch(regs.get(instruction.rm));
+	regs.branch_interworking(regs.get(instruction.rm));
 }
 
 static void exec(const blx& instruction, registers& regs, apsr_reg& status_reg) {
@@ -500,7 +499,7 @@ static void exec(const blx& instruction, registers& regs, apsr_reg& status_reg) 
 	next_instr_addr.write_bit(0, 1); // force thumb bit for lr
 	regs.set_lr(next_instr_addr);
 
-	regs.branch(jump_addr);
+	regs.branch_link_interworking(jump_addr);
 }
 
 static void exec(const ldr_literal& instruction, registers& regs, apsr_reg& status_reg, const memory& mem) {
@@ -743,7 +742,8 @@ static void exec(const push& instruction, registers& regs, memory& mem) {
 	size_t count = 0;
 	for(reg_idx rid = 0; rid < registers::NUM_REGS-1; rid++) {
 		if(instruction.is_set(rid)) {
-			mem.write32(start_address + (count*4), regs.get(rid));
+			word val = regs.get(rid);
+			mem.write32(start_address + (count*4), val);
 			count++;
 		}
 	}
@@ -767,7 +767,7 @@ static void exec(const pop& instruction, registers& regs, memory& mem) {
 	}
 
 	if(instruction.is_set(registers::PC)) {
-		regs.branch(mem.read32(base));
+		regs.branch_interworking(mem.read32(base));
 	}
 
 	regs.set_sp(frame_start + stored_size);
