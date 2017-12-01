@@ -3,11 +3,26 @@
 
 #include "types.hpp"
 
+static
+bool is_wide_thumb_encoding(const halfword& instruction) {
+	return 0b111 == instruction.uint(13, 3) &&
+		   0b00 !=  instruction.uint(11, 2);
+}
+
 struct instruction_pair {
 	instruction_pair(halfword a, halfword b)
 		: first(a)
 		, second(b) {}
 	const halfword first;
 	const halfword second;
+
+	bool is_wide() const {
+		return is_wide_thumb_encoding(first);
+	}
+
+	const word size() const {
+		return sizeof(halfword) + (is_wide() * sizeof(halfword));
+	}
+
 };
 #endif //MICROMACHINE_INSTRUCTION_PAIR_HPP

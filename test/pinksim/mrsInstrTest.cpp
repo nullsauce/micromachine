@@ -128,8 +128,8 @@ PINKY_TEST(mrs, FromMSP)
     setExpectedRegisterValue(R12, INITIAL_SP);
     pinkySimStep(&m_context);
 }
-/*
-TEST_SIM_ONLY(mrs, FromPSP)
+
+PINKY_TEST(mrs, FromPSP)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PSP);
     setRegisterValue(R12, 0xFFFFFFFF);
@@ -137,33 +137,33 @@ TEST_SIM_ONLY(mrs, FromPSP)
     pinkySimStep(&m_context);
 }
 
-TEST_SIM_ONLY(mrs, FromPRIMASKsetTo1)
+PINKY_TEST(mrs, FromPRIMASKsetTo1)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
     setRegisterValue(R12, 0xFFFFFFFF);
-    m_context.PRIMASK = 1;
+    PRIMASK = 1;
     setExpectedRegisterValue(R12, 1);
     pinkySimStep(&m_context);
 }
 
-TEST_SIM_ONLY(mrs, PRIMASKto0)
+PINKY_TEST(mrs, PRIMASKto0)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
     setRegisterValue(R12, 0xFFFFFFFF);
-    m_context.PRIMASK = 0;
+    PRIMASK = 0;
     setExpectedRegisterValue(R12, 0);
     pinkySimStep(&m_context);
 }
 
-TEST_SIM_ONLY(mrs, CONTROLIgnored)
+PINKY_TEST(mrs, CONTROLIgnored)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_CONTROL);
     setRegisterValue(R12, 0xFFFFFFFF);
     setExpectedRegisterValue(R12, 0);
     pinkySimStep(&m_context);
 }
-
-TEST_SIM_ONLY(mrs, R13IsUnpredictable)
+/*
+PINKY_TEST(mrs, R13IsUnpredictable)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", SP, SYS_XPSR);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
@@ -171,7 +171,7 @@ TEST_SIM_ONLY(mrs, R13IsUnpredictable)
     pinkySimStep(&m_context);
 }
 
-TEST_SIM_ONLY(mrs, R15IsUnpredictable)
+PINKY_TEST(mrs, R15IsUnpredictable)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", PC, SYS_XPSR);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);

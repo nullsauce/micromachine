@@ -48,6 +48,7 @@ protected:
     uint32_t        m_expectedPC;
     uint32_t        m_expectedIPSR;
     uint32_t        m_emitAddress;
+    uint32_t		PRIMASK;
 	PinkySimContext m_context;
 	cpu 			_cpu;
 	uint8_t*		_host_mem;
@@ -106,6 +107,7 @@ protected:
 		m_expectedPC = 0;
 		m_expectedIPSR = 0;
 		m_emitAddress = 0;
+		PRIMASK = 0;
 
         m_expectedStepReturn = PINKYSIM_STEP_OK;
 
@@ -178,52 +180,52 @@ protected:
             {
             case 'n':
                 m_expectedXPSRflags &= ~APSR_N;
-					_cpu.regs().app_status_register().write_neg_flag(false);
+				_cpu.regs().app_status_register().write_neg_flag(true);
 				//apsr |= APSR_N;
                 break;
             case 'N':
                 m_expectedXPSRflags |= APSR_N;
-					_cpu.regs().app_status_register().write_neg_flag(true);
+				_cpu.regs().app_status_register().write_neg_flag(false);
 				//apsr &= ~APSR_N;
                 break;
             case 'z':
                 m_expectedXPSRflags &= ~APSR_Z;
-					_cpu.regs().app_status_register().write_zero_flag(false);
+				_cpu.regs().app_status_register().write_zero_flag(true);
 				//apsr |= APSR_Z;
                 break;
             case 'Z':
                 m_expectedXPSRflags |= APSR_Z;
-					_cpu.regs().app_status_register().write_zero_flag(true);
+				_cpu.regs().app_status_register().write_zero_flag(false);
 				//apsr &= ~APSR_Z;
                 break;
             case 'c':
                 m_expectedXPSRflags &= ~APSR_C;
-					_cpu.regs().app_status_register().write_carry_flag(false);
+				_cpu.regs().app_status_register().write_carry_flag(true);
 				//apsr |= APSR_C;
                 break;
             case 'C':
                 m_expectedXPSRflags |= APSR_C;
-					_cpu.regs().app_status_register().write_carry_flag(true);
+				_cpu.regs().app_status_register().write_carry_flag(false);
                 //apsr &= ~APSR_C;
                 break;
             case 'v':
                 m_expectedXPSRflags &= ~APSR_V;
-					_cpu.regs().app_status_register().write_overflow_flag(false);
+				_cpu.regs().app_status_register().write_overflow_flag(true);
 				//apsr |= APSR_V;
                 break;
             case 'V':
                 m_expectedXPSRflags |= APSR_V;
-					_cpu.regs().app_status_register().write_overflow_flag(true);
+				_cpu.regs().app_status_register().write_overflow_flag(false);
 				//apsr &= ~APSR_V;
                 break;
             case 't':
              	m_expectedXPSRflags &= ~EPSR_T;
-					_cpu.regs().execution_status_register().set_thumb_bit(false);
+				_cpu.regs().execution_status_register().set_thumb_bit(true);
 				//apsr &= ~EPSR_T;
                 break;
             case 'T':
             	m_expectedXPSRflags |= EPSR_T;
-					_cpu.regs().execution_status_register().set_thumb_bit(true);
+				_cpu.regs().execution_status_register().set_thumb_bit(false);
 				//apsr |= EPSR_T;
                 break;
             }
@@ -372,10 +374,12 @@ protected:
 
     void pinkySimStep()
     {
+    	_cpu.regs().primask_register() = PRIMASK;
         _cpu.step();
         validateXPSR();
         validateRegisters();
 		validateSignaledException();
+		PRIMASK = _cpu.regs().primask_register();
     }
 
 	void validateSignaledException() {

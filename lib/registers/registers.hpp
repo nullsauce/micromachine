@@ -26,7 +26,7 @@ struct registers {
 		, _interrupt_status_register(_xpsr_register)
 		, _execution_status_register(_xpsr_register)
 		, _sp(_exec_mode_register, _control_register)
-		, _pc(_exec_mode_register, hardfault_signal) {
+		, _pc(_exec_mode_register, _execution_status_register, hardfault_signal) {
 
 	}
 
@@ -37,9 +37,10 @@ struct registers {
 	static constexpr reg_idx PC = 15;
 
 	void reset() {
-		for(reg_idx i = 0; i < NUM_GP_REGS; i++) {
+		for(reg_idx i = 0; i < NUM_REGS; i++) {
 			set(i, 0);
 		}
+		_execution_status_register.set_thumb_bit(1);
 	}
 
 	word get(reg_idx i) const {
@@ -79,12 +80,16 @@ struct registers {
 
 	}
 
-	void branch(word address) {
-		_pc.branch(address);
+	void branch_interworking(word address) {
+		_pc.branch_interworking(address);
 	}
 
-	void branch_thumb(word address) {
-		_pc.branch(address | 1);
+	void branch_link_interworking(word address) {
+		_pc.branch_link_interworking(address);
+	}
+
+	void branch_alu(word address) {
+		_pc.branch(address);
 	}
 
 	word get_sp() const {
