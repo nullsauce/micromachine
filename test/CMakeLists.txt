@@ -20,7 +20,7 @@ macro(declare_test test_name test_files)
     add_executable(${test_name} ${test_files})
     add_dependencies(${test_name} googletest)
     target_include_directories(${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include "${CMAKE_SOURCE_DIR}/lib")
-    target_link_libraries(${test_name} gtest_main gtest ${CMAKE_THREAD_LIBS_INIT} capstone)
+    target_link_libraries(${test_name} gtest_main gtest ${CMAKE_THREAD_LIBS_INIT} capstone micromachine)
     add_test(all_tests ${test_name})
 endmacro()
 
