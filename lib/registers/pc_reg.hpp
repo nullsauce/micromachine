@@ -28,9 +28,6 @@ public:
 	}
 
 	void branch_interworking(word address) {
-		// force thumb bit in interworking since we only support thumb
-		address.set_bit(0);
-
 		if(_exec_mode_reg.is_handler_mode() &&
 			0b1111 == address.uint(28,4)) {
 			// TODO ExceptionReturn
@@ -55,9 +52,6 @@ public:
 	}
 
 	void branch_link_interworking(word address) {
-		// force thumb bit in interworking since we only support thumb
-		address.set_bit(0);
-
 		if(!address.bit(0)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
 		// trigger a hard fault on next instruction if Thumb bit is not set
 		_epsr_reg.set_thumb_bit(address.bit(0));
