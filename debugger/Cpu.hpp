@@ -237,7 +237,6 @@ private:
             _registers.at(i)->setValue(_cpu.regs().get(i));
         }
         word offset = (desiredInstructionCount()/2)*2;
-        qDebug() << offset;
         word addr = _cpu.regs().get_pc();
         for(int i = 0; i < _instructions.size(); i++) {
             instruction_pair instr = _cpu.fetch_instruction_debug(addr-offset);
