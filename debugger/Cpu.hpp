@@ -62,6 +62,7 @@ class Instruction : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString code READ code NOTIFY changed)
     Q_PROPERTY(QString hexAddress READ hexAddress NOTIFY changed)
+    Q_PROPERTY(quint32 address READ address NOTIFY changed)
 
 public:
 
@@ -79,6 +80,10 @@ public:
 	QString code() const {
 		return _code;
 	}
+
+    quint32 address() const {
+        return _address;
+    }
 
 	void setCode(const QString& code) {
 		_code = code;
@@ -117,12 +122,12 @@ class QCpu : public QObject
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<Register> regs READ regs)
     Q_PROPERTY(QQmlListProperty<Instruction> instructions READ instructions NOTIFY instructionsChanged)
-    Q_PROPERTY(int currentPC READ currentPC NOTIFY changed)
+    Q_PROPERTY(quint32 currentPC READ currentPC NOTIFY changed)
+    Q_PROPERTY(int desiredInstructionCount READ desiredInstructionCount WRITE setDesiredInstructionCount NOTIFY desiredInstructionCountChanged)
 
 public:
     QCpu(QObject* parent = nullptr)
         : QObject(parent)
-        , _instructions(20)
         , _dummy_instr(nullptr, 0, "<nothing>"){
 
         const char* const reg_names_std[16] = {
@@ -142,18 +147,45 @@ public:
         emit regsChanged();
         emit nameChanged();
 
+
+        setDesiredInstructionCount(20);
+
+        reset();
+
     }
 
     QQmlListProperty<Register> regs() {
         return QQmlListProperty<Register>(this, _registers);
     }
 
-	QQmlListProperty<Instruction> instructions() {
+    QQmlListProperty<Instruction> instructions() {
 		return QQmlListProperty<Instruction>(this, this,
 			&QCpu::_instructionCount,
 			&QCpu::_instruction
-		);
+        );
 	}
+
+    int desiredInstructionCount() const {
+        return _desired_instruction_count;
+    }
+
+    void setDesiredInstructionCount(int count) {
+        if(count != _desired_instruction_count) {
+            _desired_instruction_count = count;
+
+            while(_instructions.size() < _desired_instruction_count) {
+                _instructions.append(
+                    QSharedPointer<Instruction>(new Instruction, &QObject::deleteLater)
+                );
+            }
+            while(_instructions.size() > _desired_instruction_count) {
+                _instructions.pop_back();
+            }
+
+            emit desiredInstructionCountChanged();
+            updateViewModels();
+        }
+    }
 
 	int instructionCount() {
 		return _instructions.size();
@@ -165,7 +197,7 @@ public:
 
 	Instruction* instruction(int index) {
 		if(index < instructionCount()) {
-			return &_instructions[index];
+            return _instructions.at(index).data();
 		}
 		return &_dummy_instr;
 	}
@@ -174,7 +206,7 @@ public:
 		return reinterpret_cast<QCpu*>((list->data))->instruction(index);
 	}
 
-    int currentPC() const {
+    quint32 currentPC() const {
         return _cpu.regs().get_pc();
     }
 
@@ -196,6 +228,7 @@ signals:
     void nameChanged();
     void instructionsChanged();
     void changed();
+    void desiredInstructionCountChanged();
 
 private:
 
@@ -203,14 +236,14 @@ private:
         for(int i = 0; i < 16; i++) {
             _registers.at(i)->setValue(_cpu.regs().get(i));
         }
-
-	 	word addr = _cpu.regs().get_pc();
+        word offset = (desiredInstructionCount()/2)*2;
+        qDebug() << offset;
+        word addr = _cpu.regs().get_pc();
         for(int i = 0; i < _instructions.size(); i++) {
-        	instruction_pair instr = _cpu.fetch_instruction(addr);
-        	_instructions.at(i).setCode(
-        		QString::fromStdString(disasm::disassemble_instruction(instr, addr))
-        	);
-        	_instructions.at(i).setAddress(addr);
+            instruction_pair instr = _cpu.fetch_instruction(addr-offset);
+            auto instruction = _instructions.at(i);
+            instruction->setCode(QString::fromStdString(disasm::disassemble_instruction(instr, addr-offset)));
+            instruction->setAddress(addr-offset);
         	addr = addr + instr.size();
         }
         emit instructionsChanged();
@@ -218,10 +251,11 @@ private:
     }
 
    QList<Register*> _registers;
-   std::vector<Instruction> _instructions;
+   QList<QSharedPointer<Instruction>> _instructions;
    cpu _cpu;
    std::vector<uint8_t> _stack_mem;
    Instruction _dummy_instr;
+   int _desired_instruction_count;
 
 };
 
