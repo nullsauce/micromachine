@@ -28,6 +28,9 @@ set(SRCS
     dispatcher.hpp
     disasm.hpp
     cpu.hpp
+	cpu.cpp
 )
 
-add_library(micro INTERFACE)
+add_library(micromachine STATIC ${SRCS})
+target_include_directories(micromachine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set_target_properties(micromachine PROPERTIES LINKER_LANGUAGE CXX)
