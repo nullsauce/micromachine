@@ -16,9 +16,11 @@ set(SRCS
 )
 add_executable(visual_debugger ${SRCS} qml.qrc)
 target_include_directories(visual_debugger PUBLIC "../lib")
+target_include_directories(visual_debugger PUBLIC ${CMAKE_SOURCE_DIR}/lib)
 target_link_libraries(visual_debugger
 	Qt5::Quick
 	Qt5::Core
 	Qt5::Qml
 	Qt5::Gui
+	micromachine
 )
