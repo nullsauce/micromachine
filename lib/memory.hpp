@@ -77,6 +77,10 @@ public:
 		return read<uint16_t>(address, ok);
 	}
 
+	uint16_t read16_unchecked(uint32_t address) const {
+		return read_unchecked<uint16_t>(address);
+	}
+
 	uint8_t read8(uint32_t address) const {
 		return read<uint8_t>(address);
 	}
@@ -152,6 +156,16 @@ private:
 		}
 		ok = true;
 		return read<access_t>(region, address);
+	}
+
+	template <typename access_t>
+	access_t read_unchecked(uint32_t address) const {
+		const mem_mapping* region = find_const_region(address);
+		if(!region) {
+			return 0;
+		} else {
+			return read<access_t>(region, address);
+		}
 	}
 
 	template <typename access_t>

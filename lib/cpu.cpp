@@ -68,6 +68,14 @@ instruction_pair cpu::fetch_instruction(word address) const {
 	}
 }
 
+// used for debug purposes only
+instruction_pair cpu::fetch_instruction_debug(word address) const {
+	halfword first_instr = _mem.read16_unchecked(address);
+	halfword second_instr = _mem.read16_unchecked(address + sizeof(halfword)); // always prefetch
+	return instruction_pair(first_instr, second_instr);
+}
+
+
 
 bool cpu::step() {
 
