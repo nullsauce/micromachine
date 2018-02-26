@@ -3,34 +3,39 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
 ApplicationWindow {
+    id:window
     visible: true
     width: 640
     height: 480
     title: qsTr("Hello World")
 
     color:"#111"
-    ListModel {
-        ListElement {
-            address:0
-            text:"add r1, r2"
-        }
-    }
+
 
     function zpad(n, width) {
       n = n + '';
       return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
     }
 
+    Binding {
+        target:CPU
+        property: "desiredInstructionCount"
+        value:(window.height/16)-2
+    }
 
     Column {
-
+        id:disasm
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         Repeater {
             model:CPU.instructions
 
             Item {
-                height:instructionText.height
+                id:instructionItem
+                height:16
                 width:300
-                property bool isCurrent: index == 0
+                property bool isCurrent: address === CPU.currentPC
                 Rectangle {
                     anchors.fill: instrRow
                     color:"#123b56"
@@ -45,7 +50,7 @@ ApplicationWindow {
                         font.family: "monospace"
                         horizontalAlignment: Text.AlignRight
                         width:80
-                        height:contentHeight
+                        height:instructionItem.height
                         color:"#555"
                     }
                     Text {
@@ -54,21 +59,19 @@ ApplicationWindow {
                         font.family: "monospace"
                         horizontalAlignment: Text.AlignLeft
                         width:contentWidth * 1.1
-                        height:contentHeight
+                        height:instructionItem.height
                         color:"#ddd"
                     }
                 }
             }
-
-
         }
     }
 
     Column {
+        id:registers
         anchors.right: parent.right
         Repeater {
             model:CPU.regs
-
             Row {
                 height:regText.height
                 spacing: 10
