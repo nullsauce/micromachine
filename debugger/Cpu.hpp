@@ -240,7 +240,7 @@ private:
         qDebug() << offset;
         word addr = _cpu.regs().get_pc();
         for(int i = 0; i < _instructions.size(); i++) {
-            instruction_pair instr = _cpu.fetch_instruction(addr-offset);
+            instruction_pair instr = _cpu.fetch_instruction_debug(addr-offset);
             auto instruction = _instructions.at(i);
             instruction->setCode(QString::fromStdString(disasm::disassemble_instruction(instr, addr-offset)));
             instruction->setAddress(addr-offset);
