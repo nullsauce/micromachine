@@ -10,14 +10,6 @@ find_package(Threads)
 include(cotire)
 
 add_subdirectory(lib)
-
-set(SOURCE_FILES
-    main.cpp
-)
-add_executable(run_micromachine ${HEADER_FILES} ${SOURCE_FILES})
-target_include_directories(run_micromachine PUBLIC ${CMAKE_SOURCE_DIR}/lib)
-target_link_libraries(run_micromachine micromachine)
-
-
+add_subdirectory(run)
 add_subdirectory(debugger)
 add_subdirectory(test)
