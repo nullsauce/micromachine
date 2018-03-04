@@ -20,24 +20,38 @@ public:
 
 
 	struct mem_mapping {
-		mem_mapping(uint8_t* host, uint32_t start_addr, uint32_t size)
-			: host_mem(host)
-			, range(start_addr, start_addr + size) {}
+		mem_mapping(uint8_t* host_ptr, uint32_t start_addr, uint32_t size, const std::string& name = "")
+			: _host_mem(host_ptr)
+			, _range(start_addr, start_addr + size)
+			, _name(name) {}
 
 		const uint32_t& start() const {
-			return range.first;
+			return _range.first;
 		}
 
 		const uint32_t& end() const {
-			return range.second;
+			return _range.second;
 		}
 
-		void* translate(uint32_t addr) const {
-			return host_mem + addr;
+		const uint8_t* host_mem() const {
+			return _host_mem;
 		}
 
-		uint8_t* host_mem;
-		std::pair<uint32_t, uint32_t> range;
+		void* translate(uint32_t address) const {
+			if(address < start()) {
+				fprintf(stderr,"invalid address 0x%08X", address);
+				return nullptr;
+			}
+			return _host_mem + (address - start());
+		}
+
+		const std::string& name() const {
+			return _name;
+		}
+
+		uint8_t* const _host_mem;
+		const std::pair<uint32_t, uint32_t> _range;
+		const std::string _name;
 	};
 
 
@@ -89,6 +103,10 @@ public:
 		return read<uint8_t>(address, ok);
 	}
 
+
+	void map(uint8_t* host, uint32_t start_addr, uint32_t size, const std::string& name) {
+		_regions.emplace_back(host, start_addr, size, name);
+	}
 
 	void map(uint8_t* host, uint32_t start_addr, uint32_t size) {
 		regions.emplace_back(host, start_addr, size);
