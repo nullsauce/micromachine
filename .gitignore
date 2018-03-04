@@ -3,3 +3,7 @@ cmake-build*/
 *.elf
 *.bin
 *.o
+CMakeLists.txt.user
+
+build-debugger*/
+sdk/build*/
