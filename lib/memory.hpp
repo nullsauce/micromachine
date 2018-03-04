@@ -202,11 +202,11 @@ private:
 
 	const mem_mapping* find_const_region(uint32_t address) const {
 
-		const auto it = std::find_if(std::begin(regions), std::end(regions), [=](const mem_mapping& mm){
+		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const mem_mapping& mm){
 			return in_range(address, mm);
 		});
 
-		if(std::end(regions) != it) {
+		if(std::end(_regions) != it) {
 			return it.base();
 		}
 
