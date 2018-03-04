@@ -7,4 +7,4 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#include "Cpu.hpp"
+#include "QCpu.hpp"
