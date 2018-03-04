@@ -8,15 +8,105 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "cpu.hpp"
-
+#include "elfio/elfio.hpp"
 
 cpu::cpu()
 	: _regs(_active_exceptions[exception::HARDFAULT])
 	, _mem(_active_exceptions[exception::HARDFAULT])
 	, _exec_dispatcher(_regs, _mem, _active_exceptions)
+	, _initial_sp(0)
+	, _initial_pc(0)
 {}
 
-void cpu::execute(const instruction_pair instr) {
+
+bool cpu::load_elf(const std::string &path)
+{
+	ELFIO::elfio elfReader;
+	if (!elfReader.load(path)) {
+		return false;
+	}
+
+	if (elfReader.get_class() != ELFCLASS32) {
+		return false;
+	}
+
+	if (elfReader.get_encoding() != ELFDATA2LSB) {
+		return false;
+	}
+
+
+
+	ELFIO::Elf_Half sec_num = elfReader.sections.size();
+
+	uint32_t entryPoint = (uint32_t)elfReader.get_entry();
+	fprintf(stderr, "PC will be set to %08X\n", entryPoint);
+
+	_initial_pc = entryPoint;
+
+	std::cout << "Number of sections: " << sec_num << std::endl;
+	for (int i = 0; i < sec_num; ++i) {
+		ELFIO::section *section = elfReader.sections[i];
+		fprintf(stderr, "%s:\t\t\t %016X %016X %i %i %i %i\n",
+			section->get_name().c_str(),
+			section->get_address(),
+			section->get_size(),
+			section->get_flags(),
+			section->get_type(),
+			section->get_info(),
+			section->get_index()
+		);
+
+		if(section->get_flags() & SHF_ALLOC) {
+
+
+			if(0 == section->get_size()) {
+				fprintf(stderr, "Skipping empty section %s\n", section->get_name().c_str());
+				continue;
+			}
+
+			fprintf(stderr, "Creating memory section for %s\n", section->get_name().c_str());
+
+			uint8_t* data = (uint8_t*)calloc(1, section->get_size());
+
+			// should we copy data to this section ?
+			if(section->get_type() & SHT_PROGBITS) {
+				memcpy(data, section->get_data(), section->get_size());
+			}
+
+			_mem.map(data, section->get_address(), section->get_size(), section->get_name());
+
+			if(0 == section->get_name().compare(".stack")) {
+				uint32_t sp = section->get_address() + section->get_size() - 1;
+				fprintf(stderr, "SP will be set to %08X\n", sp);
+				_initial_sp = sp;
+			}
+		}
+	}
+
+
+
+    // Print ELF file segments info
+    ELFIO::Elf_Half seg_num = elfReader.segments.size();
+    std::cout << "Number of segments: " << seg_num << std::endl;
+    for ( int i = 0; i < seg_num; ++i ) {
+        const ELFIO::segment* pseg = elfReader.segments[i];
+        std::cout << "  [" << i << "] 0x" << std::hex
+                  << pseg->get_flags()
+                  << "\t0x"
+                  << pseg->get_virtual_address()
+                  << "\t0x"
+                  << pseg->get_file_size()
+                  << "\t0x"
+                  << pseg->get_memory_size()
+                  << std::endl;
+        // Access to segments's data
+        // const char* p = reader.segments[i]->get_data()
+    }
+	return true;
+}
+
+void cpu::execute(const instruction_pair instr)
+{
 	_exec_dispatcher.dispatch_instruction(instr);
 }
 
@@ -26,6 +116,8 @@ void cpu::reset() {
 	enter_thread_mode();
 	_regs.reset();
 	_regs.app_status_register().reset();
+	_regs.set_sp(_initial_sp);
+	_regs.set_pc(_initial_pc);
 
 	// set sp to vector+0
 	/*

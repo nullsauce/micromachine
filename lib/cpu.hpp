@@ -37,6 +37,8 @@ public:
 	registers& regs();
 	const registers& regs() const;
 
+	bool load_elf(const std::string& path);
+
 private:
 	void execute(const instruction_pair instr);
 	void push_stack();
@@ -51,6 +53,10 @@ private:
 	registers 			_regs;
 	memory 				_mem;
 	exec_dispatcher 	_exec_dispatcher;
+
+	// TODO: this is not needed here
+	uint32_t _initial_sp;
+	uint32_t _initial_pc;
 
 
 };
