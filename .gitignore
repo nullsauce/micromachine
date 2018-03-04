@@ -1,5 +1,8 @@
-.idea
+.idea/*
+!*/codeStyleSettings.xml
+
 cmake-build*/
+
 *.elf
 *.bin
 *.o
