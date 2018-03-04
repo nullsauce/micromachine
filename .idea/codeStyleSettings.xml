@@ -5,6 +5,9 @@
       <value>
         <option name="AUTODETECT_INDENTS" value="false" />
         <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
+        <MarkdownNavigatorCodeStyleSettings>
+          <option name="RIGHT_MARGIN" value="72" />
+        </MarkdownNavigatorCodeStyleSettings>
         <Objective-C>
           <option name="KEEP_CASE_EXPRESSIONS_IN_ONE_LINE" value="true" />
           <option name="CLASS_CONSTRUCTOR_INIT_LIST_ALIGN_MULTILINE" value="false" />
