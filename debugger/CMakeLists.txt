@@ -11,8 +11,11 @@ find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
 set(SRCS
 	main.cpp
-	Cpu.hpp
-	Cpu.cpp
+        QCpu.hpp
+        QCpu.cpp
+        MemView.hpp
+        MemView.cpp
+        QMemRegion.hpp
 )
 add_executable(visual_debugger ${SRCS} qml.qrc)
 target_include_directories(visual_debugger PUBLIC "../lib")
