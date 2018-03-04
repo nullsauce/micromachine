@@ -1,6 +1,6 @@
 
 
-#include "lib/cpu.hpp"
+#include "cpu.hpp"
 
 int main(int argc, const char** argv) {
 
