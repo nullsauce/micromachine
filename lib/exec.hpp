@@ -765,9 +765,16 @@ static void exec(const pop& instruction, registers& regs, memory& mem) {
 			base += 4;
 		}
 	}
-
+	// PC is always the last, so base value
+	// is what needs to be written.
 	if(instruction.is_set(registers::PC)) {
-		regs.branch_interworking(mem.read32(base));
+		/* TODO: check whats going on with
+		 * thumb bit when popping PC from
+		 * a previous push LR where LR = 0
+		 */
+		word address = mem.read32(base);
+		//address.set_bit(0); // fix thumb bit ??'
+		regs.branch_interworking(address);
 	}
 
 	regs.set_sp(frame_start + stored_size);
