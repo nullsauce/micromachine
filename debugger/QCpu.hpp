@@ -15,6 +15,9 @@ and/or distributed without the express permission of Flavio Roth.
 #include <QQmlListProperty>
 
 #include "cpu.hpp"
+#include "MemView.hpp"
+
+#include <unordered_map>
 
 class Register : public QObject {
     Q_OBJECT
@@ -63,13 +66,15 @@ class Instruction : public QObject {
     Q_PROPERTY(QString code READ code NOTIFY changed)
     Q_PROPERTY(QString hexAddress READ hexAddress NOTIFY changed)
     Q_PROPERTY(quint32 address READ address NOTIFY changed)
+    Q_PROPERTY(bool isBreakPoint READ isBreakPoint NOTIFY changed)
 
 public:
 
   Instruction(QObject* parent = nullptr, uint32_t address = 0, const QString& code = "<>")
 		: QObject(parent)
 		, _address(address)
-		, _code(code) {
+        , _code(code)
+        , _is_breakpoint(false) {
 
 	}
 
@@ -95,6 +100,17 @@ public:
 		emit changed();
 	}
 
+    bool isBreakPoint() const {
+        return _is_breakpoint;
+    }
+
+    void setIsBreakPoint(bool isBreakPoint) {
+        if(isBreakPoint != _is_breakpoint) {
+            _is_breakpoint = isBreakPoint;
+            emit changed();
+        }
+    }
+
 signals:
 
 	void changed();
@@ -103,19 +119,10 @@ private:
 
 	uint32_t _address;
 	QString _code;
+    bool _is_breakpoint;
 
 };
 
-static
-unsigned char program[] = {
-  0x90, 0xb5, 0x83, 0xb0, 0x00, 0xaf, 0x00, 0x23, 0x7b, 0x60, 0x7b, 0x68,
-  0x01, 0x3b, 0x7a, 0x68, 0x10, 0x1c, 0x19, 0x1c, 0x00, 0xf0, 0x10, 0xf8,
-  0x04, 0x1c, 0x7b, 0x68, 0x5b, 0x00, 0x7a, 0x68, 0x10, 0x1c, 0x19, 0x1c,
-  0x00, 0xf0, 0x08, 0xf8, 0x03, 0x1c, 0x63, 0x43, 0x7a, 0x68, 0xd3, 0x18,
-  0x7b, 0x60, 0x61, 0xdf, 0xe9, 0xe7, 0xc0, 0x46, 0x80, 0xb5, 0x82, 0xb0,
-  0x00, 0xaf, 0x78, 0x60, 0x39, 0x60, 0x7b, 0x68, 0x7a, 0x68, 0x5a, 0x43,
-  0x3b, 0x68, 0xd3, 0x18, 0x18, 0x1c, 0xbd, 0x46, 0x02, 0xb0, 0x80, 0xbd
-};
 
 class QCpu : public QObject
 {
@@ -124,7 +131,7 @@ class QCpu : public QObject
     Q_PROPERTY(QQmlListProperty<Instruction> instructions READ instructions NOTIFY instructionsChanged)
     Q_PROPERTY(quint32 currentPC READ currentPC NOTIFY changed)
     Q_PROPERTY(int desiredInstructionCount READ desiredInstructionCount WRITE setDesiredInstructionCount NOTIFY desiredInstructionCountChanged)
-
+    Q_PROPERTY(QQmlListProperty<QMemRegion> memoryRegions READ memoryRegions CONSTANT)
 public:
     QCpu(QObject* parent = nullptr)
         : QObject(parent)
@@ -140,18 +147,36 @@ public:
             _registers.append(new Register(this,reg_names_std[i]));
         }
 
+
+        _cpu.load_elf("/home/fla/projects/micromachine/sdk/build/simple_c_elf");
+        /*
         _stack_mem.assign(1024, 0);
         _cpu.mem().map(program, 0, sizeof(program)+1000);
         _cpu.mem().map(_stack_mem.data(), 0x10000u-_stack_mem.size(), _stack_mem.size());
 
+        _heap_mem.assign(1024, 0xcd);
+        _cpu.mem().map(_heap_mem.data(), 0x20000, _heap_mem.size());
+
+        _initialized_data.assign(0x2000, 0);
+        _cpu.mem().map(_initialized_data.data(), 0x20000000, _initialized_data.size());
+        */
+        for(const auto& region: _cpu.mem().regions()) {
+            auto r = new QMemRegion(this);
+            r->setMapping(&region);
+            _memory_regions.append(r);
+        }
+
         emit regsChanged();
         emit nameChanged();
-
 
         setDesiredInstructionCount(20);
 
         reset();
 
+    }
+
+    QQmlListProperty<QMemRegion> memoryRegions() {
+        return QQmlListProperty<QMemRegion>(this, _memory_regions);
     }
 
     QQmlListProperty<Register> regs() {
@@ -210,18 +235,28 @@ public:
         return _cpu.regs().get_pc();
     }
 
-    Q_INVOKABLE void step() {
-        _cpu.step();
+    Q_INVOKABLE bool step(int steps) {
+        for(int i = 0; i < steps; i++) {
+            _cpu.step();
+        }
         updateViewModels();
         word addr = _cpu.regs().get_pc();
-        instruction_pair instr = _cpu.fetch_instruction(addr);
+        if(isBreakPoint(addr)) return false;
+        return true;
     }
 
     Q_INVOKABLE void reset() {
         _cpu.reset();
-        _cpu.regs().set_sp(0x10000u);
+       // _cpu.regs().set_sp(0x10000u);
         updateViewModels();
     }
+
+    Q_INVOKABLE void setBreakPoint(quint32 address, bool enabled) {
+        _breakpoint_instructions[address] = enabled;
+        updateViewModels();
+    }
+
+
 
 signals:
     void regsChanged();
@@ -229,21 +264,48 @@ signals:
     void instructionsChanged();
     void changed();
     void desiredInstructionCountChanged();
+    void memViewChanged();
 
 private:
+
+    bool isBreakPoint(uint32_t instructionAddr) {
+        auto bkp = _breakpoint_instructions.find(instructionAddr);
+        if(bkp != _breakpoint_instructions.end()) {
+            return bkp->second;
+        } else {
+            return false;
+        }
+    }
+
+    void dissasembleIntructionsAround(uint32_t addr) {
+        word offset = (desiredInstructionCount()/2)*2;
+        for(int i = 0; i < _instructions.size(); i++) {
+            uint32_t displayed_addr = addr-offset;
+            instruction_pair instr = _cpu.fetch_instruction_debug(displayed_addr);
+            auto instruction = _instructions.at(i);
+            instruction->setCode(QString::fromStdString(disasm::disassemble_instruction(instr, displayed_addr)));
+            instruction->setAddress(displayed_addr);
+            auto bkp = _breakpoint_instructions.find(displayed_addr);
+            if(bkp != _breakpoint_instructions.end()) {
+                instruction->setIsBreakPoint(bkp->second);
+            } else {
+                instruction->setIsBreakPoint(false);
+            }
+            addr = addr + instr.size();
+        }
+
+    }
 
     void updateViewModels() {
         for(int i = 0; i < 16; i++) {
             _registers.at(i)->setValue(_cpu.regs().get(i));
         }
-        word offset = (desiredInstructionCount()/2)*2;
+
         word addr = _cpu.regs().get_pc();
-        for(int i = 0; i < _instructions.size(); i++) {
-            instruction_pair instr = _cpu.fetch_instruction_debug(addr-offset);
-            auto instruction = _instructions.at(i);
-            instruction->setCode(QString::fromStdString(disasm::disassemble_instruction(instr, addr-offset)));
-            instruction->setAddress(addr-offset);
-        	addr = addr + instr.size();
+        dissasembleIntructionsAround(addr);
+
+        for(size_t i = 0; i < _memory_regions.size(); i++) {
+            _memory_regions.at(i)->markMemoryChanged();
         }
         emit instructionsChanged();
         emit changed();
@@ -251,10 +313,14 @@ private:
 
    QList<Register*> _registers;
    QList<QSharedPointer<Instruction>> _instructions;
+   QList<QMemRegion*> _memory_regions;
    cpu _cpu;
    std::vector<uint8_t> _stack_mem;
+   std::vector<uint8_t> _heap_mem;
+   std::vector<uint8_t> _initialized_data;
    Instruction _dummy_instr;
    int _desired_instruction_count;
+   std::unordered_map<uint32_t, bool> _breakpoint_instructions;
 
 };
 
