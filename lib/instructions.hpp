@@ -329,6 +329,7 @@ struct standard_push_register_list {
 		return binops::get_bit(register_list, reg);
 	}
 
+    // TODO: rename to push_count
 	uint32_t pop_count() const {
 		return __builtin_popcount(register_list);
 	}
