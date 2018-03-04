@@ -2,7 +2,10 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "cpu.hpp"
-#include "Cpu.hpp"
+#include "QCpu.hpp"
+#include "QMemRegion.hpp"
+#include "MemView.hpp"
+
 int main(int argc, char *argv[])
 {
     //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -12,6 +15,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<QCpu>("Fla", 1, 0, "Cpu");
     qmlRegisterType<Register>("Fla", 1, 0, "Register");
 	qmlRegisterType<Instruction>("Fla", 1, 0, "Instruction");
+    qmlRegisterType<MemView>("Fla", 1, 0, "MemView");
+    qmlRegisterType<QMemRegion>("Fla", 1, 0, "MemoryRegion");
     QCpu processor;
     engine.rootContext()->setContextProperty("CPU", &processor);
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));

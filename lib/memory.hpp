@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "exception_vector.hpp"
 
 #define memory_hardfault(reason_fmt,...)\
 	fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__); \
@@ -109,7 +110,7 @@ public:
 	}
 
 	void map(uint8_t* host, uint32_t start_addr, uint32_t size) {
-		regions.emplace_back(host, start_addr, size);
+		_regions.emplace_back(host, start_addr, size);
 	}
 
 	template <typename access_t>
@@ -117,6 +118,9 @@ public:
 		return 0 == (address & (sizeof(access_t)-1));
 	}
 
+	const region_vec& regions() const {
+		return _regions;
+	}
 
 private:
 
@@ -213,7 +217,7 @@ private:
 		return const_cast<mem_mapping*>(find_const_region(address));
 	}
 
-	region_vec regions;
+    region_vec _regions;
 	mutable exception_vector::bitref_t _hardfault_signal;
 
 };
