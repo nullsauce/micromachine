@@ -61,6 +61,10 @@ public:
         return offset < virtualRange();
     }
 
+    uint32_t virtualAddressOffset(uint32_t address) const {
+        return address - _mapping->start();
+    }
+
     void markMemoryChanged() {
         emit memoryChanged();
     }
