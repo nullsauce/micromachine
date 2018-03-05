@@ -84,17 +84,10 @@ macro(make_program)
 endmacro()
 
 
-
-make_program(
-	TARGET prog1
-	LINKER_SCRIPT link.ld
-	C_SOURCES test.c
-	ASM_SOURCES boot.s
-)
-
 make_program(
 	TARGET simple_c
 	LINKER_SCRIPT link.ld
 	C_SOURCES simple.c
+	ASM_SOURCES boot.s
 )
 
