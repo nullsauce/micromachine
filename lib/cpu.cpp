@@ -56,7 +56,7 @@ bool cpu::load_elf(const std::string &path)
 			section->get_index()
 		);
 
-		if(section->get_flags() & SHF_ALLOC) {
+		if(section->get_flags() & (SHF_ALLOC | SHF_EXECINSTR)) {
 
 
 			if(0 == section->get_size()) {
