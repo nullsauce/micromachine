@@ -2,15 +2,30 @@
 This is the startup file for LPC81x. The C definition of the vector tables are defined in vector.c
 */
 .thumb
-.section .text
+.force_thumb
+.section .isr_vector, "ax"
+
+// LD variables
+.extern _stack_bottom
+
+// ISR handlers
+.extern _isr_reset
+.extern _isr_reset
+.extern _isr_nmi
+.extern _isr_hardfault
+.extern _isr_svcall
+.extern _isr_pendsv
+.extern _isr_systick
+.extern _isr_external_interruput
+
 
 .align 2
 
-/* vector  */
-.long _stack_start
-.long handle_reset
-.long NMI_Handler
-.long HardFault_Handler
+// Interrupt vector table
+.long _stack_bottom
+.long _isr_reset
+.long _isr_nmi
+.long _isr_hardfault
 .long 0
 .long 0
 .long 0
@@ -18,31 +33,31 @@ This is the startup file for LPC81x. The C definition of the vector tables are d
 .long 0
 .long 0
 .long 0
-.long SVCall_Handler
+.long _isr_svcall
 .long 0
 .long 0
-.long PendSV_Handler
-.long SysTick_Handler
-.long 0
+.long _isr_pendsv
+.long _isr_systick
+.long _isr_external_interruput
 
 /* IRQ 0 */
-.long SPI0_IRQ
-.long SPI1_IRQ
 .long 0
-.long UART0_IRQ
-.long UART1_IRQ
-.long UART2_IRQ
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
 .long 0
 .long 0
 /* IRQ 8 */
-.long I2C0_IRQ
-.long SCT_IRQ
-.long MRT_IRQ
-.long CMP_IRQ
-.long WDT_IRQ
-.long BOD_IRQ
 .long 0
-.long WKT_IRQ
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
 /* IRQ 16 */
 .long 0
 .long 0
@@ -53,18 +68,12 @@ This is the startup file for LPC81x. The C definition of the vector tables are d
 .long 0
 .long 0
 /* IRQ 24 */
-.long PININT0_IRQ
-.long PININT1_IRQ
-.long PININT2_IRQ
-.long PININT3_IRQ
-.long PININT4_IRQ
-.long PININT5_IRQ
-.long PININT6_IRQ
-.long PININT7_IRQ
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
+.long 0
 
-.text
-.align
-
-.global handle_reset
-handle_reset:
-    b reset
