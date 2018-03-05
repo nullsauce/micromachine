@@ -36,7 +36,7 @@ macro(make_program)
 	-mthumb \
 	-mfloat-abi=soft \
 	-nostdlib \
-	-march=armv6-m \
+	-march=armv6s-m \
 	")
 
 
