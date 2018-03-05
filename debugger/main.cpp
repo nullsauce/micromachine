@@ -5,6 +5,7 @@
 #include "QCpu.hpp"
 #include "QMemRegion.hpp"
 #include "MemView.hpp"
+#include "Disassembler.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Register>("Fla", 1, 0, "Register");
 	qmlRegisterType<Instruction>("Fla", 1, 0, "Instruction");
     qmlRegisterType<MemView>("Fla", 1, 0, "MemView");
+    qmlRegisterType<Disassembler>("Fla", 1, 0, "Disassembler");
     qmlRegisterType<QMemRegion>("Fla", 1, 0, "MemoryRegion");
     QCpu processor;
     engine.rootContext()->setContextProperty("CPU", &processor);
