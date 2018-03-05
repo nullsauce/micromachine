@@ -10,7 +10,7 @@ MEMORY
 
 heap_size = 8*1024;
 
-ENTRY(_start)
+ENTRY(_isr_reset)
 
 /* Define output sections */
 SECTIONS
@@ -19,14 +19,18 @@ SECTIONS
     .isr_vector :
     {
         . = ALIGN(4);
-        KEEP(*(.isr_vector)) /* Startup code */
+        _isr_vector_start = .;
+        KEEP(*(.isr_vector)) /* without 'KEEP' the garbage collector discards this section */
+        ASSERT(. != _isr_vector_start, "The .isr_vector section is empty");
+        _isr_vector_end = .;
         . = ALIGN(4);
-    } >FLASH
+    } > FLASH
 
     /* The program code and other data goes into FLASH */
     .text :
     {
         . = ALIGN(4);
+        _stext = .;
         *(.text)           /* .text sections (code) */
         *(.text*)          /* .text* sections (code) */
         *(.rodata)         /* .rodata sections (constants, strings, etc.) */
@@ -97,6 +101,7 @@ SECTIONS
         _stack_end = .;
     } > RAM
 
-.ARM.attributes 0 : { *(.ARM.attributes) }
+    _stack_bottom = _stack_end - 1;
+    .ARM.attributes 0 : { *(.ARM.attributes) }
 
-}
+    }

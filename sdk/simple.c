@@ -13,7 +13,18 @@ const char* hello = "Hello World This Is A Program";
 extern char _heap_start;
 
 
-void _start() {
+
+#define ISR __attribute__((weak, interrupt("IRQ")))
+void _isr_empty() {};
+void ISR _isr_nmi() {};
+void ISR _isr_hardfault() {};
+void ISR _isr_svcall() {};
+void ISR _isr_pendsv() {};
+void ISR _isr_systick() {};
+void ISR _isr_external_interruput() {};
+
+
+void _isr_reset() {
 	// zero bss
 	extern uint32_t* __bss_start__;
 	extern uint32_t* __bss_end__;
