@@ -16,13 +16,13 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "cpu.hpp"
 #include "MemView.hpp"
-
+#include "QInstruction.hpp"
 #include <unordered_map>
 
 class Register : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(int value READ value NOTIFY valueChanged)
+    Q_PROPERTY(quint32 value READ value NOTIFY valueChanged)
     Q_PROPERTY(QString hexValue READ hexValue NOTIFY valueChanged)
 public:
     Register(QObject* parent = nullptr, const QString& name = "")
@@ -60,82 +60,17 @@ private:
     const QString _name;
 };
 
-
-class Instruction : public QObject {
-    Q_OBJECT
-    Q_PROPERTY(QString code READ code NOTIFY changed)
-    Q_PROPERTY(QString hexAddress READ hexAddress NOTIFY changed)
-    Q_PROPERTY(quint32 address READ address NOTIFY changed)
-    Q_PROPERTY(bool isBreakPoint READ isBreakPoint NOTIFY changed)
-
-public:
-
-  Instruction(QObject* parent = nullptr, uint32_t address = 0, const QString& code = "<>")
-		: QObject(parent)
-		, _address(address)
-        , _code(code)
-        , _is_breakpoint(false) {
-
-	}
-
-	QString hexAddress() const {
-		return QString("%1").arg(_address, 8, 16, QChar('0'));
-	}
-
-	QString code() const {
-		return _code;
-	}
-
-    quint32 address() const {
-        return _address;
-    }
-
-	void setCode(const QString& code) {
-		_code = code;
-		emit changed();
-	}
-
-	void setAddress(uint32_t address) {
-		_address = address;
-		emit changed();
-	}
-
-    bool isBreakPoint() const {
-        return _is_breakpoint;
-    }
-
-    void setIsBreakPoint(bool isBreakPoint) {
-        if(isBreakPoint != _is_breakpoint) {
-            _is_breakpoint = isBreakPoint;
-            emit changed();
-        }
-    }
-
-signals:
-
-	void changed();
-
-private:
-
-	uint32_t _address;
-	QString _code;
-    bool _is_breakpoint;
-
-};
-
-
 class QCpu : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<Register> regs READ regs)
+    Q_PROPERTY(QQmlListProperty<Register> regs READ regs CONSTANT)
     Q_PROPERTY(QQmlListProperty<Instruction> instructions READ instructions NOTIFY instructionsChanged)
     Q_PROPERTY(quint32 currentPC READ currentPC NOTIFY changed)
     Q_PROPERTY(int desiredInstructionCount READ desiredInstructionCount WRITE setDesiredInstructionCount NOTIFY desiredInstructionCountChanged)
     Q_PROPERTY(QQmlListProperty<QMemRegion> memoryRegions READ memoryRegions CONSTANT)
 public:
     QCpu(QObject* parent = nullptr)
-        : QObject(parent)
-        , _dummy_instr(nullptr, 0, "<nothing>"){
+        : QObject(parent) {
 
         const char* const reg_names_std[16] = {
             "r00","r01","r02","r03",

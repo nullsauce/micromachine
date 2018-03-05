@@ -1,6 +1,8 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
+import QtQuick.Window 2.2
+import Fla 1.0
 
 ApplicationWindow {
     id:window
@@ -26,11 +28,7 @@ ApplicationWindow {
         value:(window.height/16)-2
     }
 
-    Rectangle {
-        anchors.fill: disasm
-        color:"#11181f"
-        border.color: "#22313F"
-    }
+
 
     Timer {
         id:clock
@@ -79,6 +77,118 @@ ApplicationWindow {
         }
     }
 
+
+    Window {
+        visible: true
+        width:800
+        height:600
+        id:disasmView
+        readonly property real disasmLineHeight:16
+        property int test:CPU.regs[15].value
+        readonly property color backgroundColor: "#22313F"
+        readonly property color centerColor: Qt.darker("#22313F",1.3)
+        readonly property real centerIntructionOrigin: disassembler.paddingInstructionCount * disasmLineHeight
+
+        Rectangle {
+            anchors.fill: parent
+            color:"#11181f"
+            border.color: disasmView.backgroundColor
+        }
+
+        Disassembler {
+            id:disassembler
+            memoryRegion:CPU.memoryRegions[1]
+            paddingInstructionCount: Math.floor((instructionList.height / disasmView.disasmLineHeight) / 2)
+            centerAddress:CPU.regs[15].value
+
+        }
+
+        Item {
+            y:disasmView.centerIntructionOrigin
+            height:disasmView.disasmLineHeight
+            width:50
+
+            Text {
+                anchors.fill: parent
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignRight
+                text:"->"
+                font.family: "monospace"
+                color:"#ddd"
+            }
+        }
+
+        Column {
+            anchors.fill: parent
+            anchors.leftMargin: 80
+            id:instructionList
+
+            Repeater {
+                anchors.fill: parent
+                model:disassembler.instructions
+                delegate: Item {
+                    width:500
+                    height:disasmView.disasmLineHeight
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color:disasmView.centerColor
+                        visible: address === disassembler.centerAddress
+                        width:parent.width
+                    }
+                    Rectangle {
+                        anchors.fill: parent
+                        color:"#123b56"
+                        visible: address === disasmView.test
+                        width:parent.width
+                    }
+                    Text {
+                        text:hexAddress
+                        font.family: "monospace"
+                        horizontalAlignment: Text.AlignLeft
+                        width:80
+                        height:parent.height
+                        color: address === disassembler.centerAddress ? "#ddd" : "#555"
+                    }
+                    Text {
+                        x:90
+                        id:instructionText
+                        text:code
+                        font.family: "monospace"
+                        horizontalAlignment: Text.AlignLeft
+                        width:400
+                        height:parent.height
+                        color:"#ddd"
+                    }
+                }
+            }
+        }
+        /* optim for center marker
+        Rectangle {
+            width:500
+            height:disasmView.disasmLineHeight
+            color:"red"
+            y:disassembler.paddingInstructionCount * height
+        }*/
+        MouseArea {
+            anchors.fill: parent
+            onWheel: {
+                var newPos = 0;
+                if(wheel.angleDelta.y > 0) {
+                    disassembler.scrollUp();
+                } else {
+                    disassembler.scrollDown();
+                }
+
+            }
+        }
+    }
+
+    Rectangle {
+        anchors.fill: disasm
+        color:"#11181f"
+        border.color: "#22313F"
+    }
 
     Column {
         id:disasm
