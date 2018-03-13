@@ -39,13 +39,14 @@ bool cpu::load_elf(const std::string &path)
 	ELFIO::Elf_Half sec_num = elfReader.sections.size();
 
 	uint32_t entryPoint = (uint32_t)elfReader.get_entry();
-	fprintf(stderr, "PC will be set to %08X\n", entryPoint);
+	//fprintf(stderr, "PC will be set to %08X\n", entryPoint);
 
 	_initial_pc = entryPoint;
 
-	std::cout << "Number of sections: " << sec_num << std::endl;
+	//std::cout << "Number of sections: " << sec_num << std::endl;
 	for (int i = 0; i < sec_num; ++i) {
 		ELFIO::section *section = elfReader.sections[i];
+		/*
 		fprintf(stderr, "%s:\t\t\t %016X %016X %i %i %i %i\n",
 			section->get_name().c_str(),
 			section->get_address(),
@@ -54,17 +55,16 @@ bool cpu::load_elf(const std::string &path)
 			section->get_type(),
 			section->get_info(),
 			section->get_index()
-		);
+		);*/
 
 		if(section->get_flags() & (SHF_ALLOC | SHF_EXECINSTR)) {
 
-
 			if(0 == section->get_size()) {
-				fprintf(stderr, "Skipping empty section %s\n", section->get_name().c_str());
+				//fprintf(stderr, "Skipping empty section %s\n", section->get_name().c_str());
 				continue;
 			}
 
-			fprintf(stderr, "Creating memory section for %s\n", section->get_name().c_str());
+			//fprintf(stderr, "Creating memory section for %s\n", section->get_name().c_str());
 
 			uint8_t* data = (uint8_t*)calloc(1, section->get_size());
 
@@ -77,31 +77,12 @@ bool cpu::load_elf(const std::string &path)
 
 			if(0 == section->get_name().compare(".stack")) {
 				uint32_t sp = section->get_address() + section->get_size() - 1;
-				fprintf(stderr, "SP will be set to %08X\n", sp);
+				//fprintf(stderr, "SP will be set to %08X\n", sp);
 				_initial_sp = sp;
 			}
 		}
 	}
 
-
-
-    // Print ELF file segments info
-    ELFIO::Elf_Half seg_num = elfReader.segments.size();
-    std::cout << "Number of segments: " << seg_num << std::endl;
-    for ( int i = 0; i < seg_num; ++i ) {
-        const ELFIO::segment* pseg = elfReader.segments[i];
-        std::cout << "  [" << i << "] 0x" << std::hex
-                  << pseg->get_flags()
-                  << "\t0x"
-                  << pseg->get_virtual_address()
-                  << "\t0x"
-                  << pseg->get_file_size()
-                  << "\t0x"
-                  << pseg->get_memory_size()
-                  << std::endl;
-        // Access to segments's data
-        // const char* p = reader.segments[i]->get_data()
-    }
 	return true;
 }
 
@@ -188,11 +169,11 @@ bool cpu::step() {
 		_regs.reset_pc_dirty_status();
 
 		execute(instr);
-
+		/*
 		fprintf(stderr, "%08x: %s\n",
 			(size_t)current_addr,
 			disasm::disassemble_instruction(instr, current_addr).c_str()
-		);
+		);*/
 
 		bool hard_fault = active_exceptions().is_signaled(exception::HARDFAULT);
 		bool fault = hard_fault;
