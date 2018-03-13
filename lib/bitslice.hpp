@@ -1,7 +1,6 @@
 #ifndef MICROMACHINE_BITSLICE_HPP
 #define MICROMACHINE_BITSLICE_HPP
 
-
 // Necessary for different slices to access each other _val event if their
 // template parameters are different without having public val methods.
 // TODO: make sure this is a zero cost abstraction
@@ -23,7 +22,7 @@ protected:
 	u_type& _val;
 };
 
-template<typename u_type, size_t offset, size_t len>
+template<size_t offset, size_t len, typename u_type>
 struct bitslice : public integer_ref_holder<u_type> {
 
 	static_assert(len > 0, "cannot declare a bit slice of length 0");
@@ -39,10 +38,10 @@ struct bitslice : public integer_ref_holder<u_type> {
 	using integer_ref_holder<u_type>::val;
 	using integer_ref_holder<u_type>::_val;
 
-	using type = bitslice<u_type, offset, len>;
+	using type = bitslice<offset, len, u_type>;
 
 	template<size_t other_offset>
-	type& operator= (const bitslice<u_type, other_offset, len>& other) {
+	type& operator= (const bitslice<other_offset, len, u_type>& other) {
 		static_assert(other_offset < binops::binsize<u_type>(),
 			"source offset must be smaller than the total number of bits");
 		write_bits(_val, offset, other.val(), other_offset, len);
@@ -60,8 +59,8 @@ struct bitslice : public integer_ref_holder<u_type> {
 	}
 
 	template<size_t local_offset, size_t new_len>
-	bitslice<u_type, offset+local_offset, new_len> bits() {
-		return bitslice<u_type, offset+local_offset, new_len>(_val);
+	bitslice<offset+local_offset, new_len, u_type> bits() {
+		return bitslice<offset+local_offset, new_len, u_type>(_val);
 	};
 
 	operator u_type() const {
@@ -72,6 +71,10 @@ struct bitslice : public integer_ref_holder<u_type> {
 		return (_val >> offset) & binops::make_mask<u_type>(len);
 	}
 
+	static bitslice<offset, len, u_type> of(u_type& other) {
+		return bitslice<offset, len, u_type>(other);
+	};
+
 private:
 
 	void write_bits(u_type& dst, size_t dst_offset, u_type src, size_t src_offset, size_t dst_len) {
@@ -80,5 +83,14 @@ private:
 		dst = (dst & (mask)) | (to_place & ~mask);
 	}
 };
+
+namespace bits {
+	template<size_t offset, size_t len, typename u_type>
+	bitslice<offset, len, u_type> of(u_type& integer) {
+		return bitslice<offset, len, uint32_t>::of(integer);
+	}
+}
+
+
 
 #endif //MICROMACHINE_BITSLICE_HPP
