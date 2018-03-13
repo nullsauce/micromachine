@@ -28,7 +28,7 @@ public:
 	{}
 
 	template <size_t slice_offset, size_t slice_len>
-	integer_type(const bitslice<u_type, slice_offset, slice_len>& bits)
+	integer_type(const bitslice<slice_offset, slice_len, u_type>& bits)
 			: _val((u_type)bits)
 	{}
 
@@ -67,8 +67,8 @@ public:
 	}
 
 	template<size_t offset, size_t len>
-	bitslice<u_type, offset, len> bits() {
-		return bitslice<u_type, offset, len>(*this);
+	bitslice<offset, len, u_type> bits() {
+		return bitslice<offset, len, u_type>(*this);
 	};
 
 	bool bit(size_t offset) const {

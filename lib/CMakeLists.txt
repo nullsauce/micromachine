@@ -3,6 +3,7 @@ set(SRCS
     binops.hpp
     types.hpp
     instruction_pair.hpp
+    bitslice.hpp
     integer_type.hpp
     instructions.hpp
     precond.hpp
