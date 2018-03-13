@@ -1,0 +1,37 @@
+# this one is important
+SET(CMAKE_SYSTEM_NAME micromachine)
+#this one not so much
+SET(CMAKE_SYSTEM_VERSION 1)
+
+set(TARGET_PREFIX "arm-none-eabi-")
+
+
+# specify the cross compiler
+SET(CMAKE_C_COMPILER   "${TARGET_PREFIX}gcc")
+SET(CMAKE_CXX_COMPILER "${TARGET_PREFIX}g++")
+set(CMAKE_LINKER "${TARGET_PREFIX}ld")
+set(CMAKE_CXX_LINKER "${TARGET_PREFIX}ld")
+set(CMAKE_ASM_COMPILER "${TARGET_PREFIX}as")
+
+set(CMAKE_C_FLAGS "-c -g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m")
+set(CMAKE_CXX_FLAGS "-g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m")
+
+set(CUSTOM_LD_FLAGS "-nostdlib -nodefaultlibs -nostartfiles")
+
+set(CMAKE_C_LINK_FLAGS "${CUSTOM_LD_FLAGS}")
+set(CMAKE_CXX_LINK_FLAGS "${CUSTOM_LD_FLAGS}")
+
+set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET>")
+set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINKER} <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET>")
+
+
+# where is the target environment
+SET(CMAKE_FIND_ROOT_PATH ${CMAKE_SOURCE_DIR})
+
+# search for programs in the build host directories
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+
+
+# for libraries and headers in the target directories
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
