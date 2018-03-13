@@ -83,7 +83,7 @@ public:
         }
 
 
-        _cpu.load_elf("/home/fla/projects/micromachine/sdk/build/simple_c_elf");
+        _cpu.load_elf("/home/fla/projects/micromachine/sdk/build/performance_test");
         /*
         _stack_mem.assign(1024, 0);
         _cpu.mem().map(program, 0, sizeof(program)+1000);
