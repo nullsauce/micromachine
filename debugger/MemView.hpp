@@ -125,14 +125,6 @@ public:
                 rect.adjust(-offset*mByteTextSize.width(),0,-offset*mByteTextSize.width(),0);
                 painter->fillRect(rect, colors[nextColor]);
                 painter->drawRect(rect);
-                /*
-                if(x == numWords-1) {
-                    if(lastAddressOffset == 0) {
-                        nextColor = (nextColor + 1) % 2;
-                    }
-                } else {
-                    nextColor = (nextColor + 1) % 2;
-                }*/
 
                 if(x != numWords-1 || lastAddressOffset == 0) {
                     nextColor = (nextColor + 1) % 2;
