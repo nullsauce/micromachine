@@ -23,15 +23,16 @@ public:
 	struct mem_mapping {
 		mem_mapping(uint8_t* host_ptr, uint32_t start_addr, uint32_t size, const std::string& name = "")
 			: _host_mem(host_ptr)
-			, _range(start_addr, start_addr + size)
+			, _start(start_addr)
+			, _end(start_addr + size)
 			, _name(name) {}
 
 		const uint32_t& start() const {
-			return _range.first;
+			return _start;
 		}
 
 		const uint32_t& end() const {
-			return _range.second;
+			return _end;
 		}
 
 		const uint8_t* host_mem() const {
@@ -51,7 +52,8 @@ public:
 		}
 
 		uint8_t* const _host_mem;
-		const std::pair<uint32_t, uint32_t> _range;
+		const uint32_t _start;
+		const uint32_t _end;
 		const std::string _name;
 	};
 
