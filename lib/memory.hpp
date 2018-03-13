@@ -14,6 +14,25 @@
 	fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__); \
 	_hardfault_signal = true; \
 
+namespace {
+	template<class ForwardIt, class T, class Compare>
+	ForwardIt lamda_upper_bound(ForwardIt first, ForwardIt last, const T& value, Compare comp) {
+		ForwardIt it;
+		typename std::iterator_traits<ForwardIt>::difference_type count, step;
+		count = std::distance(first,last);
+
+		while (count > 0) {
+			it = first;
+			step = count / 2;
+			std::advance(it, step);
+			if (!comp(value, *it)) {
+				first = ++it;
+				count -= step + 1;
+			} else count = step;
+		}
+		return first;
+	}
+}
 
 class memory {
 
@@ -213,7 +232,23 @@ private:
 		}
 
 		return nullptr;
+
+		/*
+		auto found_region = lamda_upper_bound(std::begin(_regions), std::end(_regions), address, [] (const uint32_t
+		search, const mem_mapping& region) {
+			return region.end() > search;
+		});
+
+		// if the interator is valid, then check the address
+		// is within the region size
+		if(std::end(_regions) != found_region && found_region->start() < address) {
+			return found_region.base();
+		} else {
+			return nullptr;
+		}*/
 	}
+
+
 
 	mem_mapping* find_region(uint32_t address) {
 		return const_cast<mem_mapping*>(find_const_region(address));
