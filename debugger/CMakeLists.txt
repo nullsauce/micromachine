@@ -18,6 +18,10 @@ set(SRCS
 	MemView.cpp
 	Disassembler.hpp
 	Disassembler.cpp
+	AddressTracker.hpp
+	AddressTracker.cpp
+	AddressTrackerList.hpp
+	AddressTrackerList.cpp
 	QMemRegion.hpp
 )
 add_executable(visual_debugger ${SRCS} qml.qrc)
