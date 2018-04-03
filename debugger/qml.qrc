@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>Memoryview.qml</file>
+        <file>DisassemblyView.qml</file>
     </qresource>
 </RCC>
