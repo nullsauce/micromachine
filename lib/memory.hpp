@@ -240,6 +240,7 @@ private:
 			}
 		}
 
+#if 1
 		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const mem_mapping& mm){
 			return in_range(address, mm);
 		});
@@ -247,10 +248,9 @@ private:
 		if(std::end(_regions) != it) {
 			return it.base();
 		}
-
 		return nullptr;
+#else
 
-		/*
 		auto found_region = lamda_upper_bound(std::begin(_regions), std::end(_regions), address, [] (const uint32_t
 		search, const mem_mapping& region) {
 			return region.end() > search;
@@ -262,7 +262,8 @@ private:
 			return found_region.base();
 		} else {
 			return nullptr;
-		}*/
+		}
+#endif
 	}
 
 
