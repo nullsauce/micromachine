@@ -223,6 +223,23 @@ private:
 
 	const mem_mapping* find_const_region(uint32_t address) const {
 
+		// Check if within PPB register (inside the System memory region
+		if(0xE0000000 == address & 0xFFF00000) {
+			if(address < 0xE000E010) {
+				// System control and ID registers
+			} else if(address < 0xE000E100) {
+				// SysTick
+			} else if(address < 0xE000ED00) {
+				// NVIC
+			} else if(address < 0xE000EDF0) {
+				// MPU
+			} else if(address < 0xE000EF00) {
+				// Debug
+			} else {
+				// Unassigned addresses are reserved
+			}
+		}
+
 		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const mem_mapping& mm){
 			return in_range(address, mm);
 		});
