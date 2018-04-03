@@ -106,11 +106,16 @@ public slots:
         setCenterAddress(centerAddress() + prevInstructionSize);
     }
 
+
     void update() {
         if(mMem == nullptr) return;
         if(0 == mPaddingInstructionCount) return;
 
         size_t totalNumberOfInstructions = (mPaddingInstructionCount * 2) + 1;
+        if((ssize_t)totalNumberOfInstructions < 0) {
+            return;
+        }
+
         mInstructions.resize(totalNumberOfInstructions);
 
         for(auto& instr : mInstructions) {
@@ -119,32 +124,19 @@ public slots:
             }
         }
 
-
-        uint32_t nextAddress = mCenterAddress;
-        for(int i = mPaddingInstructionCount; i >= 0; i--) {
+        uint32_t nextAddress = mCenterAddress - (totalNumberOfInstructions / 2)*2;
+        for(int i = 0; i < totalNumberOfInstructions; i++) {
             QSharedPointer<Instruction> instr = mInstructions.at(i);
             instr->setAddress(nextAddress);
             if(mMem->isValidVirtualAddress(nextAddress)) {
-                uint32_t size = disassembleAddress(nextAddress, instr->mutableCode());
+                uint32_t data = 0; // binary representation
+                uint32_t size = disassembleAddress(nextAddress, instr->mutableCode(), data);
                 instr->setSize(size);
+                instr->setData(data);
             } else {
                 instr->setCode("");
                 instr->setSize(2);
-            }
-
-            nextAddress -= instr->size();
-        }
-
-        nextAddress = mCenterAddress;
-        for(int i = mPaddingInstructionCount; i < totalNumberOfInstructions; i++) {
-            QSharedPointer<Instruction> instr = mInstructions.at(i);
-            instr->setAddress(nextAddress);
-            if(mMem->isValidVirtualAddress(nextAddress)) {
-                uint32_t size = disassembleAddress(nextAddress, instr->mutableCode());
-                instr->setSize(size);
-            } else {
-                instr->setCode("");
-                instr->setSize(2);
+                instr->setData(0);
             }
             nextAddress += instr->size();
         }
@@ -174,12 +166,13 @@ private:
         return reinterpret_cast<Disassembler*>((list->data))->instruction(index);
     }
 
-    uint32_t disassembleAddress(uint32_t address, QString& disasm) {
+    uint32_t disassembleAddress(uint32_t address, QString& disasm, uint32_t& data) {
         uint32_t offset = mMem->virtualAddressOffset(address);
         const uint8_t* buffer = mMem->hostMemoryBase();
         halfword first_instr = *(uint16_t*)(buffer + offset); // always prefetch
         halfword second_instr = *(uint16_t*)(buffer + offset + sizeof(halfword)); // always prefetch
         instruction_pair instr = instruction_pair(first_instr, second_instr);
+        data = instr.second << 16 | instr.first;
         disasm = QString::fromStdString(disasm::disassemble_instruction(instr, address));
         return instr.size();
     }

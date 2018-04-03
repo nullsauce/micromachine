@@ -191,6 +191,12 @@ public:
         updateViewModels();
     }
 
+    Q_INVOKABLE bool toggleBreakpoint(quint32 address) {
+        bool newState = !isBreakPoint(address);
+        setBreakPoint(address, newState);
+        return newState;
+    }
+
 
 
 signals:

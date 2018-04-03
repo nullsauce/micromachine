@@ -22,7 +22,8 @@ class Instruction : public QObject {
     Q_PROPERTY(QString code READ code NOTIFY changed)
     Q_PROPERTY(QString hexAddress READ hexAddress NOTIFY changed)
     Q_PROPERTY(quint32 address READ address NOTIFY changed)
-    Q_PROPERTY(quint32 size READ size  NOTIFY changed)
+    Q_PROPERTY(quint32 size READ size NOTIFY changed)
+    Q_PROPERTY(QString data READ data NOTIFY changed)
     Q_PROPERTY(bool isBreakPoint READ isBreakPoint NOTIFY changed)
 
 public:
@@ -30,10 +31,23 @@ public:
   Instruction(QObject* parent = nullptr)
 		: QObject(parent)
         , _address(0)
-        , _is_breakpoint(false)
-        , _size(2){
+        , _size(2)
+        , _data("")
+        , _is_breakpoint(false) {
 
 	}
+
+    QString data() const {
+        return _data;
+    }
+
+    void setData(uint32_t data) {
+        _data.clear();
+        uint8_t* bytes = (uint8_t*)&data;
+        for(int i = 0; i < size(); i++) {
+            _data += QString("%1").arg(bytes[i], 2, 16, QChar('0'));
+        }
+    }
 
     uint32_t size() const {
         return _size;
@@ -88,8 +102,9 @@ private:
 
 	uint32_t _address;
 	QString _code;
-    bool _is_breakpoint;
     uint32_t _size;
+    QString _data;
+    bool _is_breakpoint;
 
 };
 

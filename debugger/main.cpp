@@ -6,6 +6,8 @@
 #include "QMemRegion.hpp"
 #include "MemView.hpp"
 #include "Disassembler.hpp"
+#include "AddressTracker.hpp"
+#include "AddressTrackerList.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -14,11 +16,13 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     qmlRegisterType<QCpu>("Fla", 1, 0, "Cpu");
-    qmlRegisterType<Register>("Fla", 1, 0, "Register");
-	qmlRegisterType<Instruction>("Fla", 1, 0, "Instruction");
+    qmlRegisterUncreatableType<Register>("Fla", 1, 0, "Register", "cannot create");
+    qmlRegisterUncreatableType<Instruction>("Fla", 1, 0, "Instruction", "cannot create");
     qmlRegisterType<MemView>("Fla", 1, 0, "MemView");
     qmlRegisterType<Disassembler>("Fla", 1, 0, "Disassembler");
-    qmlRegisterType<QMemRegion>("Fla", 1, 0, "MemoryRegion");
+    qmlRegisterUncreatableType<QMemRegion>("Fla", 1, 0, "MemoryRegion", "cannot create");
+    qmlRegisterType<AddressTrackerList>("Fla", 1, 0, "AddressTrackerList");
+    qmlRegisterUncreatableType<AddressTracker>("Fla", 1, 0, "AddressTracker", "cannot create");
     QCpu processor;
     engine.rootContext()->setContextProperty("CPU", &processor);
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
