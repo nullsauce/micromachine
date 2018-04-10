@@ -47,6 +47,10 @@ public:
         for(int i = 0; i < size(); i++) {
             _data += QString("%1").arg(bytes[i], 2, 16, QChar('0'));
         }
+        _data += " ";
+        for(int i = 0; i < size(); i++) {
+            _data += QString("%1").arg(bytes[i], 8, 2, QChar('0')) + " ";
+        }
     }
 
     uint32_t size() const {
