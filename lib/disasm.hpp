@@ -253,7 +253,7 @@ private:
 		format("mov %s, %s", R(instruction.high_rd()), R(instruction.high_rm()));
 	}
 	void dispatch(const bx& instruction) override {
-		format("bx %d", R(instruction.rm));
+		format("bx %s", R(instruction.rm));
 	}
 	void dispatch(const blx& instruction) override {
 		format("blx %s", R(instruction.rm));
