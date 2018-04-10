@@ -384,7 +384,7 @@ protected:
 
 	void validateSignaledException() {
 		if(PINKYSIM_STEP_HARDFAULT == m_expectedStepReturn) {
-			EXPECT_TRUE(_cpu.active_exceptions().is_signaled(exception::HARDFAULT));
+			EXPECT_TRUE(_cpu.exceptions().is_pending(exception_type::HARDFAULT_PRECISE));
 		} else {
 			assert("TODO implement");
 		}

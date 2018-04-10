@@ -3,8 +3,8 @@
 
 #include "standard_reg.hpp"
 #include "exec_mode_reg.hpp"
-#include "exception_vector.hpp"
 #include "epsr_reg.hpp"
+#include "exception_return_handler.hpp"
 
 class pc_reg : public standard_reg {
 public:
@@ -16,10 +16,10 @@ public:
 
 	pc_reg(const exec_mode_reg& exec_mode_reg,
 			epsr_reg& epsr_reg,
-			exception_vector::bitref_t& hardfault_signal)
+			exception_return_handler& exception_return_handler)
 		: _exec_mode_reg(exec_mode_reg)
 		, _epsr_reg(epsr_reg)
-		, _hardfault_signal(hardfault_signal) {
+		, _exception_return_handler(exception_return_handler) {
 
 	}
 
@@ -31,7 +31,8 @@ public:
 		if(_exec_mode_reg.is_handler_mode() &&
 			0b1111 == address.uint(28,4)) {
 			// TODO ExceptionReturn
-			precond_fail("ExceptionReturn unimplemented")
+			uint32_t return_address = address.uint(0, 28);
+			_exception_return_handler.exception_return(return_address);
 		} else {
 
 			if(!address.bit(0)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
@@ -75,7 +76,7 @@ private:
 
 	const exec_mode_reg& 			_exec_mode_reg;
 	epsr_reg& 						_epsr_reg;
-	exception_vector::bitref_t&	_hardfault_signal;
+	exception_return_handler&		_exception_return_handler;
 };
 
 

@@ -16,17 +16,17 @@
 #include "registers/apsr_reg.hpp"
 #include "registers/ipsr_reg.hpp"
 #include "registers/epsr_reg.hpp"
-
+#include "exception_return_handler.hpp"
 
 struct registers {
 
-	registers(exception_vector::bitref_t& hardfault_signal)
+	registers(exception_return_handler& exception_return_handler)
 		: _xpsr_register(0)
 		, _app_status_register(_xpsr_register)
 		, _interrupt_status_register(_xpsr_register)
 		, _execution_status_register(_xpsr_register)
 		, _sp(_exec_mode_register, _control_register)
-		, _pc(_exec_mode_register, _execution_status_register, hardfault_signal) {
+		, _pc(_exec_mode_register, _execution_status_register, exception_return_handler) {
 
 	}
 

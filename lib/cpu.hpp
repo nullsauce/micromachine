@@ -14,9 +14,10 @@
 #include "exec.hpp"
 #include "memory.hpp"
 #include "registers/exec_mode_reg.hpp"
-#include "exception.hpp"
+#include "exception_type.hpp"
 #include "exception_vector.hpp"
 #include "exec_dispatcher.hpp"
+#include "exception_manager.hpp"
 #include "disasm.hpp"
 
 class cpu {
@@ -31,7 +32,7 @@ public:
 	instruction_pair fetch_instruction(word address) const;
 	instruction_pair fetch_instruction_debug(word address) const;
 	bool step();
-	const exception_vector& active_exceptions() const;
+	const exception_vector& exceptions() const;
 	memory& mem();
 	const memory& mem() const;
 	registers& regs();
@@ -41,18 +42,16 @@ public:
 
 private:
 	void execute(const instruction_pair instr);
-	void push_stack();
-	void signal_exception(exception ex);
-	void exception_entry(exception ex);
+
 	void enter_handler_mode();
 	void enter_thread_mode();
-	bool is_priviledged_mode() const;
-	void take_exception(exception exception);
 
-	exception_vector	_active_exceptions;
+
+	exception_vector	_exception_vector;
 	registers 			_regs;
 	memory 				_mem;
 	exec_dispatcher 	_exec_dispatcher;
+	exception_manager 	_exception_manager;
 
 	// TODO: this is not needed here
 	uint32_t _initial_sp;
