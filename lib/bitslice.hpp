@@ -36,13 +36,16 @@ struct bitslice /*: public integer_ref_holder<u_type>*/ {
 	}
 
 	u_type extract() const {
-		return (_val >> offset) & binops::make_mask<u_type>(len);
+		return (_val.get() >> offset) & binops::make_mask<u_type>(len);
 	}
 
 	std::reference_wrapper<u_type> val() {
 		return _val;
 	}
 
+	const std::reference_wrapper<u_type> val() const {
+		return _val;
+	}
 
 private:
 
@@ -57,6 +60,7 @@ private:
 
 template<size_t offset, size_t len>
 struct bits {
+
 	template<typename u_type>
 	static bitslice<offset, len, u_type> of(u_type& integer) {
 		return bitslice<offset, len, u_type>(integer);

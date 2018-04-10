@@ -871,7 +871,7 @@ static void exec(const mrs& instruction, registers& regs, apsr_reg& apsr) {
 	switch(instruction.sysn.uint(3, 5)) {
 		case 0b00000: {
 			if(instruction.sysn.bit(0)) {
-				val.write_bits(0, 0, regs.interrupt_status_register().exception(), 8);
+				val.write_bits(0, 0, (uint8_t)regs.interrupt_status_register().exception_num(), 8);
 			}
 			if(instruction.sysn.bit(1)) {
 				// T-bit reads as zero
@@ -949,10 +949,6 @@ static void exec(const bl_imm& instruction, registers& regs) {
 	int32_t offset = instruction.offset();
 	int32_t new_pc = regs.get_pc() + offset;
 	regs.set_pc(new_pc);
-}
-
-static void exec(const svc& instruction) {
-	fprintf(stderr, "SVC %02X\n", instruction.imm8);
 }
 
 #endif //THUMBEMU_EXEC_HPP
