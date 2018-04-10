@@ -12,7 +12,7 @@
 
 #define memory_hardfault(reason_fmt,...)\
 	fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__); \
-	_hardfault_signal = true; \
+	_exception.raise(exception_type::HARDFAULT_PRECISE);
 
 namespace {
 	template<class ForwardIt, class T, class Compare>
@@ -77,8 +77,8 @@ public:
 	};
 
 
-	memory(exception_vector::bitref_t& hardfault_signal)
-		: _hardfault_signal(hardfault_signal) {
+	memory(exception_vector& exception_vector)
+		: _exception(exception_vector) {
 
 	}
 
@@ -273,7 +273,7 @@ private:
 	}
 
     region_vec _regions;
-	mutable exception_vector::bitref_t _hardfault_signal;
+	exception_vector& _exception;
 
 };
 

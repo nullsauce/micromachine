@@ -23,13 +23,15 @@ set(SRCS
     memory.hpp
     cpu.hpp
     exception_vector.hpp
-    exception.hpp
+    exception_type.hpp
     string_format.hpp
     exec_dispatcher.hpp
     dispatcher.hpp
     disasm.hpp
+    exception_manager.hpp
+    exception_manager.cpp
     cpu.hpp
-	cpu.cpp
+    cpu.cpp
 )
 
 add_library(micromachine STATIC ${SRCS})
