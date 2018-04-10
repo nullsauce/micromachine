@@ -26,18 +26,14 @@ private:
 	registers& _regs;
 	memory& _mem;
 
-	void signal_exception(exception type) {
-		_exception_vector[type] = true;
-	}
-
 	void invalid_instruction(const halfword& instr) override {
 		(void)instr;
-		signal_exception(exception::HARDFAULT);
+		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
 	}
 
 	void invalid_instruction(const instruction_pair& instr) override {
 		(void)instr;
-		signal_exception(exception::HARDFAULT);
+		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
@@ -262,16 +258,16 @@ private:
 		exec(bl_imm(instruction), _regs);
 	}
 	void dispatch(const svc& instruction) override {
-		exec(svc(instruction));
+		_exception_vector.raise(exception_type::SVCALL);
 	}
 	void dispatch(const udf& instr) override {
 		(void)instr;
 		// undefined instruction
-		signal_exception(exception::HARDFAULT);
+		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
 	}
 	void dispatch(const udfw& instr) override {
 		// undefined instruction
-		signal_exception(exception::HARDFAULT);
+		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
 	}
 };
 

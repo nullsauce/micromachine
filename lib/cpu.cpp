@@ -11,9 +11,10 @@ and/or distributed without the express permission of Flavio Roth.
 #include "elfio/elfio.hpp"
 
 cpu::cpu()
-	: _regs(_active_exceptions[exception::HARDFAULT])
-	, _mem(_active_exceptions[exception::HARDFAULT])
-	, _exec_dispatcher(_regs, _mem, _active_exceptions)
+	: _regs(_exception_manager)
+	, _mem(_exception_vector)
+	, _exec_dispatcher(_regs, _mem, _exception_vector)
+	, _exception_manager(_regs, _mem, _exception_vector)
 	, _initial_sp(0)
 	, _initial_pc(0)
 {}
@@ -93,8 +94,8 @@ void cpu::execute(const instruction_pair instr)
 
 void cpu::reset() {
 
-	_active_exceptions.clear();
-	enter_thread_mode();
+	_exception_vector.reset();
+	_exception_manager.reset();
 	_regs.reset();
 	_regs.app_status_register().reset();
 	_regs.set_sp(_initial_sp);
@@ -152,49 +153,54 @@ instruction_pair cpu::fetch_instruction_debug(word address) const {
 
 bool cpu::step() {
 
-	if(!_regs.execution_status_register().thumb_bit_set()) {
-		// Thumb bit not set
-		// all instructions in this state are UNDEFINED .
-		signal_exception(exception::HARDFAULT);
-	}
-	if(_active_exceptions.any_signaled()) {
-		fprintf(stderr, "Exception signaled\n");
-		return true;
+
+
+
+
+
+	const word current_addr = _regs.get_pc();
+	instruction_pair instr = fetch_instruction(current_addr);
+
+	_exception_vector.prioritize();
+	if(_exception_vector.any_pending()) {
+		_exception_manager.exception_entry(_exception_vector.top_exception(), current_addr, instr);
 	} else {
 
-		const word current_addr = _regs.get_pc();
-		instruction_pair instr = fetch_instruction(current_addr);
+		if(!_regs.execution_status_register().thumb_bit_set()) {
+			// Thumb bit not set
+			// all instructions in this state are UNDEFINED .
+			_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
+		}
 
 		_regs.set_pc(current_addr + 4);  // simulate prefetch of 2 instructions
 		_regs.reset_pc_dirty_status();
-
 		execute(instr);
+
 		/*
 		fprintf(stderr, "%08x: %s\n",
 			(size_t)current_addr,
 			disasm::disassemble_instruction(instr, current_addr).c_str()
 		);*/
 
-		bool hard_fault = active_exceptions().is_signaled(exception::HARDFAULT);
-		bool fault = hard_fault;
-		if(!_regs.branch_occured()) {
-			if(hard_fault) {
-				_regs.set_pc(current_addr);
-			} else {
-				_regs.set_pc(current_addr + instr.size());
-			}
-		}
-
-		if(active_exceptions().any_signaled()) {
-			//exception_entry(active_exceptions.storage());
-		}
-
-		return hard_fault;
 	}
+
+	bool hard_fault = _exception_vector.is_pending(exception_type::HARDFAULT_PRECISE);
+
+	if(!_regs.branch_occured()) {
+		if(hard_fault) {
+			// restore pc to real current address
+			_regs.set_pc(current_addr);
+		} else {
+			_regs.set_pc(current_addr + instr.size());
+		}
+	}
+
+	return hard_fault;
+
 }
 
-const exception_vector& cpu::active_exceptions() const {
-	return _active_exceptions;
+const exception_vector& cpu::exceptions() const {
+	return _exception_vector;
 }
 
 memory& cpu::mem() {
@@ -213,81 +219,4 @@ const registers& cpu::regs() const {
 	return _regs;
 }
 
-
-void cpu::push_stack() {
-
-	const size_t stack_frame_size = 32;
-	const uint32_t sp_mask = ~((uint32_t)0b100);
-	const bool frame_ptr_align = _regs.get_sp().bit(2);
-
-	uint32_t frame_ptr = (_regs.get_sp() - stack_frame_size) & sp_mask;
-	_regs.set_sp(frame_ptr);
-
-	// TODO: ReturnAddress()
-	uint32_t return_address = regs().get_pc() - 2;
-
-	uint xpsr_status = 	_regs.xpsr_register().uint(0, 8) |
-						(frame_ptr_align << 8) |
-						_regs.xpsr_register().uint(10, 22) << 10;
-
-	_mem.write32(frame_ptr+0,  _regs.get(0));
-	_mem.write32(frame_ptr+4,  _regs.get(1));
-	_mem.write32(frame_ptr+8,  _regs.get(2));
-	_mem.write32(frame_ptr+12, _regs.get(3));
-	_mem.write32(frame_ptr+16, _regs.get(12));
-	_mem.write32(frame_ptr+20, _regs.get_lr());
-	_mem.write32(frame_ptr+24, return_address);
-	_mem.write32(frame_ptr+28, xpsr_status);
-
-
-	if(_regs.exec_mode_register().is_handler_mode()) {
-		_regs.set_lr(0xFFFFFFF1);
-	} else if(_regs.control_register().sp_sel()) {
-		_regs.set_lr(0xFFFFFFF9);
-	} else {
-		_regs.set_lr(0xFFFFFFFD);
-	}
-}
-
-void cpu::signal_exception(exception ex)  {
-	precond(exception::INVALID != ex, "Bad exception identifier");
-	_active_exceptions[ex] = true;
-}
-
-void cpu::exception_entry(exception ex) {
-	push_stack();
-	take_exception(ex);
-}
-
-void cpu::enter_handler_mode() {
-	_regs.exec_mode_register().set_handler_mode();
-}
-
-void cpu::enter_thread_mode() {
-	_regs.exec_mode_register().set_thread_mode();
-}
-
-bool cpu::is_priviledged_mode() const {
-	return _regs.exec_mode_register().is_handler_mode() &&
-		!_regs.control_register().n_priv();
-}
-
-void cpu::take_exception(exception exception) {
-	// enter handler mode
-	enter_handler_mode();
-
-	// set ipsr with exception number
-	_regs.interrupt_status_register().set_exception(exception);
-
-	// stack is now SP_main
-	_regs.control_register().set_sp_sel(0);
-
-	_active_exceptions[exception] = true;
-
-	//SCS_UpdateStatusRegs();
-	//SetEventRegister();
-	//InstructionSynchronizationBarrier();
-	uint32_t handler_address = _mem.read32(4*(size_t)exception);
-	_regs.branch_link_interworking(handler_address);
-}
 

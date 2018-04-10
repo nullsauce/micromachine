@@ -28,6 +28,6 @@ int fib(int n){
 }
 
 void _isr_reset() {
-	fib(25);
 	SVC(42);
+	fib(25);
 }
