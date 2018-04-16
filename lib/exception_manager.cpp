@@ -120,14 +120,12 @@ current_instruction) {
 	// address of next instruction by default;
 	uint32_t return_address = instruction_address + current_instruction.size();
 
-	if(exception_type::HARDFAULT_PRECISE == ex.state().type()) {
+    if(exception_type::HARDFAULT == ex.state().type()) {
 		// address of the instruction causing fault
 		return_address = instruction_address;
 	} else if(exception_type::SVCALL == ex.state().type()) {
 		// address of the next instruction after svc
-        // return_address = instruction_address + current_instruction.size();
-        // note: actually we already incremented the pc when processing the svc instruction
-        return_address = instruction_address;
+        return_address = instruction_address + current_instruction.size();
 	} else if(exception_type::PENDSV == ex.state().type() || exception_type::SYSTICK == ex.state().type()) {
 		// address of instruction to be executed after the irq
 		return_address = instruction_address + current_instruction.size();
@@ -197,11 +195,11 @@ void exception_manager::push_stack(uint32_t return_address) {
 
 
 	if(_regs.exec_mode_register().is_handler_mode()) {
-		_regs.set_lr(0xFFFFFFF1);
+		_regs.set_lr(0xFFFFFFF1); // return to handler
     } else if(0 == _regs.control_register().sp_sel()) {
-		_regs.set_lr(0xFFFFFFF9);
+		_regs.set_lr(0xFFFFFFF9); // return to thread using main stack
 	} else {
-		_regs.set_lr(0xFFFFFFFD);
+		_regs.set_lr(0xFFFFFFFD); // return to thread using process stack
 	}
 }
 

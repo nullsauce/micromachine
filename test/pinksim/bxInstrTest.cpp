@@ -39,7 +39,7 @@ PINKY_TEST(bx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCause
 
     const uint16_t NOP = 0xBF00;
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16, NOP, READ_ONLY);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 

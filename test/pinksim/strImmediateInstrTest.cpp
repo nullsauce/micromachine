@@ -51,8 +51,7 @@ PINKY_TEST(strImmediate, T1AttemptUnalignedStore)
 {
     emitInstruction16("01100iiiiinnnttt", 0, R3, R2);
     setRegisterValue(R3, INITIAL_PC + 2);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
@@ -60,8 +59,7 @@ PINKY_TEST(strImmediate, T1AttemptStoreToInvalidAddress)
 {
     emitInstruction16("01100iiiiinnnttt", 16, R3, R2);
     setRegisterValue(R3, 0xFFFFFFFC - 16 * 4);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
@@ -91,7 +89,7 @@ TEST_SIM_ONLY(strImmediate, T2AttemptUnalignedStore)
 {
     emitInstruction16("10010tttiiiiiiii", R2, 0);
     setRegisterValue(SP, INITIAL_PC + 1026);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
+    setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
     setExpectedRegisterValue(PC, INITIAL_PC);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
@@ -102,8 +100,7 @@ TEST_SIM_ONLY(strImmediate, T2AttemptStoreToInvalidAddress)
 {
     emitInstruction16("10010tttiiiiiiii", R2, 0);
     setRegisterValue(SP, 0xFFFFFFFC);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 */

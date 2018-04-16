@@ -161,39 +161,37 @@ bool cpu::step() {
 	const word current_addr = _regs.get_pc();
 	instruction_pair instr = fetch_instruction(current_addr);
 
-	_exception_vector.prioritize();
-	if(_exception_vector.any_pending()) {
-		_exception_manager.exception_entry(_exception_vector.top_exception(), current_addr, instr);
+	if(!_regs.execution_status_register().thumb_bit_set()) {
+		// Thumb bit not set
+		// all instructions in this state are UNDEFINED .
+		_exception_vector.raise(exception_type::HARDFAULT);
 	} else {
-
-		if(!_regs.execution_status_register().thumb_bit_set()) {
-			// Thumb bit not set
-			// all instructions in this state are UNDEFINED .
-			_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
-		}
 
 		_regs.set_pc(current_addr + 4);  // simulate prefetch of 2 instructions
 		_regs.reset_pc_dirty_status();
 		execute(instr);
 
-		/*
-		fprintf(stderr, "%08x: %s\n",
-			(size_t)current_addr,
-			disasm::disassemble_instruction(instr, current_addr).c_str()
-		);*/
-
 	}
 
-	bool hard_fault = _exception_vector.is_pending(exception_type::HARDFAULT_PRECISE);
 
-	if(!_regs.branch_occured()) {
-		if(hard_fault) {
-			// restore pc to real current address
-			_regs.set_pc(current_addr);
-		} else {
-			_regs.set_pc(current_addr + instr.size());
-		}
+	/*
+	fprintf(stderr, "%08x: %s\n",
+		(size_t)current_addr,
+		disasm::disassemble_instruction(instr, current_addr).c_str()
+	);*/
+
+	// check for pending exceptions
+	_exception_vector.prioritize();
+	bool hard_fault = false;
+	if(_exception_vector.any_pending()) {
+		hard_fault = _exception_vector.is_pending(exception_type::HARDFAULT);
+		_regs.set_pc(current_addr);
+		_exception_manager.exception_entry(_exception_vector.top_exception(), current_addr, instr);
+	} else if(!_regs.branch_occured()) {
+		_regs.set_pc(current_addr + instr.size());
 	}
+
+
 
 	return hard_fault;
 
