@@ -74,8 +74,7 @@ PINKY_TEST(ldrshRegister, AttemptUnalignedLoad)
     emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
     setRegisterValue(R7, 1);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
@@ -84,7 +83,6 @@ PINKY_TEST(ldrshRegister, AttemptLoadFromInvalidAddress)
     emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, 0xFFFFFFFC);
     setRegisterValue(R7, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }

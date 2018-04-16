@@ -40,7 +40,7 @@ enum class exception_type : exception_number_t {
 	INVALID = 0,
 	RESET	= 1,
 	NMI		= 2,
-	HARDFAULT_PRECISE = 3,
+	HARDFAULT = 3,
 
 	// 4-10 reserved
 	_RESERVED_0 = 4,

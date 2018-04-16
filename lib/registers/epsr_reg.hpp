@@ -13,7 +13,8 @@ struct epsr_reg : public xpsr_reg {
 	using xpsr_reg::xpsr_reg;
 	
 	bool thumb_bit_set() const {
-		return bit(THUMB_BIT);
+		bool set = bit(THUMB_BIT);
+		return set;
 	}
 
 	void set_thumb_bit(bool set) {

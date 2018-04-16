@@ -59,7 +59,6 @@ PINKY_TEST(strhImmediate, AttemptStoreToInvalidAddress)
 {
     emitInstruction16("10000iiiiinnnttt", 0, R3, R1);
     setRegisterValue(R3, 0xFFFFFFFC);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }

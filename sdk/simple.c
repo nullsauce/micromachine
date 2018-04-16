@@ -1,6 +1,8 @@
 #include <stdint.h>
-
+#include <stddef.h>
 #define SVC(code) __asm__ __volatile__ ("svc %0" : : "I" (code) )
+
+
 
 int fib(int);
 uint32_t rand();
@@ -13,18 +15,50 @@ const char* hello = "Hello World This Is A Program";
 extern char _heap_start;
 
 
+static
+unsigned int __write(unsigned int fd, const char* buf, unsigned int count) {
+
+}
+
+inline
+static
+unsigned int svcall(uint8_t command) {
+	switch(command) {
+		case 0x04: /* write */ {
+			register unsigned int fd 	asm("r0");
+			register const char* buf 	asm("r1");
+			register size_t count 		asm("r2");
+			return __write(fd, buf, count);
+		}
+	}
+}
+
+
 
 #define ISR __attribute__((weak, interrupt("IRQ")))
 void _isr_empty() {};
 void ISR _isr_nmi() {};
 void ISR _isr_hardfault() {};
-void ISR _isr_svcall() {};
+void ISR _isr_svcall() {
+	// Load the svc operation number into r0
+
+	// 1) load the saved lr into r0
+	__asm__ __volatile__ ("ldr r7, [sp, #24]");
+	// 2) sub 2 to lr to find the address of the svc instruction
+	__asm__ __volatile__ ("sub r7, #2");
+	// 3) load the first byte of the instruction into r0
+	register uint8_t command asm("r7");
+	__asm__ __volatile__ ("ldrb r7, [r7]");
+
+	svcall(command);
+};
 void ISR _isr_pendsv() {};
 void ISR _isr_systick() {};
 void ISR _isr_external_interruput() {};
 
 
 void _isr_reset() {
+	SVC(42);
 	// zero bss
 	extern uint32_t* __bss_start__;
 	extern uint32_t* __bss_end__;

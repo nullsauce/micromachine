@@ -29,31 +29,27 @@ TEST_GROUP_BASE(undefined, pinkySimBase)
 PINKY_TEST(undefined, Undedfined16BitWithAllZeroesForImmedaite)
 {
     emitInstruction16("11011110iiiiiiii", 0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNDEFINED);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
 PINKY_TEST(undefined, Undedfined16BitWithAllOnesForImmedaite)
 {
     emitInstruction16("11011110iiiiiiii", -1);
-    setExpectedStepReturn(PINKYSIM_STEP_UNDEFINED);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
 PINKY_TEST(undefined, Undefined32BitWithAllZeroesForImmediate)
 {
     emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", 0, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNDEFINED);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
 PINKY_TEST(undefined, Undefined32BitWithAllOnesForImmediate)
 {
     emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", -1, -1);
-    setExpectedStepReturn(PINKYSIM_STEP_UNDEFINED);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }

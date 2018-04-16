@@ -3,14 +3,15 @@ include_directories(framework)
 
 set(BUILD_STANDALONE_TESTS FALSE CACHE BOOL "")
 
-set(HEADER_FILES
-    framework/pinkySimBaseTest.h
+set(COMMON_FILES
     framework/pinksim.hpp
     framework/pinkysim_glue.hpp
     framework/SimpleMemory_glue.hpp
+    framework/pinkySimBaseTest.h
+    framework/pinkySimBaseTest.cpp
 )
 
-set(ALL_TESTS_SRC ${HEADER_FILES})
+set(ALL_TESTS_SRC ${COMMON_FILES})
 
 macro(declare_pinksim_test test_name)
     # name of the source test file
@@ -20,7 +21,7 @@ macro(declare_pinksim_test test_name)
 
     if(${BUILD_STANDALONE_TESTS})
         # build a standalone test executable for this test only
-        list(APPEND STANDALONE_TEST_SRCS ${HEADER_FILES})
+        list(APPEND STANDALONE_TEST_SRCS ${COMMON_FILES})
         list(APPEND STANDALONE_TEST_SRCS ${TEST_SRC_FILE})
         declare_test(${test_name} "${STANDALONE_TEST_SRCS}")
         add_test(${test_name} ${test_name})
