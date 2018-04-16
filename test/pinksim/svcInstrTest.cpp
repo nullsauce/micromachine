@@ -32,13 +32,13 @@ TEST_GROUP_BASE(svc, pinkySimBase)
 PINKY_TEST(svc, SmallestImmediate)
 {
     emitInstruction16("11011111iiiiiiii", 0);
-    setExpectedStepReturn(PINKYSIM_STEP_SVC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
     pinkySimStep(&m_context);
 }
 
 PINKY_TEST(svc, LargestImmediate)
 {
     emitInstruction16("11011111iiiiiiii", 255);
-    setExpectedStepReturn(PINKYSIM_STEP_SVC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
     pinkySimStep(&m_context);
 }

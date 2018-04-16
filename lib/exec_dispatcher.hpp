@@ -28,12 +28,12 @@ private:
 
 	void invalid_instruction(const halfword& instr) override {
 		(void)instr;
-		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
+		_exception_vector.raise(exception_type::HARDFAULT);
 	}
 
 	void invalid_instruction(const instruction_pair& instr) override {
 		(void)instr;
-		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
+		_exception_vector.raise(exception_type::HARDFAULT);
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
@@ -263,11 +263,11 @@ private:
 	void dispatch(const udf& instr) override {
 		(void)instr;
 		// undefined instruction
-		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
+		_exception_vector.raise(exception_type::HARDFAULT);
 	}
 	void dispatch(const udfw& instr) override {
 		// undefined instruction
-		_exception_vector.raise(exception_type::HARDFAULT_PRECISE);
+		_exception_vector.raise(exception_type::HARDFAULT);
 	}
 };
 

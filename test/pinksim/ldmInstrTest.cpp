@@ -87,8 +87,7 @@ PINKY_TEST(ldm, HardFaultFromInvalidMemoryRead)
 {
     emitInstruction16("11001nnnrrrrrrrr", 0, (1 << 0));
     setRegisterValue(R0, 0xFFFFFFFC);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 /*

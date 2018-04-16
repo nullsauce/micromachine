@@ -90,7 +90,7 @@ PINKY_TEST(pop, PopToSetPCToEvenAddressWhichGeneratesHardFault)
 
     const uint16_t NOP = 0xBF00;
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16, NOP, READ_ONLY);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 /*
@@ -98,8 +98,7 @@ PINKY_TEST(pop, HardFaultFromInvalidMemoryRead)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 1);
     setRegisterValue(SP, 0xFFFFFFFC);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }*/
 /*
@@ -107,7 +106,6 @@ TEST_SIM_ONLY(pop, UnpredictableToPopNoRegisters)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 */
