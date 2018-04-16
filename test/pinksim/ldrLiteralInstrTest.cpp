@@ -65,6 +65,6 @@ PINKY_TEST(ldrLiteral, AttemptToLoadFromInvalidAddress)
     setExpectedRegisterValue(PC, INITIAL_SP - 128);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 128, 0, READ_WRITE);
     emitInstruction16("01001tttiiiiiiii", R0, 255);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }

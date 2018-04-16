@@ -64,8 +64,7 @@ PINKY_TEST(strRegister, AttemptUnalignedStore)
     emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
     setRegisterValue(R7, 2);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
@@ -74,7 +73,6 @@ PINKY_TEST(strRegister, AttemptStoreToInvalidAddress)
     emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, 0xFFFFFFFC);
     setRegisterValue(R7, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }

@@ -84,7 +84,6 @@ PINKY_TEST(ldrsbRegister, AttemptLoadInvalidAddress)
     emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, 0xFFFFFFFC);
     setRegisterValue(R7, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }

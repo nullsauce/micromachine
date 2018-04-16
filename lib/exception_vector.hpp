@@ -18,7 +18,7 @@ public:
 			{exception_type::INVALID},
 			{exception_type::RESET},
 			{exception_type::NMI},
-			{exception_type::HARDFAULT_PRECISE},
+			{exception_type::HARDFAULT},
 			{exception_type::_RESERVED_0},
 			{exception_type::_RESERVED_1},
 			{exception_type::_RESERVED_2},
@@ -51,7 +51,7 @@ public:
 		, _exceptions({
 			{get_ptr_by_type(exception_type::RESET), -3},
 			{get_ptr_by_type(exception_type::NMI), -2},
-			{get_ptr_by_type(exception_type::HARDFAULT_PRECISE), -1},
+			{get_ptr_by_type(exception_type::HARDFAULT), -1},
 			{get_ptr_by_type(exception_type::SVCALL), 1},
 			{get_ptr_by_type(exception_type::PENDSV), 1},
 			{get_ptr_by_type(exception_type::SYSTICK), 1},

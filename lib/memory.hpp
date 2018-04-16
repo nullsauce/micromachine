@@ -12,7 +12,7 @@
 
 #define memory_hardfault(reason_fmt,...)\
 	fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__); \
-	_exception.raise(exception_type::HARDFAULT_PRECISE);
+    _exception.raise(exception_type::HARDFAULT);
 
 namespace {
 	template<class ForwardIt, class T, class Compare>
