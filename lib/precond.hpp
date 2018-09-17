@@ -14,9 +14,14 @@
 		std::terminate(); \
 	} \
 
+#ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
 #define precond(cond, message, ...) { \
 	if(!(cond)) { \
 		precond_fail("FATAL: " message "\n", ##__VA_ARGS__) \
 	}} \
+
+#else
+#define precond(...) (void)0
+#endif
 
 #endif //THUMBEMU_DEBUG_HPP
