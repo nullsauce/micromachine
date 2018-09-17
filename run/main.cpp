@@ -13,9 +13,8 @@ int main(int argc, const char** argv) {
 	cpu c;
 	c.load_elf(argv[1]);
 
-	for(int i = 0; i < 40; i++) {
-	c.reset();
 
+	c.reset();
 	auto start = std::chrono::steady_clock::now();
 	decltype(start) end;
 	for(;;) {
@@ -27,9 +26,11 @@ int main(int argc, const char** argv) {
 		}
 	}
 	uint64_t elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-	fprintf(stderr, "elapsed: %f seconds\n", elapsed_ms/1000.0);
+	double elapsed_secs = elapsed_ms/1000.0;
+	fprintf(stderr, "elapsed: %f seconds\n", elapsed_secs);
 
-	}
+	double perf = c.debug_instruction_counter() / elapsed_secs;
+	fprintf(stderr, "run %lld instruction(s), %f i/s\n", c.debug_instruction_counter(), perf);
 	//c.regs().print();
 	return EXIT_SUCCESS;
 }
