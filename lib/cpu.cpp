@@ -18,7 +18,11 @@ cpu::cpu()
 	, _initial_sp(0)
 	, _initial_pc(0)
 	, _debug_instruction_counter(0)
-{}
+{
+#ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
+	fprintf(stderr, "Warning: The CPU is compiled with addtional safety checks that might slow its performance.");
+#endif
+}
 
 
 bool cpu::load_elf(const std::string &path)
