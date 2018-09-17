@@ -27,7 +27,7 @@ void exception_manager::reset() {
 
 void exception_manager::exception_return(uint32_t ret_address) {
 	assert(_regs.exec_mode_register().is_handler_mode());
-    fprintf(stderr,"exception_return from %08x\n", ret_address);
+    //fprintf(stderr,"exception_return from %08x\n", ret_address);
 	// bits 4 to 24 are all ones
 	// TODO: make a nice function
 	if(binops::make_mask<24>() != bits<4,24>::of(ret_address)) {
