@@ -23,9 +23,17 @@ public:
 		memory& mem,
 		exception_vector& exceptions);
 	void exception_return(uint32_t ret_address) override ;
-	void exception_entry(prioritized_exception& ex, uint32_t instruction_address, instruction_pair current_instruction);
 	void reset();
+
+	void process_pending_exception(word current_addr, instruction_pair instruction) {
+		// TODO: Implement priority checks
+		_regs.set_pc(current_addr);
+		exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction);
+	}
+
 private:
+
+	void exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair current_instruction);
 
 	void enter_handler_mode();
 	void enter_thread_mode();
@@ -35,13 +43,11 @@ private:
 
 
 	bool is_priviledged_mode() const;
-	void take_exception(prioritized_exception& exception);
+	void take_exception(exception_state& exception);
 
 	registers& 			_regs;
 	memory& _mem;
 	exception_vector&	_exception_vector;
-
-	uint32_t _active_exception_count;
 ;
 };
 
