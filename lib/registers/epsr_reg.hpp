@@ -3,7 +3,6 @@
 
 #include "types.hpp"
 #include "xpsr_reg.hpp"
-#include "exception_type.hpp"
 
 struct epsr_reg : public xpsr_reg {
 

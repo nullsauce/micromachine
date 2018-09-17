@@ -14,10 +14,9 @@
 #include "exec.hpp"
 #include "memory.hpp"
 #include "registers/exec_mode_reg.hpp"
-#include "exception_type.hpp"
 #include "exception_vector.hpp"
-#include "exec_dispatcher.hpp"
 #include "exception_manager.hpp"
+#include "exec_dispatcher.hpp"
 #include "disasm.hpp"
 
 class cpu {
