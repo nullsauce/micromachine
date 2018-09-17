@@ -13,8 +13,13 @@ set(CMAKE_LINKER "${TARGET_PREFIX}ld")
 set(CMAKE_CXX_LINKER "${TARGET_PREFIX}ld")
 set(CMAKE_ASM_COMPILER "${TARGET_PREFIX}as")
 
-set(CMAKE_C_FLAGS "-c -g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m")
-set(CMAKE_CXX_FLAGS "-g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m")
+
+UNSET(CMAKE_C_FLAGS CACHE)
+UNSET(CMAKE_CXX_FLAGS CACHE)
+set(CMAKE_C_FLAGS "-c -g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m"
+    CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "-g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m"
+    CACHE STRING "" FORCE)
 
 set(CUSTOM_LD_FLAGS "-nostdlib -nodefaultlibs -nostartfiles")
 
