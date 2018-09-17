@@ -16,8 +16,7 @@ exception_manager::exception_manager(
 		exception_vector& exceptions)
 	: _regs(regs)
 	, _mem(mem)
-	, _exception_vector(exceptions)
-	, _active_exception_count(0) {
+	, _exception_vector(exceptions) {
 
 }
 
@@ -46,7 +45,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
     const uint8_t ret_bits = (uint8_t)bits<0,4>::of(ret_address);
     switch(ret_bits) {
 		case 0b0001: /* return to handler */ {
-			if(_active_exception_count == 1) {
+			if(_exception_vector.active_exception_count() == 1) {
 				// unpredictable
 				// exception mismatch
 				fprintf(stderr, "exception mismatch\n");
@@ -58,7 +57,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 			break;
 		}
 		case 0b1001: /* return to thread using main stack */ {
-			if(_active_exception_count != 1) {
+			if(_exception_vector.active_exception_count() != 1) {
 				// unpredictable
 				// return to thread exception mismatch
 				fprintf(stderr, "return to thread exception mismatch\n");
@@ -70,7 +69,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 			break;
 		}
 		case 0b1101: /* return to thread using process stack */ {
-			if(_active_exception_count != 1) {
+			if(_exception_vector.active_exception_count() != 1) {
 				// unpredictable
 				// return to thread exception mismatch
 				fprintf(stderr, "return to thread exception mismatch\n");
@@ -90,7 +89,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	}
 
 	_exception_vector.deactivate(returning_from_exception);
-	_active_exception_count--;
+	//_active_exception_count--;
 	pop_stack(frame_ptr, ret_address);
 
 	if(_regs.exec_mode_register().is_handler_mode()) {
@@ -113,20 +112,20 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	// IMPLEMENTATION DEFINED
 }
 
-void exception_manager::exception_entry(prioritized_exception& ex, uint32_t instruction_address, instruction_pair
+void exception_manager::exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair
 current_instruction) {
 
 
 	// address of next instruction by default;
 	uint32_t return_address = instruction_address + current_instruction.size();
 
-    if(exception_type::HARDFAULT == ex.state().type()) {
+    if(exception_type::HARDFAULT == ex.type()) {
 		// address of the instruction causing fault
 		return_address = instruction_address;
-	} else if(exception_type::SVCALL == ex.state().type()) {
+	} else if(exception_type::SVCALL == ex.type()) {
 		// address of the next instruction after svc
         return_address = instruction_address + current_instruction.size();
-	} else if(exception_type::PENDSV == ex.state().type() || exception_type::SYSTICK == ex.state().type()) {
+	} else if(exception_type::PENDSV == ex.type() || exception_type::SYSTICK == ex.type()) {
 		// address of instruction to be executed after the irq
 		return_address = instruction_address + current_instruction.size();
 	}
@@ -210,23 +209,22 @@ bool exception_manager::is_priviledged_mode() const {
 		!_regs.control_register().n_priv();
 }
 
-void exception_manager::take_exception(prioritized_exception& exception) {
+void exception_manager::take_exception(exception_state& exception) {
 	// enter handler mode
 	enter_handler_mode();
 
 	// set ipsr with exception number
-	_regs.interrupt_status_register().set_exception_number(exception.state().number());
+	_regs.interrupt_status_register().set_exception_number(exception.number());
 
 	// stack is now SP_main
 	_regs.control_register().set_sp_sel(0);
 
-	exception.state().activate();
-	_active_exception_count++;
+	_exception_vector.activate(exception);
 
 	//SCS_UpdateStatusRegs();
 	//SetEventRegister();
 	//InstructionSynchronizationBarrier();
-	uint8_t exception_number = exception.state().number();
+	uint8_t exception_number = exception.number();
 	uint32_t vector_table_offset = sizeof(word) * exception_number;
 	uint32_t handler_address = _mem.read32(vector_table_offset);
 	_regs.branch_link_interworking(handler_address);
