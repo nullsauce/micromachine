@@ -168,11 +168,9 @@ bool cpu::step() {
 		// all instructions in this state are UNDEFINED .
 		_exception_vector.raise(exception_type::HARDFAULT);
 	} else {
-
 		_regs.set_pc(current_addr + 4);  // simulate prefetch of 2 instructions
 		_regs.reset_pc_dirty_status();
 		execute(instr);
-
 	}
 
 	/*
@@ -182,6 +180,7 @@ bool cpu::step() {
 	);*/
 
 	// check for pending exceptions
+
 	_exception_vector.prioritize();
 	bool hard_fault = false;
 	if(_exception_vector.any_pending()) {
@@ -192,10 +191,7 @@ bool cpu::step() {
 		_regs.set_pc(current_addr + instr.size());
 	}
 
-
-
 	return hard_fault;
-
 }
 
 const exception_vector& cpu::exceptions() const {
