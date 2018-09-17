@@ -78,37 +78,29 @@ public:
             "r08","r09","r10","r11",
             "r12","sp","lr","pc"
         };
+
         for(int i = 0; i < 16; i++) {
             _registers.append(new Register(this,reg_names_std[i]));
         }
 
-
-        _cpu.load_elf("/home/fla/projects/micromachine/sdk/build/simple_c");
-        /*
-        _stack_mem.assign(1024, 0);
-        _cpu.mem().map(program, 0, sizeof(program)+1000);
-        _cpu.mem().map(_stack_mem.data(), 0x10000u-_stack_mem.size(), _stack_mem.size());
-
-        _heap_mem.assign(1024, 0xcd);
-        _cpu.mem().map(_heap_mem.data(), 0x20000, _heap_mem.size());
-
-        _initialized_data.assign(0x2000, 0);
-        _cpu.mem().map(_initialized_data.data(), 0x20000000, _initialized_data.size());
-        */
-        for(const auto& region: _cpu.mem().regions()) {
-            auto r = new QMemRegion(this);
-            r->setMapping(&region);
-            _memory_regions.append(r);
-        }
-
-        emit regsChanged();
-        emit nameChanged();
-
         setDesiredInstructionCount(20);
-
-        reset();
-
     }
+
+	bool loadElf(const QString& file) {
+		qDebug() << "Loading ELF file" << file;
+		_cpu.load_elf(file.toStdString());
+
+		_memory_regions.clear();
+		for(const auto& region: _cpu.mem().regions()) {
+			auto r = new QMemRegion(this);
+			r->setMapping(&region);
+			_memory_regions.append(r);
+		}
+
+		emit regsChanged();
+		emit nameChanged();
+		reset();
+	}
 
     QQmlListProperty<QMemRegion> memoryRegions() {
         return QQmlListProperty<QMemRegion>(this, _memory_regions);
