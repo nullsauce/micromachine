@@ -6,7 +6,7 @@
 #define MICROMACHINE_EXCEPTION_VECTOR_HPP
 
 #include <array>
-#include "exception_type.hpp"
+#include "exception_state.hpp"
 #include "types.hpp"
 
 
@@ -104,7 +104,7 @@ public:
 		std::sort(_exceptions.begin(), _exceptions.end(), _comparator);
 	}
 
-	bool any_pending() {
+	bool any_pending() const {
 		return top_exception().state().pending();
 	}
 
@@ -112,9 +112,13 @@ public:
 		return _exceptions.at(0);
 	}
 
+	const prioritized_exception& top_exception() const {
+		return _exceptions.at(0);
+	}
+
 	void print() {
 		for(const auto& e : _exceptions) {
-			fprintf(stderr, "%d [%d] %d\n", e.priority(), e.priority_score(), e.state().number());
+			fprintf(stderr, "%d [%d] %d\n", e.priority(), e.priority_score(), (int)e.state().number());
 		}
 	}
 
