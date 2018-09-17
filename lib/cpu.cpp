@@ -179,14 +179,12 @@ bool cpu::step() {
 		disasm::disassemble_instruction(instr, current_addr).c_str()
 	);*/
 
-	// check for pending exceptions
-
-	_exception_vector.prioritize();
 	bool hard_fault = false;
-	if(_exception_vector.any_pending()) {
+	//bool exception_pending = _exception_manager.prepare_exceptions();
+	exception_state* pending_exception = _exception_vector.top_pending_exception();
+	if(pending_exception) {
 		hard_fault = _exception_vector.is_pending(exception_type::HARDFAULT);
-		_regs.set_pc(current_addr);
-		_exception_manager.exception_entry(_exception_vector.top_exception(), current_addr, instr);
+		_exception_manager.process_pending_exception(current_addr, instr);
 	} else if(!_regs.branch_occured()) {
 		_regs.set_pc(current_addr + instr.size());
 	}
