@@ -24,6 +24,11 @@ int main(int argc, char *argv[])
     qmlRegisterType<AddressTrackerList>("Fla", 1, 0, "AddressTrackerList");
     qmlRegisterUncreatableType<AddressTracker>("Fla", 1, 0, "AddressTracker", "cannot create");
     QCpu processor;
+	if(argc < 1) {
+		qDebug() << "Elf file argument is missing";
+		return -1;
+	}
+	processor.loadElf(argv[1]);
     engine.rootContext()->setContextProperty("CPU", &processor);
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
