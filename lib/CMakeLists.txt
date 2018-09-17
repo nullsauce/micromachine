@@ -35,6 +35,12 @@ set(SRCS
 )
 
 add_library(micromachine STATIC ${SRCS})
+
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+	message(WARNING "Enabling precondition checks")
+	add_definitions(-DMICROMACHINE_ENABLE_PRECOND_CHECKS)
+endif()
+
 target_include_directories(micromachine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(micromachine PROPERTIES LINKER_LANGUAGE CXX)
 cotire(micromachine)
