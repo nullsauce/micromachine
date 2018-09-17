@@ -17,6 +17,7 @@ cpu::cpu()
 	, _exception_manager(_regs, _mem, _exception_vector)
 	, _initial_sp(0)
 	, _initial_pc(0)
+	, _debug_instruction_counter(0)
 {}
 
 
@@ -153,10 +154,7 @@ instruction_pair cpu::fetch_instruction_debug(word address) const {
 
 bool cpu::step() {
 
-
-
-
-
+	_debug_instruction_counter++;
 
 	const word current_addr = _regs.get_pc();
 	instruction_pair instr = fetch_instruction(current_addr);
@@ -172,7 +170,6 @@ bool cpu::step() {
 		execute(instr);
 
 	}
-
 
 	/*
 	fprintf(stderr, "%08x: %s\n",

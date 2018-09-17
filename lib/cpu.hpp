@@ -40,6 +40,10 @@ public:
 
 	bool load_elf(const std::string& path);
 
+	uint64_t debug_instruction_counter() const {
+		return _debug_instruction_counter;
+	}
+
 private:
 	void execute(const instruction_pair instr);
 
@@ -56,6 +60,7 @@ private:
 	// TODO: this is not needed here
 	uint32_t _initial_sp;
 	uint32_t _initial_pc;
+	uint64_t _debug_instruction_counter;
 
 
 };
