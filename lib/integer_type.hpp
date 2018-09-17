@@ -24,7 +24,7 @@ public:
 	integer_type() : _val(0) {}
 
 	integer_type(bits_t v)
-			: _val(to_host_order(v))
+			: _val(v)
 	{}
 
 	template <size_t slice_offset, size_t slice_len>
@@ -33,7 +33,7 @@ public:
 	{}
 
 	operator bits_t() const {
-		return unpack();
+		return _val;
 	}
 
 	bits_t uint(size_t bit_offset, size_t num_bits) const {
@@ -104,26 +104,6 @@ private:
 	static bits_t swap(bits_t val) {
 		return binops::swap(val);
 	}
-
-	static bits_t platform_to_host_order(bits_t val) {
-		return swap(val);
-	}
-
-	static bits_t host_to_platform_order(bits_t val) {
-		return swap(val);
-	}
-
-	static bits_t to_host_order(bits_t val) {
-		if(is_big_endian()) {
-			return platform_to_host_order(val);
-		}
-		return val;
-	}
-
-	bits_t unpack() const {
-		return to_host_order(_val);
-	};
-
 
 	bits_t _val;
 
