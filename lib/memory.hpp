@@ -46,11 +46,11 @@ public:
 			, _end(start_addr + size)
 			, _name(name) {}
 
-		const uint32_t& start() const {
+		uint32_t start() const {
 			return _start;
 		}
 
-		const uint32_t& end() const {
+		uint32_t end() const {
 			return _end;
 		}
 
