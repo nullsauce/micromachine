@@ -210,7 +210,7 @@ private:
 	sp_reg 			_sp;
 	standard_reg 	_lr;
 	pc_reg 			_pc;
-	const std::array<ireg*, 16> _registers = {
+	const std::array<ireg*, 16> _registers = {{
 		&_gen_pupose_registers[0],
 		&_gen_pupose_registers[1],
 		&_gen_pupose_registers[2],
@@ -227,7 +227,7 @@ private:
 		&_sp,
 		&_lr,
 		&_pc
-	};
+	}};
 
 
 };
