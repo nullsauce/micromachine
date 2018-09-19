@@ -30,7 +30,7 @@ int main(int argc, const char** argv) {
 	fprintf(stderr, "elapsed: %f seconds\n", elapsed_secs);
 
 	double perf = c.debug_instruction_counter() / elapsed_secs;
-	fprintf(stderr, "run %lld instruction(s), %f i/s\n", c.debug_instruction_counter(), perf);
+	fprintf(stderr, "run %ld instruction(s), %f i/s\n", c.debug_instruction_counter(), perf);
 	//c.regs().print();
 	return EXIT_SUCCESS;
 }
