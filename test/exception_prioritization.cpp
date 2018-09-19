@@ -7,31 +7,31 @@
 
 TEST(ExceptionsTest, NotPendingWhenEmpty) {
 	exception_vector vec;
-	EXPECT_FALSE(vec.any_active());
+	EXPECT_FALSE(vec.any_pending());
 }
 
 TEST(ExceptionsTest, RasingOnePendingShouldBePending) {
 	exception_vector vec;
 	vec.raise(exception_type::HARDFAULT);
-	EXPECT_TRUE(vec.any_active());
+	EXPECT_TRUE(vec.any_pending());
 }
 
 TEST(ExceptionsTest, RasingOnePendingShouldBeTheSamePending) {
 	exception_vector vec;
 	vec.raise(exception_type::HARDFAULT);
-	EXPECT_TRUE(vec.any_active());
+	EXPECT_TRUE(vec.any_pending());
 	ASSERT_NE(nullptr, vec.top_pending_exception());
 	EXPECT_EQ(exception_type::HARDFAULT, vec.top_pending_exception()->type());
 }
 
-TEST(ExceptionsTest, ActiveFlagScope) {
+TEST(ExceptionsTest, PendingFlagScope) {
 	exception_vector vec;
 	vec.raise(exception_type::HARDFAULT);
-	EXPECT_TRUE(vec.any_active());
+	EXPECT_TRUE(vec.any_pending());
 	vec.activate(exception_type::HARDFAULT);
-	EXPECT_TRUE(vec.any_active());
+	EXPECT_FALSE(vec.any_pending());
 	vec.deactivate(exception_type::HARDFAULT);
-	EXPECT_FALSE(vec.any_active());
+	EXPECT_FALSE(vec.any_pending());
 }
 
 TEST(ExceptionsTest, TopPendingShouldBeHighestPriority) {
