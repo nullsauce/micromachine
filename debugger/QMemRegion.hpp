@@ -44,7 +44,7 @@ public:
         return _mapping->host_mem();
     }
 
-    const uint32_t& virtualBase() const {
+    const uint32_t virtualBase() const {
         return _mapping->start();
     }
 
