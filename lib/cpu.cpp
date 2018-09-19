@@ -166,7 +166,7 @@ bool cpu::step() {
 	if(!_regs.execution_status_register().thumb_bit_set()) {
 		// Thumb bit not set
 		// all instructions in this state are UNDEFINED .
-		_exception_vector.raise(exception_type::HARDFAULT);
+		_exception_vector.raise(exception_number::name::HARDFAULT);
 	} else {
 		_regs.set_pc(current_addr + 4);  // simulate prefetch of 2 instructions
 		_regs.reset_pc_dirty_status();
@@ -183,7 +183,7 @@ bool cpu::step() {
 	//bool exception_pending = _exception_manager.prepare_exceptions();
 	exception_state* pending_exception = _exception_vector.top_pending_exception();
 	if(pending_exception) {
-		hard_fault = _exception_vector.is_pending(exception_type::HARDFAULT);
+		hard_fault = pending_exception->number() == exception_number(exception_number::name::HARDFAULT);
 		_exception_manager.process_pending_exception(current_addr, instr);
 	} else if(!_regs.branch_occured()) {
 		_regs.set_pc(current_addr + instr.size());
