@@ -166,14 +166,14 @@ private:
 	bool write(uint32_t address, access_t value) {
 
 		if(!is_aligned<access_t>(address)) {
-			memory_hardfault("unaligned memory access. write word at 0x%08X", address);
+			memory_hardfault("unaligned memory access. write word at 0x%08X\n", address);
 			return false;
 		}
 
 		mem_mapping* region = find_region(address);
 
 		if(!region) {
-			memory_hardfault("invalid memory access (unmapped) when writing word at 0x%08X", address);
+			memory_hardfault("invalid memory access (unmapped) when writing word at 0x%08X\n", address);
 			return false;
 		}
 
