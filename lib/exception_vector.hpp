@@ -7,16 +7,17 @@
 
 #include <array>
 #include <list>
-#include "exception_state.hpp"
+#include <stack>
+#include "exception_type.hpp"
 #include "types.hpp"
 
 /// Exception state
 class exception_state {
 	friend class exception_vector;
 public:
-	exception_state(const exception_type& ex_type, int8_t priority = 0)
+	exception_state(exception_number::name exception_name, int8_t priority = 0)
 		: _priority(priority)
-		, _type(ex_type)
+		, _number(exception_number::from_name(exception_name))
 		, _active(false)
 		, _pending(false)
 		, _default_priority(priority) {
@@ -27,6 +28,7 @@ public:
 	}
 
 	void set_priority(int8_t priority) {
+
 		_priority = priority;
 	}
 
@@ -39,11 +41,7 @@ public:
 	}
 
 	exception_number number() const {
-		return exception_number::from_type(_type);
-	}
-
-	exception_type type() const {
-		return _type;
+		return _number;
 	}
 
 	void clear() {
@@ -51,110 +49,143 @@ public:
 		_active = _pending = false;
 	}
 
+	bool is_lower_priority(const exception_state& other) {
+		if(_priority == other._priority) {
+			return _number < other._number;
+		} else if(_priority < other._priority) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 private:
 
 	void raise() {
-		//fprintf(stderr, "RAISE %d (%d) %p\n", _type, _priority, this);
 		_pending = true;
 	}
 
 	void activate() {
-		//fprintf(stderr, "ACTIVATE %d (%d)\n", _type, _priority);
 		_pending = false;
 		_active = true;
 	}
 
 	void deactivate() {
-		//fprintf(stderr, "DEACTIVATE %d (%d)\n", _type, _priority);
 		_active = false;
 	}
 
 	int8_t _priority;
-	const exception_type _type;
+	const exception_number _number;
 	bool _active;
 	bool _pending;
 	int8_t _default_priority;
 };
+
+namespace {
+	bool pending_exception(const exception_state& ex){
+		return ex.pending();
+	};
+
+	bool active_exception(const exception_state& ex){
+		return ex.active();
+	};
+
+}
 
 class exception_vector {
 
 public:
 	exception_vector()
 		: _exception_states({{
-			{exception_type::INVALID, 126},
-			{exception_type::RESET, -3},
-			{exception_type::NMI, -2},
-			{exception_type::HARDFAULT, -1},
-			{exception_type::_RESERVED_0},
-			{exception_type::_RESERVED_1},
-			{exception_type::_RESERVED_2},
-			{exception_type::_RESERVED_3},
-			{exception_type::_RESERVED_4},
-			{exception_type::_RESERVED_5},
-			{exception_type::_RESERVED_6},
-			{exception_type::SVCALL},
-			{exception_type::_RESERVED_7},
-			{exception_type::_RESERVED_8},
-			{exception_type::PENDSV},
-			{exception_type::SYSTICK},
-			{exception_type::IRQ_0},
-			{exception_type::IRQ_1},
-			{exception_type::IRQ_2},
-			{exception_type::IRQ_3},
-			{exception_type::IRQ_4},
-			{exception_type::IRQ_5},
-			{exception_type::IRQ_6},
-			{exception_type::IRQ_7},
-			{exception_type::IRQ_8},
-			{exception_type::IRQ_9},
-			{exception_type::IRQ_10},
-			{exception_type::IRQ_11},
-			{exception_type::IRQ_12},
-			{exception_type::IRQ_13},
-			{exception_type::IRQ_14},
-			{exception_type::IRQ_15}
+			{exception_number::name::INVALID, 126},
+			{exception_number::name::RESET, -3},
+			{exception_number::name::NMI, -2},
+			{exception_number::name::HARDFAULT, -1},
+			{exception_number::name::_RESERVED_0},
+			{exception_number::name::_RESERVED_1},
+			{exception_number::name::_RESERVED_2},
+			{exception_number::name::_RESERVED_3},
+			{exception_number::name::_RESERVED_4},
+			{exception_number::name::_RESERVED_5},
+			{exception_number::name::_RESERVED_6},
+			{exception_number::name::SVCALL},
+			{exception_number::name::_RESERVED_7},
+			{exception_number::name::_RESERVED_8},
+			{exception_number::name::PENDSV},
+			{exception_number::name::SYSTICK},
+			{exception_number::name::IRQ_0},
+			{exception_number::name::IRQ_1},
+			{exception_number::name::IRQ_2},
+			{exception_number::name::IRQ_3},
+			{exception_number::name::IRQ_4},
+			{exception_number::name::IRQ_5},
+			{exception_number::name::IRQ_6},
+			{exception_number::name::IRQ_7},
+			{exception_number::name::IRQ_8},
+			{exception_number::name::IRQ_9},
+			{exception_number::name::IRQ_10},
+			{exception_number::name::IRQ_11},
+			{exception_number::name::IRQ_12},
+			{exception_number::name::IRQ_13},
+			{exception_number::name::IRQ_14},
+			{exception_number::name::IRQ_15}
 		}})
 		, _active_exception_count(0)
-	{}
+		, _current_priority(0)
+	{
+		_stream_priority.push(0);
+	}
+
+	int8_t current_priority() const {
+		return _stream_priority.top();
+	}
 
 	uint32_t active_exception_count() const {
 		return _active_exception_count;
 	}
 
-	void raise(exception_type type) {
+	void raise(exception_number exception) {
 		// add exception to pending deque
-		auto& exception = get_by_type(type);
-		_active_exceptions.add_exception(exception);
-		exception.raise();
+		auto& exception_state = get_by_number(exception);
+		// TODO: THe same exception can't be pending twice
+		_pending_exceptions.add_exception(exception_state);
+		exception_state.raise();
 	}
 
-	void activate(exception_type type) {
-		activate(get_by_type(type));
+	void activate(exception_number exception) {
+		activate(get_by_number(exception));
 	}
 
 	void activate(exception_state& exception) {
-		// mark it as active
+        precond(exception.priority() < current_priority(), "Only higher priority can be activated");
+		// move from pending list to active list
+		_pending_exceptions.remove_exception(exception);
+		_active_exceptions.add_exception(exception);
 		exception.activate();
+		_stream_priority.push(exception.priority());
 		_active_exception_count++;
 	}
 
-	void deactivate(exception_type type) {
-		deactivate(get_by_type(type));
+	void deactivate(exception_number ex_number) {
+		deactivate(get_by_number(ex_number));
 	}
 
 	void deactivate(exception_state& exception) {
 		// remove from the pending exception list
 		_active_exceptions.remove_exception(exception);
 		exception.deactivate();
+		_stream_priority.pop();
+		// the base priority should always remain
+        precond(!_stream_priority.empty(), "cant remove the base priority");
 		_active_exception_count--;
 	}
 
-	bool is_pending(exception_type type) const {
-		return get_by_type(type).pending();
+	bool is_pending(exception_number ex_number) const {
+		return get_by_number(ex_number).pending();
 	}
 
-	bool is_active(exception_type type) const {
-		return get_by_type(type).active();
+	bool is_active(exception_number ex_number) const {
+		return get_by_number(ex_number).active();
 	}
 
 	void reset() {
@@ -163,13 +194,8 @@ public:
 		}
 	}
 
-	void prioritize() {
-		//std::sort(_exception_queue.begin(), _exception_queue.end(), _comparator);
-	}
-
-	bool any_active() const {
-		return !_active_exceptions.empty();
-		//return top_exception().state().pending();
+	bool any_pending() const {
+		return !_pending_exceptions.empty();
 	}
 
 	void print() {
@@ -179,27 +205,41 @@ public:
 	}
 
 	exception_state* top_pending_exception() {
-		return _active_exceptions.top_pending();
+		return _pending_exceptions.top_pending();
 	}
 
 private:
 
-	exception_state* get_ptr_by_type(exception_type type) {
-		return &_exception_states[static_cast<size_t>(type)];
+	exception_state* get_ptr_by_number(exception_number ex_number) {
+		return &_exception_states[ex_number];
 	}
 
-	exception_state& get_by_type(exception_type type) {
-		return _exception_states.at(static_cast<size_t>(type));
+	exception_state& get_by_number(exception_number ex_number) {
+		return _exception_states.at(ex_number);
 	}
 
-	const exception_state& get_by_type(exception_type type) const {
-		return _exception_states.at(static_cast<size_t>(type));
+	const exception_state& get_by_number(exception_number ex_number) const {
+		return _exception_states.at(ex_number);
 	}
 
 	std::array<exception_state, 32> _exception_states;
 
+	class exception_list {
+		public:
+		void add_exception(exception_state& exception) {
+			_exceptions.push_back(std::ref(exception));
+		}
+
+		void remove_exception(exception_state& exception) {
+			_exceptions.remove(exception);
+		}
+
+		private:
+		std::list<std::reference_wrapper<exception_state>> _exceptions;
+	};
 
 	class prioritized_exception_list {
+
 	public:
 		/// inserts an exception before the first exception that
 		/// has a lower priority integer value (=higher priority)
@@ -228,15 +268,9 @@ private:
 			return _exceptions.empty();
 		}
 
-		exception_state& top() {
-			return _exceptions.front();
-		}
-
-		exception_state* top_pending() {
-			auto it = std::find_if(_exceptions.begin(), _exceptions.end(), [](const exception_state& ex){
-				return ex.pending();
-			});
-
+		template <typename filterFn>
+		exception_state* top(filterFn fn) {
+			auto it = std::find_if(_exceptions.begin(), _exceptions.end(), fn);
 			if(_exceptions.end() != it) {
 				return &(it->get());
 			} else {
@@ -244,15 +278,20 @@ private:
 			}
 		}
 
-		const exception_state& top() const {
-			return _exceptions.front();
+		exception_state* top_pending() {
+			return top(pending_exception);
 		}
+
+
 private:
 		std::list<std::reference_wrapper<exception_state>> _exceptions;
 	};
 
-	prioritized_exception_list _active_exceptions;
+	prioritized_exception_list _pending_exceptions;
+	exception_list _active_exceptions;
 	uint32_t _active_exception_count;
+	int8_t _current_priority;
+	std::stack<int8_t> _stream_priority;
 };
 
 #endif //MICROMACHINE_EXCEPTION_VECTOR_HPP

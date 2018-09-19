@@ -26,9 +26,18 @@ public:
 	void reset();
 
 	void process_pending_exception(word current_addr, instruction_pair instruction) {
-		// TODO: Implement priority checks
-		_regs.set_pc(current_addr);
-		exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction);
+		// Check if this pending exception has priority over the current priority of the
+		// instruction stream.
+		// Lower priority value means higher priority.
+		bool smaller = _exception_vector.top_pending_exception()->priority() < _exception_vector.current_priority();
+		// TODO: Check Priority grouping.
+		// When two pending exceptions have the same group priority, the lower pending exception number has
+		// priority over the higher pending number as part of the priority precedence rule.
+		if(smaller) {
+			// yep, lets activate this exception
+			_regs.set_pc(current_addr);
+			exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction);
+		}
 	}
 
 private:
