@@ -17,7 +17,7 @@
 #include "registers/ipsr_reg.hpp"
 #include "registers/epsr_reg.hpp"
 #include "exception_return_handler.hpp"
-
+//#define USE_INDIRECT_REG_ACCESS
 struct registers {
 
 	registers(exception_return_handler& exception_return_handler)
@@ -44,9 +44,10 @@ struct registers {
 	}
 
 	word get(reg_idx i) const {
-
+	#ifdef USE_INDIRECT_REG_ACCESS
+		return *_registers[i];
+	#else
 		precond(i < NUM_REGS, "register index too large %zu", i);
-
 		if(i < NUM_GP_REGS) {
 			return _gen_pupose_registers[i];
 		} else if(i == SP) {
@@ -58,14 +59,15 @@ struct registers {
 		} else {
 			precond_fail("invalid register index %lu", i);
 		}
-
 		return 0;
+	#endif
 	}
 
 	void set(reg_idx i, word val) {
-
+	#ifdef USE_INDIRECT_REG_ACCESS
+		(*_registers[i]) = val;
+	#else
 		precond(i < NUM_REGS, "register index too large");
-
 		if(i < NUM_GP_REGS) {
 			_gen_pupose_registers[i] = val;
 		} else if(i == SP) {
@@ -77,7 +79,7 @@ struct registers {
 		} else {
 			precond_fail("invalid register index %lu", i);
 		}
-
+	#endif
 	}
 
 	void branch_interworking(word address) {
@@ -208,6 +210,24 @@ private:
 	sp_reg 			_sp;
 	standard_reg 	_lr;
 	pc_reg 			_pc;
+	const std::array<ireg*, 16> _registers = {
+		&_gen_pupose_registers[0],
+		&_gen_pupose_registers[1],
+		&_gen_pupose_registers[2],
+		&_gen_pupose_registers[3],
+		&_gen_pupose_registers[4],
+		&_gen_pupose_registers[5],
+		&_gen_pupose_registers[6],
+		&_gen_pupose_registers[7],
+		&_gen_pupose_registers[8],
+		&_gen_pupose_registers[9],
+		&_gen_pupose_registers[10],
+		&_gen_pupose_registers[11],
+		&_gen_pupose_registers[12],
+		&_sp,
+		&_lr,
+		&_pc
+	};
 
 
 };
