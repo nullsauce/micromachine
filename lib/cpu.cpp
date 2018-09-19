@@ -20,7 +20,7 @@ cpu::cpu()
 	, _debug_instruction_counter(0)
 {
 #ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
-	fprintf(stderr, "Warning: The CPU is compiled with addtional safety checks that might slow its performance.");
+	fprintf(stderr, "Warning: The CPU is compiled with addtional safety checks that might slow its performance.\n");
 #endif
 }
 
