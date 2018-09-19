@@ -24,7 +24,6 @@ set(SRCS
     cpu.hpp
     exception_vector.hpp
     exception_type.hpp
-    exception_state.hpp
     string_format.hpp
     exec_dispatcher.hpp
     dispatcher.hpp

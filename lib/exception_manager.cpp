@@ -119,13 +119,13 @@ current_instruction) {
 	// address of next instruction by default;
 	uint32_t return_address = instruction_address + current_instruction.size();
 
-    if(exception_type::HARDFAULT == ex.type()) {
+    if(exception_number::name::HARDFAULT == ex.number()) {
 		// address of the instruction causing fault
 		return_address = instruction_address;
-	} else if(exception_type::SVCALL == ex.type()) {
+	} else if(exception_number::name::SVCALL == ex.number()) {
 		// address of the next instruction after svc
         return_address = instruction_address + current_instruction.size();
-	} else if(exception_type::PENDSV == ex.type() || exception_type::SYSTICK == ex.type()) {
+	} else if(exception_number::name::PENDSV == ex.number() || exception_number::name::SYSTICK == ex.number()) {
 		// address of instruction to be executed after the irq
 		return_address = instruction_address + current_instruction.size();
 	}
