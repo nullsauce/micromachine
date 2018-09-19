@@ -7,388 +7,388 @@
 
 namespace {
 
-	static bool is_siadsumoco(const halfword& instruction) {
+	static bool is_siadsumoco(const halfword instruction) {
 		return 0 == instruction.uint(14, 2);
 	}
 
-	static bool is_data_processing(const halfword& instruction) {
+	static bool is_data_processing(const halfword instruction) {
 		return 0b010000 == instruction.uint(10, 6);
 	}
 
-	static bool is_sdibe(const halfword& instruction) {
+	static bool is_sdibe(const halfword instruction) {
 		return 0b010001 == instruction.uint(10, 6);
 	}
 
-	static bool is_lsl_imm(const halfword& instruction) {
+	static bool is_lsl_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b000 == instruction.uint(11, 3);
 
 	}
 
-	static bool is_lsr_imm(const halfword& instruction) {
+	static bool is_lsr_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b001 == instruction.uint(11, 3);
 	}
 
-	static bool is_asr_imm(const halfword& instruction) {
+	static bool is_asr_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b010 == instruction.uint(11, 3);
 	}
 
-	static bool is_add_reg(const halfword& instruction) {
+	static bool is_add_reg(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01100 == instruction.uint(9, 5);
 	}
 
-	static bool is_subs_reg(const halfword& instruction) {
+	static bool is_subs_reg(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01101 == instruction.uint(9, 5);
 	}
 
-	static bool is_add_imm(const halfword& instruction) {
+	static bool is_add_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01110 == instruction.uint(9, 5);
 	}
 
-	static bool is_subs_imm(const halfword& instruction) {
+	static bool is_subs_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01111 == instruction.uint(9, 5);
 	}
 
-	static bool is_mov_imm(const halfword& instruction) {
+	static bool is_mov_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b100 == instruction.uint(11, 3);
 	}
 
-	static bool is_cmp_imm(const halfword& instruction) {
+	static bool is_cmp_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b101 == instruction.uint(11, 3);
 	}
 
-	static bool is_add_imm_t2(const halfword& instruction) {
+	static bool is_add_imm_t2(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b110 == instruction.uint(11, 3);
 	}
 
-	static bool is_subs_imm8(const halfword& instruction) {
+	static bool is_subs_imm8(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b111 == instruction.uint(11, 3);
 	}
 
 
-	static bool is_and_reg(const halfword& instruction) {
+	static bool is_and_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0000 == instruction.uint(6, 4);
 	}
 
-	static bool is_xor_reg(const halfword& instruction) {
+	static bool is_xor_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0001 == instruction.uint(6, 4);
 	}
 
-	static bool is_lsl_reg(const halfword& instruction) {
+	static bool is_lsl_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0010 == instruction.uint(6, 4);
 	}
 
-	static bool is_lsr_reg(const halfword& instruction) {
+	static bool is_lsr_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0011 == instruction.uint(6, 4);
 	}
 
-	static bool is_asr_reg(const halfword& instruction) {
+	static bool is_asr_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0100 == instruction.uint(6, 4);
 	}
 
-	static bool is_adc_reg(const halfword& instruction) {
+	static bool is_adc_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0101 == instruction.uint(6, 4);
 	}
 
-	static bool is_sbc(const halfword &instruction) {
+	static bool is_sbc(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0110 == instruction.uint(6, 4);
 	}
 
-	static bool is_ror_reg(const halfword& instruction) {
+	static bool is_ror_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b0111 == instruction.uint(6, 4);
 	}
 
-	static bool is_tst_reg(const halfword& instruction) {
+	static bool is_tst_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1000 == instruction.uint(6, 4);
 	}
 
-	static bool is_rsb_imm(const halfword& instruction) {
+	static bool is_rsb_imm(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1001 == instruction.uint(6, 4);
 	}
 
-	static bool is_cmn_reg(const halfword& instruction) {
+	static bool is_cmn_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1011 == instruction.uint(6, 4);
 	}
 
-	static bool is_cmp_reg(const halfword& instruction) {
+	static bool is_cmp_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1010 == instruction.uint(6, 4);
 	}
 
-	static bool is_orr_reg(const halfword &instruction) {
+	static bool is_orr_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1100 == instruction.uint(6, 4);
 	}
 
-	static bool is_mul_reg(const halfword& instruction) {
+	static bool is_mul_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1101 == instruction.uint(6, 4);
 	}
 
-	static bool is_bitclear_reg(const halfword& instruction) {
+	static bool is_bitclear_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1110 == instruction.uint(6, 4);
 	}
 
-	static bool is_not_reg(const halfword& instruction) {
+	static bool is_not_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
 			   0b1111 == instruction.uint(6, 4);
 	}
 
 
-	static bool is_add_highreg(const halfword& instruction) {
+	static bool is_add_highreg(const halfword instruction) {
 		return is_sdibe(instruction) &&
 			   0b00 == instruction.uint(8, 2);
 	}
 
-	static bool is_sdibe_unpredictable_0(const halfword& instruction) {
+	static bool is_sdibe_unpredictable_0(const halfword instruction) {
 		return is_sdibe(instruction) &&
 			   0b0100 == instruction.uint(6, 4);
 	}
 
-	static bool is_cmp_highreg(const halfword& instruction) {
+	static bool is_cmp_highreg(const halfword instruction) {
 		return is_sdibe(instruction) && (
 			(0b0101 == instruction.uint(6, 4)) ||
 			(0b011 == instruction.uint(7, 3))
 		);
 	}
 
-	static bool is_mov_highreg(const halfword& instruction) {
+	static bool is_mov_highreg(const halfword instruction) {
 		return is_sdibe(instruction) &&
 			   0b10 == instruction.uint(8, 2);
 	}
 
-	static bool is_bx(const halfword& instruction) {
+	static bool is_bx(const halfword instruction) {
 		return is_sdibe(instruction) &&
 			   0b110 == instruction.uint(7, 3);
 	}
 
-	static bool is_blx(const halfword& instruction) {
+	static bool is_blx(const halfword instruction) {
 		return is_sdibe(instruction) &&
 			   0b111 == instruction.uint(7, 3);
 	}
 
-	static bool is_ldr_literal(const halfword& instruction) {
+	static bool is_ldr_literal(const halfword instruction) {
 		return 0b01001 == instruction.uint(11, 5);
 	}
 
-	static bool is_str_reg(const halfword &instruction) {
+	static bool is_str_reg(const halfword instruction) {
 		return 0b0101000 == instruction.uint(9, 7);
 	}
 
-	static bool is_strh_reg(const halfword &instruction) {
+	static bool is_strh_reg(const halfword instruction) {
 		return 0b0101001 == instruction.uint(9, 7);
 	}
 
-	static bool is_strb_reg(const halfword &instruction) {
+	static bool is_strb_reg(const halfword instruction) {
 		return 0b0101010 == instruction.uint(9, 7);
 	}
 
-	static bool is_ldrsb_reg(const halfword &instruction) {
+	static bool is_ldrsb_reg(const halfword instruction) {
 		return 0b0101011 == instruction.uint(9, 7);
 	}
 
-	static bool is_ldr_reg(const halfword& instruction) {
+	static bool is_ldr_reg(const halfword instruction) {
 		return 0b0101100 == instruction.uint(9, 7);
 	}
 
-	static bool is_ldrh_reg(const halfword &instruction) {
+	static bool is_ldrh_reg(const halfword instruction) {
 		return 0b0101101 == instruction.uint(9, 7);
 	}
 
-	static bool is_ldrb_reg(const halfword &instruction) {
+	static bool is_ldrb_reg(const halfword instruction) {
 		return 0b0101110 == instruction.uint(9, 7);
 	}
 
-	static bool is_ldrsh_reg(const halfword &instruction) {
+	static bool is_ldrsh_reg(const halfword instruction) {
 		return 0b0101111 == instruction.uint(9, 7);
 	}
 
-	static bool is_str_imm(const halfword &instruction) {
+	static bool is_str_imm(const halfword instruction) {
 		return 0b01100 == instruction.uint(11, 5);
 	}
 
-	static bool is_ldr_imm(const halfword& instruction) {
+	static bool is_ldr_imm(const halfword instruction) {
 		return 0b01101 == instruction.uint(11, 5);
 	}
 
-	static bool is_strb_imm(const halfword &instruction) {
+	static bool is_strb_imm(const halfword instruction) {
 		return 0b01110 == instruction.uint(11, 5);
 	}
 
-	static bool is_ldrb_imm(const halfword &instruction) {
+	static bool is_ldrb_imm(const halfword instruction) {
 		return 0b01111 == instruction.uint(11, 5);
 	}
 
-	static bool is_strh_imm(const halfword &instruction) {
+	static bool is_strh_imm(const halfword instruction) {
 		return 0b10000 == instruction.uint(11, 5);
 	}
 
-	static bool is_ldrh_imm(const halfword &instruction) {
+	static bool is_ldrh_imm(const halfword instruction) {
 		return 0b10001 == instruction.uint(11, 5);
 	}
 
-	static bool is_str_sp_imm(const halfword &instruction) {
+	static bool is_str_sp_imm(const halfword instruction) {
 		return 0b10010 == instruction.uint(11, 5);
 	}
 
-	static bool is_ldr_sp_imm(const halfword &instruction) {
+	static bool is_ldr_sp_imm(const halfword instruction) {
 		return 0b10011 == instruction.uint(11, 5);
 	}
 
-	static bool is_adr(const halfword& instruction) {
+	static bool is_adr(const halfword instruction) {
 		return 0b10100 == instruction.uint(11, 5);
 	}
 
-	static bool is_add_sp_imm(const halfword& instruction) {
+	static bool is_add_sp_imm(const halfword instruction) {
 		return 0b10101 == instruction.uint(11, 5);
 	}
 
-	static bool is_add_sp_imm_t2(const halfword& instruction) {
+	static bool is_add_sp_imm_t2(const halfword instruction) {
 		return 0b101100000 == instruction.uint(7, 9);
 	}
 
-	static bool is_sub_sp_imm(const halfword& instruction) {
+	static bool is_sub_sp_imm(const halfword instruction) {
 		return 0b101100001 == instruction.uint(7, 9);
 	}
 
-	static bool is_sxth(const halfword& instruction) {
+	static bool is_sxth(const halfword instruction) {
 		return 0b1011001000 == instruction.uint(6, 10);
 	}
 
-	static bool is_sxtb(const halfword& instruction) {
+	static bool is_sxtb(const halfword instruction) {
 		return 0b1011001001 == instruction.uint(6, 10);
 	}
 
-	static bool is_uxth(const halfword& instruction) {
+	static bool is_uxth(const halfword instruction) {
 		return 0b1011001010 == instruction.uint(6, 10);
 	}
 
-	static bool is_uxtb(const halfword& instruction) {
+	static bool is_uxtb(const halfword instruction) {
 		return 0b1011001011 == instruction.uint(6, 10);
 	}
 
-	static bool is_push(const halfword& instruction) {
+	static bool is_push(const halfword instruction) {
 		return 0b1011010 == instruction.uint(9, 7);
 	}
 
-	static bool is_cps(const halfword& instruction) {
+	static bool is_cps(const halfword instruction) {
 		return 0b10110110011 == instruction.uint(5, 11);
 	}
 
-	static bool is_rev_word(const halfword& instruction) {
+	static bool is_rev_word(const halfword instruction) {
 		return 0b1011101000 == instruction.uint(6, 10);
 	}
 
-	static bool is_rev16(const halfword &instruction) {
+	static bool is_rev16(const halfword instruction) {
 		return 0b1011101001 == instruction.uint(6, 10);
 	}
 
-	static bool is_revsh(const halfword &instruction) {
+	static bool is_revsh(const halfword instruction) {
 		return 0b1011101011 == instruction.uint(6, 10);
 	}
 
-	static bool is_pop(const halfword& instruction) {
+	static bool is_pop(const halfword instruction) {
 		return 0b1011110 == instruction.uint(9, 7);
 	}
 
-	static bool is_breakpoint(const halfword& instruction) {
+	static bool is_breakpoint(const halfword instruction) {
 		return 0b10111110 == instruction.uint(8, 8);
 	}
 
-	static bool is_hints(const halfword& instruction) {
+	static bool is_hints(const halfword instruction) {
 		return 0b10111111 == instruction.uint(8, 8);
 	}
 
-	static bool is_nop(const halfword& instruction) {
+	static bool is_nop(const halfword instruction) {
 		return 0b1011111100000000 == instruction;
 	}
 
-	static bool is_stm(const halfword& instruction) {
+	static bool is_stm(const halfword instruction) {
 		return 0b11000 == instruction.uint(11, 5);
 	}
 
-	static bool is_ldm(const halfword& instruction) {
+	static bool is_ldm(const halfword instruction) {
 		return 0b11001 == instruction.uint(11, 5);
 	}
 
-	static bool is_branch(const halfword& instruction) {
+	static bool is_branch(const halfword instruction) {
 		return 0b1101 == instruction.uint(12, 4) &&
 			   (instruction.uint(9, 3) != 0b111);
 	}
 
-	static bool is_svc(const halfword& instruction) {
+	static bool is_svc(const halfword instruction) {
 		return 0b1101 == instruction.uint(12, 4) &&
 			   0b1111 == instruction.uint(8, 4);
 	}
 
 
-	static bool is_unconditional_branch(const halfword& instruction) {
+	static bool is_unconditional_branch(const halfword instruction) {
 		return 0b11100 == instruction.uint(11, 5);
 	}
 
-	static bool is_32bit_thumb_encoding(const halfword& instruction) {
+	static bool is_32bit_thumb_encoding(const halfword instruction) {
 		return 0b111 == instruction.uint(13, 3) &&
 			   0b00 !=  instruction.uint(11, 2);
 	}
 
 
-	static bool is_32bit_thumb_br_misc_ctl(const instruction_pair& instr) {
+	static bool is_32bit_thumb_br_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_encoding(instr.first) &&
 			   0b10 == instr.first.uint(11, 2) &&
 			   0b1  == instr.second.uint(15, 1);
 	}
 
-	static bool is_32bit_thumb_msr(const instruction_pair& instr) {
+	static bool is_32bit_thumb_msr(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			   0b011100 == instr.first.uint(5, 6) &&
 			   0b000 	== (instr.second.uint(12, 3) & 0b101);
 	}
 
-	static bool is_32bit_thumb_misc_ctl(const instruction_pair& instr) {
+	static bool is_32bit_thumb_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			   0b0111011 == instr.first.uint(4, 7) &&
 			   0b000 	== (instr.second.uint(12, 3) & 0b101);
 	}
 
-	static bool is_32bit_thumb_mrs(const instruction_pair& instr) {
+	static bool is_32bit_thumb_mrs(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			   0b011111 == instr.first.uint(5, 6) &&
 			   0b000 	== (instr.second.uint(12, 3) & 0b101);
 	}
 
-	static bool is_32bit_thumb_bl(const instruction_pair& instr) {
+	static bool is_32bit_thumb_bl(const instruction_pair instr) {
 		auto op2 = instr.second.uint(12, 3) & 0b101;
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			 0b101 	== op2 ;
 	}
 
-	static bool is_undefined(const halfword& instr) {
+	static bool is_undefined(const halfword instr) {
 		return 0b11011110 == instr.uint(8, 8);
 	}
 
-	static bool is_undefined32(const instruction_pair& instr) {
+	static bool is_undefined32(const instruction_pair instr) {
 		return is_32bit_thumb_encoding(instr.first) &&
 				0b111101111111 == instr.first.uint(4, 12) &&
 				0b1010 == instr.second.uint(12, 4);
@@ -402,7 +402,7 @@ public:
 
 	void dispatch_instruction(const instruction_pair instruction_pair) {
 
-		const halfword& instr = instruction_pair.first;
+		const halfword instr = instruction_pair.first;
 		if(is_nop(instr)) dispatch(nop());
 		//fprintf(stderr, "%s\n", instr.to_string().c_str());
 
@@ -618,83 +618,83 @@ public:
 	}
 
 private:
-	virtual void invalid_instruction(const halfword& instr) = 0;
-	virtual void invalid_instruction(const instruction_pair& instr) = 0;
-	virtual void dispatch(const nop& instruction) = 0;
-	virtual void dispatch(const lsl_imm& instruction) = 0;
-	virtual void dispatch(const lsr_imm& instruction) = 0;
-	virtual void dispatch(const asr_imm& instruction) = 0;
-	virtual void dispatch(const add_reg& instruction) = 0;
-	virtual void dispatch(const subs_reg& instruction) = 0;
-	virtual void dispatch(const add_imm& instruction) = 0;
-	virtual void dispatch(const subs_imm& instruction) = 0;
-	virtual void dispatch(const mov_imm& instruction) = 0;
-	virtual void dispatch(const movs& instruction) = 0;
-	virtual void dispatch(const cmp_imm& instruction) = 0;
-	virtual void dispatch(const add_imm_t2& instruction) = 0;
-	virtual void dispatch(const subs_imm8& instruction) = 0;
-	virtual void dispatch(const and_reg& instruction) = 0;
-	virtual void dispatch(const eor_reg& instruction) = 0;
-	virtual void dispatch(const lsl_reg& instruction) = 0;
-	virtual void dispatch(const lsr_reg& instruction) = 0;
-	virtual void dispatch(const asr_reg& instruction) = 0;
-	virtual void dispatch(const adc& instruction) = 0;
-	virtual void dispatch(const sbc& instruction) = 0;
-	virtual void dispatch(const ror_reg& instruction) = 0;
-	virtual void dispatch(const tst_reg& instruction) = 0;
-	virtual void dispatch(const rsb_imm& instruction) = 0;
-	virtual void dispatch(const cmp_reg& instruction) = 0;
-	virtual void dispatch(const cmn_reg& instruction) = 0;
-	virtual void dispatch(const orr_reg& instruction) = 0;
-	virtual void dispatch(const mul_reg& instruction) = 0;
-	virtual void dispatch(const bic_reg& instruction) = 0;
-	virtual void dispatch(const not_reg& instruction) = 0;
-	virtual void dispatch(const add_highreg& instruction) = 0;
-	virtual void dispatch(const cmp_highreg& instruction) = 0;
-	virtual void dispatch(const mov_highreg& instruction) = 0;
-	virtual void dispatch(const bx& instruction) = 0;
-	virtual void dispatch(const blx& instruction) = 0;
-	virtual void dispatch(const ldr_literal& instruction) = 0;
-	virtual void dispatch(const str_reg& instruction) = 0;
-	virtual void dispatch(const strh_reg& instruction) = 0;
-	virtual void dispatch(const strb_reg& instruction) = 0;
-	virtual void dispatch(const ldrsb_reg& instruction) = 0;
-	virtual void dispatch(const ldr_reg& instruction) = 0;
-	virtual void dispatch(const ldrh_reg& instruction) = 0;
-	virtual void dispatch(const ldrb_reg& instruction) = 0;
-	virtual void dispatch(const ldrsh_reg& instruction) = 0;
-	virtual void dispatch(const str_imm& instruction) = 0;
-	virtual void dispatch(const ldr_imm& instruction) = 0;
-	virtual void dispatch(const strb_imm& instruction) = 0;
-	virtual void dispatch(const ldrb_imm& instruction) = 0;
-	virtual void dispatch(const strh_imm& instruction) = 0;
-	virtual void dispatch(const ldrh_imm& instruction) = 0;
-	virtual void dispatch(const str_sp_imm& instruction) = 0;
-	virtual void dispatch(const ldr_sp_imm& instruction) = 0;
-	virtual void dispatch(const adr& instruction) = 0;
-	virtual void dispatch(const add_sp_imm& instruction) = 0;
-	virtual void dispatch(const add_sp_imm_t2& instruction) = 0;
-	virtual void dispatch(const sub_sp_imm& instruction) = 0;
-	virtual void dispatch(const sxth& instruction) = 0;
-	virtual void dispatch(const sxtb& instruction) = 0;
-	virtual void dispatch(const uxth& instruction) = 0;
-	virtual void dispatch(const uxtb& instruction) = 0;
-	virtual void dispatch(const push& instruction) = 0;
-	virtual void dispatch(const cps& instruction) = 0;
-	virtual void dispatch(const pop& instruction) = 0;
-	virtual void dispatch(const rev_word& instruction) = 0;
-	virtual void dispatch(const rev16& instruction) = 0;
-	virtual void dispatch(const revsh& instruction) = 0;
-	virtual void dispatch(const branch& instruction) = 0;
-	virtual void dispatch(const unconditional_branch& instruction) = 0;
-	virtual void dispatch(const stm& instruction) = 0;
-	virtual void dispatch(const ldm& instruction) = 0;
-	virtual void dispatch(const mrs& instruction) = 0;
-	virtual void dispatch(const msr& instruction) = 0;
-	virtual void dispatch(const bl_imm& instruction) = 0;
-	virtual void dispatch(const svc& instruction) = 0;
-	virtual void dispatch(const udf& instr) = 0;
-	virtual void dispatch(const udfw& instr) = 0;
+	virtual void invalid_instruction(const halfword instr) = 0;
+	virtual void invalid_instruction(const instruction_pair instr) = 0;
+	virtual void dispatch(const nop instruction) = 0;
+	virtual void dispatch(const lsl_imm instruction) = 0;
+	virtual void dispatch(const lsr_imm instruction) = 0;
+	virtual void dispatch(const asr_imm instruction) = 0;
+	virtual void dispatch(const add_reg instruction) = 0;
+	virtual void dispatch(const subs_reg instruction) = 0;
+	virtual void dispatch(const add_imm instruction) = 0;
+	virtual void dispatch(const subs_imm instruction) = 0;
+	virtual void dispatch(const mov_imm instruction) = 0;
+	virtual void dispatch(const movs instruction) = 0;
+	virtual void dispatch(const cmp_imm instruction) = 0;
+	virtual void dispatch(const add_imm_t2 instruction) = 0;
+	virtual void dispatch(const subs_imm8 instruction) = 0;
+	virtual void dispatch(const and_reg instruction) = 0;
+	virtual void dispatch(const eor_reg instruction) = 0;
+	virtual void dispatch(const lsl_reg instruction) = 0;
+	virtual void dispatch(const lsr_reg instruction) = 0;
+	virtual void dispatch(const asr_reg instruction) = 0;
+	virtual void dispatch(const adc instruction) = 0;
+	virtual void dispatch(const sbc instruction) = 0;
+	virtual void dispatch(const ror_reg instruction) = 0;
+	virtual void dispatch(const tst_reg instruction) = 0;
+	virtual void dispatch(const rsb_imm instruction) = 0;
+	virtual void dispatch(const cmp_reg instruction) = 0;
+	virtual void dispatch(const cmn_reg instruction) = 0;
+	virtual void dispatch(const orr_reg instruction) = 0;
+	virtual void dispatch(const mul_reg instruction) = 0;
+	virtual void dispatch(const bic_reg instruction) = 0;
+	virtual void dispatch(const not_reg instruction) = 0;
+	virtual void dispatch(const add_highreg instruction) = 0;
+	virtual void dispatch(const cmp_highreg instruction) = 0;
+	virtual void dispatch(const mov_highreg instruction) = 0;
+	virtual void dispatch(const bx instruction) = 0;
+	virtual void dispatch(const blx instruction) = 0;
+	virtual void dispatch(const ldr_literal instruction) = 0;
+	virtual void dispatch(const str_reg instruction) = 0;
+	virtual void dispatch(const strh_reg instruction) = 0;
+	virtual void dispatch(const strb_reg instruction) = 0;
+	virtual void dispatch(const ldrsb_reg instruction) = 0;
+	virtual void dispatch(const ldr_reg instruction) = 0;
+	virtual void dispatch(const ldrh_reg instruction) = 0;
+	virtual void dispatch(const ldrb_reg instruction) = 0;
+	virtual void dispatch(const ldrsh_reg instruction) = 0;
+	virtual void dispatch(const str_imm instruction) = 0;
+	virtual void dispatch(const ldr_imm instruction) = 0;
+	virtual void dispatch(const strb_imm instruction) = 0;
+	virtual void dispatch(const ldrb_imm instruction) = 0;
+	virtual void dispatch(const strh_imm instruction) = 0;
+	virtual void dispatch(const ldrh_imm instruction) = 0;
+	virtual void dispatch(const str_sp_imm instruction) = 0;
+	virtual void dispatch(const ldr_sp_imm instruction) = 0;
+	virtual void dispatch(const adr instruction) = 0;
+	virtual void dispatch(const add_sp_imm instruction) = 0;
+	virtual void dispatch(const add_sp_imm_t2 instruction) = 0;
+	virtual void dispatch(const sub_sp_imm instruction) = 0;
+	virtual void dispatch(const sxth instruction) = 0;
+	virtual void dispatch(const sxtb instruction) = 0;
+	virtual void dispatch(const uxth instruction) = 0;
+	virtual void dispatch(const uxtb instruction) = 0;
+	virtual void dispatch(const push instruction) = 0;
+	virtual void dispatch(const cps instruction) = 0;
+	virtual void dispatch(const pop instruction) = 0;
+	virtual void dispatch(const rev_word instruction) = 0;
+	virtual void dispatch(const rev16 instruction) = 0;
+	virtual void dispatch(const revsh instruction) = 0;
+	virtual void dispatch(const branch instruction) = 0;
+	virtual void dispatch(const unconditional_branch instruction) = 0;
+	virtual void dispatch(const stm instruction) = 0;
+	virtual void dispatch(const ldm instruction) = 0;
+	virtual void dispatch(const mrs instruction) = 0;
+	virtual void dispatch(const msr instruction) = 0;
+	virtual void dispatch(const bl_imm instruction) = 0;
+	virtual void dispatch(const svc instruction) = 0;
+	virtual void dispatch(const udf instr) = 0;
+	virtual void dispatch(const udfw instr) = 0;
 };
 
 
