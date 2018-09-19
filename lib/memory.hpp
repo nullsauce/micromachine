@@ -250,7 +250,17 @@ private:
 		}
 		return nullptr;
 #else
+		auto found_region = std::upper_bound(_regions.begin(), _regions.end(), address, [](uint32_t search, const
+		mem_mapping&
+		region) {
+			return  search < region.end();
+		});
+		if(_regions.end() == found_region || address >= found_region->end()) {
+			return nullptr;
+		}
+		return found_region.base();
 
+		/*
 		auto found_region = lamda_upper_bound(std::begin(_regions), std::end(_regions), address, [] (const uint32_t
 		search, const mem_mapping& region) {
 			return region.end() > search;
@@ -262,7 +272,7 @@ private:
 			return found_region.base();
 		} else {
 			return nullptr;
-		}
+		}*/
 #endif
 	}
 
