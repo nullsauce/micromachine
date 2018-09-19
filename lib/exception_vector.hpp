@@ -28,7 +28,6 @@ public:
 	}
 
 	void set_priority(int8_t priority) {
-
 		_priority = priority;
 	}
 
@@ -59,6 +58,10 @@ public:
 		}
 	}
 
+	bool operator==(const exception_state& other) const {
+		return _number == other._number;
+	}
+
 private:
 
 	void raise() {
@@ -81,14 +84,16 @@ private:
 	int8_t _default_priority;
 };
 
+
+
 namespace {
 	bool pending_exception(const exception_state& ex){
 		return ex.pending();
-	};
+	}
 
 	bool active_exception(const exception_state& ex){
 		return ex.active();
-	};
+	}
 
 }
 
@@ -231,7 +236,9 @@ private:
 		}
 
 		void remove_exception(exception_state& exception) {
-			_exceptions.remove(exception);
+			_exceptions.remove_if([&](const std::reference_wrapper<exception_state>& e){
+				return e.get() == exception;
+			});
 		}
 
 		private:
