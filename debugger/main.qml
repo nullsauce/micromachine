@@ -172,13 +172,10 @@ ApplicationWindow {
 						height:contentHeight
 						color:"#999"
 					}
-					Text {
+
+					WordDisplay {
 						id:regText
 						text:hexValue
-						font.family: "monospace"
-						horizontalAlignment: Text.AlignLeft
-						width:contentWidth * 1.1
-						height:contentHeight
 						color:"#ddd"
 					}
 				}
