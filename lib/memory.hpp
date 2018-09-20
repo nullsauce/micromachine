@@ -32,6 +32,10 @@ namespace {
 		}
 		return first;
 	}
+
+	constexpr bool address_in_region(uint32_t address, uint32_t region_start, uint32_t region_end) {
+		return (address >= region_start && address <= region_end);
+	}
 }
 
 class memory {
@@ -223,23 +227,33 @@ private:
 
 	const mem_mapping* find_const_region(uint32_t address) const {
 
-		// Check if within PPB register (inside the System memory region
-		if(0xE0000000 == address & 0xFFF00000) {
-			if(address < 0xE000E010) {
-				// System control and ID registers
-			} else if(address < 0xE000E100) {
-				// SysTick
-			} else if(address < 0xE000ED00) {
-				// NVIC
-			} else if(address < 0xE000EDF0) {
-				// MPU
-			} else if(address < 0xE000EF00) {
-				// Debug
-			} else {
-				// Unassigned addresses are reserved
-			}
-		}
+		// System memory region,  - 0xFFFFFFFF
+		// Check if within sub regions
+		if(address >= 0xE0000000) {
+			// 1 Private Peripheral Bus (PPB) region (0xE0000000 - 0xE00FFFFF)
+			if(address_in_region(address, 0xE0000000 , 0xE00FFFFF)) {
+				// 1.1 System Control Space region (0xE000E000 - 0xE000EFFF)
+				if(address_in_region(address, 0xE000E000, 0xE000EFFF)) {
+					// 1.1.1 Auxiliary Control register (0xE000E000 - 0xE000E00F)
+				} else if(address_in_region(address, 0xE000ED00, 0xE000ED8F)) {
+					// 1.1.2 System Control Block (0xE000ED00 - 0xE000ED8F)
+				} else if(address_in_region(address, 0xE000EF90, 0xE000EFCF)) {
+					// 1.1.3 IMPLEMENTATION DEFINED (0xE000EF90 - 0xE000EFCF)
+				} else if(address_in_region(address, 0xE000E010, 0xE000E0FF)) {
+					// 1.1.4 Systick (0xE000E010 - 0xE000E0FF)
+				} else if(address_in_region(address, 0xE000E100, 0xE000ECFF)) {
+					// 1.1.5 NVIC (0xE000E100 - 0xE000ECFF)
+				} else if(address_in_region(address, 0xE000EDF0, 0xE000EEFF)) {
+					// 1.1.6 Debug control and configuration (0xE000EDF0 - 0xE000EEFF)
+				} else if(address_in_region(address, 0xE000ED90, 0xE000EDEF)) {
+					// 1.1.7 MPU (0xE000ED90 - 0xE000EDEF)
+				}
 
+			}
+		} else if(0xE0100000 == address & 0xFFF00000) {
+			// Vendor Sys region (0xE0100000 - 0xFFFFFFFF)
+
+		}
 #if 1
 		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const mem_mapping& mm){
 			return in_range(address, mm);
