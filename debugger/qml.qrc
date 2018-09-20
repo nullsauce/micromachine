@@ -4,5 +4,6 @@
         <file>qtquickcontrols2.conf</file>
         <file>Memoryview.qml</file>
         <file>DisassemblyView.qml</file>
+        <file>WordDisplay.qml</file>
     </qresource>
 </RCC>
