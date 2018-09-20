@@ -1,6 +1,7 @@
 #ifndef MEMVIEW_HPP
 #define MEMVIEW_HPP
 
+#include <QtMath>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
@@ -58,7 +59,7 @@ public:
 
     void setScroll(qreal scroll) {
         size_t totalNumberOfRowsInRange = mMem->virtualRange() / mNumberOfColumns;
-        size_t atRow = (size_t)floor(scroll * totalNumberOfRowsInRange);
+        size_t atRow = (size_t)qFloor(scroll * totalNumberOfRowsInRange);
         uint32_t offset = atRow * mNumberOfColumns;
         setOffset(offset);
         emit scrollChanged();
