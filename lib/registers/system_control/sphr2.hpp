@@ -2,20 +2,17 @@
 #define MICROMACHINE_EMU_SPHR2_HPP
 
 #include "types.hpp"
-#include "registers/ireg.hpp"
+#include "registers/word_reg.hpp"
 
-class sphr2_reg : public ireg {
+class sphr2_reg : public word_reg {
 public:
-
 	using ireg::operator=;
-	sphr2_reg() : _word(0) {}
 
 	word pri11() const {
 		return get().bits<30, 2>();
 	}
 
 private:
-
 	static constexpr uint32_t _mask = (0b11 << 30);
 
 	void set(word word) override {

@@ -28,6 +28,10 @@ public:
 		return _sps[(size_t)type];
 	}
 
+	void reset() override {
+		set(0);
+	}
+
 private:
 
 	static const uint32_t MASK = binops::make_mask<2, 30>();

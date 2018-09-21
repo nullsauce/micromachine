@@ -9,6 +9,10 @@ public:
 	using ireg::operator=;
 	standard_reg() : _word(0) {}
 
+	void reset() override {
+		set(0);
+	}
+
 private:
 
 	void set(word word) override {
