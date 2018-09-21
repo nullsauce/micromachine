@@ -16,6 +16,10 @@ public:
 		return get();
 	}
 
+	operator uint32_t() const {
+		return get();
+	}
+
 	// TODO: add reset()
 
 private:
