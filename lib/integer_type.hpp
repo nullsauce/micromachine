@@ -71,6 +71,11 @@ public:
 		return bitslice<offset, len, u_type>(*this);
 	};
 
+	template<size_t offset, size_t len>
+	bitslice<offset, len, const u_type> bits() const {
+		return bitslice<offset, len, const u_type>(*this);
+	};
+
 	bool bit(size_t offset) const {
 		return binops::get_bit<bits_t>(*this, offset);
 	}

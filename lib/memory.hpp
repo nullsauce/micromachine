@@ -7,7 +7,12 @@
 
 #include <vector>
 #include <algorithm>
-
+#include <unordered_map>
+#include <type_traits>
+#include <registers/system_control/systick.hpp>
+#include "registers/system_control/sphr2.hpp"
+#include "registers/system_control/sphr3.hpp"
+#include "registers/system_control/systick.hpp"
 #include "exception_vector.hpp"
 
 #define memory_hardfault(reason_fmt,...)\
@@ -15,6 +20,7 @@
     _exception.raise(exception_number::name::HARDFAULT);
 
 namespace {
+
 	template<class ForwardIt, class T, class Compare>
 	ForwardIt lamda_upper_bound(ForwardIt first, ForwardIt last, const T& value, Compare comp) {
 		ForwardIt it;
@@ -168,6 +174,18 @@ private:
 
 	template <typename access_t>
 	bool write(uint32_t address, access_t value) {
+		// Only check if this is a system control register
+		// access when access_t is uint32_t
+		// TODO: use static_if
+		if(std::is_same<uint32_t, access_t>::value) {
+			if(address >= 0xE0000000) {
+				auto reg_it = _system_control_registers.find(address);
+				if(_system_control_registers.end() != reg_it) {
+					reg_it->second.get() = value;
+					return true;
+				}
+			}
+		}
 
 		if(!is_aligned<access_t>(address)) {
 			memory_hardfault("unaligned memory access. write word at 0x%08X\n", address);
@@ -186,13 +204,28 @@ private:
 		return true;
 	}
 
+
+
 	template <typename access_t>
 	access_t read(uint32_t address, bool& ok) const {
+		// Only check if this is a system control register
+		// access when access_t is uint32_t
+		// TODO: use static_if
+		if(std::is_same<uint32_t, access_t>::value) {
+			if(address >= 0xE0000000) {
+				auto reg_it = _system_control_registers.find(address);
+				if(_system_control_registers.end() != reg_it) {
+					return (word)reg_it->second.get();
+				}
+			}
+		}
+
 		if(!is_aligned<access_t>(address)) {
 			memory_hardfault("unaligned memory access. read word at 0x%08X\n", address);
 			ok = false;
 			return 0;
 		}
+
 		precond(is_aligned<access_t>(address),"unaligned memory access. read word at 0x%08X\n", address);
 		const mem_mapping* region = find_const_region(address);
 
@@ -226,10 +259,14 @@ private:
 	}
 
 	const mem_mapping* find_const_region(uint32_t address) const {
-
+		/*
 		// System memory region,  - 0xFFFFFFFF
 		// Check if within sub regions
 		if(address >= 0xE0000000) {
+			auto reg_it = _system_control_registers.find(address);
+			if(_system_control_registers.end() != reg_it) {
+				return reg_it;
+			}
 			// 1 Private Peripheral Bus (PPB) region (0xE0000000 - 0xE00FFFFF)
 			if(address_in_region(address, 0xE0000000 , 0xE00FFFFF)) {
 				// 1.1 System Control Space region (0xE000E000 - 0xE000EFFF)
@@ -253,7 +290,7 @@ private:
 		} else if(0xE0100000 == address & 0xFFF00000) {
 			// Vendor Sys region (0xE0100000 - 0xFFFFFFFF)
 
-		}
+		}*/
 #if 1
 		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const mem_mapping& mm){
 			return in_range(address, mm);
@@ -298,6 +335,14 @@ private:
 
     region_vec _regions;
 	exception_vector& _exception;
+	sphr2_reg _sphr2_reg;
+	sphr3_reg _sphr3_reg;
+	systick _systick;
+	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers = {
+		std::make_pair(0xE000ED1C, std::ref(_sphr2_reg)),
+		std::make_pair(0xE000ED20, std::ref(_sphr3_reg)),
+		std::make_pair(0xE000E010, std::ref(_systick.control_register()))
+	};
 
 };
 
