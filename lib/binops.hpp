@@ -65,7 +65,7 @@ static constexpr size_t make_mask() {
 }
 
 template<typename u_type>
-static u_type make_mask(const size_t num_bits) {
+static constexpr u_type make_mask(const size_t num_bits) {
 	precond(num_bits <= binsize<u_type>(), "dest value can't hold num_bits");
 	return ((1ULL<<num_bits)-1ULL);
 }

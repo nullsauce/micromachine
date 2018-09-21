@@ -7,7 +7,7 @@ class ireg {
 
 public:
 
-	ireg& operator = (word word) {
+	ireg& operator=(word word) {
 		set(word);
 		return *this;
 	}
@@ -15,6 +15,8 @@ public:
 	operator word() const {
 		return get();
 	}
+
+	// TODO: add reset()
 
 private:
 
