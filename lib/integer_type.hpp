@@ -36,8 +36,12 @@ public:
 		return _val;
 	}
 
+	operator bits_t&() {
+		return _val;
+	}
+
 	bits_t uint(size_t bit_offset, size_t num_bits) const {
-		return binops::read_uint<bits_t>(*this, bit_offset, num_bits);
+		return binops::read_uint(*this, bit_offset, num_bits);
 	}
 
 	sbits_t sint(size_t bit_offset, size_t num_bits) const {
@@ -77,7 +81,7 @@ public:
 	};
 
 	bool bit(size_t offset) const {
-		return binops::get_bit<bits_t>(*this, offset);
+		return binops::get_bit(*this, offset);
 	}
 
 	bool any_bits_set(size_t offset, size_t num_bits) const {

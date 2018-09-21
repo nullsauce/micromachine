@@ -54,7 +54,7 @@ public:
 
 private:
 
-	static constexpr uint32_t _mask = (0b1 << 16) | 0b111;
+	static constexpr uint32_t _mask = (0b1U << 16) | 0b111;
 
 	void set(word word) override {
 		_word = word & _mask;
@@ -151,7 +151,7 @@ public:
 
 private:
 
-	static constexpr uint32_t _mask = binops::make_mask<uint32_t>(24) | (0b11 << 30);
+	static constexpr uint32_t _mask = binops::make_mask<24>() | (0b11U << 30);
 
 	void set(word word) override {
 		_word = word & _mask;
