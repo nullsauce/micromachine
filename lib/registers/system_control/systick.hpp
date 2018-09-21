@@ -2,20 +2,15 @@
 #define MICROMACHINE_EMU_SYSTICK_HPP
 
 #include "types.hpp"
-#include "registers/ireg.hpp"
+#include "registers/word_reg.hpp"
 
-class systick_control_reg : public ireg {
+class systick_control_reg : public word_reg {
 public:
-	using ireg::operator=;
-	using ireg::operator word;
-
+	using word_reg::operator=;
 	static constexpr size_t COUNTFLAG_BIT = 16;
 	static constexpr size_t CLKSOURCE_BIT = 2;
 	static constexpr size_t TICKINT_BIT = 1;
 	static constexpr size_t ENABLE_BIT = 0;
-
-	using ireg::operator=;
-	systick_control_reg() : _word(0) {}
 
 	bool count_flag() {
 		// Reading the COUNTFLAG_BIT clears it to 0
@@ -53,7 +48,6 @@ public:
 	}
 
 private:
-
 	static constexpr uint32_t _mask = (0b1U << 16) | 0b111;
 
 	void set(word word) override {
@@ -63,18 +57,12 @@ private:
 	const word get() const override {
 		return _word & _mask;
 	}
-
-protected:
-	word _word;
 };
 
-class systick_reload_value_reg : public ireg {
+class systick_reload_value_reg : public word_reg {
 public:
-	using ireg::operator=;
-	using ireg::operator word;
-
+	using word_reg::operator=;
 private:
-
 	void set(word word) override {
 		_word.bits<0, 24>() = word;
 	}
@@ -82,16 +70,15 @@ private:
 	const word get() const override {
 		return _word.bits<0, 24>();
 	}
-
-protected:
-	word _word;
 };
 
-class systick_current_value_reg : public ireg {
+class systick_current_value_reg : public word_reg {
 public:
-	using ireg::operator=;
-	using ireg::operator word;
-
+	using word_reg::operator=;
+	systick_current_value_reg(systick_control_reg& control_reg)
+		: word_reg()
+		, _control_reg(control_reg) {
+	}
 	// this setter does NOT clear the register
 	void set_internal(word word) {
 		_word.bits<0, 24>() = word;
@@ -102,11 +89,10 @@ public:
 	}
 
 private:
-
 	void set(word word) override {
 		// Writing to SYST_CVR clears both the register and the COUNTFLAG status bit to zero
-		// TODO: clear COUNTFLAG
 		_word.bits<0, 24>() = 0;
+		_control_reg.set_count_flag(false);
 	}
 
 	const word get() const override {
@@ -115,13 +101,12 @@ private:
 
 protected:
 	word _word;
+	systick_control_reg& _control_reg;
 };
 
-class systick_calib_value_reg : public ireg {
+class systick_calib_value_reg : public word_reg {
 public:
-	using ireg::operator=;
-	using ireg::operator word;
-
+	using word_reg::operator=;
 	static constexpr size_t SKEW_BIT = 30;
 	static constexpr size_t NOREF_BIT = 31;
 
@@ -150,7 +135,6 @@ public:
 	}
 
 private:
-
 	static constexpr uint32_t _mask = binops::make_mask<24>() | (0b11U << 30);
 
 	void set(word word) override {
@@ -160,59 +144,6 @@ private:
 	const word get() const override {
 		return _word & _mask;
 	}
-
-protected:
-	word _word;
-};
-
-class systick {
-public:
-
-	void tick() {
-
-		if(!_control.enabled()) {
-			return;
-		}
-
-		// TODO: remove casts
-		if(0U == _reload_value) {
-			_control.set_enabled(false);
-			return;
-		}
-
-		if(0U == _current_value) {
-			_current_value.set_internal(_reload_value);
-		} else {
-			_current_value.decrement();
-			if(0U == _current_value) {
-				_control.set_count_flag(true);
-			}
-		}
-	}
-
-	systick_control_reg& control_register() {
-		return _control;
-	}
-
-	systick_current_value_reg& current_value_register() {
-		return _current_value;
-	}
-
-	systick_reload_value_reg& reload_value_register() {
-		return _reload_value;
-	}
-
-	systick_calib_value_reg& calib_value_register() {
-		return _calib_value;
-	}
-
-private:
-
-	systick_control_reg _control;
-	systick_current_value_reg _current_value;
-	systick_reload_value_reg _reload_value;
-	systick_calib_value_reg _calib_value;
-
 };
 
 #endif //MICROMACHINE_EMU_SYSTICK_HPP
