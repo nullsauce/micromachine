@@ -48,6 +48,7 @@ class memory {
 
 public:
 
+	using system_control_register_map = std::unordered_map<uint32_t, std::reference_wrapper<ireg>>;
 
 	struct mem_mapping {
 		mem_mapping(uint8_t* host_ptr, uint32_t start_addr, uint32_t size, const std::string& name = "")
@@ -86,10 +87,9 @@ public:
 		const std::string _name;
 	};
 
-
-	memory(exception_vector& exception_vector)
-		: _exception(exception_vector) {
-
+	memory(exception_vector& exception_vector, const system_control_register_map& scr_map)
+		: _exception(exception_vector)
+		, _system_control_registers(scr_map) {
 	}
 
 	using region_vec = std::vector<mem_mapping>;
@@ -335,14 +335,7 @@ private:
 
     region_vec _regions;
 	exception_vector& _exception;
-	sphr2_reg _sphr2_reg;
-	sphr3_reg _sphr3_reg;
-	systick _systick;
-	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers = {
-		std::make_pair(0xE000ED1C, std::ref(_sphr2_reg)),
-		std::make_pair(0xE000ED20, std::ref(_sphr3_reg)),
-		std::make_pair(0xE000E010, std::ref(_systick.control_register()))
-	};
+	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers;
 
 };
 
