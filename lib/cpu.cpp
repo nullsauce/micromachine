@@ -12,7 +12,11 @@ and/or distributed without the express permission of Flavio Roth.
 
 cpu::cpu()
 	: _regs(_exception_manager)
-	, _mem(_exception_vector)
+	, _mem(_exception_vector,{
+		std::make_pair(0xE000ED1C, std::ref(_sphr2_reg)),
+		std::make_pair(0xE000ED20, std::ref(_sphr3_reg)),
+		std::make_pair(0xE000E010, std::ref(_system_timer.control_register()))
+	})
 	, _exec_dispatcher(_regs, _mem, _exception_vector)
 	, _exception_manager(_regs, _mem, _exception_vector)
 	, _initial_sp(0)
@@ -105,6 +109,7 @@ void cpu::reset() {
 	_regs.app_status_register().reset();
 	_regs.set_sp(_initial_sp);
 	_regs.set_pc(_initial_pc);
+	_system_timer.reset();
 
 	// set sp to vector+0
 	/*

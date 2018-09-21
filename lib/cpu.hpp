@@ -18,6 +18,7 @@
 #include "exception_manager.hpp"
 #include "exec_dispatcher.hpp"
 #include "disasm.hpp"
+#include "timer.hpp"
 
 class cpu {
 
@@ -52,9 +53,13 @@ private:
 
 	exception_vector	_exception_vector;
 	registers 			_regs;
+	sphr2_reg 			_sphr2_reg;
+	sphr3_reg 			_sphr3_reg;
+	systick				_system_timer;
 	memory 				_mem;
 	exec_dispatcher 	_exec_dispatcher;
 	exception_manager 	_exception_manager;
+
 
 	// TODO: this is not needed here
 	uint32_t _initial_sp;
