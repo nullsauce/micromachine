@@ -175,16 +175,16 @@ public:
 		}
 
 		// TODO: remove casts
-		if(0U == (word)_reload_value) {
+		if(0U == _reload_value) {
 			_control.set_enabled(false);
 			return;
 		}
 
-		if(0U == (word)_current_value) {
+		if(0U == _current_value) {
 			_current_value.set_internal(_reload_value);
 		} else {
 			_current_value.decrement();
-			if(0U == (word)_current_value) {
+			if(0U == _current_value) {
 				_control.set_count_flag(true);
 			}
 		}
