@@ -10,6 +10,26 @@ and/or distributed without the express permission of Flavio Roth.
 #include <stddef.h>
 extern char _heap_start;
 
+#define NVIC_ST_CTRL_R          (*((volatile unsigned long *)0xE000E010))
+#define NVIC_ST_RELOAD_R        (*((volatile unsigned long *)0xE000E014))
+#define NVIC_ST_CURRENT_R       (*((volatile unsigned long *)0xE000E018))
+#define NVIC_ST_CTRL_COUNT      0x00010000  // Count flag
+#define NVIC_ST_CTRL_CLK_SRC    0x00000004  // Clock Source
+#define NVIC_ST_CTRL_INTEN      0x00000002  // Interrupt enable
+#define NVIC_ST_CTRL_ENABLE     0x00000001  // Counter mode
+#define NVIC_ST_RELOAD_M        0x00FFFFFF  // Counter load value
+
+
+// Initialize SysTick with busy wait running at bus clock.
+void SysTick_Init(void){
+  NVIC_ST_CTRL_R = 0;                   // disable SysTick during setup
+  NVIC_ST_RELOAD_R = 100;  			// reload value
+  NVIC_ST_CURRENT_R = 0;                // any write to current clears it
+                                        // enable SysTick with core clock
+  NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE + NVIC_ST_CTRL_CLK_SRC;
+}
+
+
 #define SVC(code) __asm__ __volatile__ ("svc %0" : : "I" (code) )
 #define ISR __attribute__((weak, interrupt("IRQ")))
 void _isr_empty() {};
@@ -17,7 +37,10 @@ void ISR _isr_nmi() {};
 void ISR _isr_hardfault() {};
 void ISR _isr_svcall() {};
 void ISR _isr_pendsv() {};
-void ISR _isr_systick() {};
+void ISR _isr_systick() {
+	volatile uint32_t* heap = (uint32_t*)&_heap_start;
+	heap[16]++;
+};
 void ISR _isr_external_interruput() {};
 
 static uint32_t z1 = 0x2f312e94;
@@ -49,6 +72,7 @@ int fib(int n){
 }
 
 void entry() {
+	SysTick_Init();
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
 	heap[0] = 0x50414548;
 	uint32_t i = 0;

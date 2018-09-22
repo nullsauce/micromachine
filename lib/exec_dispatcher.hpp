@@ -28,17 +28,17 @@ private:
 
 	void invalid_instruction(const halfword instr) override {
 		(void)instr;
-		_exception_vector.raise(exception_number::name::HARDFAULT);
+		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	}
 
 	void invalid_instruction(const instruction_pair instr) override {
 		(void)instr;
-		_exception_vector.raise(exception_number::name::HARDFAULT);
+		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
 	void dispatch(const nop instruction) override {
-	
+
 	}
 	void dispatch(const lsl_imm instruction) override {
 		exec(lsl_imm(instruction), _regs, _regs.app_status_register());
@@ -258,16 +258,16 @@ private:
 		exec(bl_imm(instruction), _regs);
 	}
 	void dispatch(const svc instruction) override {
-		_exception_vector.raise(exception_number::name::SVCALL);
+		_exception_vector.raise(exception_number::ex_name::SVCALL);
 	}
 	void dispatch(const udf instr) override {
 		(void)instr;
 		// undefined instruction
-		_exception_vector.raise(exception_number::name::HARDFAULT);
+		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	}
 	void dispatch(const udfw instr) override {
 		// undefined instruction
-		_exception_vector.raise(exception_number::name::HARDFAULT);
+		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	}
 };
 
