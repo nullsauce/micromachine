@@ -31,7 +31,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	// TODO: make a nice function
 	if(binops::make_mask<24>() != bits<4,24>::of(ret_address)) {
 		// unpredicatable
-        fprintf(stderr, "unpredicatable\n");
+        fprintf(stderr, "unpredicatable.\n");
 	}
 
 	exception_number returning_from_exception = _regs.interrupt_status_register().exception_num();
@@ -93,13 +93,13 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	pop_stack(frame_ptr, ret_address);
 
 	if(_regs.exec_mode_register().is_handler_mode()) {
-		if(0U == (uint8_t)returning_from_exception) {
+		if(0U == _regs.interrupt_status_register().exception_num()) {
 			// unpredictable
-            fprintf(stderr, "unpredictable\n");
+            fprintf(stderr, "unpredictable. (is_handler_mode but returning_from_exception is zero)\n");
 		}
-	} else if(0U != (uint8_t)returning_from_exception) {
+	} else if(0U != _regs.interrupt_status_register().exception_num()) {
 		// unpredictable
-        fprintf(stderr, "unpredictable\n");
+        fprintf(stderr, "unpredictable. (not in handler mode, but returning_from_exception is %d)\n", (uint8_t)returning_from_exception);
 	}
 
 	//TODO: SetEventRegister()
@@ -119,13 +119,13 @@ current_instruction) {
 	// address of next instruction by default;
 	uint32_t return_address = instruction_address + current_instruction.size();
 
-    if(exception_number::name::HARDFAULT == ex.number()) {
+    if(exception_number::ex_name::HARDFAULT == ex.number()) {
 		// address of the instruction causing fault
 		return_address = instruction_address;
-	} else if(exception_number::name::SVCALL == ex.number()) {
+	} else if(exception_number::ex_name::SVCALL == ex.number()) {
 		// address of the next instruction after svc
         return_address = instruction_address + current_instruction.size();
-	} else if(exception_number::name::PENDSV == ex.number() || exception_number::name::SYSTICK == ex.number()) {
+	} else if(exception_number::ex_name::PENDSV == ex.number() || exception_number::ex_name::SYSTICK == ex.number()) {
 		// address of instruction to be executed after the irq
 		return_address = instruction_address + current_instruction.size();
 	}

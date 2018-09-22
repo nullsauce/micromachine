@@ -12,10 +12,14 @@ and/or distributed without the express permission of Flavio Roth.
 
 cpu::cpu()
 	: _regs(_exception_manager)
+	, _system_timer(_exception_vector)
 	, _mem(_exception_vector,{
 		std::make_pair(0xE000ED1C, std::ref(_sphr2_reg)),
 		std::make_pair(0xE000ED20, std::ref(_sphr3_reg)),
-		std::make_pair(0xE000E010, std::ref(_system_timer.control_register()))
+		std::make_pair(0xE000E010, std::ref(_system_timer.control_register())),
+		std::make_pair(0xE000E014, std::ref(_system_timer.reload_value_register())),
+		std::make_pair(0xE000E018, std::ref(_system_timer.current_value_register())),
+		std::make_pair(0xE000E01C, std::ref(_system_timer.calib_value_register())),
 	})
 	, _exec_dispatcher(_regs, _mem, _exception_vector)
 	, _exception_manager(_regs, _mem, _exception_vector)
@@ -110,6 +114,8 @@ void cpu::reset() {
 	_regs.set_sp(_initial_sp);
 	_regs.set_pc(_initial_pc);
 	_system_timer.reset();
+	_sphr2_reg.reset();
+	_sphr3_reg.reset();
 
 	// set sp to vector+0
 	/*
@@ -165,13 +171,15 @@ bool cpu::step() {
 
 	_debug_instruction_counter++;
 
+	_system_timer.tick();
+
 	const word current_addr = _regs.get_pc();
 	instruction_pair instr = fetch_instruction(current_addr);
 
 	if(!_regs.execution_status_register().thumb_bit_set()) {
 		// Thumb bit not set
 		// all instructions in this state are UNDEFINED .
-		_exception_vector.raise(exception_number::name::HARDFAULT);
+		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	} else {
 		_regs.set_pc(current_addr + 4);  // simulate prefetch of 2 instructions
 		_regs.reset_pc_dirty_status();
@@ -188,7 +196,7 @@ bool cpu::step() {
 	//bool exception_pending = _exception_manager.prepare_exceptions();
 	exception_state* pending_exception = _exception_vector.top_pending_exception();
 	if(pending_exception) {
-		hard_fault = pending_exception->number() == exception_number(exception_number::name::HARDFAULT);
+		hard_fault = pending_exception->number() == exception_number(exception_number::ex_name::HARDFAULT);
 		_exception_manager.process_pending_exception(current_addr, instr);
 	} else if(!_regs.branch_occured()) {
 		_regs.set_pc(current_addr + instr.size());
