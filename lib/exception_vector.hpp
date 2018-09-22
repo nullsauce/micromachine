@@ -14,8 +14,9 @@
 /// Exception state
 class exception_state {
 	friend class exception_vector;
+	using priority_t = int32_t;
 public:
-	exception_state(exception_number::name exception_name, int8_t priority = 0)
+	exception_state(exception_number::ex_name exception_name, priority_t priority = 0)
 		: _priority(priority)
 		, _number(exception_number::from_name(exception_name))
 		, _active(false)
@@ -23,11 +24,27 @@ public:
 		, _default_priority(priority) {
 		}
 
-	int8_t priority() const {
-		return _priority;
+	priority_t priority() const {
+		switch(_number.name()) {
+			case exception_number::ex_name::RESET: return -3;
+			case exception_number::ex_name::NMI: return -2;
+			case exception_number::ex_name::HARDFAULT: return -1;
+			case exception_number::ex_name::SVCALL: return 0; // shpr2.11
+			case exception_number::ex_name::PENDSV: return 0; // shpr2.14
+			case exception_number::ex_name::SYSTICK: return 0; // shpr2.15
+			default: if(_number.name() > exception_number::ex_name::SYSTICK) {
+				// External interrupts
+				uint32_t reg = (_number.int_value() - 16) / 4;
+				uint32_t section = _number.int_value() % 4;
+				return 0; // UInt(NVIC_IPR:r.PRI_N:v)
+			} else {
+				// Reserved exceptions
+				return 4;
+			}
+		}
 	}
 
-	void set_priority(int8_t priority) {
+	void set_priority(priority_t priority) {
 		_priority = priority;
 	}
 
@@ -77,11 +94,11 @@ private:
 		_active = false;
 	}
 
-	int8_t _priority;
+	priority_t _priority;
 	const exception_number _number;
 	bool _active;
 	bool _pending;
-	int8_t _default_priority;
+	priority_t _default_priority;
 };
 
 
@@ -102,46 +119,46 @@ class exception_vector {
 public:
 	exception_vector()
 		: _exception_states({{
-			{exception_number::name::INVALID, 126},
-			{exception_number::name::RESET, -3},
-			{exception_number::name::NMI, -2},
-			{exception_number::name::HARDFAULT, -1},
-			{exception_number::name::_RESERVED_0},
-			{exception_number::name::_RESERVED_1},
-			{exception_number::name::_RESERVED_2},
-			{exception_number::name::_RESERVED_3},
-			{exception_number::name::_RESERVED_4},
-			{exception_number::name::_RESERVED_5},
-			{exception_number::name::_RESERVED_6},
-			{exception_number::name::SVCALL},
-			{exception_number::name::_RESERVED_7},
-			{exception_number::name::_RESERVED_8},
-			{exception_number::name::PENDSV},
-			{exception_number::name::SYSTICK},
-			{exception_number::name::IRQ_0},
-			{exception_number::name::IRQ_1},
-			{exception_number::name::IRQ_2},
-			{exception_number::name::IRQ_3},
-			{exception_number::name::IRQ_4},
-			{exception_number::name::IRQ_5},
-			{exception_number::name::IRQ_6},
-			{exception_number::name::IRQ_7},
-			{exception_number::name::IRQ_8},
-			{exception_number::name::IRQ_9},
-			{exception_number::name::IRQ_10},
-			{exception_number::name::IRQ_11},
-			{exception_number::name::IRQ_12},
-			{exception_number::name::IRQ_13},
-			{exception_number::name::IRQ_14},
-			{exception_number::name::IRQ_15}
+			{exception_number::ex_name::INVALID, 126},
+			{exception_number::ex_name::RESET, -3},
+			{exception_number::ex_name::NMI, -2},
+			{exception_number::ex_name::HARDFAULT, -1},
+			{exception_number::ex_name::_RESERVED_0},
+			{exception_number::ex_name::_RESERVED_1},
+			{exception_number::ex_name::_RESERVED_2},
+			{exception_number::ex_name::_RESERVED_3},
+			{exception_number::ex_name::_RESERVED_4},
+			{exception_number::ex_name::_RESERVED_5},
+			{exception_number::ex_name::_RESERVED_6},
+			{exception_number::ex_name::SVCALL},
+			{exception_number::ex_name::_RESERVED_7},
+			{exception_number::ex_name::_RESERVED_8},
+			{exception_number::ex_name::PENDSV},
+			{exception_number::ex_name::SYSTICK},
+			{exception_number::ex_name::IRQ_0},
+			{exception_number::ex_name::IRQ_1},
+			{exception_number::ex_name::IRQ_2},
+			{exception_number::ex_name::IRQ_3},
+			{exception_number::ex_name::IRQ_4},
+			{exception_number::ex_name::IRQ_5},
+			{exception_number::ex_name::IRQ_6},
+			{exception_number::ex_name::IRQ_7},
+			{exception_number::ex_name::IRQ_8},
+			{exception_number::ex_name::IRQ_9},
+			{exception_number::ex_name::IRQ_10},
+			{exception_number::ex_name::IRQ_11},
+			{exception_number::ex_name::IRQ_12},
+			{exception_number::ex_name::IRQ_13},
+			{exception_number::ex_name::IRQ_14},
+			{exception_number::ex_name::IRQ_15}
 		}})
 		, _active_exception_count(0)
 		, _current_priority(0)
 	{
-		_stream_priority.push(0);
+		_stream_priority.push(126);
 	}
 
-	int8_t current_priority() const {
+	exception_state::priority_t current_priority() const {
 		return _stream_priority.top();
 	}
 
@@ -155,6 +172,7 @@ public:
 		// TODO: THe same exception can't be pending twice
 		_pending_exceptions.add_exception(exception_state);
 		exception_state.raise();
+		fprintf(stderr, "exception_vector: raised %s\n", exception.str().c_str());
 	}
 
 	void activate(exception_number exception) {
@@ -169,6 +187,7 @@ public:
 		exception.activate();
 		_stream_priority.push(exception.priority());
 		_active_exception_count++;
+		fprintf(stderr, "exception_vector: activated %s\n", exception.number().str().c_str());
 	}
 
 	void deactivate(exception_number ex_number) {
@@ -183,6 +202,7 @@ public:
 		// the base priority should always remain
         precond(!_stream_priority.empty(), "cant remove the base priority");
 		_active_exception_count--;
+		fprintf(stderr, "exception_vector: deactivated %s\n", exception.number().str().c_str());
 	}
 
 	bool is_pending(exception_number ex_number) const {
@@ -212,6 +232,8 @@ public:
 	exception_state* top_pending_exception() {
 		return _pending_exceptions.top_pending();
 	}
+
+
 
 private:
 
@@ -252,8 +274,7 @@ private:
 		/// has a lower priority integer value (=higher priority)
 		void add_exception(exception_state& exception) {
 			auto insert_it = std::upper_bound(_exceptions.begin(), _exceptions.end(), exception.priority(), []
-			(int8_t prio, const
-			exception_state& e) {
+			(exception_state::priority_t prio, const exception_state& e) {
 				return prio < e.priority();
 			});
 			_exceptions.insert(insert_it, std::ref(exception));
@@ -297,8 +318,8 @@ private:
 	prioritized_exception_list _pending_exceptions;
 	exception_list _active_exceptions;
 	uint32_t _active_exception_count;
-	int8_t _current_priority;
-	std::stack<int8_t> _stream_priority;
+	exception_state::priority_t _current_priority;
+	std::stack<exception_state::priority_t> _stream_priority;
 };
 
 #endif //MICROMACHINE_EXCEPTION_VECTOR_HPP

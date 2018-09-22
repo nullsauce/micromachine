@@ -12,25 +12,25 @@ TEST(ExceptionsTest, NotPendingWhenEmpty) {
 
 TEST(ExceptionsTest, RasingOnePendingShouldBePending) {
 	exception_vector vec;
-	vec.raise(exception_number::name::HARDFAULT);
+	vec.raise(exception_number::ex_name::HARDFAULT);
 	EXPECT_TRUE(vec.any_pending());
 }
 
 TEST(ExceptionsTest, RasingOnePendingShouldBeTheSamePending) {
 	exception_vector vec;
-	vec.raise(exception_number::name::HARDFAULT);
+	vec.raise(exception_number::ex_name::HARDFAULT);
 	EXPECT_TRUE(vec.any_pending());
 	ASSERT_NE(nullptr, vec.top_pending_exception());
-	EXPECT_EQ(exception_number::name::HARDFAULT, vec.top_pending_exception()->number());
+	EXPECT_EQ(exception_number::ex_name::HARDFAULT, vec.top_pending_exception()->number());
 }
 
 TEST(ExceptionsTest, PendingFlagScope) {
 	exception_vector vec;
-	vec.raise(exception_number::name::HARDFAULT);
+	vec.raise(exception_number::ex_name::HARDFAULT);
 	EXPECT_TRUE(vec.any_pending());
-	vec.activate(exception_number::name::HARDFAULT);
+	vec.activate(exception_number::ex_name::HARDFAULT);
 	EXPECT_FALSE(vec.any_pending());
-	vec.deactivate(exception_number::name::HARDFAULT);
+	vec.deactivate(exception_number::ex_name::HARDFAULT);
 	EXPECT_FALSE(vec.any_pending());
 }
 
@@ -38,28 +38,28 @@ TEST(ExceptionsTest, TopPendingShouldBeHighestPriority) {
 	exception_vector vec;
 
 	// Raise a HARDFAULT exception
-	vec.raise(exception_number::name::HARDFAULT);
+	vec.raise(exception_number::ex_name::HARDFAULT);
 	ASSERT_NE(nullptr, vec.top_pending_exception());
-	EXPECT_EQ(exception_number::name::HARDFAULT, vec.top_pending_exception()->number());
+	EXPECT_EQ(exception_number::ex_name::HARDFAULT, vec.top_pending_exception()->number());
 
 	// Raise a RESET exception
 	// Reset is higher priority and should take precedence as top pending
-	vec.raise(exception_number::name::RESET);
-	EXPECT_EQ(exception_number::name::RESET, vec.top_pending_exception()->number());
+	vec.raise(exception_number::ex_name::RESET);
+	EXPECT_EQ(exception_number::ex_name::RESET, vec.top_pending_exception()->number());
 
 	// Simulate handling of the RESET exception
-	vec.activate(exception_number::name::RESET);
-	vec.deactivate(exception_number::name::RESET);
+	vec.activate(exception_number::ex_name::RESET);
+	vec.deactivate(exception_number::ex_name::RESET);
 
 	// The HARDFAULT exception should still be pending
 	ASSERT_NE(nullptr, vec.top_pending_exception());
-	EXPECT_EQ(exception_number::name::HARDFAULT, vec.top_pending_exception()->number());
+	EXPECT_EQ(exception_number::ex_name::HARDFAULT, vec.top_pending_exception()->number());
 
 	// Simulate handling of the HARDFAULT exception
-	vec.activate(exception_number::name::HARDFAULT);
+	vec.activate(exception_number::ex_name::HARDFAULT);
 	// There should be no more pending exceptions
 	EXPECT_EQ(nullptr, vec.top_pending_exception());
-	vec.deactivate(exception_number::name::HARDFAULT);
+	vec.deactivate(exception_number::ex_name::HARDFAULT);
 
 	// There should be no more pending exceptions
 	EXPECT_EQ(nullptr, vec.top_pending_exception());

@@ -604,7 +604,7 @@ public:
 					invalid_instruction(instruction_pair);
 				}
 			} else {
-				fprintf(stderr, "undefined 32bit instruction\n");
+				fprintf(stderr, "undefined 32bit instruction %04x %04x\n", instruction_pair.first, instruction_pair.second);
 				invalid_instruction(instruction_pair);
 			}
 

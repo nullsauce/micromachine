@@ -362,7 +362,7 @@ void pinkySimBase::pinkySimStep()
 
 void pinkySimBase::validateSignaledException() {
 	if(PINKYSIM_STEP_HARDFAULT == m_expectedStepReturn) {
-		EXPECT_TRUE(_cpu.exceptions().is_active(exception_number::name::HARDFAULT));
+		EXPECT_TRUE(_cpu.exceptions().is_active(exception_number::ex_name::HARDFAULT));
 	} else {
 		assert("TODO implement");
 	}

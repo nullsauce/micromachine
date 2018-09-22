@@ -22,7 +22,7 @@ private:
 
 public:
 	exception_number_t _integer_value;
-	enum class name : exception_number_t {
+	enum class ex_name : exception_number_t {
 		INVALID = 0,
 		RESET	= 1,
 		NMI		= 2,
@@ -65,19 +65,26 @@ public:
 	};
 	//exception_number() = default;
 	exception_number(exception_number_t number) : _integer_value(number) {}
-	exception_number(name name) : _integer_value(from_name(name)) {}
+	exception_number(ex_name name) : _integer_value(from_name(name)) {}
+	ex_name name() const {
+		return static_cast<ex_name>(*this);
+	}
+
+	exception_number_t int_value() const {
+		return static_cast<exception_number_t>(*this);
+	}
 
 	static exception_number from_uint(uint32_t number) {
 		return { static_cast<exception_number_t>(number) };
 	}
-	static exception_number from_name(name name) {
+	static exception_number from_name(ex_name name) {
 		return { static_cast<exception_number_t>(name) };
 	}
 	operator exception_number_t() const {
 		return _integer_value;
 	}
-	operator name() const {
-		return static_cast<name>(_integer_value);
+	operator ex_name() const {
+		return static_cast<ex_name>(_integer_value);
 	}
 	bool operator==(const exception_number& other) const {
 		return _integer_value == other._integer_value;
@@ -93,6 +100,44 @@ public:
 	}
 	bool operator>=(const exception_number& other) const {
 		return _integer_value >= other._integer_value;
+	}
+
+	std::string str() const {
+		static const char* names[32] = {
+			"INVALID",
+			"RESET",
+			"NMI",
+			"HARDFAULT",
+			"_RESERVED_0",
+			"_RESERVED_1",
+			"_RESERVED_2",
+			"_RESERVED_3",
+			"_RESERVED_4",
+			"_RESERVED_5",
+			"_RESERVED_6",
+			"SVCALL",
+			"_RESERVED_7",
+			"_RESERVED_8",
+			"PENDSV",
+			"SYSTICK",
+			"IRQ_0",
+			"IRQ_1",
+			"IRQ_2",
+			"IRQ_3",
+			"IRQ_4",
+			"IRQ_5",
+			"IRQ_6",
+			"IRQ_7",
+			"IRQ_8",
+			"IRQ_9",
+			"IRQ_10",
+			"IRQ_11",
+			"IRQ_12",
+			"IRQ_13",
+			"IRQ_14",
+			"IRQ_15",
+		};
+		return names[int_value()];
 	}
 };
 

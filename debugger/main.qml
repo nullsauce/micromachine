@@ -42,7 +42,7 @@ ApplicationWindow {
 		}
 
 		onTriggered: {
-			if(false === CPU.step(1000)) {
+			if(false === CPU.step(1)) {
 				// breakpoint reached
 				clock.stop();
 			}
