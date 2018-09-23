@@ -869,4 +869,8 @@ struct cps {
 	 : im(instruction.bit(4)){}
 	const bool im;
 };
+
+struct bkpt : standard_imm8 {
+	using standard_imm8::standard_imm8;
+};
 #endif //THUMBEMU_INSTRUCTIONS_HPP
