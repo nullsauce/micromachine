@@ -780,6 +780,10 @@ static void exec(const pop& instruction, registers& regs, memory& mem) {
 	regs.set_sp(frame_start + stored_size);
 }
 
+static void exec(const bkpt& instruction, bool& break_signal) {
+	break_signal = true;
+}
+
 static void exec(const rev_word& instruction, registers& regs) {
 	regs.set(instruction.rd, binops::swap(regs.get(instruction.rm)));
 }

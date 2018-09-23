@@ -21,11 +21,13 @@ cpu::cpu()
 		std::make_pair(0xE000E018, std::ref(_system_timer.current_value_register())),
 		std::make_pair(0xE000E01C, std::ref(_system_timer.calib_value_register())),
 	})
-	, _exec_dispatcher(_regs, _mem, _exception_vector)
+	, _break_signal(false)
+	, _exec_dispatcher(_regs, _mem, _exception_vector, _break_signal)
 	, _exception_manager(_regs, _mem, _exception_vector)
 	, _initial_sp(0)
 	, _initial_pc(0)
 	, _debug_instruction_counter(0)
+
 {
 #ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
 	fprintf(stderr, "Warning: The CPU is compiled with addtional safety checks that might slow its performance.\n");
@@ -107,6 +109,7 @@ void cpu::execute(const instruction_pair instr)
 
 void cpu::reset() {
 
+	_break_signal = false;
 	_exception_vector.reset();
 	_exception_manager.reset();
 	_regs.reset();
@@ -169,6 +172,11 @@ instruction_pair cpu::fetch_instruction_debug(word address) const {
 
 bool cpu::step() {
 
+	if(_break_signal) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		return true;
+
+	}
 	_debug_instruction_counter++;
 
 	_system_timer.tick();

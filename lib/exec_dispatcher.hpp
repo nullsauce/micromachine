@@ -13,10 +13,12 @@ public:
 	exec_dispatcher(
 		registers& regs,
 		memory& mem,
-		exception_vector& exceptions)
+		exception_vector& exceptions,
+		bool& break_signal)
 	: _exception_vector(exceptions)
 	, _regs(regs)
 	, _mem(mem)
+	, _break_signal(break_signal)
 	{}
 
 
@@ -25,6 +27,7 @@ private:
 	exception_vector& _exception_vector;
 	registers& _regs;
 	memory& _mem;
+	bool& _break_signal;
 
 	void invalid_instruction(const halfword instr) override {
 		(void)instr;
@@ -225,6 +228,9 @@ private:
 	}
 	void dispatch(const pop instruction) override {
 		exec(pop(instruction), _regs, _mem);
+	}
+	void dispatch(const bkpt instruction) override {
+		exec(bkpt(instruction), _break_signal);
 	}
 	void dispatch(const rev_word instruction) override {
 		exec(rev_word(instruction), _regs);
