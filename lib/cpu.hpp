@@ -57,9 +57,9 @@ private:
 	sphr3_reg 			_sphr3_reg;
 	systick				_system_timer;
 	memory 				_mem;
+	bool				_break_signal;
 	exec_dispatcher 	_exec_dispatcher;
 	exception_manager 	_exception_manager;
-
 
 	// TODO: this is not needed here
 	uint32_t _initial_sp;

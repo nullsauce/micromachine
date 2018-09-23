@@ -559,8 +559,7 @@ public:
 		} else if(is_pop(instr)) {
 			dispatch(pop(instr));
 		} else if(is_breakpoint(instr)) {
-			// TODO:
-			fprintf(stderr, "BKP unimplemented\n");
+			dispatch(bkpt(instr));
 		} else if(is_hints(instr)) {
 			// TODO:
 			fprintf(stderr, "HINTS unimplemented\n");
@@ -682,6 +681,7 @@ private:
 	virtual void dispatch(const push instruction) = 0;
 	virtual void dispatch(const cps instruction) = 0;
 	virtual void dispatch(const pop instruction) = 0;
+	virtual void dispatch(const bkpt instr) = 0;
 	virtual void dispatch(const rev_word instruction) = 0;
 	virtual void dispatch(const rev16 instruction) = 0;
 	virtual void dispatch(const revsh instruction) = 0;

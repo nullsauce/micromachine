@@ -352,6 +352,9 @@ private:
 	void dispatch(const pop instruction) override {
 		format("pop {%s}", reg_list_str(instruction.register_list).c_str());
 	}
+	void dispatch(const bkpt instruction) override {
+		format("bkpt " + IMM(), instruction.imm8);
+	}
 	void dispatch(const rev_word instruction) override {
 		format("rev %s, %s", R(instruction.rd), R(instruction.rm));
 	}
