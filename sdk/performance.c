@@ -29,12 +29,16 @@ void SysTick_Init(void){
   NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE + NVIC_ST_CTRL_CLK_SRC;
 }
 
-
+#define BREAKPOINT(code) __asm__ __volatile__ ("bkpt %0" : : "I" (code) )
 #define SVC(code) __asm__ __volatile__ ("svc %0" : : "I" (code) )
 #define ISR __attribute__((weak, interrupt("IRQ")))
 void _isr_empty() {};
 void ISR _isr_nmi() {};
-void ISR _isr_hardfault() {};
+void ISR _isr_hardfault() {
+	// 1) peek the return addres from the stack into r0
+	register uint32_t* stack asm("sp");
+	BREAKPOINT(0x42);
+};
 void ISR _isr_svcall() {};
 void ISR _isr_pendsv() {};
 void ISR _isr_systick() {
@@ -74,11 +78,9 @@ int fib(int n){
 void entry() {
 	SysTick_Init();
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
-	heap[0] = 0x50414548;
 	uint32_t i = 0;
 	for(size_t i = 0; i < 1024*10; i++) {
-		heap[rand() % 16] += (heap[fib(i % 16) % 16] | rand());
-		heap[(heap[rand() % 16] % 4) * 4] -= fib(heap[i % 16] % 8);
+		heap[rand() % 16] += fib(rand() % 16);
 	}
 }
 
