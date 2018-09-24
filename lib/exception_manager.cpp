@@ -199,7 +199,7 @@ void exception_manager::push_stack(uint32_t return_address) {
 
 	if(_regs.exec_mode_register().is_handler_mode()) {
 		_regs.set_lr(0xFFFFFFF1); // return to handler
-    } else if(0 == _regs.control_register().sp_sel()) {
+	} else if(0 == _regs.control_register().sp_sel()) {
 		_regs.set_lr(0xFFFFFFF9); // return to thread using main stack
 	} else {
 		_regs.set_lr(0xFFFFFFFD); // return to thread using process stack
