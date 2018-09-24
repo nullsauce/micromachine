@@ -9,6 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "cpu.hpp"
 #include "elfio/elfio.hpp"
+#include <thread>
 
 cpu::cpu()
 	: _regs(_exception_manager)

@@ -25,12 +25,10 @@ public:
 	}
 
 	void set_handler_mode() {
-		fprintf(stderr, "entering handler mode\n");
 		set_mode(execution_mode::handler);
 	}
 
 	void set_thread_mode() {
-		fprintf(stderr, "entering thread mode\n");
 		set_mode(execution_mode::thread);
 	}
 
