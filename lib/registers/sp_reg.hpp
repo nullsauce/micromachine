@@ -3,6 +3,7 @@
 
 #include "standard_reg.hpp"
 #include "control_reg.hpp"
+#include "exec_mode_reg.hpp"
 
 class sp_reg : public ireg {
 public:
