@@ -185,6 +185,11 @@ bool cpu::step() {
 	const word current_addr = _regs.get_pc();
 	instruction_pair instr = fetch_instruction(current_addr);
 
+	fprintf(stderr, "S %08x: %s\n",
+		(size_t)current_addr,
+		disasm::disassemble_instruction(instr, current_addr).c_str()
+	);
+
 	if(!_regs.execution_status_register().thumb_bit_set()) {
 		// Thumb bit not set
 		// all instructions in this state are UNDEFINED .
@@ -195,23 +200,44 @@ bool cpu::step() {
 		execute(instr);
 	}
 
-	/*
-	fprintf(stderr, "%08x: %s\n",
-		(size_t)current_addr,
-		disasm::disassemble_instruction(instr, current_addr).c_str()
-	);*/
-
 	bool hard_fault = false;
-	//bool exception_pending = _exception_manager.prepare_exceptions();
+	// Next instruction might not be adjacent, if a jump happen.
+	uint32_t next_instruction_address = get_next_instruction_address(current_addr, instr);
 	exception_state* pending_exception = _exception_vector.top_pending_exception();
 	if(pending_exception) {
+		// The exception entry will handle its own jump/PC settings
 		hard_fault = pending_exception->number() == exception_number(exception_number::ex_name::HARDFAULT);
-		_exception_manager.process_pending_exception(current_addr, instr);
-	} else if(!_regs.branch_occured()) {
-		_regs.set_pc(current_addr + instr.size());
+		_exception_manager.process_pending_exception(current_addr, instr, next_instruction_address);
+	} else {
+		// Otherwise the PC is set here
+		_regs.set_pc(next_instruction_address);
 	}
 
+	fprintf(stderr, "E %08x: %s\n",
+		(size_t)current_addr,
+		disasm::disassemble_instruction(instr, current_addr).c_str()
+	);
+
+	//_regs.set_pc(next_instruction_address);
+	//_regs.reset_pc_dirty_status();
+
 	return hard_fault;
+}
+
+uint32_t cpu::get_next_instruction_address() const {
+	const word instr_addr = _regs.get_pc();
+	// TODO: remove unnecessary re-fetch here by storing current instruction
+	// in cpu
+	instruction_pair instruction = fetch_instruction(instr_addr);
+	return get_next_instruction_address(instr_addr, instruction);
+}
+
+uint32_t cpu::get_next_instruction_address(uint32_t instr_addr, instruction_pair instruction) const {
+	if(!_regs.branch_occured()) {
+		return instr_addr + instruction.size();
+	} else {
+		return _regs.get_pc();
+	}
 }
 
 const exception_vector& cpu::exceptions() const {
