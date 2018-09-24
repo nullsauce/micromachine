@@ -52,7 +52,8 @@ function(make_program)
 
 	add_custom_target(${DISASM_TARGET} ALL
 		COMMAND ${CROSS_OBJDUMP} -b binary -Mforce-thumb -marm -D --prefix-addresses  $<TARGET_PROPERTY:${BIN_TARGET},OUTFILE> > ${DISASM_FILE_NAME}
-		COMMAND ${CROSS_OBJDUMP} -D -S $<TARGET_FILE:${ELF_TARGET}> > ${DISASM_FULL_FILE_NAME}
+		COMMAND ${CROSS_OBJDUMP} -Mforce-thumb -marm  -D -S --prefix-addresses $<TARGET_FILE:${ELF_TARGET}> >
+		${DISASM_FULL_FILE_NAME}
 		DEPENDS ${BIN_TARGET}
 		VERBATIM
 	)
