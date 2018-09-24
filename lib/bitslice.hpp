@@ -4,9 +4,11 @@
 #include <functional>
 
 template<size_t offset, size_t len, typename u_type>
-struct bitslice /*: public integer_ref_holder<u_type>*/ {
+struct  bitslice /*: public integer_ref_holder<u_type>*/ {
 	// TODO: u_type should be called somthing else because it is misleading with integer_type::u_type
-	bitslice(u_type& val) : _val(val) {}
+	bitslice(u_type& val) : _val(val) {
+
+	}
 
 	static_assert(len > 0, "cannot declare a bit slice of length 0");
 	static_assert(offset < binops::binsize<u_type>(),

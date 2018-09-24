@@ -184,11 +184,11 @@ bool cpu::step() {
 
 	const word current_addr = _regs.get_pc();
 	instruction_pair instr = fetch_instruction(current_addr);
-
+	/*
 	fprintf(stderr, "S %08x: %s\n",
 		(size_t)current_addr,
 		disasm::disassemble_instruction(instr, current_addr).c_str()
-	);
+	);*/
 
 	if(!_regs.execution_status_register().thumb_bit_set()) {
 		// Thumb bit not set
@@ -212,11 +212,11 @@ bool cpu::step() {
 		// Otherwise the PC is set here
 		_regs.set_pc(next_instruction_address);
 	}
-
+	/*
 	fprintf(stderr, "E %08x: %s\n",
 		(size_t)current_addr,
 		disasm::disassemble_instruction(instr, current_addr).c_str()
-	);
+	);*/
 
 	//_regs.set_pc(next_instruction_address);
 	//_regs.reset_pc_dirty_status();

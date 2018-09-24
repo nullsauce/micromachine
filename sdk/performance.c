@@ -42,8 +42,8 @@ void ISR _isr_hardfault() {
 void ISR _isr_svcall() {};
 void ISR _isr_pendsv() {};
 void ISR _isr_systick() {
-	uint32_t* heap = (uint32_t*)&_heap_start;
-	heap[0] = (uint32_t)42;
+	volatile uint32_t* heap = (uint32_t*)&_heap_start;
+	heap[16] = heap[16]+1;
 };
 void ISR _isr_external_interruput() {};
 

@@ -9,6 +9,8 @@ Item {
 	readonly property color centerColor: Qt.darker("#22313F",1.3)
 	readonly property real centerIntructionOrigin: disassembler.paddingInstructionCount * disasmLineHeight
 	readonly property int linkRegister:CPU.regs[14].value & 0xFFFFFFFE
+	property int freeTrackerAddress:0
+
 	property alias memoryRegion: disassembler.memoryRegion
 	Disassembler {
 		id: disassembler
@@ -28,6 +30,9 @@ Item {
 
 		var spTracker = addressTrackers.addTracker("SP", "#1E824C");
 		spTracker.address = Qt.binding(function() { return CPU.regs[13].value });
+
+		var freeTracker = addressTrackers.addTracker("Ma", "#f0932b");
+		freeTracker.address = Qt.binding(function() { return disasmView.freeTrackerAddress; });
 
 		disassembler.centerTracker = pcTracker;
 	}
@@ -175,6 +180,28 @@ Item {
 		}
 
 	}
+    Rectangle {
+	    width:80
+	    height:20
+	    anchors.right: instructionList.right
+	    anchors.bottom: instructionList.top
+	    TextInput {
+	        id:disasmAddressInput
+	        anchors.fill:parent
+	        text:"00000000"
+	        horizontalAlignment: Text.AlignRight
+	        maximumLength: 8
+
+	        validator: RegExpValidator { regExp: /[0-9A-Fa-f]+/ }
+	        onTextChanged: {
+	            if(acceptableInput) {
+	                freeTrackerAddress = parseInt("0x"+text, 16);
+	            }
+	        }
+	    }
+	}
+
+
 
 	MouseArea {
 		anchors.fill: instructionList
