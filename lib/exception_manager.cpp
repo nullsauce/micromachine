@@ -117,6 +117,8 @@ current_instruction) {
 
 
 	// address of next instruction by default;
+	//TODO: I think return_address should be based on real next address.
+	// Otherwise, the return address might be wrong if a breanch instruction is pre-empted
 	uint32_t return_address = instruction_address + current_instruction.size();
 
     if(exception_number::ex_name::HARDFAULT == ex.number()) {
