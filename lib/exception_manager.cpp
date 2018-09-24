@@ -99,7 +99,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 		}
 	} else if(0U != _regs.interrupt_status_register().exception_num()) {
 		// unpredictable
-        fprintf(stderr, "unpredictable. (not in handler mode, but returning_from_exception is %d)\n", (uint8_t)returning_from_exception);
+        fprintf(stderr, "unpredictable. (not in handler mode, but returning_from_exception is %d)\n", (uint8_t)_regs.interrupt_status_register().exception_num());
 	}
 
 	//TODO: SetEventRegister()
