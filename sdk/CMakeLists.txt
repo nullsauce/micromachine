@@ -30,7 +30,7 @@ function(make_program)
 	set_property(SOURCE ${ASM_SOURCES} PROPERTY LANGUAGE C)
 
 	add_executable(${ELF_TARGET} ${ASM_SOURCES} ${SOURCES})
-	set_target_properties(${ELF_TARGET} PROPERTIES COMPILE_FLAGS " ${CMAKE_C_FLAGS}")
+	set_target_properties(${ELF_TARGET} PROPERTIES COMPILE_FLAGS "-O3 ${CMAKE_C_FLAGS}")
 	set_target_properties(${ELF_TARGET} PROPERTIES LINK_FLAGS "-T ${LINKER_SCRIPT}")
 	set_property(TARGET ${ELF_TARGET} PROPERTY C_STANDARD 99)
 	set_target_properties(${ELF_TARGET} PROPERTIES PREFIX "")

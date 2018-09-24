@@ -42,8 +42,8 @@ void ISR _isr_hardfault() {
 void ISR _isr_svcall() {};
 void ISR _isr_pendsv() {};
 void ISR _isr_systick() {
-	volatile uint32_t* heap = (uint32_t*)&_heap_start;
-	heap[16]++;
+	uint32_t* heap = (uint32_t*)&_heap_start;
+	heap[0] = (uint32_t)42;
 };
 void ISR _isr_external_interruput() {};
 
@@ -78,7 +78,8 @@ int fib(int n){
 void entry() {
 	SysTick_Init();
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
-	for(uint32_t i = 0; i < 1024*10; i++) {
+	//for(uint32_t i = 0; i < 1024*100; i++) {
+	while(1) {
 		volatile uint32_t* target = &heap[rand() % 16];
 		int f = fib(rand() % 16);
 		(*target) = f; //;
