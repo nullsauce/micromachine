@@ -29,8 +29,14 @@ public:
 
 	template <size_t slice_offset, size_t slice_len>
 	integer_type(const bitslice<slice_offset, slice_len, u_type>& bits)
-			: _val((u_type)bits)
+			: _val(bits.extract()._val)
 	{}
+
+	template <size_t slice_offset, size_t slice_len>
+	integer_type(const bitslice<slice_offset, slice_len, bits_t>& bits)
+			: _val(bits)
+	{}
+
 
 	operator bits_t() const {
 		return _val;
