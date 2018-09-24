@@ -10,9 +10,6 @@ ApplicationWindow {
 	width: 640
 	height: 480
 	title: qsTr("Hello World")
-
-
-
 	color:"#111"
 
 	function zpad(n, width) {
