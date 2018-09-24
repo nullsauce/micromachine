@@ -49,6 +49,8 @@ private:
 
 	void enter_handler_mode();
 	void enter_thread_mode();
+	uint32_t get_next_instruction_address(uint32_t instr_addr, instruction_pair instruction) const;
+	uint32_t get_next_instruction_address() const;
 
 
 	exception_vector	_exception_vector;

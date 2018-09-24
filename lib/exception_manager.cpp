@@ -26,7 +26,7 @@ void exception_manager::reset() {
 
 void exception_manager::exception_return(uint32_t ret_address) {
 	assert(_regs.exec_mode_register().is_handler_mode());
-    //fprintf(stderr,"exception_return from %08x\n", ret_address);
+    fprintf(stderr,"exception_return from address %08x\n", ret_address);
 	// bits 4 to 24 are all ones
 	// TODO: make a nice function
 	if(binops::make_mask<24>() != bits<4,24>::of(ret_address)) {
@@ -44,7 +44,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	uint32_t frame_ptr = 0;
     const uint8_t ret_bits = (uint8_t)bits<0,4>::of(ret_address);
     switch(ret_bits) {
-		case 0b0001: /* return to handler */ {
+		case 0b0001: /* return to handler EXC_RETURN=0xFFFFFFF1 */ {
 			if(_exception_vector.active_exception_count() == 1) {
 				// unpredictable
 				// exception mismatch
@@ -56,19 +56,20 @@ void exception_manager::exception_return(uint32_t ret_address) {
 			}
 			break;
 		}
-		case 0b1001: /* return to thread using main stack */ {
+		case 0b1001: /* return to thread using main stack EXC_RETURN=0xFFFFFFF9  */ {
 			if(_exception_vector.active_exception_count() != 1) {
 				// unpredictable
 				// return to thread exception mismatch
 				fprintf(stderr, "return to thread exception mismatch\n");
 			} else {
 				frame_ptr = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
+				fprintf(stderr, "frame_ptr fetched = %08x\n", frame_ptr);
 				enter_thread_mode();
 				_regs.control_register().set_sp_sel(0);
 			}
 			break;
 		}
-		case 0b1101: /* return to thread using process stack */ {
+		case 0b1101: /* return to thread using process stack EXC_RETURN=0xFFFFFFFD*/ {
 			if(_exception_vector.active_exception_count() != 1) {
 				// unpredictable
 				// return to thread exception mismatch
@@ -113,9 +114,9 @@ void exception_manager::exception_return(uint32_t ret_address) {
 }
 
 void exception_manager::exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair
-current_instruction) {
+current_instruction, uint32_t next_instruction_address) {
 
-
+	fprintf(stderr, "enter exception %s\n", ex.number().str().c_str());
 	// address of next instruction by default;
 	//TODO: I think return_address should be based on real next address.
 	// Otherwise, the return address might be wrong if a breanch instruction is pre-empted
@@ -126,10 +127,10 @@ current_instruction) {
 		return_address = instruction_address;
 	} else if(exception_number::ex_name::SVCALL == ex.number()) {
 		// address of the next instruction after svc
-        return_address = instruction_address + current_instruction.size();
+        return_address = next_instruction_address;
 	} else if(exception_number::ex_name::PENDSV == ex.number() || exception_number::ex_name::SYSTICK == ex.number()) {
 		// address of instruction to be executed after the irq
-		return_address = instruction_address + current_instruction.size();
+		return_address = next_instruction_address;
 	}
 
 	push_stack(return_address);
@@ -138,6 +139,14 @@ current_instruction) {
 
 
 void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
+
+
+	fprintf(stderr, "pop ctx 0:%08X -> +28:%08X\n", frame_ptr, frame_ptr+32);
+	for(uint32_t t = 0; t < 32; t+=4) {
+		fprintf(stderr, "  %08X: %08X\n", frame_ptr+t, _mem.read32(frame_ptr+t));
+	}
+	fprintf(stderr, "----- %08X\n", frame_ptr);
+
 	_regs.set(0, _mem.read32(frame_ptr+0));
 	_regs.set(1, _mem.read32(frame_ptr+4));
 	_regs.set(2, _mem.read32(frame_ptr+8));
@@ -146,18 +155,20 @@ void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
 	_regs.set_lr(_mem.read32(frame_ptr+20));
 	_regs.set_pc(_mem.read32(frame_ptr+24));
 	word psr_bits = _mem.read32(frame_ptr+28);
-
+	uint32_t stack_align = psr_bits.bit(9) << 2;
+	fprintf(stderr, "psr_bits=%s\n", ((word)psr_bits).to_string().c_str());
+	fprintf(stderr, "stack align=%08x\n", stack_align);
 	switch((uint8_t)bits<0,4>::of(return_address)) {
 		case 0b0001: /* return to handler */
 		case 0b1001: /* return to thread using main stack */{
 			uint32_t sp_main = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
-			uint32_t new_sp_main = (sp_main + 0x20) | (uint32_t)(psr_bits.bit(9) << 2);
+			uint32_t new_sp_main = (sp_main + 0x20) | stack_align;
 			_regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main, new_sp_main);
 			break;
 		}
 		case 0b1101: /* return to thread using process stack */ {
 			uint32_t sp_process = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
-			uint32_t new_sp_process = (sp_process + 0x20) | (uint32_t)(psr_bits.bit(9) << 2);
+			uint32_t new_sp_process = (sp_process + 0x20) | stack_align;
 			_regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process, new_sp_process);
 			break;
 		}
@@ -172,6 +183,7 @@ void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
 	}
 
 	_regs.execution_status_register().set_thumb_bit(psr_bits.bit(epsr_reg::THUMB_BIT));
+
 }
 
 void exception_manager::push_stack(uint32_t return_address) {
@@ -180,12 +192,22 @@ void exception_manager::push_stack(uint32_t return_address) {
 	const uint32_t sp_mask = ~((uint32_t)0b100);
 	const bool frame_ptr_align = _regs.get_sp().bit(2);
 
+	//TODO: Check docs for conditional stack switch
 	uint32_t frame_ptr = (_regs.get_sp() - stack_frame_size) & sp_mask;
+	uint32_t old_sp = _regs.get_sp();
 	_regs.set_sp(frame_ptr);
-
+	/*
 	uint xpsr_status = 	_regs.xpsr_register().uint(0, 8) |
 						(frame_ptr_align << 8) |
-						_regs.xpsr_register().uint(10, 22) << 10;
+						_regs.xpsr_register().uint(10, 22) << 10;*/
+
+	// TODO: Check why removing extract crashes
+	// TODO: Add tests to ensure this binary packing is correct
+	uint32_t xpsr_status = (uint32_t)_regs.xpsr_register().bits<10,22>().extract() << 10
+	    					| (uint32_t)(frame_ptr_align << 9)
+	    					| (uint32_t)_regs.xpsr_register().bits<0,9>().extract();
+	fprintf(stderr, "frame_ptr_align=%08x\n", frame_ptr_align);
+	fprintf(stderr, "xpsr_status=%s\n", ((word)xpsr_status).to_string().c_str());
 
 	_mem.write32(frame_ptr+0,  _regs.get(0));
 	_mem.write32(frame_ptr+4,  _regs.get(1));
@@ -195,6 +217,12 @@ void exception_manager::push_stack(uint32_t return_address) {
 	_mem.write32(frame_ptr+20, _regs.get_lr());
 	_mem.write32(frame_ptr+24, return_address);
 	_mem.write32(frame_ptr+28, xpsr_status);
+
+	fprintf(stderr, "push ctx [0:%08X <- +28:%08X]\n", frame_ptr, old_sp);
+	for(uint32_t t = 0; t < 32; t+=4) {
+		fprintf(stderr, "  %08X: %08X\n", frame_ptr+t, _mem.read32(frame_ptr+t));
+	}
+	fprintf(stderr, "----- %08X\n", frame_ptr);
 
 
 	if(_regs.exec_mode_register().is_handler_mode()) {

@@ -25,7 +25,7 @@ public:
 	void exception_return(uint32_t ret_address) override ;
 	void reset();
 
-	void process_pending_exception(word current_addr, instruction_pair instruction) {
+	void process_pending_exception(word current_addr, instruction_pair instruction, uint32_t next_instruction_address) {
 		// Check if this pending exception has priority over the current priority of the
 		// instruction stream.
 		// Lower priority value means higher priority.
@@ -36,13 +36,13 @@ public:
 		if(smaller) {
 			// yep, lets activate this exception
 			_regs.set_pc(current_addr);
-			exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction);
+			exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction, next_instruction_address);
 		}
 	}
 
 private:
 
-	void exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair current_instruction);
+	void exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair current_instruction, uint32_t next_instruction_address);
 
 	void enter_handler_mode();
 	void enter_thread_mode();

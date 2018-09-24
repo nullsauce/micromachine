@@ -22,6 +22,7 @@ public:
 	};
 
 	void set_specific_banked_sp(StackType type, word word) {
+		fprintf(stderr, "SET (specific) SP=%08x\n", word);
 		_sps[(size_t)type] = word;
 	}
 
@@ -39,6 +40,7 @@ private:
 
 	void set(word word) override {
 		// these two bits should always be zero, or UNPREDICTABLE
+		fprintf(stderr, "SET SP=%08x\n", word);
 		if(word & MASK) {
 			// unpredicatable
 		}

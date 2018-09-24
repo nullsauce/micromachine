@@ -329,7 +329,7 @@ private:
 		format("add sp, " + IMM(), instruction.imm32());
 	}
 	void dispatch(const sub_sp_imm instruction) override {
-		format("sub sp, sp, " + IMM(), instruction.imm7);
+		format("sub sp, sp, " + IMM(), instruction.imm32());
 	}
 	void dispatch(const sxth instruction) override {
 		format("sxth %s, %s", R(instruction.rd), R(instruction.rm));
