@@ -765,6 +765,10 @@ struct str_sp_imm : public standard_imm8_rt {
 
 struct sub_sp_imm : public standard_imm7 {
 	using standard_imm7::standard_imm7;
+
+	uint32_t imm32() const {
+		return imm7 << 2;
+	}
 };
 
 

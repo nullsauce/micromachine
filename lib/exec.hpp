@@ -701,7 +701,7 @@ static void exec(const add_sp_imm_t2 instruction, registers& regs) {
 
 static void exec(const sub_sp_imm instruction, registers& regs) {
 	// TODO check if other instructions should go here
-	word imm32 = instruction.imm7 << 2;
+	word imm32 = instruction.imm32();
 	word sp = regs.get_sp();
 	word result = alu::add_with_carry(sp, ~imm32, true);
 	regs.set_sp(result);
@@ -737,8 +737,10 @@ static void exec(const uxtb instruction, registers& regs) {
 
 static void exec(const push instruction, registers& regs, memory& mem) {
 	precond(instruction.pop_count() > 0, "must push at least one register");
+
 	const size_t stored_size = 4 * instruction.pop_count();
 	const word start_address = regs.get_sp() - stored_size;
+	fprintf(stderr, "push stack %08X - %08X\n", start_address, regs.get_sp());
 	size_t count = 0;
 	for(reg_idx rid = 0; rid < registers::NUM_REGS-1; rid++) {
 		if(instruction.is_set(rid)) {
@@ -759,29 +761,39 @@ static void exec(const pop instruction, registers& regs, memory& mem) {
 	const uint32_t frame_start = regs.get_sp(); // sp
 	uint32_t base = frame_start;
 	const uint32_t stored_size = 4 * instruction.pop_count();
+	fprintf(stderr, "pop stack %08X - %08X\n", frame_start, frame_start + stored_size);
 	for (reg_idx rid = 0; rid < 8; rid++) {
 		if(instruction.is_set(rid)) {
 			regs.set(rid, mem.read32(base));
 			base += 4;
 		}
 	}
+
+	regs.set_sp(frame_start + stored_size);
+
 	// PC is always the last, so base value
 	// is what needs to be written.
 	if(instruction.is_set(registers::PC)) {
+
 		/* TODO: check whats going on with
 		 * thumb bit when popping PC from
 		 * a previous push LR where LR = 0
 		 */
 		word address = mem.read32(base);
+		if(address == 0xFFFFFFF9) {
+			int k = 0;
+		}
+		//fprintf(stderr, "pop pc: %08x\n", address);
 		//address.set_bit(0); // fix thumb bit ??'
 		regs.branch_interworking(address);
 	}
 
-	regs.set_sp(frame_start + stored_size);
+
 }
 
 static void exec(const bkpt instruction, bool& break_signal) {
 	break_signal = true;
+	fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8);
 }
 
 static void exec(const rev_word instruction, registers& regs) {
