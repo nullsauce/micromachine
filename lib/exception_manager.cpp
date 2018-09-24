@@ -151,11 +151,13 @@ void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
 			uint32_t sp_main = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
 			uint32_t new_sp_main = (sp_main + 0x20) | (uint32_t)(psr_bits.bit(9) << 2);
 			_regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main, new_sp_main);
+			break;
 		}
 		case 0b1101: /* return to thread using process stack */ {
 			uint32_t sp_process = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
 			uint32_t new_sp_process = (sp_process + 0x20) | (uint32_t)(psr_bits.bit(9) << 2);
-			_regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process, sp_process);
+			_regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process, new_sp_process);
+			break;
 		}
 	}
 
