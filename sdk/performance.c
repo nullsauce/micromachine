@@ -23,7 +23,7 @@ extern char _heap_start;
 // Initialize SysTick with busy wait running at bus clock.
 void SysTick_Init(void){
   NVIC_ST_CTRL_R = 0;                   // disable SysTick during setup
-  NVIC_ST_RELOAD_R = 100;  			// reload value
+  NVIC_ST_RELOAD_R = 10000;  			// reload value
   NVIC_ST_CURRENT_R = 0;                // any write to current clears it
                                         // enable SysTick with core clock
   NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE + NVIC_ST_CTRL_CLK_SRC;
@@ -78,10 +78,12 @@ int fib(int n){
 void entry() {
 	SysTick_Init();
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
-	uint32_t i = 0;
-	for(size_t i = 0; i < 1024*10; i++) {
-		heap[rand() % 16] += fib(rand() % 16);
+	for(uint32_t i = 0; i < 1024*10; i++) {
+		volatile uint32_t* target = &heap[rand() % 16];
+		int f = fib(rand() % 16);
+		(*target) = f; //;
 	}
+	BREAKPOINT(0);
 }
 
 
