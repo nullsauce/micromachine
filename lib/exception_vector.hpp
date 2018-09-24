@@ -172,7 +172,7 @@ public:
 		// TODO: THe same exception can't be pending twice
 		_pending_exceptions.add_exception(exception_state);
 		exception_state.raise();
-		fprintf(stderr, "exception_vector: raised %s\n", exception.str().c_str());
+		//fprintf(stderr, "exception_vector: raised %s\n", exception.str().c_str());
 	}
 
 	void activate(exception_number exception) {
@@ -187,7 +187,7 @@ public:
 		exception.activate();
 		_stream_priority.push(exception.priority());
 		_active_exception_count++;
-		fprintf(stderr, "exception_vector: activated %s\n", exception.number().str().c_str());
+		//fprintf(stderr, "exception_vector: activated %s\n", exception.number().str().c_str());
 	}
 
 	void deactivate(exception_number ex_number) {
@@ -202,7 +202,7 @@ public:
 		// the base priority should always remain
         precond(!_stream_priority.empty(), "cant remove the base priority");
 		_active_exception_count--;
-		fprintf(stderr, "exception_vector: deactivated %s\n", exception.number().str().c_str());
+		//fprintf(stderr, "exception_vector: deactivated %s\n", exception.number().str().c_str());
 	}
 
 	bool is_pending(exception_number ex_number) const {
