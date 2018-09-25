@@ -28,30 +28,26 @@ public:
 	{}
 
 	template <size_t slice_offset, size_t slice_len>
-	integer_type(const bitslice<slice_offset, slice_len, u_type>& bits)
-			: _val(bits.extract()._val)
+	integer_type(const bitslice<slice_offset, slice_len, bits_t>& bits)
+			: _val(bits.extract())
 	{}
 
 	template <size_t slice_offset, size_t slice_len>
-	integer_type(const bitslice<slice_offset, slice_len, bits_t>& bits)
-			: _val(bits)
+	integer_type(const bitslice<slice_offset, slice_len, u_type>& bits)
+			: _val(bits.extract())
 	{}
 
+	template <size_t slice_offset, size_t slice_len>
+	integer_type(const bitslice<slice_offset, slice_len, const u_type>& bits)
+			: _val(bits.extract())
+	{}
 
 	operator bits_t() const {
 		return _val;
 	}
 
-	operator bits_t&() {
-		return _val;
-	}
-
 	bits_t uint(size_t bit_offset, size_t num_bits) const {
 		return binops::read_uint(*this, bit_offset, num_bits);
-	}
-
-	static bits_t make_mask(size_t num_bits) {
-		return binops::make_mask<bits_t>(num_bits);
 	}
 
 	void set_bit(size_t offset) {
@@ -66,6 +62,7 @@ public:
 		binops::write_bit(*this, offset, value);
 	}
 
+	// TODO: Replace caller of this by binops
 	void write_bits(size_t dst_offset, size_t src_offset, integer_type<bits_t> src, size_t num_bits) {
 		auto to_place 	= binops::rlshift(src, src_offset, dst_offset);
 		auto mask = binops::make_mask<bits_t>(num_bits) << dst_offset;

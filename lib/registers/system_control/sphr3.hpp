@@ -25,7 +25,7 @@ private:
 		_word = word & _mask;
 	}
 
-	const word get() const override {
+	word get() const override {
 		return _word & _mask;
 	}
 };

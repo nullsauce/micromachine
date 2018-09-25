@@ -69,7 +69,7 @@ private:
 		_dirty_status = true;
 	}
 
-	const word get() const override {
+	word get() const override {
 		word val = _word & MASK;
 		return val;
 	}

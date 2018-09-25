@@ -79,8 +79,8 @@ TEST(BitsTestHalfWord, AssignFromInteger) {
 	auto slice = a.bits<3, 12>();
 	slice = 0;
 	EXPECT_EQ(0b1000000000000111, a);
-	((halfword)slice).bits<1, 2>() = 0b10;
-	EXPECT_EQ(0b1000000000100111, a);
+	slice.bits<1, 2>() = 0b10;
+	EXPECT_EQ(0b1000000000000101, a);
 }
 
 TEST(BitsTestHalfWord, AssignFromTooShortInteger) {
