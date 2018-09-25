@@ -54,7 +54,7 @@ private:
 		_word = word & _mask;
 	}
 
-	const word get() const override {
+	word get() const override {
 		return _word & _mask;
 	}
 };
@@ -67,7 +67,7 @@ private:
 		_word.bits<0, 24>() = word;
 	}
 
-	const word get() const override {
+	word get() const override {
 		return _word.bits<0, 24>();
 	}
 };
@@ -95,7 +95,7 @@ private:
 		_control_reg.set_count_flag(false);
 	}
 
-	const word get() const override {
+	word get() const override {
 		return _word.bits<0, 24>();
 	}
 
@@ -115,7 +115,7 @@ public:
 	}
 
 	void set_tenms(uint32_t tenms) {
-		_word.bits<0, 24>() = tenms;
+		_word.bits<0, 24>() = bits<0, 24>::of((word)tenms);
 	}
 
 	bool skew() const {
@@ -141,7 +141,7 @@ private:
 		_word = word & _mask;
 	}
 
-	const word get() const override {
+	word get() const override {
 		return _word & _mask;
 	}
 };
