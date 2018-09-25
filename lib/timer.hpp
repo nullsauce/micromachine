@@ -11,6 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 #define MICROMACHINE_EMU_TIMER_HPP
 
 #include "registers/system_control/systick.hpp"
+#include "exception_vector.hpp"
 
 class systick {
 public:
