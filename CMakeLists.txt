@@ -5,6 +5,7 @@ include(ExternalProject)
 include(env.cmake)
 
 project(micromachine_emu)
+enable_testing()
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 14)
