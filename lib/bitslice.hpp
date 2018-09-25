@@ -49,6 +49,10 @@ struct  bitslice /*: public integer_ref_holder<u_type>*/ {
 		return _val;
 	}
 
+	void clear() {
+		write_bits(_val, 0, 0, 0, binops::binsize(_val));
+	}
+
 private:
 
 	void write_bits(u_type& dst, size_t dst_offset, u_type src, size_t src_offset, size_t dst_len) {
