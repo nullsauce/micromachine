@@ -1,3 +1,6 @@
+# Build status
+[![Build Status](https://travis-ci.com/flavioroth/micromachine.svg?token=xEyQGq1kemWxNUdLVdV8&branch=master)](https://travis-ci.com/flavioroth/micromachine)
+
 # Project
 
 micromachine aims to be an armv6-m emulator that can be used to simulate
