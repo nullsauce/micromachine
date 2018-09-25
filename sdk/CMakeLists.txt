@@ -76,3 +76,11 @@ make_program(
 	C_SOURCES performance.c
 	ASM_SOURCES boot.s
 )
+
+make_program(
+	TARGET cpptest
+	CFLAGS "-O3"
+	LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/link.ld
+	C_SOURCES cpptest.cpp
+	ASM_SOURCES boot.s
+)
