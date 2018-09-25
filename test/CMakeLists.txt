@@ -10,7 +10,7 @@ macro(declare_test test_name test_files)
     target_include_directories(${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
     target_include_directories(${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
     target_link_libraries(${test_name} libgtest libgtest_main ${CMAKE_THREAD_LIBS_INIT} micromachine)
-    add_test(all_tests ${test_name})
+    add_test({test_name} ${test_name})
 endmacro()
 
 declare_test(bits_tests bits_tests.cpp)
