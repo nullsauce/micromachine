@@ -79,14 +79,14 @@ struct   bitslice /*: public integer_ref_holder<u_type>*/ {
 		write_bits(_val, 0, 0, 0, binops::binsize(_val.get()));
 	}
 
-	template<size_t new_offset, size_t new_len>
-	bitslice<new_offset, new_len, u_type> bits() {
-		return bitslice<new_offset, new_len, u_type>(_val);
+	template<size_t sub_offset, size_t new_len>
+	bitslice<offset+sub_offset, new_len, u_type> bits() {
+		return bitslice<offset+sub_offset, new_len, u_type>(_val);
 	};
 
-	template<size_t new_offset, size_t new_len>
-	bitslice<new_offset, new_len, const u_type> bits() const {
-		return bitslice<new_offset, new_len, const u_type>(_val);
+	template<size_t sub_offset, size_t new_len>
+	bitslice<offset+sub_offset, new_len, const u_type> bits() const {
+		return bitslice<offset+sub_offset, new_len, const u_type>(_val);
 	};
 
 
