@@ -405,9 +405,11 @@ struct standard_imm8_cond {
 	const uint8_t cond;
 };
 
-struct nop {
-
-};
+struct nop {};
+struct wfe {};
+struct yield {};
+struct wfi {};
+struct sev {};
 
 struct adc : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
@@ -876,5 +878,15 @@ struct cps {
 
 struct bkpt : standard_imm8 {
 	using standard_imm8::standard_imm8;
+};
+
+struct hint  {
+	hint(halfword instruction)
+	: opa(instruction.uint(4, 4))
+	, opb(instruction.uint(0, 4)) {
+	}
+
+	const imm8_t opa;
+	const imm8_t opb;
 };
 #endif //THUMBEMU_INSTRUCTIONS_HPP
