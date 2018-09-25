@@ -29,7 +29,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	//fprintf(stderr,"exception_return from address %08x\n", ret_address);
 	// bits 4 to 24 are all ones
 	// TODO: make a nice function
-	if(binops::make_mask<24>() != bits<4,24>::of(ret_address)) {
+	if((word)binops::make_mask<24>() != (word)bits<4,24>::of(ret_address)) {
 		// unpredicatable
 		fprintf(stderr, "unpredicatable.\n");
 	}
@@ -42,7 +42,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	}
 
 	uint32_t frame_ptr = 0;
-	const uint8_t ret_bits = (uint8_t)bits<0,4>::of(ret_address);
+	const uint8_t ret_bits = (uint8_t)bits<0,4>::of(ret_address).extract();
 	switch(ret_bits) {
 		case 0b0001: /* return to handler EXC_RETURN=0xFFFFFFF1 */ {
 			if(_exception_vector.active_exception_count() == 1) {
@@ -158,7 +158,7 @@ void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
 	word psr_bits = _mem.read32(frame_ptr+28);
 	uint32_t stack_align = psr_bits.bit(8) << 2;
 
-	switch((uint8_t)bits<0,4>::of(return_address)) {
+	switch((uint8_t)bits<0,4>::of(return_address).extract()) {
 		case 0b0001: /* return to handler */
 		case 0b1001: /* return to thread using main stack */{
 			uint32_t sp_main = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
@@ -204,8 +204,8 @@ void exception_manager::push_stack(uint32_t return_address) {
 	// TODO: Check why .bits doesnt work without cast to (word)
 	// TODO: Add tests to ensure this binary packing is correct
 	word xpsr_status = 0;
-	xpsr_status.bits<10,22>() = (word)_regs.xpsr_register().bits<10,22>();
-	xpsr_status.bits<0,8>() = (word)_regs.xpsr_register().bits<0,8>();
+	xpsr_status.bits<10,22>() = _regs.xpsr_register().bits<10,22>();
+	xpsr_status.bits<0,8>() = _regs.xpsr_register().bits<0,8>();
 	xpsr_status.write_bit(8, frame_ptr_align & 1);
 	//fprintf(stderr, "xpsr1=%s\n", xpsr_status.to_string().c_str());
 	//fprintf(stderr, "xpsr2=%s\n", word(xpsr_status2).to_string().c_str());

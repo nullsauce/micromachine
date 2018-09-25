@@ -6,10 +6,6 @@ find_package(Threads)
 
 set(ALL_TEST_OBJS "")
 
-macro(declare_test test_name test_files)
-    list(APPEND ALL_TESTS_SRC ${test_files})
-endmacro()
-
 set(CPU_TESTS_COMMON_FILES
     framework/pinksim.hpp
     framework/pinkysim_glue.hpp
@@ -18,12 +14,27 @@ set(CPU_TESTS_COMMON_FILES
     framework/pinkySimBaseTest.cpp
 )
 
+macro(declare_test test_name test_files)
+    add_executable(test_of_${test_name} ${test_files})
+    target_include_directories(test_of_${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
+    target_include_directories(test_of_${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
+    target_include_directories(test_of_${test_name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/framework)
+    target_link_libraries(test_of_${test_name} libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
+    # append the test src file to the global test executable
+    list(APPEND ALL_TESTS_SRC ${test_files})
+endmacro()
+
 set(ALL_TESTS_SRC ${CPU_TESTS_COMMON_FILES})
 
 macro(declare_pinksim_test test_name)
     # name of the source test file
     set(TEST_SRC_FILE "${test_name}Test.cpp")
-    # append the est src file to the global test executable
+    add_executable(test_of_${test_name} ${TEST_SRC_FILE} ${CPU_TESTS_COMMON_FILES})
+    target_include_directories(test_of_${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
+    target_include_directories(test_of_${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
+    target_include_directories(test_of_${test_name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/framework)
+    target_link_libraries(test_of_${test_name} libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
+    # append the test src file to the global test executable
     list(APPEND ALL_TESTS_SRC "${TEST_SRC_FILE}")
 endmacro()
 
@@ -112,6 +123,5 @@ add_executable(all_tests "${ALL_TESTS_SRC}")
 target_include_directories(all_tests PUBLIC "${CMAKE_SOURCE_DIR}/lib")
 target_include_directories(all_tests PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
 target_include_directories(all_tests PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/framework)
-
 target_link_libraries(all_tests libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
 add_test(all_tests all_tests)

@@ -25,7 +25,7 @@ public:
 private:
 
 	virtual void set(word word) = 0;
-	virtual const word get() const = 0;
+	virtual word get() const = 0;
 
 
 };
