@@ -50,10 +50,6 @@ public:
 		return binops::read_uint(*this, bit_offset, num_bits);
 	}
 
-	sbits_t sint(size_t bit_offset, size_t num_bits) const {
-		return binops::read_sint<bits_t>(*this, bit_offset, num_bits);
-	}
-
 	static bits_t make_mask(size_t num_bits) {
 		return binops::make_mask<bits_t>(num_bits);
 	}
