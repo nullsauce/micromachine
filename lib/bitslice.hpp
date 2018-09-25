@@ -50,7 +50,7 @@ struct  bitslice /*: public integer_ref_holder<u_type>*/ {
 	}
 
 	void clear() {
-		write_bits(_val, 0, 0, 0, binops::binsize(_val));
+		write_bits(_val, 0, 0, 0, binops::binsize(_val.get()));
 	}
 
 private:
