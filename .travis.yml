@@ -8,4 +8,6 @@ before_script:
   - cd build
   - cmake ..
 
-script: make all_tests
+script:
+  - make all_tests
+  - ctest -V

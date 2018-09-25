@@ -1,7 +1,6 @@
 
 include(gtest)
 
-enable_testing()
 find_package(Threads)
 
 set(ALL_TEST_OBJS "")
