@@ -148,73 +148,70 @@ private:
 		exec(instruction, _regs, _regs.app_status_register());
 	}
 	void dispatch(const add_highreg instruction) override {
-		exec(instruction, _regs, _regs.app_status_register());
+		exec(instruction, _regs);
 	}
 	void dispatch(const cmp_highreg instruction) override {
 		exec(instruction, _regs, _regs.app_status_register());
 	}
 	void dispatch(const mov_highreg instruction) override {
-		exec(instruction, _regs, _regs.app_status_register());
+		exec(instruction, _regs);
 	}
 	void dispatch(const bx instruction) override {
-		exec(instruction, _regs, _regs.app_status_register());
+		exec(instruction, _regs);
 	}
 	void dispatch(const blx instruction) override {
-		exec(instruction, _regs, _regs.app_status_register());
+		exec(instruction, _regs);
 	}
 	void dispatch(const ldr_literal instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const str_reg instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const strh_reg instruction) override {
-		exec(instruction, _regs,
-			 _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const strb_reg instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldrsb_reg instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldr_reg instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldrh_reg instruction) override {
-		exec(instruction, _regs,
-			 _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldrb_reg instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldrsh_reg instruction) override {
-		exec(instruction, _regs,
-			 _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const str_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldr_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const strb_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldrb_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const strh_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldrh_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const str_sp_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const ldr_sp_imm instruction) override {
-		exec(instruction, _regs, _regs.app_status_register(), _mem);
+		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const adr instruction) override {
 		exec(instruction, _regs);
