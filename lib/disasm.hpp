@@ -152,7 +152,18 @@ private:
 	void dispatch(const nop instruction) override {
 		write("nop");
 	}
-
+	void dispatch(const yield instruction) override {
+		write("yield");
+	}
+	void dispatch(const wfe instruction) override {
+		write("wfe");
+	}
+	void dispatch(const wfi instruction) override {
+		write("wfi");
+	}
+	void dispatch(const sev instruction) override {
+		write("sev");
+	}
 	void dispatch(const lsl_imm instruction) override {
 		format("lsls %s, %s, " + IMM(), R(instruction.rd), R(instruction.rm), instruction.imm5);
 	}

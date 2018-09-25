@@ -41,7 +41,27 @@ private:
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
 	void dispatch(const nop instruction) override {
-
+		// do literally nothing
+	}
+	void dispatch(const yield instruction) override {
+		// for os and threading
+	}
+	void dispatch(const wfe instruction) override {
+		// wait for event in event register
+		/* TODO: Implement WFE event sources as specified below
+		The following events are WFE wake-up events:
+		- the execution of an SEV instruction on any other processor in a multiprocessor system
+		- any exception entering the pending state if SEVONPEND in the System Control Register is set to 1
+		- an asynchronous exception at a priority that preempts any currently active exceptions
+		- a debug event with debug enabled.
+		*/
+	}
+	void dispatch(const wfi instruction) override {
+		// wait for interrupt
+	}
+	void dispatch(const sev instruction) override {
+		// causes an event to be signaled to all processors in a
+		// multiprocessor system
 	}
 	void dispatch(const lsl_imm instruction) override {
 		exec(instruction, _regs, _regs.app_status_register());
