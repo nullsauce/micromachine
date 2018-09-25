@@ -80,7 +80,7 @@ TEST(BitsTestHalfWord, AssignFromInteger) {
 	slice = 0;
 	EXPECT_EQ(0b1000000000000111, a);
 	slice.bits<1, 2>() = 0b10;
-	EXPECT_EQ(0b1000000000000101, a);
+	EXPECT_EQ(0b1000000000100111, a);
 }
 
 TEST(BitsTestHalfWord, AssignFromTooShortInteger) {
@@ -107,4 +107,18 @@ TEST(BitsTestHalfWord, PassRefToFunction) {
 	auto slice = a.bits<3, 12>();
 	clear_slice(slice);
 	EXPECT_EQ(0b1000000000000111, a);
+}
+
+TEST(BitsTestHalfWord, Cascade) {
+	halfword a = 0b1111111111010111;
+	auto slice1 = a.bits<3, 12>();
+	slice1 = 0;
+	EXPECT_EQ(0b1000000000000111, a);
+	auto slice2 = slice1.bits<3, 3>();
+	slice2 = 0b111;
+	EXPECT_EQ(0b1000000111000111, a);
+	slice1.bits<6, 1>() = true;
+	EXPECT_EQ(0b1000001111000111, a);
+	slice1.bits<11, 1>() = 1;
+	EXPECT_EQ(0b1100001111000111, a);
 }
