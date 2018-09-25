@@ -91,7 +91,7 @@ public:
 private:
 	void set(word word) override {
 		// Writing to SYST_CVR clears both the register and the COUNTFLAG status bit to zero
-		_word.bits<0, 24>() = 0;
+		_word.bits<0, 24>().clear();
 		_control_reg.set_count_flag(false);
 	}
 
