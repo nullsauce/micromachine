@@ -603,7 +603,10 @@ public:
 					invalid_instruction(instruction_pair);
 				}
 			} else {
-				fprintf(stderr, "undefined 32bit instruction %04x %04x\n", instruction_pair.first, instruction_pair.second);
+				fprintf(stderr, "undefined 32bit instruction %04x %04x\n",
+					(uint16_t)instruction_pair.first,
+					(uint16_t)instruction_pair.second
+				);
 				invalid_instruction(instruction_pair);
 			}
 
