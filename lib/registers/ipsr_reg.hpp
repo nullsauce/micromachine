@@ -10,7 +10,7 @@ struct ipsr_reg : public xpsr_reg {
 	using xpsr_reg::xpsr_reg;
 
 	void set_exception_number(exception_number number) {
-		mutable_xpsr_bits() = (uint8_t)number;
+		mutable_xpsr_bits() = number.int_value();
 	}
 
 	exception_number exception_num() const {

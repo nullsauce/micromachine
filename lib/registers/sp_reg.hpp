@@ -47,7 +47,7 @@ private:
 		banked() = word;
 	}
 
-	const word get() const override {
+	word get() const override {
 		return banked() & MASK;
 	}
 

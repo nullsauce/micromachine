@@ -19,7 +19,7 @@ private:
 		_word = word;
 	}
 
-	const word get() const override {
+	word get() const override {
 		return _word;
 	}
 
