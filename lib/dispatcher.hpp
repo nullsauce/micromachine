@@ -561,9 +561,36 @@ public:
 		} else if(is_breakpoint(instr)) {
 			dispatch(bkpt(instr));
 		} else if(is_hints(instr)) {
-			// TODO:
-			fprintf(stderr, "HINTS unimplemented\n");
-
+			hint instruction(instr);
+			if(0b0000 != instruction.opb) {
+				// undefined
+			} else {
+				switch(instruction.opa) {
+					case 0b0000: {
+						dispatch(nop());
+						break;
+					}
+					case 0b0001: {
+						dispatch(yield());
+						break;
+					}
+					case 0b0010: {
+						dispatch(wfe());
+						break;
+					}
+					case 0b0011: {
+						dispatch(wfi());
+						break;
+					}
+					case 0b0100: {
+						dispatch(sev());
+						break;
+					}
+					default: {
+						// undefined
+					}
+				}
+			}
 
 			// Store multiple registers, see STM, STMIA, STMEA on page A6-175
 		} else if(is_stm(instr)) {
@@ -623,6 +650,10 @@ private:
 	virtual void invalid_instruction(const halfword instr) = 0;
 	virtual void invalid_instruction(const instruction_pair instr) = 0;
 	virtual void dispatch(const nop instruction) = 0;
+	virtual void dispatch(const yield instruction) = 0;
+	virtual void dispatch(const wfe instruction) = 0;
+	virtual void dispatch(const wfi instruction) = 0;
+	virtual void dispatch(const sev instruction) = 0;
 	virtual void dispatch(const lsl_imm instruction) = 0;
 	virtual void dispatch(const lsr_imm instruction) = 0;
 	virtual void dispatch(const asr_imm instruction) = 0;
