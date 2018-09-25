@@ -14,8 +14,7 @@ struct ipsr_reg : public xpsr_reg {
 	}
 
 	exception_number exception_num() const {
-		word bits = xpsr_bits();
-		return exception_number::from_uint(bits);
+		return exception_number::from_uint(xpsr_bits().extract());
 	}
 
 private:

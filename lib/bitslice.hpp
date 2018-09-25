@@ -20,7 +20,23 @@ struct   bitslice /*: public integer_ref_holder<u_type>*/ {
 
 	using type = bitslice<offset, len, u_type>;
 
+	// Operator for assignment of same bitslice
+	type& operator=(const bitslice<offset, len, u_type>& other) {
+		static_assert(offset < binops::binsize<u_type>(),
+			"source offset must be smaller than the total number of bits");
+		write_bits(_val, offset, other.val(), offset, len);
+		return *this;
+	}
 
+	// Operator for assignment of same bitslice (const version)
+	type& operator=(bitslice<offset, len, const u_type>& other) {
+		static_assert(offset < binops::binsize<u_type>(),
+			"source offset must be smaller than the total number of bits");
+		write_bits(_val, offset, other.val(), offset, len);
+		return *this;
+	}
+
+	// Operator for assignment of different bitslice
 	template<size_t other_offset>
 	type& operator=(const bitslice<other_offset, len, u_type>& other) {
 		static_assert(other_offset < binops::binsize<u_type>(),
@@ -29,6 +45,7 @@ struct   bitslice /*: public integer_ref_holder<u_type>*/ {
 		return *this;
 	}
 
+	// Operator for assignment of different bitslice (const version)
 	template<size_t other_offset>
 	type& operator=(bitslice<other_offset, len, const u_type>& other) {
 		static_assert(other_offset < binops::binsize<u_type>(),
@@ -41,10 +58,10 @@ struct   bitslice /*: public integer_ref_holder<u_type>*/ {
 		write_bits(_val, offset, other, 0, len);
 		return *this;
 	}
-	/*
+
 	operator u_type() const {
 		return extract();
-	}*/
+	}
 
 	u_type extract() const {
 		return (_val.get() >> offset) & binops::make_mask<u_type>(len);

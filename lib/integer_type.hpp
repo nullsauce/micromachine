@@ -27,21 +27,6 @@ public:
 			: _val(v)
 	{}
 
-	template <size_t slice_offset, size_t slice_len>
-	integer_type(const bitslice<slice_offset, slice_len, bits_t>& bits)
-			: _val(bits.extract())
-	{}
-
-	template <size_t slice_offset, size_t slice_len>
-	integer_type(const bitslice<slice_offset, slice_len, u_type>& bits)
-			: _val(bits.extract())
-	{}
-
-	template <size_t slice_offset, size_t slice_len>
-	integer_type(const bitslice<slice_offset, slice_len, const u_type>& bits)
-			: _val(bits.extract())
-	{}
-
 	operator bits_t() const {
 		return _val;
 	}
@@ -68,6 +53,7 @@ public:
 		auto mask = binops::make_mask<bits_t>(num_bits) << dst_offset;
 		_val = (_val & (~mask)) | to_place;
 	}
+
 
 	template<size_t offset, size_t len>
 	bitslice<offset, len, u_type> bits() {
