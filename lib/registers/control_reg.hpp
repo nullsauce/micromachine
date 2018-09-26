@@ -13,7 +13,7 @@ public:
 		return _word.bit(0);
 	}
 
-	bool set_n_priv(bool priv) {
+	void set_n_priv(bool priv) {
 		_word.write_bit(0, priv);
 	}
 
