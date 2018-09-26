@@ -18,5 +18,4 @@ pipelines:
           - cd build
           - cmake ..
           - make all_tests
-          - cd build
           - ctest -V
