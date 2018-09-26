@@ -54,7 +54,8 @@ private:
 	word& banked() {
 		if(_exec_mode_reg.is_thread_mode()) {
 			return _sps[_ctl_reg.sp_sel()];
-		} else if(_exec_mode_reg.is_handler_mode()) {
+		} else  {
+			// handler mode
 			return _sps[0];
 		}
 	}
@@ -62,7 +63,8 @@ private:
 	const word& banked() const {
 		if(_exec_mode_reg.is_thread_mode()) {
 			return _sps[_ctl_reg.sp_sel()];
-		} else if(_exec_mode_reg.is_handler_mode()) {
+		} else {
+			// handler mode
 			return _sps[0];
 		}
 	}
