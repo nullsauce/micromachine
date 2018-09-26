@@ -38,6 +38,7 @@ set(SRCS
 )
 
 add_library(micromachine STATIC ${SRCS})
+set_target_properties(micromachine PROPERTIES COMPILE_FLAGS "${BUILD_FLAGS} -Wall -Werror -Wno-unused-variable -Wno-unused-function")
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
 	message(WARNING "Enabling precondition checks")

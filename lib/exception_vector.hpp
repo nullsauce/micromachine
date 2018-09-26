@@ -34,6 +34,7 @@ public:
 			case exception_number::ex_name::SYSTICK: return 0; // shpr2.15
 			default: if(_number.name() > exception_number::ex_name::SYSTICK) {
 				// External interrupts
+				// TODO:
 				uint32_t reg = (_number.int_value() - 16) / 4;
 				uint32_t section = _number.int_value() % 4;
 				return 0; // UInt(NVIC_IPR:r.PRI_N:v)
