@@ -8,6 +8,7 @@
 #include "Disassembler.hpp"
 #include "AddressTracker.hpp"
 #include "AddressTrackerList.hpp"
+#include "InstructionDetails.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +25,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<AddressTrackerList>("Fla", 1, 0, "AddressTrackerList");
     qmlRegisterUncreatableType<AddressTracker>("Fla", 1, 0, "AddressTracker", "cannot create");
     QCpu processor;
+    qmlRegisterType<InstructionDetails>("Fla", 1, 0, "InstructionDetails");
+    qmlRegisterType<InstructionComponent>("Fla", 1, 0, "InstructionComponent");
 	if(argc < 1) {
 		qDebug() << "Elf file argument is missing";
 		return -1;
