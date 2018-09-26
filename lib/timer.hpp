@@ -68,11 +68,11 @@ public:
 	}
 
 private:
+	exception_vector& _exception_vector;
 	systick_control_reg _control;
 	systick_current_value_reg _current_value;
 	systick_reload_value_reg _reload_value;
 	systick_calib_value_reg _calib_value;
-	exception_vector& _exception_vector;
 
 };
 

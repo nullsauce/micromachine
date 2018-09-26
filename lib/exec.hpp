@@ -437,7 +437,7 @@ static void exec(const add_highreg instruction, registers& regs) {
 
 static void exec(const cmp_highreg instruction, const registers& regs, apsr_reg& status_reg) {
 
-	if(instruction.high_rn() < 8 & instruction.high_rm() < 8) {
+	if((instruction.high_rn() < 8) && (instruction.high_rm() < 8)) {
 		unpredictable();
 	}
 
@@ -929,6 +929,10 @@ static void exec(const mrs instruction, registers& regs, apsr_reg& apsr) {
 				} break;
 			}
 		} break;
+		default: {
+			// unpredictable
+			break;
+		}
 	}
 	regs.set(instruction.rd, val);
 }
@@ -963,6 +967,10 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 				regs.control_register().set_sp_sel(val.bit(1));
 			}
 		} break;
+		default: {
+			// unpredictable
+			break;
+		}
 	}
 }
 
