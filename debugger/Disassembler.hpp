@@ -19,7 +19,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "QMemRegion.hpp"
 #include "QInstruction.hpp"
-#include "disasm.hpp"
+#include "structured_disasm.hpp"
 
 class Disassembler : public QObject {
     Q_OBJECT
@@ -130,7 +130,7 @@ public slots:
             instr->setAddress(nextAddress);
             if(mMem->isValidVirtualAddress(nextAddress)) {
                 uint32_t data = 0; // binary representation
-                uint32_t size = disassembleAddress(nextAddress, instr->mutableCode(), data);
+                uint32_t size = disassembleAddress(nextAddress, instr->details(), data);
                 instr->setSize(size);
                 instr->setData(data);
             } else {
@@ -166,14 +166,15 @@ private:
         return reinterpret_cast<Disassembler*>((list->data))->instruction(index);
     }
 
-    uint32_t disassembleAddress(uint32_t address, QString& disasm, uint32_t& data) {
+    uint32_t disassembleAddress(uint32_t address, InstructionDetails& disasm, uint32_t& data) {
         uint32_t offset = mMem->virtualAddressOffset(address);
         const uint8_t* buffer = mMem->hostMemoryBase();
         halfword first_instr = *(uint16_t*)(buffer + offset); // always prefetch
         halfword second_instr = *(uint16_t*)(buffer + offset + sizeof(halfword)); // always prefetch
         instruction_pair instr = instruction_pair(first_instr, second_instr);
         data = instr.second << 16 | instr.first;
-        disasm = QString::fromStdString(disasm::disassemble_instruction(instr, address));
+		structured_disasm d(address, DISASM_FMT_HEX, disasm);
+		d.dispatch_instruction(instr);
         return instr.size();
     }
 
