@@ -25,6 +25,8 @@ else()
 		AddressTracker.cpp
 		AddressTrackerList.hpp
 		AddressTrackerList.cpp
+		InstructionDetails.hpp
+		structured_disasm.hpp
 		QMemRegion.hpp
 	)
 	add_executable(visual_debugger ${SRCS} qml.qrc)

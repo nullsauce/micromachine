@@ -176,29 +176,52 @@ Item {
 					radius: 10
 					visible: CPU.isBreakPoint(address)
 				}
+
+				Rectangle {
+					width:parent.width
+					height:parent.height
+					color:"red"
+					opacity: 0.5
+					Row {
+						anchors.fill: parent
+						Component.onCompleted: {
+							console.log("details.components", details);
+						}
+						Repeater {
+							model:details.components
+							delegate: Text {
+								text:type
+								color:"white"
+								Component.onCompleted: {
+									console.log(modelData);
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
 	}
-    Rectangle {
-	    width:80
-	    height:20
-	    anchors.right: instructionList.right
-	    anchors.bottom: instructionList.top
-	    TextInput {
-	        id:disasmAddressInput
-	        anchors.fill:parent
-	        text:"00000000"
-	        horizontalAlignment: Text.AlignRight
-	        maximumLength: 8
+	Rectangle {
+		width:80
+		height:20
+		anchors.right: instructionList.right
+		anchors.bottom: instructionList.top
+		TextInput {
+			id:disasmAddressInput
+			anchors.fill:parent
+			text:"00000000"
+			horizontalAlignment: Text.AlignRight
+			maximumLength: 8
 
-	        validator: RegExpValidator { regExp: /[0-9A-Fa-f]+/ }
-	        onTextChanged: {
-	            if(acceptableInput) {
-	                freeTrackerAddress = parseInt("0x"+text, 16);
-	            }
-	        }
-	    }
+			validator: RegExpValidator { regExp: /[0-9A-Fa-f]+/ }
+			onTextChanged: {
+				if(acceptableInput) {
+					freeTrackerAddress = parseInt("0x"+text, 16);
+				}
+			}
+		}
 	}
 
 

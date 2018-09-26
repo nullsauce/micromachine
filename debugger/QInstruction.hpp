@@ -14,8 +14,10 @@ and/or distributed without the express permission of Flavio Roth.
 #include <QtCore>
 #include <QObject>
 #include <QQmlListProperty>
+#include "structured_disasm.hpp"
 
 #include "memory.hpp"
+
 
 class Instruction : public QObject {
     Q_OBJECT
@@ -25,6 +27,7 @@ class Instruction : public QObject {
     Q_PROPERTY(quint32 size READ size NOTIFY changed)
     Q_PROPERTY(QString data READ data NOTIFY changed)
     Q_PROPERTY(bool isBreakPoint READ isBreakPoint NOTIFY changed)
+    Q_PROPERTY(InstructionDetails* details READ intructionDetails NOTIFY changed)
 
 public:
 
@@ -69,8 +72,12 @@ public:
 		return _code;
 	}
 
-    QString& mutableCode() {
-        return _code;
+	InstructionDetails* intructionDetails() {
+		return &_details;
+	}
+
+    InstructionDetails& details() {
+        return _details;
     }
 
     quint32 address() const {
@@ -106,6 +113,7 @@ private:
 
 	uint32_t _address;
 	QString _code;
+	InstructionDetails _details;
     uint32_t _size;
     QString _data;
     bool _is_breakpoint;
