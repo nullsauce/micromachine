@@ -14,70 +14,71 @@ and/or distributed without the express permission of Flavio Roth.
 #include "memory.hpp"
 
 class QMemRegion : public QObject {
-    Q_OBJECT
-    Q_PROPERTY(quint32 base READ base NOTIFY changed)
-    Q_PROPERTY(QString name READ name NOTIFY changed)
+	Q_OBJECT
+	Q_PROPERTY(quint32 base READ base NOTIFY changed)
+	Q_PROPERTY(QString name READ name NOTIFY changed)
 
 public:
 
-    QMemRegion(QObject* parent = nullptr)
-        : QObject(parent)
-        , _mapping(nullptr)
-    {}
+	QMemRegion(QObject* parent = nullptr)
+		: QObject(parent)
+		, _mapping(nullptr)
+	{}
 
-    void setMapping(const memory::mem_mapping* mapping) {
-        if(_mapping != mapping) {
-            _mapping = mapping;
-            emit changed();
-        }
-    }
+	void setMapping(const memory::mem_mapping* mapping) {
+		if(_mapping != mapping) {
+			_mapping = mapping;
+			emit changed();
+		}
+	}
 
-    uint32_t base() const {
-        return virtualBase();
-    }
+	uint32_t base() const {
+		return virtualBase();
+	}
 
-    QString name() const {
-        return QString::fromStdString(_mapping->name());
-    }
+	QString name() const {
+		return QString::fromStdString(_mapping->name());
+	}
 
-    const uint8_t* hostMemoryBase() const {
-        return _mapping->host_mem();
-    }
+	const uint8_t* hostMemoryBase() const {
+		return _mapping->host_mem();
+	}
 
-    const uint32_t virtualBase() const {
-        return _mapping->start();
-    }
+	const uint32_t virtualBase() const {
+		return _mapping->start();
+	}
 
-    const uint32_t virtualRange() const {
-        return _mapping->end() - _mapping->start();
-    }
+	const uint32_t virtualRange() const {
+		return _mapping->end() - _mapping->start();
+	}
 
-    bool isValidVirtualAddress(uint32_t address) const {
-        return _mapping->start() <= address &&
-            _mapping->end() > address;
-    }
+	bool isValidVirtualAddress(uint32_t address) const {
+		return _mapping->start() <= address &&
+			_mapping->end() > address;
+	}
 
-    bool isValidOffset(uint32_t offset) const {
-        return offset < virtualRange();
-    }
+	bool isValidOffset(uint32_t offset) const {
+		return offset < virtualRange();
+	}
 
-    uint32_t virtualAddressOffset(uint32_t address) const {
-        return address - _mapping->start();
-    }
+	template<typename T>
+	T virtualToHost(uint32_t address) {
+		return static_cast<T>(_mapping->translate(address));
+	}
 
-    void markMemoryChanged() {
-        emit memoryChanged();
-    }
+	void markMemoryChanged() {
+		emit memoryChanged();
+	}
 
 
 signals:
 
-    void changed();
-    void memoryChanged();
+	void changed();
+	void memoryChanged();
 
 private:
 
-    const memory::mem_mapping* _mapping;
+	const memory::mem_mapping* _mapping;
 
 };
 #endif //MICROMACHINE_EMU_QMEMREGION_HPP
