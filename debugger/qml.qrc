@@ -5,5 +5,15 @@
         <file>Memoryview.qml</file>
         <file>DisassemblyView.qml</file>
         <file>WordDisplay.qml</file>
+        <file>fonts/SourceCodeVariable-Italic.otf</file>
+        <file>fonts/FiraCode-Retina.otf</file>
+        <file>fonts/FiraCode-Regular.otf</file>
+        <file>fonts/FiraCode-Medium.otf</file>
+        <file>fonts/FiraCode-Light.otf</file>
+        <file>fonts/FiraCode-Bold.otf</file>
+        <file>fonts/Hack-Regular.ttf</file>
+        <file>fonts/Hack-Italic.ttf</file>
+        <file>fonts/Hack-BoldItalic.ttf</file>
+        <file>fonts/Hack-Bold.ttf</file>
     </qresource>
 </RCC>

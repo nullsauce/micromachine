@@ -17,7 +17,7 @@
 
 #define memory_hardfault(reason_fmt,...)\
 	fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__); \
-    _exception.raise(exception_number::ex_name::HARDFAULT);
+	_exception.raise(exception_number::ex_name::HARDFAULT);
 
 namespace {
 
@@ -69,9 +69,13 @@ public:
 			return _host_mem;
 		}
 
+		uint8_t* host_mem() {
+			return _host_mem;
+		}
+
 		void* translate(uint32_t address) const {
 			if(address < start()) {
-				fprintf(stderr,"invalid address 0x%08X", address);
+				fprintf(stderr,"invalid address 0x%08X\n", address);
 				return nullptr;
 			}
 			return _host_mem + (address - start());
@@ -333,7 +337,7 @@ private:
 		return const_cast<mem_mapping*>(find_const_region(address));
 	}
 
-    region_vec _regions;
+	region_vec _regions;
 	exception_vector& _exception;
 	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers;
 
