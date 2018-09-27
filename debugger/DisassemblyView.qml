@@ -12,12 +12,20 @@ Item {
 	property int freeTrackerAddress:0
 
 	property alias memoryRegion: disassembler.memoryRegion
+
+
+	Rectangle {
+		anchors.fill: parent
+		color:Qt.darker("#1d1d1d")
+	}
+
 	Disassembler {
 		id: disassembler
 		property AddressTracker centerTracker: null
 		memoryRegion:CPU.memoryRegions[1]
-		paddingInstructionCount: Math.floor((Math.max(0,instructionList.height) / disasmView.disasmLineHeight) / 2)
+		//paddingInstructionCount: Math.floor((Math.max(0,instructionList.height) / disasmView.disasmLineHeight) / 2)
 		centerAddress: centerTracker.address
+		anchors.fill: parent
 	}
 
 	Component.onCompleted: {
@@ -35,23 +43,18 @@ Item {
 		freeTracker.address = Qt.binding(function() { return disasmView.freeTrackerAddress; });
 
 		disassembler.centerTracker = pcTracker;
+		console.log("pcTracker", pcTracker.address);
 	}
-
-	Rectangle {
-		anchors.fill: parent
-		color:Qt.darker("#11181f")
-	}
-
 
 	AddressTrackerList {
 		id: addressTrackers
 	}
-
+	/*
 	Rectangle {
 		anchors.fill: instructionList
 		color:"#11181f"
 		border.color: disasmView.backgroundColor
-	}
+	}*/
 
 	Row {
 		id:trackerControl
@@ -59,6 +62,8 @@ Item {
 		anchors.left: parent.left
 		anchors.right: parent.right
 		height:20
+
+
 		Repeater {
 			anchors.fill: parent
 			model:addressTrackers.trackers
@@ -104,110 +109,11 @@ Item {
 		return null;
 	}
 
-	Column {
-		anchors.top: trackerControl.bottom
-		anchors.bottom:parent.bottom
-		width:parent.width
-		id:instructionList
-
-		Repeater {
-			anchors.fill: parent
-			model:disassembler.instructions
-			delegate: Item {
-				width:500
-				height:disasmView.disasmLineHeight
-				property AddressTracker tracker: disasmView.findTracker(address)
-				property bool pointedByTracker: tracker !== null
-				Rectangle {
-
-					anchors.fill: parent
-					color: pointedByTracker ? tracker.color : "black"
-					visible: pointedByTracker
-					width:parent.width
-
-					Text {
-						x:18
-						text:pointedByTracker ? tracker.label : "..."
-						font.family: "monospace"
-						horizontalAlignment: Text.AlignLeft
-						width:80
-						height:parent.height
-						color: "white"
-					}
-				}
-				Text {
-					x:42
-					text:hexAddress
-					font.family: "monospace"
-					horizontalAlignment: Text.AlignLeft
-					width:80
-					height:parent.height
-					color: pointedByTracker ? "#ddd" : "#555"
-				}
-				Text {
-					x:125
-					id:instructionText
-					text:code
-					font.family: "monospace"
-					horizontalAlignment: Text.AlignLeft
-					width:400
-					height:parent.height
-					color:"#ddd"
-				}
-
-				Text {
-					x:380
-					id:dataText
-					text:modelData.data
-					font.family: "monospace"
-					horizontalAlignment: Text.AlignLeft
-					width:400
-					height:parent.height
-					color:"#555"
-				}
-
-				Rectangle {
-					anchors.left: parent.left
-					anchors.top: parent.top
-					anchors.bottom: parent.bottom
-					anchors.margins: 2
-					width:height
-					color: "red"
-					radius: 10
-					visible: CPU.isBreakPoint(address)
-				}
-
-				Rectangle {
-					width:parent.width
-					height:parent.height
-					color:"red"
-					opacity: 0.5
-					Row {
-						anchors.fill: parent
-						Component.onCompleted: {
-							console.log("details.components", details);
-						}
-						Repeater {
-							model:details.components
-							delegate: Text {
-								text:type
-								color:"white"
-								Component.onCompleted: {
-									console.log(modelData);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-	}
+	/*
 	Rectangle {
 		width:80
 		height:20
-		anchors.right: instructionList.right
-		anchors.bottom: instructionList.top
+		anchors.top:parent.top
 		TextInput {
 			id:disasmAddressInput
 			anchors.fill:parent
@@ -222,12 +128,10 @@ Item {
 				}
 			}
 		}
-	}
-
-
+	}*/
 
 	MouseArea {
-		anchors.fill: instructionList
+		anchors.fill: parent
 		onWheel: {
 			var newPos = 0;
 			if(wheel.angleDelta.y > 0) {
@@ -236,12 +140,12 @@ Item {
 				disassembler.scrollDown();
 			}
 		}
-
+		/*
 		onClicked: {
 			var listPoint = instructionList.mapFromItem(instructionList, mouse.x, mouse.y);
 			var index = Math.floor(listPoint.y / disasmView.disasmLineHeight);
 			CPU.toggleBreakpoint(disassembler.instructions[index].address);
 			console.log("breakpoint at address", disassembler.instructions[index].address);
-		}
+		}*/
 	}
 }

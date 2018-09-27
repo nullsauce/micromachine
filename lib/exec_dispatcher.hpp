@@ -262,8 +262,7 @@ private:
 		exec(instruction, _regs, _regs.app_status_register());
 	}
 	void dispatch(const unconditional_branch instruction) override {
-		exec(instruction, _regs,
-			 _regs.app_status_register());
+		exec(instruction, _regs, _regs.app_status_register());
 	}
 	void dispatch(const stm instruction) override {
 		exec(instruction, _regs, _mem);
