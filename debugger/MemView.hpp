@@ -155,7 +155,7 @@ public:
 		for(size_t y = 0; y < mNumberOfRows; y++) {
 			for(size_t x = 0; x < mNumberOfColumns; x++) {
 
-				if(mMem->isValidOffset(offset)) {
+				if(mMem->isValidSegmentOffset(offset)) {
 
 					uint8_t byte = mMem->hostMemoryBase()[offset++];
 					QPointF loc(

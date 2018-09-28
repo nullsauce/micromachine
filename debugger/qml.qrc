@@ -3,7 +3,7 @@
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>Memoryview.qml</file>
-        <file>DisassemblyView.qml</file>
+        <file>DisassemblyWidget.qml</file>
         <file>WordDisplay.qml</file>
         <file>fonts/FiraCode-Retina.otf</file>
         <file>fonts/FiraCode-Regular.otf</file>
