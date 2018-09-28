@@ -42,6 +42,15 @@ private:
 		}
 		virtual ~InstructionPainter() = default;
 
+		void drawVoid(QPainter* painter, uint32_t instruction_address) {
+			_painter = painter;
+			setAddress(instruction_address);
+			_painter->save();
+			draw_address(_addr);
+			_painter->restore();
+			_painter->translate(0, 20);
+		}
+
 		void drawInstruction(QPainter* painter, uint32_t instruction_address, instruction_pair instruction) {
 			_painter = painter;
 			setAddress(instruction_address);
@@ -50,7 +59,6 @@ private:
 			dispatch_instruction(instruction);
 			_painter->restore();
 			_painter->translate(0, 20);
-
 		}
 
 	private:
@@ -205,6 +213,7 @@ public:
 		uint32_t address = base;
 		while(displayedInstructons < numDiplaybaleInstructions) {
 			if(!mMem->isValidVirtualAddress(address)) {
+				instructionPainter.drawVoid(painter, address);
 				address += 2;
 				displayedInstructons++;
 				continue;

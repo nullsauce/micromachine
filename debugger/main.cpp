@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
 		"Hack-Italic.ttf",
 		"Hack-BoldItalic.ttf",
 		"Hack-Bold.ttf",
+		"ProggyClean.ttf",
+		"ProggyCleanCE.ttf",
+		"Crisp.ttf",
 	};
 	for(const auto& font : fonts) {
 		if(-1 == QFontDatabase::addApplicationFont(QString(":/fonts/%1").arg(font))) {
