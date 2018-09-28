@@ -5,7 +5,7 @@
 #include "QCpu.hpp"
 #include "QMemRegion.hpp"
 #include "MemView.hpp"
-#include "Disassembler.hpp"
+#include "DisassemblyView.hpp"
 #include "AddressTracker.hpp"
 #include "AddressTrackerList.hpp"
 #include "InstructionDetails.hpp"
@@ -36,18 +36,20 @@ int main(int argc, char *argv[])
 			qWarning() << "failed to load application font" << font;
 		}
 	}
-	QFontDatabase database;
-	qDebug() << database.families();
 
 	qmlRegisterType<QCpu>("Fla", 1, 0, "Cpu");
 	qmlRegisterUncreatableType<Register>("Fla", 1, 0, "Register", "cannot create");
 	qmlRegisterUncreatableType<Instruction>("Fla", 1, 0, "Instruction", "cannot create");
 	qmlRegisterType<MemView>("Fla", 1, 0, "MemView");
-	qmlRegisterType<Disassembler>("Fla", 1, 0, "Disassembler");
+	qmlRegisterType<DisassemblyView>("Fla", 1, 0, "DisassemblyView");
 	qmlRegisterUncreatableType<QMemRegion>("Fla", 1, 0, "MemoryRegion", "cannot create");
 	qmlRegisterType<AddressTrackerList>("Fla", 1, 0, "AddressTrackerList");
-	qmlRegisterUncreatableType<AddressTracker>("Fla", 1, 0, "AddressTracker", "cannot create");
+	qmlRegisterType<AddressTracker>("Fla", 1, 0, "AddressTracker");
+	qmlRegisterUncreatableType<Breakpoint>("Fla", 1, 0, "Breakpoint", "cannot create");
+	qmlRegisterUncreatableType<BreakpointRegistry>("Fla", 1, 0, "BreakpointRegistry", "cannot create");
+	BreakpointRegistry breakpointRegistry;
 	QCpu processor;
+	processor.setBreakpointRegistry(&breakpointRegistry);
 	qmlRegisterType<InstructionDetails>("Fla", 1, 0, "InstructionDetails");
 	qmlRegisterType<InstructionComponent>("Fla", 1, 0, "InstructionComponent");
 	if(argc < 1) {
@@ -55,6 +57,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	processor.loadElf(argv[1]);
+
 	engine.rootContext()->setContextProperty("CPU", &processor);
 	engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 	if (engine.rootObjects().isEmpty())

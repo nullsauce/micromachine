@@ -17,8 +17,9 @@ and/or distributed without the express permission of Flavio Roth.
 class AddressTracker : public QObject {
     Q_OBJECT
     Q_PROPERTY(quint32 address READ address WRITE setAddress NOTIFY addressChanged)
-    Q_PROPERTY(QString label READ label CONSTANT)
-    Q_PROPERTY(QColor color READ color CONSTANT)
+    Q_PROPERTY(QString label READ label WRITE setLabel)
+    Q_PROPERTY(QColor color READ color WRITE setColor)
+
 public:
 
     quint32 address() const {
@@ -32,8 +33,16 @@ public:
         }
     }
 
+    void setLabel(const QString& val) {
+        _label = val;
+    }
+
     QString label() const {
         return _label;
+    }
+
+    void setColor(const QColor& val) {
+        _color = val;
     }
 
     QColor color() const {

@@ -21,14 +21,6 @@ ApplicationWindow {
 		return zpad(address.toString(16),8);
 	}
 
-	Binding {
-		target:CPU
-		property: "desiredInstructionCount"
-		value:(window.height/16)-2
-	}
-
-
-
 	Timer {
 		id:clock
 		running: false
@@ -83,12 +75,13 @@ ApplicationWindow {
 		border.color: "#22313F"
 	}
 
-	DisassemblyView {
+	DisassemblyWidget {
 		id:disasm
 		anchors.left: parent.left
 		width:500
 		anchors.top: controls.bottom
 		anchors.bottom: parent.bottom
+
 
 	}
 
