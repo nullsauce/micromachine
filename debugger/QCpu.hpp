@@ -60,6 +60,83 @@ private:
 	const QString _name;
 };
 
+class Breakpoint : public QObject {
+	Q_OBJECT
+	Q_PROPERTY(quint32 address MEMBER _address CONSTANT)
+	Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+
+public:
+	void setEnabled(bool val) {
+		if(val != _enabled) {
+			_enabled = val;
+			emit enabledChanged();
+		}
+	}
+
+	bool enabled() const {
+		return _enabled;
+	}
+
+	Breakpoint(uint32_t address = 0, QObject* parent = nullptr)
+		: QObject(parent)
+		, _address(address)
+		, _enabled(true) {
+
+	}
+
+signals:
+	void enabledChanged();
+
+private:
+	bool _enabled;
+	const uint32_t _address;
+
+};
+
+class BreakpointRegistry : public QObject {
+	Q_OBJECT
+public:
+	using breakpoint_list = std::unordered_map<uint32_t, std::unique_ptr<Breakpoint>>;
+
+public slots:
+
+	void setBreakPoint(quint32 address, bool enabled) {
+		Breakpoint& bp = findOrCreateAtAddress(address);
+		bp.setEnabled(enabled);
+	}
+
+	bool toggleBreakpoint(quint32 address) {
+		bool newState = !isBreakPoint(address);
+		setBreakPoint(address, newState);
+		return newState;
+	}
+
+	bool isBreakPoint(quint32 instructionAddr) {
+		auto bkp = _breakpoints.find(instructionAddr);
+		if(bkp != _breakpoints.end()) {
+			return bkp->second->enabled();
+		} else {
+			return false;
+		}
+	}
+
+
+private:
+
+	Breakpoint& findOrCreateAtAddress(uint32_t address) {
+		auto it = _breakpoints.find(address);
+		if(_breakpoints.end() != it) {
+			return *it->second;
+		} else {
+			auto ptr = std::make_unique<Breakpoint>(address);
+			auto newit = _breakpoints.insert(std::make_pair(address, std::move(ptr)));
+			return *ptr;
+		}
+	}
+
+	breakpoint_list _breakpoints;
+};
+
 class QCpu : public QObject
 {
 	Q_OBJECT
@@ -167,7 +244,7 @@ public:
 		for(int i = 0; i < steps; i++) {
 			_cpu.step();
 			word addr = _cpu.regs().get_pc();
-			if(isBreakPoint(addr)) {
+			if(false /*isBreakPoint(addr)*/) {
 				iterationCompleted = false;
 				break;
 			}
@@ -182,26 +259,6 @@ public:
 		updateViewModels();
 	}
 
-	Q_INVOKABLE void setBreakPoint(quint32 address, bool enabled) {
-		_breakpoint_instructions[address] = enabled;
-		updateViewModels();
-	}
-
-	Q_INVOKABLE bool toggleBreakpoint(quint32 address) {
-		bool newState = !isBreakPoint(address);
-		setBreakPoint(address, newState);
-		return newState;
-	}
-
-	Q_INVOKABLE bool isBreakPoint(quint32 instructionAddr) {
-		auto bkp = _breakpoint_instructions.find(instructionAddr);
-		if(bkp != _breakpoint_instructions.end()) {
-			return bkp->second;
-		} else {
-			return false;
-		}
-	}
-
 signals:
 	void regsChanged();
 	void nameChanged();
@@ -213,7 +270,7 @@ signals:
 private:
 
 
-
+	/*
 	void dissasembleIntructionsAround(uint32_t addr) {
 		word offset = (desiredInstructionCount()/2)*2;
 		for(int i = 0; i < _instructions.size(); i++) {
@@ -231,15 +288,15 @@ private:
 			addr = addr + instr.size();
 		}
 
-	}
+	}*/
 
 	void updateViewModels() {
 		for(int i = 0; i < 16; i++) {
 			_registers.at(i)->setValue(_cpu.regs().get(i));
 		}
 
-		word addr = _cpu.regs().get_pc();
-		dissasembleIntructionsAround(addr);
+		//word addr = _cpu.regs().get_pc();
+		//dissasembleIntructionsAround(addr);
 
 		for(size_t i = 0; i < _memory_regions.size(); i++) {
 			_memory_regions.at(i)->markMemoryChanged();
@@ -257,7 +314,7 @@ private:
    std::vector<uint8_t> _initialized_data;
    Instruction _dummy_instr;
    int _desired_instruction_count;
-   std::unordered_map<uint32_t, bool> _breakpoint_instructions;
+
 
 };
 
