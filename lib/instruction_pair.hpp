@@ -13,8 +13,13 @@ struct instruction_pair {
 	instruction_pair(halfword a, halfword b)
 	    : first(a)
 	    , second(b) {}
-	const halfword first;
-	const halfword second;
+	halfword first;
+	halfword second;
+
+	instruction_pair()
+	    : first(0)
+	    , second(0) {}
+
 
 	bool is_wide() const {
 		return is_wide_intruction(first);

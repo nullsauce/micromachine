@@ -57,7 +57,7 @@ public:
 			_mapping->end() > address;
 	}
 
-	bool isValidOffset(uint32_t offset) const {
+	bool isValidSegmentOffset(uint32_t offset) const {
 		return offset < virtualRange();
 	}
 
