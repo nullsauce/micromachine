@@ -30,17 +30,18 @@ class DisassemblyView : public QQuickPaintedItem {
 	Q_PROPERTY(BreakpointRegistry* breakpointRegistry READ breakpointRegistry WRITE setBreakpointRegistry NOTIFY breakpointRegistryChanged)
 	Q_PROPERTY(int maxVisibleInstructionCount READ maxDisplayableIntructions NOTIFY dimensionsChanged)
 	Q_PROPERTY(QQmlListProperty<AddressTracker> addressTrackers READ addressTrackers)
-private:
 
+private:
 	class InstructionPainter : public structured_disasm {
 	public:
 		InstructionPainter(int lineHeight)
 			: _painter(nullptr)
 			, _line_height(lineHeight)
+			, _num_jumps(0)
 			, _name_font("Hack")
 			, _register_font(_name_font)
 			, _address_font(_name_font)
-			, _xref_label(_name_font){
+			, _xref_label(_name_font) {
 			_name_font.setPixelSize(18);
 			_register_font.setPixelSize(18);
 			_register_font.setBold(false);
@@ -91,10 +92,12 @@ private:
 	private:
 		QPainter* _painter;
 		int _line_height;
+		int _num_jumps;
 		QFont _name_font;
 		QFont _register_font;
 		QFont _address_font;
 		QFont _xref_label;
+
 
 		void drawBreakpointFlag(bool enabled) {
 			if(enabled) {
@@ -176,21 +179,21 @@ private:
 
 		void emit_label_address(uint32_t label_address) override {
 			QString labelText = QString("%1").arg(label_address, 8, 16, QChar('0'));
-			int offset = label_address - _addr;
-			int distance_px = offset * _line_height;
-			_painter->setPen(Qt::green);
-			_painter->drawLine(0, 10, 200, 10);
-			_painter->setPen(Qt::yellow);
-			_painter->drawLine(200, 10, 200, distance_px);
-			_painter->setPen(Qt::red);
-			_painter->drawLine(200, distance_px+_line_height, 0, distance_px+_line_height);
-			_painter->setFont(_xref_label);
-			_painter->setPen(Qt::gray);
-			_painter->drawText(160, distance_px, labelText);
-			_painter->setPen(QColor("#87d787"));
+			int offset = label_address - (int32_t)_addr - 2;
+			int jump_y_distance = 13 + (offset * _line_height);
+			int jump_x_distance = 100+((_num_jumps++)*5);
 			_painter->setFont(_register_font);
 			_painter->drawText(5, _line_height, labelText);
-			_painter->translate(40, 0);
+			_painter->translate(140, 0);
+
+			_painter->setPen(QColor("#6c6c6c"));
+			_painter->drawLine(0, 13, jump_x_distance, 13);
+			_painter->drawLine(jump_x_distance, 13, jump_x_distance, jump_y_distance);
+			_painter->drawLine(jump_x_distance, jump_y_distance, 0, jump_y_distance);
+			_painter->setFont(_xref_label);
+			_painter->setPen(Qt::gray);
+			_painter->drawText(40, jump_y_distance-2, QString("%1").arg(_addr, 8, 16, QChar('0')));
+			_painter->setPen(QColor("#87d787"));
 		}
 
 		void emit_begin_deref() override {

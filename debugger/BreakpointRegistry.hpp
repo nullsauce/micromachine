@@ -9,7 +9,8 @@
 
 class Breakpoint : public QObject {
 	Q_OBJECT
-	Q_PROPERTY(quint32 address MEMBER _address CONSTANT)
+	Q_PROPERTY(quint32 address MEMBER _address NOTIFY addressChanged)
+	Q_PROPERTY(QString addressHex READ addressHex NOTIFY addressChanged)
 	Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
@@ -18,6 +19,10 @@ public:
 			_enabled = val;
 			emit enabledChanged();
 		}
+	}
+
+	QString addressHex() const {
+		 return QString("%1").arg(_address, 8, 16, QChar('0'));
 	}
 
 	bool enabled() const {
@@ -33,10 +38,11 @@ public:
 
 signals:
 	void enabledChanged();
+	void addressChanged();
 
 private:
 	bool _enabled;
-	const uint32_t _address;
+	uint32_t _address;
 
 };
 
