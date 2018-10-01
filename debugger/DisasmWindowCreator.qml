@@ -3,14 +3,15 @@ import Fla 1.0
 Item {
 	id:item
 	width:600
-	height:400
+	height:800
+
 	property BreakpointRegistry breakpointRegistry
 	property MemoryRegion memoryRegion
 
-	function createInstance(posX, posY) {
+	function createInstance() {
 		var posX = (appWindow.width / 2) -(item.width / 2);
 		var posY = (appWindow.height / 2) -(item.height / 2);
-		component.createObject(appWindow, {x:posX, y:posY});
+		component.createObject(appWindow, {x:posX, y:posY, screen:appWindow.screen});
 	}
 
 	Component {

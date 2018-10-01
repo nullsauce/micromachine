@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Window 2.2
+import QtQuick.Controls 1.4
 import Fla 1.0
+
 Window {
 	flags: Qt.Tool
 	Component.onCompleted: show()
@@ -17,9 +19,22 @@ Window {
 		delegate: Item {
 			height: 20
 			width: parent.width
-			Text {
-				color:"grey"
-				text: address
+			Row {
+				spacing: 10
+				Text {
+					width:contentWidth
+					color:"white"
+					text:addressHex
+				}
+				CheckBox {
+					id:enabledCheckbox
+					enabled:false
+					checked: modelData.enabled
+				}
+			}
+			MouseArea {
+				anchors.fill: parent
+				onClicked: modelData.enabled = !modelData.enabled
 			}
 		}
 	}
