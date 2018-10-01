@@ -39,11 +39,13 @@ private:
 			, _line_height(lineHeight)
 			, _name_font("Hack")
 			, _register_font(_name_font)
-			, _address_font(_name_font) {
+			, _address_font(_name_font)
+			, _xref_label(_name_font){
 			_name_font.setPixelSize(18);
 			_register_font.setPixelSize(18);
 			_register_font.setBold(false);
 			_address_font.setPixelSize(18);
+			_xref_label.setPixelSize(12);
 		}
 		virtual ~InstructionPainter() = default;
 
@@ -92,6 +94,7 @@ private:
 		QFont _name_font;
 		QFont _register_font;
 		QFont _address_font;
+		QFont _xref_label;
 
 		void drawBreakpointFlag(bool enabled) {
 			if(enabled) {
@@ -172,9 +175,21 @@ private:
 		}
 
 		void emit_label_address(uint32_t label_address) override {
+			QString labelText = QString("%1").arg(label_address, 8, 16, QChar('0'));
+			int offset = label_address - _addr;
+			int distance_px = offset * _line_height;
+			_painter->setPen(Qt::green);
+			_painter->drawLine(0, 10, 200, 10);
+			_painter->setPen(Qt::yellow);
+			_painter->drawLine(200, 10, 200, distance_px);
+			_painter->setPen(Qt::red);
+			_painter->drawLine(200, distance_px+_line_height, 0, distance_px+_line_height);
+			_painter->setFont(_xref_label);
+			_painter->setPen(Qt::gray);
+			_painter->drawText(160, distance_px, labelText);
 			_painter->setPen(QColor("#87d787"));
 			_painter->setFont(_register_font);
-			_painter->drawText(5, _line_height, QString("%1").arg(label_address, 8, 16, QChar('0')));
+			_painter->drawText(5, _line_height, labelText);
 			_painter->translate(40, 0);
 		}
 
@@ -483,6 +498,9 @@ private:
 		// first look at the first halfowrd and
 		// decide if we must fetch another halfword
 		// because the instruction is 4 bytes
+		if(!mMem || !mMem->isValidVirtualAddress(address)) {
+			return false;
+		}
 		halfword* maybe_first_instr = mMem->virtualToHost<halfword*>(address);
 		if(nullptr != maybe_first_instr) {
 			first_instr = *maybe_first_instr;

@@ -17,5 +17,8 @@
         <file>fonts/ProggyClean.ttf</file>
         <file>fonts/ProggyCleanCE.ttf</file>
         <file>fonts/Crisp.ttf</file>
+        <file>BreakpointsWindow.qml</file>
+        <file>BreakpointsWindowCreator.qml</file>
+        <file>DisasmWindowCreator.qml</file>
     </qresource>
 </RCC>

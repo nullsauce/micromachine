@@ -20,6 +20,48 @@ and/or distributed without the express permission of Flavio Roth.
 #include "BreakpointRegistry.hpp"
 #include <unordered_map>
 
+class Register : public QObject {
+	Q_OBJECT
+	Q_PROPERTY(QString name READ name CONSTANT)
+	Q_PROPERTY(quint32 value READ value NOTIFY valueChanged)
+	Q_PROPERTY(QString hexValue READ hexValue NOTIFY valueChanged)
+public:
+	Register(QObject* parent = nullptr, const QString& name = "")
+		: QObject(parent)
+		, _val(0)
+		, _name(name) {
+
+	}
+
+	QString hexValue() const {
+		 return QString("%1").arg(_val, 8, 16, QChar('0'));
+	}
+
+	uint32_t value() const {
+		return _val;
+	}
+
+	void setValue(uint32_t v) {
+		if(v != _val) {
+			_val = v;
+			emit valueChanged();
+		}
+	}
+
+	QString name() const {
+		return _name;
+	}
+
+signals:
+	void valueChanged();
+
+private:
+
+	uint32_t _val;
+	const QString _name;
+};
+
+
 class QCpu : public QObject
 {
 	Q_OBJECT
