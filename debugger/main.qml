@@ -17,6 +17,8 @@ ApplicationWindow {
 		color: Qt.darker("#1d1d1d")
 	}
 
+	Component.onCompleted: disasmWindowCreator.createInstance()
+
 
 	BreakpointsWindowCreator {
 		id:breakpointsWindowCreator
@@ -59,6 +61,7 @@ ApplicationWindow {
 			//}
 		}
 	}
+
 
 	Row {
 		id:controls
