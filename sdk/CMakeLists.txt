@@ -77,6 +77,7 @@ make_program(
 	ASM_SOURCES boot.s
 )
 
+#[[
 make_program(
 	TARGET cpptest
 	CFLAGS "-O3"
@@ -84,3 +85,4 @@ make_program(
 	C_SOURCES cpptest.cpp
 	ASM_SOURCES boot.s
 )
+]]
