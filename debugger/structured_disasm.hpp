@@ -570,7 +570,7 @@ private:
 	}
 	void dispatch(const branch instruction) override {
 		int32_t offset = instruction.offset();
-		uint32_t label = ( + 4) + offset;
+		uint32_t label = (_addr + 4) + offset;
 		//std::string narrow_suffix = format_use_narrow_branch() ? ".n" : "";
 		//format("b%2.2s"+narrow_suffix+" "+IMM(), condition_string(instruction.cond), label);
 		emit_name("b");

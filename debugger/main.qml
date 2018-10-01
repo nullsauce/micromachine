@@ -5,12 +5,29 @@ import QtQuick.Window 2.2
 import Fla 1.0
 
 ApplicationWindow {
-	id:window
+	id:appWindow
 	visible: true
-	width: 640
-	height: 480
+	width: 1280
+	height: 720
 	title: qsTr("Hello World")
 	color:"#111"
+
+	Rectangle {
+		anchors.fill: parent
+		color: Qt.darker("#1d1d1d")
+	}
+
+
+	BreakpointsWindowCreator {
+		id:breakpointsWindowCreator
+		breakpointRegistry: CPU.breakpointRegistry
+	}
+
+	DisasmWindowCreator {
+		id:disasmWindowCreator
+		breakpointRegistry: CPU.breakpointRegistry
+		memoryRegion: CPU.memoryRegions[1]
+	}
 
 	function zpad(n, width) {
 		n = n + '';
@@ -66,27 +83,33 @@ ApplicationWindow {
 			text:"reset"
 			onClicked: CPU.reset();
 		}
+		Button {
+			text:"breakpoints"
+			onClicked: breakpointsWindowCreator.createInstance()
+		}
+		Button {
+			text:"code"
+			onClicked: disasmWindowCreator.createInstance()
+		}
 	}
 
-
+	/*
 	Rectangle {
 		anchors.fill: disasm
 		color:"#11181f"
 		border.color: "#22313F"
-	}
-
+	}*/
+	/*
 	DisassemblyWidget {
 		id:disasm
 		anchors.left: parent.left
 		width:500
 		anchors.top: controls.bottom
 		anchors.bottom: parent.bottom
-
-
-	}
+	}*/
 
 	RowLayout {
-		anchors.left: disasm.right
+
 		anchors.right: parent.right
 		anchors.top: parent.top
 		anchors.bottom: registers.top
