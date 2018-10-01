@@ -1,27 +1,18 @@
 import QtQuick 2.0
 import Fla 1.0
+import QtQuick.Window 2.2
 
-Item {
 
+Window {
 	id: disasmView
-	property int freeTrackerAddress: 0
+	flags: Qt.Tool
+	Component.onCompleted: show()
+	property alias breakpointRegistry: disassemblyView.breakpointRegistry
+	property alias memoryRegion: disassemblyView.memoryRegion
 
 	Rectangle {
 		anchors.fill: parent
 		color: Qt.darker("#1d1d1d")
-	}
-
-	AddressTrackerList {
-		id: addressTrackers
-	}
-
-	function findTracker(address) {
-		for (var i = 0; i < addressTrackers.trackers.length; i++) {
-			if (addressTrackers.trackers[i].address === address) {
-				return addressTrackers.trackers[i]
-			}
-		}
-		return null
 	}
 
 	Row {
@@ -30,10 +21,9 @@ Item {
 		anchors.left: parent.left
 		anchors.right: parent.right
 		height: 20
-
 		Repeater {
 			anchors.fill: parent
-			model: addressTrackers.trackers
+			model: disassemblyView.addressTrackers
 			delegate: Item {
 				width: 40
 				height: 20
@@ -59,7 +49,7 @@ Item {
 				MouseArea {
 					anchors.fill: parent
 					cursorShape: Qt.PointingHandCursor
-					onClicked: disassemblyView.centerTracker = modelData
+					onClicked: disassemblyView.baseAddressRef = modelData
 				}
 			}
 		}
@@ -70,15 +60,22 @@ Item {
 		width: parent.width
 		anchors.top: controlbar.bottom
 		anchors.bottom: parent.bottom
+		property AddressTracker baseAddressRef: pagedTracker
+		//memoryRegion: CPU.memoryRegions[1]
+		//breakpointRegistry: CPU.breakpointRegistry
+		baseAddress: baseAddressRef.address
+		Component.onCompleted: {
+			console.log(memoryRegion)
+		}
 
-		property AddressTracker baseAddressRef: pcTracker
-		memoryRegion: CPU.memoryRegions[1]
-		breakpointRegistry: CPU.breakpointRegistry
-		baseAddress: Math.floor(
-						 baseAddressRef.address / (2 * maxVisibleInstructionCount))
-					 * (2 * maxVisibleInstructionCount)
-		onBaseAddressChanged: console.log("base", baseAddress)
 		addressTrackers: [
+			AddressTracker {
+				id: pagedTracker
+				label: "Co"
+				color: "#00000000"
+				address: Math.floor(pcTracker.address / (2 * disassemblyView.maxVisibleInstructionCount))
+						 * (2 * disassemblyView.maxVisibleInstructionCount)
+			},
 			AddressTracker {
 				id: pcTracker
 				label: "PC"
@@ -96,31 +93,6 @@ Item {
 				address: CPU.regs[13].value
 			}
 		]
-
-		Component.onCompleted: {
-
-			var pcTracker = addressTrackers.addTracker("PC", "#123b56")
-			pcTracker.address = Qt.binding(function () {
-				return CPU.regs[15].value
-			})
-
-			var lrTracker = addressTrackers.addTracker("LR", "#446CB3")
-			lrTracker.address = Qt.binding(function () {
-				return CPU.regs[14].value & 0xFFFFFFFE
-			})
-
-			var spTracker = addressTrackers.addTracker("SP", "#1E824C")
-			spTracker.address = Qt.binding(function () {
-				return CPU.regs[13].value
-			})
-
-			var freeTracker = addressTrackers.addTracker("Ma", "#f0932b")
-			freeTracker.address = Qt.binding(function () {
-				return disasmView.freeTrackerAddress
-			})
-
-			disassemblyView.baseAddressRef = pcTracker
-		}
 
 		MouseArea {
 			id: mouseArea
