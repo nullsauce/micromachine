@@ -15,58 +15,58 @@ and/or distributed without the express permission of Flavio Roth.
 #include <QColor>
 
 class AddressTracker : public QObject {
-    Q_OBJECT
-    Q_PROPERTY(quint32 address READ address WRITE setAddress NOTIFY addressChanged)
-    Q_PROPERTY(QString label READ label WRITE setLabel)
-    Q_PROPERTY(QColor color READ color WRITE setColor)
+	Q_OBJECT
+	Q_PROPERTY(quint32 address READ address WRITE setAddress NOTIFY addressChanged)
+	Q_PROPERTY(QString label READ label WRITE setLabel)
+	Q_PROPERTY(QColor color READ color WRITE setColor)
 
 public:
 
-    quint32 address() const {
-        return _address;
-    }
+	quint32 address() const {
+		return _address;
+	}
 
-    void setAddress(quint32 address) {
-        if(address != _address) {
-            _address = address;
-            emit addressChanged();
-        }
-    }
+	void setAddress(quint32 address) {
+		if(address != _address) {
+			_address = address;
+			emit addressChanged();
+		}
+	}
 
-    void setLabel(const QString& val) {
-        _label = val;
-    }
+	void setLabel(const QString& val) {
+		_label = val;
+	}
 
-    QString label() const {
-        return _label;
-    }
+	QString label() const {
+		return _label;
+	}
 
-    void setColor(const QColor& val) {
-        _color = val;
-    }
+	void setColor(const QColor& val) {
+		_color = val;
+	}
 
-    QColor color() const {
-        return _color;
-    }
+	QColor color() const {
+		return _color;
+	}
 
-    AddressTracker(
-            const QString& label = "",
-            QColor color = Qt::gray,
-            QObject* parent = nullptr)
-        : QObject(parent)
-        , _address(0)
-        , _label(label)
-        , _color(color) {
+	AddressTracker(
+			const QString& label = "",
+			QColor color = Qt::gray,
+			QObject* parent = nullptr)
+		: QObject(parent)
+		, _address(0)
+		, _label(label)
+		, _color(color) {
 
-    }
+	}
 
 signals:
-    void addressChanged();
+	void addressChanged();
 
 private:
-    quint32 _address;
-    QString _label;
-    QColor _color;
+	quint32 _address;
+	QString _label;
+	QColor _color;
 };
 
 
