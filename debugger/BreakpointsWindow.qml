@@ -3,28 +3,25 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import Fla 1.0
 
-Window {
-	flags: Qt.Tool
+ToolWindow {
+
 	Component.onCompleted: show()
 	property BreakpointRegistry breakpointRegistry
 
-	Rectangle {
-		anchors.fill: parent
-		color: Qt.darker("#1d1d1d")
-	}
-
-	ListView {
+	content: ListView {
 		anchors.fill: parent
 		model: breakpointRegistry.breakpoints
 		delegate: Item {
 			height: 20
-			width: parent.width
+			anchors.left: parent.left
+			anchors.right: parent.right
 			Row {
-				spacing: 10
-				Text {
-					width:contentWidth
-					color:"white"
-					text:addressHex
+				anchors.fill: parent
+				anchors.margins: 4
+				spacing: 14
+				UintDisplay {
+					value:address
+					color: "#6c6c6c";
 				}
 				CheckBox {
 					id:enabledCheckbox

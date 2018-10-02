@@ -20,9 +20,9 @@ class MemView : public QQuickPaintedItem
 public:
 
 	MemView()
-		: mFont("monospace", 12)
+		: mFont("Hack", 12)
 		, mFontColor("#bdbdb5")
-		, mBackgroundColor("#05151c")
+		, mBackgroundColor("#1d1d1d")
 		, mFontMap(generateFontMap())
 		, mOffset(0)
 		, mMem(nullptr)
@@ -30,8 +30,6 @@ public:
 		, mNumberOfRows(0)
 		, mNumberOfDisplayableItems(0)
 		, mAddressAreaWidth(90) {
-
-
 		connect(this, &MemView::offsetChanged, this, &MemView::refresh, Qt::DirectConnection);
 		connect(this, &MemView::dimensionsChanged, this, &MemView::refresh, Qt::DirectConnection);
 		connect(this, &MemView::regionChanged, this, &MemView::refresh, Qt::DirectConnection);
@@ -67,7 +65,8 @@ public:
 
 	qreal visibleRatio() const {
 		if(nullptr == mMem) return 1;
-		return (qreal)mNumberOfDisplayableItems / (qreal)mMem->virtualRange();
+		uint32_t totalNumberOfRows = (mMem->virtualRange() / mNumberOfColumns);
+		return 0.9 * ((qreal)mNumberOfRows / (qreal)totalNumberOfRows);
 	}
 
 	int columns() const {
@@ -80,6 +79,47 @@ public:
 
 	size_t ceildiv(size_t x, size_t y) {
 		return(x + y - 1) / y;
+	}
+
+	int wordWidth() const {
+		return 4 * mByteTextSize.width();
+	}
+
+	bool isAddressVisible(quint32 address) {
+		uint32_t visibleRangeStartAddress = mMem->virtualBase() + mOffset;
+		uint32_t visibleRangeSize = columns() * rows();
+		uint32_t visibleRangeEndAddress = qMin(visibleRangeStartAddress + visibleRangeSize
+											   , mMem->virtualBase() + mMem->virtualRange());
+		return address >= visibleRangeStartAddress && address < visibleRangeEndAddress;
+	}
+
+	Q_INVOKABLE QRectF addressBounds(quint32 address) {
+		if(!mMem->isValidVirtualAddress(address)) {
+			return QRectF();
+		}
+		if(!isAddressVisible(address)) {
+			return QRectF();
+		}
+		uint32_t visibleOffset = address - (mMem->virtualBase() + mOffset);
+		int row = visibleOffset / columns();
+		int col = visibleOffset % columns();
+		return QRectF((col*mByteTextSize.width())+mAddressAreaWidth,
+					  (row*mByteTextSize.height()),
+					  mByteTextSize.width(),
+					  mByteTextSize.height());
+	}
+
+	Q_INVOKABLE quint32 addressAtPos(qreal x, qreal y) {
+		const QRectF hexDisplayArea = boundingRect().adjusted(mAddressAreaWidth,0,0,0);
+		if(!hexDisplayArea.contains(QPointF(x,y))) {
+			return 0;
+		}
+		x = x - hexDisplayArea.x();
+		y = y - hexDisplayArea.y();
+		int column = (int)qFloor(x / mByteTextSize.width());
+		int row = (int)qFloor(y / mByteTextSize.height());
+		uint32_t offset =  (row*columns()+column);
+		return memoryRegion()->virtualBase() + offset;
 	}
 
 	void geometryChanged(const QRectF& newGeometry, const QRectF& oldGeometry) {
@@ -96,7 +136,6 @@ public:
 
 		int maxDisplayItems = maxDisplayCols * maxDisplayRows;
 		setNumberOfDisplaybleItems(maxDisplayItems);
-
 	}
 
 	void paint(QPainter* painter) override {
@@ -137,7 +176,7 @@ public:
 
 
 		painter->save();
-		painter->setPen(mFontColor);
+		painter->setPen(QColor("#6c6c6c"));
 		for(size_t y = 0; y < mNumberOfRows; y++) {
 			uint32_t address = (mMem->virtualBase() + mOffset) + (y * mNumberOfColumns);
 			painter->drawText(
@@ -174,20 +213,17 @@ public:
 	}
 
 signals:
-
 	void dimensionsChanged();
 	void regionChanged();
 	void offsetChanged();
 	void scrollChanged();
 
 public slots:
-
 	void refresh() {
 		update();
 	}
 
 private:
-
 	bool canScrollDown() const {
 		if(nullptr == mMem) return false;
 		return mOffset < (mMem->virtualRange() - mNumberOfColumns);

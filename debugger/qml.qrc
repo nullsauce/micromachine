@@ -3,7 +3,7 @@
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>Memoryview.qml</file>
-        <file>DisassemblyWidget.qml</file>
+        <file>DisassemblyWindow.qml</file>
         <file>WordDisplay.qml</file>
         <file>fonts/FiraCode-Retina.otf</file>
         <file>fonts/FiraCode-Regular.otf</file>
@@ -20,5 +20,12 @@
         <file>BreakpointsWindow.qml</file>
         <file>BreakpointsWindowCreator.qml</file>
         <file>DisasmWindowCreator.qml</file>
+        <file>ToolWindow.qml</file>
+        <file>UintDisplay.qml</file>
+        <file>CustomToolTip.qml</file>
+        <file>RegularText.qml</file>
+        <file>Helper.js</file>
+        <file>MemoryWindow.qml</file>
+        <file>MemoryWindowCreator.qml</file>
     </qresource>
 </RCC>

@@ -16,7 +16,7 @@ Item {
 
 	Component {
 		id: component
-		DisassemblyWidget {
+		DisassemblyWindow {
 			id:window
 			width:item.width
 			height:item.height
