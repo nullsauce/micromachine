@@ -189,6 +189,7 @@ private:
 			int jump_y_distance = 13 + (offset * _line_height);
 			int jump_x_distance = 110+((_num_jumps++)*5);
 			_painter->setFont(_register_font);
+			_painter->setPen(QColor("#87d787"));
 			_painter->drawText(5, _line_height, labelText);
 			_painter->translate(100, 0);
 
@@ -206,7 +207,7 @@ private:
 			_painter->setFont(_xref_label);
 			_painter->setPen(Qt::gray);
 			_painter->drawText(50, jump_y_distance-2, QString("%1").arg(_addr, 8, 16, QChar('0')));
-			_painter->setPen(QColor("#87d787"));
+
 		}
 
 		void emit_begin_deref() override {

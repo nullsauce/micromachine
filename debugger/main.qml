@@ -31,6 +31,10 @@ ApplicationWindow {
 		memoryRegion: CPU.memoryRegions[1]
 	}
 
+	MemoryWindowCreator {
+		id:memoryWindowCreator
+	}
+
 	function zpad(n, width) {
 		n = n + '';
 		return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
@@ -94,6 +98,10 @@ ApplicationWindow {
 			text:"code"
 			onClicked: disasmWindowCreator.createInstance()
 		}
+		Button {
+			text:"memory"
+			onClicked: memoryWindowCreator.createInstance()
+		}
 	}
 
 	/*
@@ -111,49 +119,6 @@ ApplicationWindow {
 		anchors.bottom: parent.bottom
 	}*/
 
-	RowLayout {
-
-		anchors.right: parent.right
-		anchors.top: parent.top
-		anchors.bottom: registers.top
-
-		Item {
-			height:parent.height
-			Layout.maximumWidth : 900
-			Layout.alignment: Qt.AlignRight
-			Layout.fillWidth: true
-			Layout.fillHeight: true
-			id:memoryViewPanel
-			TabBar {
-				id:memoryRegionTab
-				anchors.top: parent.top
-				Repeater {
-					model:CPU.memoryRegions
-					TabButton {
-						width: Math.max(100, memoryViewPanel.width / CPU.memoryRegions.length)
-						text: name
-					}
-				}
-			}
-
-			StackLayout {
-				width:parent.width
-				anchors.top: memoryRegionTab.bottom
-				anchors.bottom: parent.bottom
-				currentIndex: memoryRegionTab.currentIndex
-				Repeater {
-					model:CPU.memoryRegions
-					Item {
-						anchors.fill: parent
-						Memoryview {
-							anchors.fill: parent
-							memoryRegion:modelData
-						}
-					}
-				}
-			}
-		}
-	}
 
 	Item {
 		id:registers
@@ -189,11 +154,17 @@ ApplicationWindow {
 						color:"#999"
 					}
 
+					UintDisplay {
+						color:"#ddd"
+						value: modelData.value
+						id:regText
+					}
+					/*
 					WordDisplay {
 						id:regText
 						text:hexValue
 						color:"#ddd"
-					}
+					}*/
 				}
 			}
 		}
