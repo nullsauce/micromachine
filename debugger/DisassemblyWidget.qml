@@ -105,13 +105,23 @@ Window {
 					disassemblyView.scrollDown()
 				}
 			}
-			onClicked: {
-				var listPoint = disassemblyView.mapFromItem(mouseArea,
-															mouse.x, mouse.y)
-				var address = disassemblyView.addressAtYPos(listPoint.y)
-				console.log("address", address)
-				CPU.breakpointRegistry.toggleBreakpoint(address)
+
+            function getAddressUnderMouse(mouse) {
+                var listPoint = disassemblyView.mapFromItem(mouseArea,
+                                                            mouse.x, mouse.y);
+                var address = disassemblyView.addressAtYPos(listPoint.y);
+                return address;
+            }
+
+            onDoubleClicked: {
+                var address = getAddressUnderMouse(mouse);
+                CPU.breakpointRegistry.createDestroyBreakpoint(address)
 			}
+
+            onClicked: {
+                var address = getAddressUnderMouse(mouse);
+                CPU.breakpointRegistry.toggleBreakpoint(address)
+            }
 		}
 	}
 
