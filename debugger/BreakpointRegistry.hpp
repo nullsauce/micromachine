@@ -103,6 +103,7 @@ public slots:
 	bool destroyBreakpoint(quint32 address) {
 		auto bkp = _breakpoints.find(address);
 		if(bkp != _breakpoints.end()) {
+			_iterable_list.removeAll(bkp->second.data());
 			_breakpoints.erase(bkp);
 			qWarning() << "breakpoint erased" << address;
 			emit breakpointListChanged();
