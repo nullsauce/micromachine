@@ -61,9 +61,21 @@ public slots:
 	}
 
 	bool toggleBreakpoint(quint32 address) {
-		bool newState = !shouldBreakAt(address);
-		setBreakPoint(address, newState);
-		return newState;
+		if(Breakpoint* breakpoint = findBreakpoint(address)) {
+			bool newState = !shouldBreakAt(address);
+			setBreakPoint(address, newState);
+			return newState;
+		}
+		return false;
+	}
+
+	bool createDestroyBreakpoint(quint32 address) {
+		if(Breakpoint* breakpoint = findBreakpoint(address)) {
+			destroyBreakpoint(address);
+		} else {
+			createBreakpoint(address);
+		}
+		return true;
 	}
 
 	bool shouldBreakAt(quint32 instructionAddr) {
@@ -75,8 +87,31 @@ public slots:
 		}
 	}
 
+	const Breakpoint* breakpointAt(quint32 instructionAddr) const {
+		auto bkp = _breakpoints.find(instructionAddr);
+		if(bkp != _breakpoints.end()) {
+			return bkp->second.data();
+		} else {
+			return nullptr;
+		}
+	}
+
 	QQmlListProperty<Breakpoint> breakpoints() {
 		return QQmlListProperty<Breakpoint>(this, _iterable_list);
+	}
+
+	bool destroyBreakpoint(quint32 address) {
+		auto bkp = _breakpoints.find(address);
+		if(bkp != _breakpoints.end()) {
+			_breakpoints.erase(bkp);
+			qWarning() << "breakpoint erased" << address;
+			emit breakpointListChanged();
+			emit breakpointsChanged();
+			return true;
+		} else {
+			qWarning() << "breakpoint not found at address" << address;
+		}
+		return false;
 	}
 
 signals:
@@ -93,8 +128,8 @@ private:
 		_iterable_list.append(newBreakpoint);
 		// forward changes event to breakpointsChanged
 		connect(newBreakpoint, &Breakpoint::enabledChanged, this, &BreakpointRegistry::breakpointsChanged);
-		emit breakpointsChanged();
 		emit breakpointListChanged();
+		emit breakpointsChanged();
 		return *newBreakpoint;
 	}
 
@@ -104,6 +139,15 @@ private:
 			return *it->second.data();
 		} else {
 			return createBreakpoint(address);
+		}
+	}
+
+	Breakpoint* findBreakpoint(uint32_t instructionAddr) {
+		auto bkp = _breakpoints.find(instructionAddr);
+		if(bkp != _breakpoints.end()) {
+			return bkp->second.data();
+		} else {
+			return nullptr;
 		}
 	}
 

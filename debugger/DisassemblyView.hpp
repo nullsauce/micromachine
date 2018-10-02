@@ -41,7 +41,8 @@ private:
 			, _name_font("Hack")
 			, _register_font(_name_font)
 			, _address_font(_name_font)
-			, _xref_label(_name_font) {
+			, _xref_label(_name_font)
+			, _xref_line_pen(QColor("#4c4c4c")){
 			_name_font.setPixelSize(18);
 			_register_font.setPixelSize(18);
 			_register_font.setBold(false);
@@ -59,18 +60,18 @@ private:
 		void drawVoid(uint32_t instruction_address) {
 			setAddress(instruction_address);
 			_painter->save();
-			drawBreakpointFlag(false);
+			drawBreakpointState(nullptr);
 			draw_invalid_address(_addr);
 			_painter->restore();
 		}
 
-		void drawInstruction(uint32_t instruction_address, instruction_pair instruction, bool isBreakpoint) {
+		void drawInstruction(uint32_t instruction_address, instruction_pair instruction, const Breakpoint* breakpoint) {
 			//_painter->fillRect(0,0, 500, _line_height, Qt::gray);
 			//_painter->drawRect(0,0, 500, _line_height);
 			// make up for baseline, so that text is vertically centered
 			setAddress(instruction_address);
 			_painter->save();
-			drawBreakpointFlag(isBreakpoint);
+			drawBreakpointState(breakpoint);
 			_painter->translate(0, -3);
 			draw_address(_addr);
 			dispatch_instruction(instruction);
@@ -97,12 +98,17 @@ private:
 		QFont _register_font;
 		QFont _address_font;
 		QFont _xref_label;
+		QPen _xref_line_pen;
 
 
-		void drawBreakpointFlag(bool enabled) {
-			if(enabled) {
+		void drawBreakpointState(const Breakpoint* breakpoint) {
+			if(breakpoint) {
 				_painter->setBrush(Qt::red);
 				_painter->drawEllipse(4,4,_line_height-8, _line_height-8);
+				if(!breakpoint->enabled()) {
+					_painter->setBrush(Qt::black);
+					_painter->drawEllipse(6,6,_line_height-12, _line_height-12);
+				}
 			}
 			_painter->translate(22, 0);
 		}
@@ -181,18 +187,25 @@ private:
 			QString labelText = QString("%1").arg(label_address, 8, 16, QChar('0'));
 			int offset = label_address - (int32_t)_addr - 2;
 			int jump_y_distance = 13 + (offset * _line_height);
-			int jump_x_distance = 100+((_num_jumps++)*5);
+			int jump_x_distance = 110+((_num_jumps++)*5);
 			_painter->setFont(_register_font);
 			_painter->drawText(5, _line_height, labelText);
-			_painter->translate(140, 0);
+			_painter->translate(100, 0);
 
-			_painter->setPen(QColor("#6c6c6c"));
-			_painter->drawLine(0, 13, jump_x_distance, 13);
-			_painter->drawLine(jump_x_distance, 13, jump_x_distance, jump_y_distance);
-			_painter->drawLine(jump_x_distance, jump_y_distance, 0, jump_y_distance);
+			QPolygon arrow;
+			arrow << QPoint(0, 13);
+			arrow << QPoint(jump_x_distance, 13);
+			arrow << QPoint(jump_x_distance, jump_y_distance);
+			arrow << QPoint(40, jump_y_distance);
+			arrow << QPoint(45, jump_y_distance-5);
+			arrow << QPoint(45, jump_y_distance+5);
+			arrow << QPoint(40, jump_y_distance);
+			_painter->setPen(_xref_line_pen);
+			_painter->drawPolyline(arrow);
+
 			_painter->setFont(_xref_label);
 			_painter->setPen(Qt::gray);
-			_painter->drawText(40, jump_y_distance-2, QString("%1").arg(_addr, 8, 16, QChar('0')));
+			_painter->drawText(50, jump_y_distance-2, QString("%1").arg(_addr, 8, 16, QChar('0')));
 			_painter->setPen(QColor("#87d787"));
 		}
 
@@ -312,12 +325,11 @@ public:
 				}
 			}
 
-
-			bool isBreakpoint = mBreakpointRegistry ? mBreakpointRegistry->shouldBreakAt(address) : false;
 			if(foundTracker) {
 				instructionPainter.drawHighlight(foundTracker);
 			}
-			instructionPainter.drawInstruction(address, instruction, isBreakpoint);
+			const Breakpoint* breakpoint = mBreakpointRegistry->breakpointAt(address);
+			instructionPainter.drawInstruction(address, instruction, breakpoint);
 			instructionPainter.next_line();
 			address += instruction.size();
 		}
@@ -351,8 +363,8 @@ public:
 			instructionPainter.prev_line();
 			if(prevInstruction(address, instruction)) {
 				address -= instruction.size();
-				bool isBreakpoint = mBreakpointRegistry ? mBreakpointRegistry->shouldBreakAt(address) : false;
-				instructionPainter.drawInstruction(address, instruction,isBreakpoint);
+				const Breakpoint* breakpoint = mBreakpointRegistry->breakpointAt(address);
+				instructionPainter.drawInstruction(address, instruction, breakpoint);
 			} else {
 				instructionPainter.drawVoid(address);
 				address -= 2;
@@ -373,8 +385,8 @@ public:
 			}
 			instruction_pair instruction;
 			if(instructionAtAddress(address, instruction)) {
-				bool isBreakpoint = mBreakpointRegistry ? mBreakpointRegistry->shouldBreakAt(address) : false;
-				instructionPainter.drawInstruction(address, instruction,isBreakpoint);
+				const Breakpoint* breakpoint = mBreakpointRegistry->breakpointAt(address);
+				instructionPainter.drawInstruction(address, instruction, breakpoint);
 				address += instruction.size();
 			} else {
 				instructionPainter.drawVoid(address);
