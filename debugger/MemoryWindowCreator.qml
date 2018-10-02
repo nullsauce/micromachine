@@ -2,9 +2,8 @@ import QtQuick 2.0
 import Fla 1.0
 Item {
 	id:item
-	width:250
-	height:400
-	property BreakpointRegistry breakpointRegistry
+	width:900
+	height:600
 
 	function createInstance() {
 		var posX = (appWindow.width / 2) -(item.width / 2);
@@ -14,11 +13,10 @@ Item {
 
 	Component {
 		id: component
-		BreakpointsWindow {
+		MemoryWindow {
 			id:window
 			width:item.width
 			height:item.height
-			breakpointRegistry: item.breakpointRegistry
 		}
 	}
 }
