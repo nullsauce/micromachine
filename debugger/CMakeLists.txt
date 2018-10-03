@@ -23,6 +23,8 @@ else()
 		AddressTracker.cpp
 		AddressTrackerList.hpp
 		AddressTrackerList.cpp
+		IntegerText.hpp
+		IntegerText.cpp
 		InstructionDetails.hpp
 		structured_disasm.hpp
 		BreakpointRegistry.hpp

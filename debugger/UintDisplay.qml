@@ -1,32 +1,21 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 import "Helper.js" as Helper
+import Fla 1.0
 
-RegularText {
-	property int value: 0
-	property int displayMode:1
-
-
-	property string hexRepresentation: Helper.hex32(value)
-	property string unsignedDecimalRepresentation: "%1".arg(value)
-
-	function getTextRepresentation() {
-		switch(displayMode) {
-		    case 0: return unsignedDecimalRepresentation;
-			case 1: return hexRepresentation;
-			default: return unsignedDecimalRepresentation;
-		}
-	}
+IntegerText {
+	width:contentWidth
+	height:contentHeight
 
 	function switchDisplayMode() {
-		displayMode = (displayMode + 1) % 2;
+		if(IntegerText.Hexadecimal === displayMode) {
+			displayMode = IntegerText.SignedDecimal;
+		} else if(IntegerText.SignedDecimal === displayMode) {
+			displayMode = IntegerText.UnsignedDecimal;
+		} else if(IntegerText.UnsignedDecimal === displayMode) {
+			displayMode = IntegerText.Hexadecimal;
+		}
 	}
-
-	height:contentHeight
-	font.family: "Hack"
-	font.styleName: "Regular"
-	wrapMode: Text.NoWrap
-	text: getTextRepresentation()
 
 	MouseArea {
 		id:mouseArea
@@ -34,12 +23,14 @@ RegularText {
 		anchors.fill: parent
 		acceptedButtons: Qt.RightButton
 		onClicked:switchDisplayMode()
+
 		CustomToolTip {
 			delay: 500
 			visible: mouseArea.containsMouse
-			text: "hex: %1\nuns: %2"
-			    .arg(hexRepresentation)
-			    .arg(unsignedDecimalRepresentation)
+			text: "hex: %1\nuns: %2\nsig: %3"
+				.arg(asHexString)
+				.arg(asUnsignedDecimalString)
+				.arg(asSignedDecimalString)
 		}
 	}
 

@@ -123,11 +123,13 @@ public:
 	}
 
 	Q_INVOKABLE bool step(int steps) {
+		_breakpoint_registry->markAllAsUnreached();
 		bool iterationCompleted = true;
 		for(int i = 0; i < steps; i++) {
 			_cpu.step();
 			word addr = _cpu.regs().get_pc();
 			if(_breakpoint_registry->shouldBreakAt(addr)) {
+				_breakpoint_registry->breakpointAt(addr)->setReached(true);
 				iterationCompleted = false;
 				break;
 			}

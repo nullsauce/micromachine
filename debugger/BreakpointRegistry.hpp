@@ -12,8 +12,21 @@ class Breakpoint : public QObject {
 	Q_PROPERTY(quint32 address MEMBER _address NOTIFY addressChanged)
 	Q_PROPERTY(QString addressHex READ addressHex NOTIFY addressChanged)
 	Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+	Q_PROPERTY(bool reached READ reached WRITE setReached NOTIFY reachedChanged)
 
 public:
+
+	bool reached() const {
+		return _reached;
+	}
+
+	void setReached(bool val) {
+		if(val != _reached) {
+			_reached = val;
+			emit reachedChanged();
+		}
+	}
+
 	void setEnabled(bool val) {
 		if(val != _enabled) {
 			_enabled = val;
@@ -32,6 +45,7 @@ public:
 	Breakpoint(uint32_t address = 0, QObject* parent = nullptr)
 		: QObject(parent)
 		, _enabled(true)
+		, _reached(false)
 		, _address(address){
 
 	}
@@ -39,9 +53,11 @@ public:
 signals:
 	void enabledChanged();
 	void addressChanged();
+	void reachedChanged();
 
 private:
 	bool _enabled;
+	bool _reached;
 	uint32_t _address;
 
 };
@@ -96,6 +112,15 @@ public slots:
 		}
 	}
 
+	Breakpoint* breakpointAt(quint32 instructionAddr) {
+		auto bkp = _breakpoints.find(instructionAddr);
+		if(bkp != _breakpoints.end()) {
+			return bkp->second.data();
+		} else {
+			return nullptr;
+		}
+	}
+
 	QQmlListProperty<Breakpoint> breakpoints() {
 		return QQmlListProperty<Breakpoint>(this, _iterable_list);
 	}
@@ -113,6 +138,12 @@ public slots:
 			qWarning() << "breakpoint not found at address" << address;
 		}
 		return false;
+	}
+
+	void markAllAsUnreached() {
+		for(Breakpoint* bkp : _iterable_list) {
+			bkp->setReached(false);
+		}
 	}
 
 signals:
