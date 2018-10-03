@@ -63,6 +63,43 @@ struct   bitslice /*: public integer_ref_holder<u_type>*/ {
 		return extract();
 	}
 
+	// Allow conversion to bool if length equals 1
+	template<size_t num_bits = len>
+	operator typename std::enable_if<num_bits == 1, bool>::type () const {
+		return extract();
+	}
+
+	// Allow conversion to uint8 if length is smaller or equal to 8
+	template<size_t num_bits = len>
+	operator typename std::enable_if<num_bits <= 8, uint8_t>::type () const {
+		return extract();
+	}
+
+	// Allow conversion to int8 if length is smaller or equal to 8
+	template<size_t num_bits = len>
+	operator typename std::enable_if<num_bits <= 8, int8_t>::type() const {
+		return extract();
+	}
+
+	// Allow conversion to uint16 if length is smaller or equal to 16
+	template<size_t num_bits = len>
+	operator typename std::enable_if<num_bits <= 16, uint16_t>::type() const {
+		return extract();
+	}
+
+	// Allow conversion to int16 if length is smaller or equal to 16
+	template<size_t num_bits = len>
+	operator typename std::enable_if<num_bits <= 16, int16_t>::type() const {
+		return extract();
+	}
+
+
+	/*
+	typename std::enable_if<len <= 8, void>::type
+	operator uint8_t() const {
+		return extract();
+	}*/
+
 	u_type extract() const {
 		return (_val.get() >> offset) & binops::make_mask<u_type>(len);
 	}
