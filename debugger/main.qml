@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.2
 import Fla 1.0
@@ -113,6 +113,30 @@ ApplicationWindow {
 		height:300
 	}
 
+	ScrollView {
+		id:scrollView
+		anchors.fill: parent
+		anchors.margins: 50
+		ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+		ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+
+		Text {
+			id:ioDataText
+			width:500
+			height:contentHeight
+			color:"white"
+			wrapMode: Text.WrapAnywhere
+			textFormat: Text.PlainText
+			font.family: "monospace"
+			maximumLineCount:10
+			Connections {
+				target: CPU
+				onIoData: {
+					ioDataText.text += String.fromCharCode(data);
+				}
+			}
+		}
+	}
 
 	/*
 	Rectangle {

@@ -73,8 +73,8 @@ make_program(
 	TARGET performance_test
 	CFLAGS "-O3"
 	LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/link.ld
-	C_SOURCES performance.c
-	ASM_SOURCES boot.s
+	C_SOURCES performance.c system/tinyprintf.h system/tinyprintf.c
+	ASM_SOURCES boot.s div.S lmul.S uldivmod.S
 )
 
 #[[
