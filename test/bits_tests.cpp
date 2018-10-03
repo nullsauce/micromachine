@@ -1,6 +1,8 @@
 
 #include "types.hpp"
+#include "framework/static_assert_exception.hpp"
 #include <gtest/gtest.h>
+#include <type_traits>
 
 TEST(BitsTestHalfWord, SameSliceHalf) {
 	halfword a = 0b0000001011111111;
@@ -97,15 +99,10 @@ TEST(BitsTestHalfWord, AssignFromTooLargeInteger) {
 	EXPECT_EQ(0b0000000011111110, a);
 }
 
-template<typename TSlice>
-static void clear_slice(TSlice& slice) {
-	slice = 0;
-}
-
 TEST(BitsTestHalfWord, PassRefToFunction) {
 	halfword a = 0b1111111111111111;
 	auto slice = a.bits<3, 12>();
-	clear_slice(slice);
+	slice = 0;
 	EXPECT_EQ(0b1000000000000111, a);
 }
 
@@ -121,4 +118,76 @@ TEST(BitsTestHalfWord, Cascade) {
 	EXPECT_EQ(0b1000001111000111, a);
 	slice1.bits<11, 1>() = 1;
 	EXPECT_EQ(0b1100001111000111, a);
+}
+
+TEST(BitsConversionTest, SingleBitWordConvertibleToBool) {
+	testing::assert_convertible<bitslice<0, 1, word>, bool>
+	    ("bitslice of length 1 should be convertible to bool");
+
+}
+
+TEST(BitsConversionTest, NotSingleBitWordNotConvertibleToBool) {
+	testing::assert_not_convertible<bitslice<0, 2, word>, bool>
+	    ("bitslice of length 2 should NOT be convertible to bool");
+
+}
+
+TEST(BitsConversionTest, NineBitsWordNotConvertibleToUint8) {
+	testing::assert_not_convertible<bitslice<0, 9, word>, uint8_t>
+	    ("bitslice of length 9 should NOT be convertible to uint8_t");
+
+}
+
+TEST(BitsConversionTest, EightBitsWordConvertibleToUint8) {
+	testing::assert_convertible<bitslice<0, 8, word>, uint8_t>
+	    ("bitslice of length 8 should be convertible to uint8_t");
+
+}
+
+TEST(BitsConversionTest, EightBitsWordConvertibleToUint16) {
+	testing::assert_convertible<bitslice<0, 8, word>, uint16_t>
+	    ("bitslice of length 8 should be convertible to uint16_t");
+
+}
+
+TEST(BitsConversionTest, EightBitsWordConvertibleToUint32) {
+	testing::assert_convertible<bitslice<0, 8, uint32_t>, uint32_t>
+	    ("bitslice of length 8 should be convertible to uint32_t");
+
+}
+
+TEST(BitsConversionTest, SixteenBitsWordNotConvertibleToUint8) {
+	testing::assert_not_convertible<bitslice<0, 16, word>, uint8_t>
+	    ("bitslice of length 16 should not be convertible to uint8_t");
+
+}
+
+TEST(BitsConversionTest, SixteenBitsWordConvertibleToUint16) {
+	testing::assert_convertible<bitslice<0, 16, word>, uint16_t>
+	    ("bitslice of length 16 should be convertible to uint16_t");
+
+}
+
+TEST(BitsConversionTest, SixteenBitsWordConvertibleToUint32) {
+	testing::assert_convertible<bitslice<0, 16, uint32_t>, uint32_t>
+	    ("bitslice of length 16 should be convertible to uint32_t");
+
+}
+
+TEST(BitsConversionTest, TwentyFourBitsWordNotConvertibleToUint8) {
+	testing::assert_not_convertible<bitslice<0, 24, word>, uint8_t>
+	    ("bitslice of length 24 should not be convertible to uint8_t");
+
+}
+
+TEST(BitsConversionTest, TwentyFourBitsWordNotConvertibleToUint16) {
+	testing::assert_not_convertible<bitslice<0, 24, word>, uint16_t>
+	    ("bitslice of length 24 should not be convertible to uint16_t");
+
+}
+
+TEST(BitsConversionTest, TwentyFourBitsWordConvertibleToUint32) {
+	testing::assert_convertible<bitslice<0, 16, uint32_t>, uint32_t>
+	    ("bitslice of length 8 should be convertible to uint32_t");
+
 }
