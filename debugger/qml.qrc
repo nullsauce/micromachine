@@ -27,5 +27,11 @@
         <file>Helper.js</file>
         <file>MemoryWindow.qml</file>
         <file>MemoryWindowCreator.qml</file>
+        <file>icons/cancel-circle.svg</file>
+        <file>icons/memory.svg</file>
+        <file>icons/pagebreak.svg</file>
+        <file>icons/plus.svg</file>
+        <file>Icon.qml</file>
+        <file>IconButton.qml</file>
     </qresource>
 </RCC>
