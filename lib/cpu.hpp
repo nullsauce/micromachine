@@ -5,10 +5,12 @@
 #ifndef MICROMACHINE_CPU_HPP
 #define MICROMACHINE_CPU_HPP
 
+
 #include "types.hpp"
 #include "instruction_pair.hpp"
 #include "registers/registers.hpp"
 #include "registers/apsr_reg.hpp"
+#include "registers/custom/generic_io_reg.hpp"
 #include "exec.hpp"
 #include "instructions.hpp"
 #include "exec.hpp"
@@ -44,6 +46,10 @@ public:
 		return _debug_instruction_counter;
 	}
 
+	void set_io_callback(generic_io_reg::callback_t callback) {
+		_io_reg_callback = callback;
+	}
+
 private:
 	void execute(const instruction_pair instr);
 
@@ -54,9 +60,11 @@ private:
 
 
 	exception_vector	_exception_vector;
+	generic_io_reg::callback_t _io_reg_callback;
 	registers 			_regs;
 	sphr2_reg 			_sphr2_reg;
 	sphr3_reg 			_sphr3_reg;
+	generic_io_reg		_generic_io_reg;
 	systick				_system_timer;
 	memory 				_mem;
 	bool				_break_signal;
@@ -67,6 +75,8 @@ private:
 	uint32_t _initial_sp;
 	uint32_t _initial_pc;
 	uint64_t _debug_instruction_counter;
+
+
 
 
 };

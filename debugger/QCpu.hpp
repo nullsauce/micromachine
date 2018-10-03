@@ -84,6 +84,11 @@ public:
 		for(int i = 0; i < 16; i++) {
 			_registers.append(new Register(this,reg_names_std[i]));
 		}
+
+		_cpu.set_io_callback([this](uint8_t op, uint8_t data) {
+			//fprintf(stderr, "IO: op:%02x data:%02x char:%c\n", op, data, data);
+			emit ioData(op, data);
+		});
 	}
 
 	BreakpointRegistry* breakpointRegistry() {
@@ -150,6 +155,7 @@ signals:
 	void changed();
 	void desiredInstructionCountChanged();
 	void memViewChanged();
+	void ioData(quint8 op, quint8 data);
 
 private:
 	void updateViewModels() {
