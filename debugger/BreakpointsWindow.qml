@@ -12,16 +12,24 @@ ToolWindow {
 		anchors.fill: parent
 		model: breakpointRegistry.breakpoints
 		delegate: Item {
-			height: 20
+			height: 30
 			anchors.left: parent.left
 			anchors.right: parent.right
 			Row {
-				anchors.fill: parent
+				id: infos
+				anchors.right: controls.left
+				anchors.left: parent.left
+				anchors.top: parent.top
+				anchors.bottom: parent.bottom
 				anchors.margins: 4
 				spacing: 14
+				Rectangle {
+					anchors.fill: parent
+					color: "#123b56"
+					visible: reached
+				}
 				UintDisplay {
 					value:address
-					color: "#6c6c6c";
 				}
 				CheckBox {
 					id:enabledCheckbox
@@ -29,9 +37,29 @@ ToolWindow {
 					checked: modelData.enabled
 				}
 			}
+
 			MouseArea {
+				id: lineMouseArea
 				anchors.fill: parent
+				hoverEnabled: true
 				onClicked: modelData.enabled = !modelData.enabled
+			}
+
+			Item {
+				id:controls
+				visible: lineMouseArea.containsMouse
+				width:60
+				anchors.right: parent.right
+				height: parent.height
+				IconButton {
+					source: "icons/cancel-circle.svg"
+					anchors.top: parent.top
+					anchors.bottom: parent.bottom
+					anchors.right: parent.right
+					anchors.margins: 2
+					width:height
+					onClicked: breakpointRegistry.destroyBreakpoint(modelData.address)
+				}
 			}
 		}
 	}

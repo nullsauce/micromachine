@@ -4,18 +4,14 @@ import QtQuick.Layouts 1.3
 import QtQuick.Window 2.2
 import Fla 1.0
 
+
 ApplicationWindow {
 	id:appWindow
 	visible: true
 	width: 1280
 	height: 720
 	title: qsTr("Hello World")
-	color:"#111"
-
-	Rectangle {
-		anchors.fill: parent
-		color: Qt.darker("#1d1d1d")
-	}
+	color: "#1d1d1d"
 
 	Component.onCompleted: disasmWindowCreator.createInstance()
 
@@ -44,25 +40,22 @@ ApplicationWindow {
 		return zpad(address.toString(16),8);
 	}
 
+
 	Timer {
 		id:clock
 		running: false
-		repeat: true
+		repeat: false
 		interval: 16
 		Component.onCompleted: {
 			CPU.reset();
 		}
 
 		onTriggered: {
-			if(false === CPU.step(1000)) {
-				// breakpoint reached
+			if(false === CPU.step(iterationSlider.value)) {
 				clock.stop();
+			} else {
+				clock.start();
 			}
-		}
-		onRunningChanged: {
-			//if(running) {
-
-			//}
 		}
 	}
 
@@ -102,7 +95,24 @@ ApplicationWindow {
 			text:"memory"
 			onClicked: memoryWindowCreator.createInstance()
 		}
+
+		Slider {
+			id: iterationSlider
+			from:1
+			to:600000
+			stepSize:10000
+			width:200
+		}
 	}
+
+	Icon {
+		anchors.centerIn: parent
+		source: "icons/memory.svg"
+		color: "#333"
+		width:300
+		height:300
+	}
+
 
 	/*
 	Rectangle {
@@ -155,7 +165,6 @@ ApplicationWindow {
 					}
 
 					UintDisplay {
-						color:"#ddd"
 						value: modelData.value
 						id:regText
 					}

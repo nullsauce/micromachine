@@ -9,6 +9,7 @@
 #include "AddressTracker.hpp"
 #include "AddressTrackerList.hpp"
 #include "InstructionDetails.hpp"
+#include "IntegerText.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
 	qmlRegisterType<AddressTracker>("Fla", 1, 0, "AddressTracker");
 	qmlRegisterUncreatableType<Breakpoint>("Fla", 1, 0, "Breakpoint", "cannot create");
 	qmlRegisterUncreatableType<BreakpointRegistry>("Fla", 1, 0, "BreakpointRegistry", "cannot create");
+	qmlRegisterType<IntegerText>("Fla", 1, 0, "IntegerText");
 	BreakpointRegistry breakpointRegistry;
 	QCpu processor;
 	processor.setBreakpointRegistry(&breakpointRegistry);
