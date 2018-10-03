@@ -13,6 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 cpu::cpu()
 	: _regs(_exception_manager)
+	, _generic_io_reg(std::ref(_io_reg_callback))
 	, _system_timer(_exception_vector)
 	, _mem(_exception_vector,{
 		std::make_pair(0xE000ED1C, std::ref(_sphr2_reg)),
@@ -21,6 +22,7 @@ cpu::cpu()
 		std::make_pair(0xE000E014, std::ref(_system_timer.reload_value_register())),
 		std::make_pair(0xE000E018, std::ref(_system_timer.current_value_register())),
 		std::make_pair(0xE000E01C, std::ref(_system_timer.calib_value_register())),
+		std::make_pair(0xE000EF90, std::ref(_generic_io_reg))
 	})
 	, _break_signal(false)
 	, _exec_dispatcher(_regs, _mem, _exception_vector, _break_signal)

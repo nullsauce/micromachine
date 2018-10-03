@@ -23,6 +23,7 @@ set(SRCS
     registers/system_control/sphr2.hpp
     registers/system_control/sphr3.hpp
     registers/system_control/systick.hpp
+    registers/custom/generic_io_reg.hpp
     memory.hpp
     cpu.hpp
     exception_vector.hpp
