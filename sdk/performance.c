@@ -8,6 +8,7 @@ and/or distributed without the express permission of Flavio Roth.
 */
 #include <stdint.h>
 #include <stddef.h>
+#include "system/tinyprintf.h"
 extern char _heap_start;
 
 #define NVIC_ST_CTRL_R          (*((volatile unsigned long *)0xE000E010))
@@ -19,6 +20,28 @@ extern char _heap_start;
 #define NVIC_ST_CTRL_ENABLE     0x00000001  // Counter mode
 #define NVIC_ST_RELOAD_M        0x00FFFFFF  // Counter load value
 
+#define IO_REG          		(*((volatile unsigned long *)0xE000EF90))
+#define IO_CALL_OUT_CHAR		0
+
+void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
+	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
+}
+
+void putc(char c) {
+	io_call(IO_CALL_OUT_CHAR, c, 0, 0);
+}
+
+void printf_putc(void* ptr, char c) {
+	putc(c);
+}
+
+void puts(char* str) {
+	while(*str) {
+		io_call(IO_CALL_OUT_CHAR, *(str++), 0, 0);
+	}
+}
+
+const char* hex = "0123456789abcdef";
 
 // Initialize SysTick with busy wait running at bus clock.
 void SysTick_Init(void){
@@ -43,7 +66,10 @@ void ISR _isr_svcall() {};
 void ISR _isr_pendsv() {};
 void ISR _isr_systick() {
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
-	heap[16] = heap[16]+1;
+	heap[16]++;
+	uint8_t byte = heap[16] & 0xff;
+	char a = hex[(byte >> 0) & 0xf];
+	printf("Hello World %08x\n", heap[16]);
 };
 void ISR _isr_external_interruput() {};
 
@@ -76,6 +102,7 @@ int fib(int n){
 }
 
 void entry() {
+	init_printf(NULL, printf_putc);
 	SysTick_Init();
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
 	//for(uint32_t i = 0; i < 1024*100; i++) {
