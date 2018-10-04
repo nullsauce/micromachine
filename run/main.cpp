@@ -1,6 +1,7 @@
 
 
 #include <chrono>
+#include <unistd.h>
 #include "cpu.hpp"
 
 int main(int argc, const char** argv) {
@@ -12,7 +13,9 @@ int main(int argc, const char** argv) {
 
 	cpu c;
 	c.load_elf(argv[1]);
-
+	c.set_io_callback([](uint8_t op, uint8_t data){
+		write(STDOUT_FILENO, &data, 1);
+	});
 
 	c.reset();
 	auto start = std::chrono::steady_clock::now();
