@@ -8,7 +8,7 @@ and/or distributed without the express permission of Flavio Roth.
 */
 #include <stdint.h>
 #include <stddef.h>
-#include "system/tinyprintf.h"
+#include <tinyprintf.h>
 extern char _heap_start;
 
 #define NVIC_ST_CTRL_R          (*((volatile unsigned long *)0xE000E010))
