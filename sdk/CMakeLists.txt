@@ -1,3 +1,6 @@
+
+project(micromachine-sdk)
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_BINARY_DIR}/micromachine.toolchain")
 cmake_minimum_required(VERSION 3.2)
 
 function(add_micromachine_executable)
