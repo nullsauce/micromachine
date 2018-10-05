@@ -6,29 +6,24 @@
 and/or distributed without the express permission of Flavio Roth.
 
 */
+
+#include <interrupt_handlers.h>
+#include <instructions.h>
+#include <systick.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <tinyprintf.h>
+
 extern char _heap_start;
 
-#define NVIC_ST_CTRL_R          (*((volatile unsigned long *)0xE000E010))
-#define NVIC_ST_RELOAD_R        (*((volatile unsigned long *)0xE000E014))
-#define NVIC_ST_CURRENT_R       (*((volatile unsigned long *)0xE000E018))
-#define NVIC_ST_CTRL_COUNT      0x00010000  // Count flag
-#define NVIC_ST_CTRL_CLK_SRC    0x00000004  // Clock Source
-#define NVIC_ST_CTRL_INTEN      0x00000002  // Interrupt enable
-#define NVIC_ST_CTRL_ENABLE     0x00000001  // Counter mode
-#define NVIC_ST_RELOAD_M        0x00FFFFFF  // Counter load value
 
-#define IO_REG          		(*((volatile unsigned long *)0xE000EF90))
-#define IO_CALL_OUT_CHAR		0
 
 void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
 	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
 }
 
 void putc(char c) {
-	io_call(IO_CALL_OUT_CHAR, c, 0, 0);
+	io_call(0, c, 0, 0);
 }
 
 void printf_putc(void* ptr, char c) {
@@ -37,14 +32,14 @@ void printf_putc(void* ptr, char c) {
 
 void puts(char* str) {
 	while(*str) {
-		io_call(IO_CALL_OUT_CHAR, *(str++), 0, 0);
+		io_call(0, *(str++), 0, 0);
 	}
 }
 
 const char* hex = "0123456789abcdef";
 
 // Initialize SysTick with busy wait running at bus clock.
-void SysTick_Init(void){
+void init_systick(void){
   NVIC_ST_CTRL_R = 0;                   // disable SysTick during setup
   NVIC_ST_RELOAD_R = 1000000;  			// reload value
   NVIC_ST_CURRENT_R = 0;                // any write to current clears it
@@ -52,26 +47,38 @@ void SysTick_Init(void){
   NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE + NVIC_ST_CTRL_CLK_SRC;
 }
 
-#define BREAKPOINT(code) __asm__ __volatile__ ("bkpt %0" : : "I" (code) )
-#define SVC(code) __asm__ __volatile__ ("svc %0" : : "I" (code) )
-#define ISR __attribute__((weak, interrupt("IRQ")))
-void _isr_empty() {};
-void ISR _isr_nmi() {};
-void ISR _isr_hardfault() {
+
+//#define ISR __attribute__((weak, interrupt("IRQ")))
+
+void entry();
+
+INTERRUPT_USER_OVERRIDE(_isr_hardfault)
+void _user_isr_hardfault(void) {
 	// 1) peek the return addres from the stack into r0
 	register uint32_t* stack asm("sp");
-	BREAKPOINT(0x42);
+	breakpoint(0x42);
 };
-void ISR _isr_svcall() {};
-void ISR _isr_pendsv() {};
-void ISR _isr_systick() {
+
+INTERRUPT_USER_OVERRIDE(_isr_systick)
+void _user_isr_systick() {
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
 	heap[16]++;
 	uint8_t byte = heap[16] & 0xff;
 	char a = hex[(byte >> 0) & 0xf];
 	printf("Hello World %08x\n", heap[16]);
 };
-void ISR _isr_external_interruput() {};
+
+INTERRUPT_USER_OVERRIDE(_isr_reset)
+void _user_isr_reset() {
+	// zero bss
+	extern uint32_t* __bss_start__;
+	extern uint32_t* __bss_end__;
+	for (uint8_t* dst = (uint8_t*)__bss_start__; dst < (uint8_t*)__bss_end__; dst++) {
+		*dst = 0;
+	}
+	entry();
+}
+
 
 static uint32_t z1 = 0x2f312e94;
 static uint32_t z2 = 0xfebf9a50;
@@ -103,7 +110,7 @@ int fib(int n){
 
 void entry() {
 	init_printf(NULL, printf_putc);
-	SysTick_Init();
+	init_systick();
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
 	//for(uint32_t i = 0; i < 1024*100; i++) {
 	while(1) {
@@ -111,16 +118,7 @@ void entry() {
 		int f = fib(rand() % 16);
 		(*target) = f; //;
 	}
-	BREAKPOINT(0);
+	breakpoint(0);
 }
 
 
-void _isr_reset() {
-	// zero bss
-	extern uint32_t* __bss_start__;
-	extern uint32_t* __bss_end__;
-	for (uint8_t* dst = (uint8_t*)__bss_start__; dst < (uint8_t*)__bss_end__; dst++) {
-		*dst = 0;
-	}
-	entry();
-}
