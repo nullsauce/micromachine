@@ -26,6 +26,10 @@ function(generate_dissasembly)
 	set_target_properties(${OUTPUT_TARGET_NAME} PROPERTIES OUTFILE "${OUTPUT_FILE}")
 endfunction()
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 add_subdirectory(runtime-abi)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/system/include)
 add_subdirectory(system)

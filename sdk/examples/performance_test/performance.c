@@ -13,9 +13,9 @@ and/or distributed without the express permission of Flavio Roth.
 #include <stdint.h>
 #include <stddef.h>
 #include <tinyprintf.h>
+#include <entrypoint.h>
 
 extern char _heap_start;
-
 
 
 void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
@@ -47,37 +47,13 @@ void init_systick(void){
   NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE + NVIC_ST_CTRL_CLK_SRC;
 }
 
-
-//#define ISR __attribute__((weak, interrupt("IRQ")))
-
-void entry();
-
-INTERRUPT_USER_OVERRIDE(_isr_hardfault)
-void _user_isr_hardfault(void) {
-	// 1) peek the return addres from the stack into r0
-	register uint32_t* stack asm("sp");
-	breakpoint(0x42);
-};
-
-INTERRUPT_USER_OVERRIDE(_isr_systick)
-void _user_isr_systick() {
+void _isr_systick() {
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
 	heap[16]++;
 	uint8_t byte = heap[16] & 0xff;
 	char a = hex[(byte >> 0) & 0xf];
 	printf("Hello World %08x\n", heap[16]);
 };
-
-INTERRUPT_USER_OVERRIDE(_isr_reset)
-void _user_isr_reset() {
-	// zero bss
-	extern uint32_t* __bss_start__;
-	extern uint32_t* __bss_end__;
-	for (uint8_t* dst = (uint8_t*)__bss_start__; dst < (uint8_t*)__bss_end__; dst++) {
-		*dst = 0;
-	}
-	entry();
-}
 
 
 static uint32_t z1 = 0x2f312e94;
@@ -108,7 +84,7 @@ int fib(int n){
 	}
 }
 
-void entry() {
+void main() {
 	init_printf(NULL, printf_putc);
 	init_systick();
 	volatile uint32_t* heap = (uint32_t*)&_heap_start;
