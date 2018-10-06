@@ -131,6 +131,10 @@ public:
 		return read_unchecked<uint16_t>(address);
 	}
 
+	uint32_t read32_unchecked(uint32_t address) const {
+		return read_unchecked<uint32_t>(address);
+	}
+
 	uint8_t read8(uint32_t address) const {
 		return read<uint8_t>(address);
 	}
