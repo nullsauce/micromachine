@@ -27,7 +27,6 @@ cpu::cpu()
 	, _break_signal(false)
 	, _exec_dispatcher(_regs, _mem, _exception_vector, _break_signal)
 	, _exception_manager(_regs, _mem, _exception_vector)
-	, _initial_sp(0)
 	, _initial_pc(0)
 	, _debug_instruction_counter(0)
 
@@ -93,12 +92,6 @@ bool cpu::load_elf(const std::string &path)
 			}
 
 			_mem.map(data, section->get_address(), section->get_size(), section->get_name());
-
-			if(0 == section->get_name().compare(".stack")) {
-				uint32_t sp = section->get_address() + section->get_size() - 1;
-				//fprintf(stderr, "SP will be set to %08X\n", sp);
-				_initial_sp = sp;
-			}
 		}
 	}
 
@@ -112,12 +105,14 @@ void cpu::execute(const instruction_pair instr)
 
 void cpu::reset() {
 
+	uint32_t initial_sp_main = _mem.read32_unchecked(0U) & 0xFFFFFFFC;
+
 	_break_signal = false;
 	_exception_vector.reset();
 	_exception_manager.reset();
 	_regs.reset();
 	_regs.app_status_register().reset();
-	_regs.set_sp(_initial_sp);
+	_regs.set_sp(initial_sp_main);
 	_regs.set_pc(_initial_pc);
 	_system_timer.reset();
 	_sphr2_reg.reset();
@@ -133,6 +128,7 @@ void cpu::reset() {
 	word reset_handler = _mem.read32(4);
 	fprintf(stderr, "reset handler : %08x\n", reset_handler);
 	_regs.branch_link_interworking(reset_handler);*/
+
 
 	/*
 	SP_main = MemA[vectortable,4] & 0xFFFFFFFC;
