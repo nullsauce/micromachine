@@ -9,6 +9,7 @@ bool is_wide_thumb_encoding(const halfword& instruction) {
 	       0b00 !=  instruction.uint(11, 2);
 }
 
+// TODO: make natively 32 bits
 struct instruction_pair {
 	instruction_pair(halfword a, halfword b)
 	    : first(a)
@@ -19,6 +20,10 @@ struct instruction_pair {
 	instruction_pair()
 	    : first(0)
 	    , second(0) {}
+
+	instruction_pair(word word)
+	    : first(word.bits<16,16>())
+	    , second(word.bits<0,16>()) {}
 
 
 	bool is_wide() const {
