@@ -154,14 +154,7 @@ void cpu::reset() {
 }
 
 instruction_pair cpu::fetch_instruction(word address) const {
-	bool ok[2] = {false,false};
-	halfword first_instr = _mem.read16(address, ok[0]);
-	halfword second_instr = _mem.read16(address + sizeof(halfword), ok[1]); // always prefetch
-	if(ok[0] && ok[1]) {
-		return instruction_pair(first_instr, second_instr);
-	} else {
-		return instruction_pair(0,0);
-	}
+	return instruction_pair(_mem.read32_unchecked(address));
 }
 
 // used for debug purposes only
