@@ -99,6 +99,20 @@ public:
 		_breakpoint_registry = registry;
 	}
 
+	QQmlListProperty<QMemRegion> memoryRegions() {
+		return QQmlListProperty<QMemRegion>(this, _memory_regions);
+	}
+
+	QQmlListProperty<Register> regs() {
+		return QQmlListProperty<Register>(this, _registers);
+	}
+
+	quint32 currentPC() const {
+		return _cpu.regs().get_pc();
+	}
+
+public slots:
+
 	bool loadElf(const QString& file) {
 		qDebug() << "Loading ELF file" << file;
 		_cpu.load_elf(file.toStdString());
@@ -115,19 +129,7 @@ public:
 		reset();
 	}
 
-	QQmlListProperty<QMemRegion> memoryRegions() {
-		return QQmlListProperty<QMemRegion>(this, _memory_regions);
-	}
-
-	QQmlListProperty<Register> regs() {
-		return QQmlListProperty<Register>(this, _registers);
-	}
-
-	quint32 currentPC() const {
-		return _cpu.regs().get_pc();
-	}
-
-	Q_INVOKABLE bool step(int steps) {
+	bool step(int steps) {
 		_breakpoint_registry->markAllAsUnreached();
 		bool iterationCompleted = true;
 		for(int i = 0; i < steps; i++) {
@@ -143,10 +145,11 @@ public:
 		return iterationCompleted;
 	}
 
-	Q_INVOKABLE void reset() {
+	void reset() {
 		_cpu.reset();
 		updateViewModels();
 	}
+
 
 signals:
 	void regsChanged();
