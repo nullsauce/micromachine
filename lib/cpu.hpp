@@ -72,7 +72,6 @@ private:
 	exception_manager 	_exception_manager;
 
 	// TODO: this is not needed here
-	uint32_t _initial_sp;
 	uint32_t _initial_pc;
 	uint64_t _debug_instruction_counter;
 
