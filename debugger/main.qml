@@ -2,6 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.2
+import QtQuick.Dialogs 1.2
 import Fla 1.0
 
 
@@ -12,9 +13,6 @@ ApplicationWindow {
 	height: 720
 	title: qsTr("Hello World")
 	color: "#1d1d1d"
-
-	Component.onCompleted: disasmWindowCreator.createInstance()
-
 
 	BreakpointsWindowCreator {
 		id:breakpointsWindowCreator
@@ -29,6 +27,16 @@ ApplicationWindow {
 
 	MemoryWindowCreator {
 		id:memoryWindowCreator
+	}
+
+	FileDialog {
+		id: openElfFileDialog
+		title: "Select ELF file"
+
+		selectMultiple: false
+		selectFolder: false
+		nameFilters: ["All files (*)" ]
+		onAccepted: CPU.loadElf(fileUrl)
 	}
 
 	function zpad(n, width) {
@@ -73,6 +81,11 @@ ApplicationWindow {
 				}
 			}
 		}
+		Button {
+			text:"open"
+			onClicked: openElfFileDialog.open()
+		}
+
 		Button {
 			text:"step"
 			onClicked: {
