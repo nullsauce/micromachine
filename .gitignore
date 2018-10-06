@@ -2,6 +2,8 @@
 !*/codeStyleSettings.xml
 
 cmake-build*/
+local/*
+build-qt*/
 
 *.elf
 *.bin
