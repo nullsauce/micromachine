@@ -22,8 +22,8 @@ struct instruction_pair {
 	    , second(0) {}
 
 	instruction_pair(word word)
-	    : first(word.bits<16,16>())
-	    , second(word.bits<0,16>()) {}
+	    : first(word.bits<0,16>())
+	    , second(word.bits<16,16>()) {}
 
 
 	bool is_wide() const {
