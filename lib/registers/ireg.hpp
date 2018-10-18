@@ -20,8 +20,8 @@ public:
 
 private:
 
-	virtual void set(word word) = 0;
-	virtual word get() const = 0;
+	virtual void set(uint32_t word) = 0;
+	virtual uint32_t get() const = 0;
 
 
 };

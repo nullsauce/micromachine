@@ -138,19 +138,19 @@ namespace alu {
 		return ror_c(value, offset, false);
 	}
 
-	static inline word add_with_carry(
-			const word& a,
-			const word& b,
+	static inline uint32_t add_with_carry(
+			const uint32_t& a,
+			const uint32_t& b,
 			const bool& carry_in,
 			bool& carry_out,
 			bool& overflow_out) {
 
 		const uint64_t bigval = (uint64_t)a + (uint64_t)b + (uint64_t)carry_in;
-		const word lower32bits = binops::make_mask<word>(binops::binsize<word>());
-		const word res = (word)(bigval & lower32bits);
+		const uint32_t lower32bits = binops::make_mask<uint32_t>(binops::binsize<uint32_t>());
+		const uint32_t res = (uint32_t)(bigval & lower32bits);
 
-		const word ab = a ^ b;
-		const word ares = a ^ res;
+		const uint32_t ab = a ^ b;
+		const uint32_t ares = a ^ res;
 
 		carry_out = (bigval >> 32) & 1U;
 
@@ -160,9 +160,9 @@ namespace alu {
 		return res;
 	}
 
-	static inline word add_with_carry(
-			const word& a,
-			const word& b,
+	static inline uint32_t add_with_carry(
+			const uint32_t& a,
+			const uint32_t& b,
 			const bool& carry_in) {
 		bool ignored_carry;
 		bool ignored_overflow;

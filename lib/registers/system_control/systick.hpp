@@ -56,11 +56,11 @@ public:
 private:
 	static constexpr uint32_t _mask = (0b1U << 16) | 0b111;
 
-	void set(word word) override {
+	void set(uint32_t word) override {
 		_word = word & _mask;
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return _word & _mask;
 	}
 };
@@ -69,11 +69,11 @@ class systick_reload_value_reg : public word_reg {
 public:
 	using word_reg::operator=;
 private:
-	void set(word word) override {
+	void set(uint32_t word) override {
 		bits<0,24>::of(_word) = word;
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return bits<0,24>::of(_word);
 	}
 };
@@ -86,7 +86,7 @@ public:
 		, _control_reg(control_reg) {
 	}
 	// this setter does NOT clear the register
-	void set_internal(word word) {
+	void set_internal(uint32_t word) {
 		bits<0,24>::of(_word) = word;
 	}
 
@@ -95,18 +95,18 @@ public:
 	}
 
 private:
-	void set(word word) override {
+	void set(uint32_t word) override {
 		// Writing to SYST_CVR clears both the register and the COUNTFLAG status bit to zero
 		bits<0,24>::of(_word).clear();
 		_control_reg.set_count_flag(false);
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return bits<0,24>::of(_word);
 	}
 
 protected:
-	word _word;
+	uint32_t _word;
 	systick_control_reg& _control_reg;
 };
 
@@ -120,7 +120,7 @@ public:
 	using skew_bit = bits<SKEW_BIT>;
 	using noref_bit = bits<NOREF_BIT>;
 
-	word tenms() const {
+	uint32_t tenms() const {
 		return self<tenms_bits>();
 	}
 
@@ -147,11 +147,11 @@ public:
 private:
 	static constexpr uint32_t _mask = binops::make_mask<24>() | (0b11U << 30);
 
-	void set(word word) override {
+	void set(uint32_t word) override {
 		_word = word & _mask;
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return _word & _mask;
 	}
 };

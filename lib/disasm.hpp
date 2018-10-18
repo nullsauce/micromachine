@@ -14,7 +14,7 @@ class disasm : public dispatcher {
 
 public:
 
-	static std::string disassemble_instruction(const instruction_pair instr, word address) {
+	static std::string disassemble_instruction(const instruction_pair instr, uint32_t address) {
 		disasm d(address, DISASM_FMT_HEX);
 		d.dispatch_instruction(instr);
 		return d.instruction_string;
@@ -29,7 +29,7 @@ private:
 	}
 
 	std::string instruction_string;
-	word _addr;
+	uint32_t _addr;
 	const uint32_t format_options;
 
 	void write(const std::string& str) {
@@ -140,7 +140,7 @@ private:
 		return special_register((special_reg_instr::SpecialRegister)val);
 	}
 
-	void invalid_instruction(const halfword instr) override {
+	void invalid_instruction(const uint16_t instr) override {
 		format("<UNDEFINED> instruction: 0x%04x", (uint16_t)instr);
 	}
 

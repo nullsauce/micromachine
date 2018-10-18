@@ -31,8 +31,8 @@ public:
 	cpu();
 
 	void reset();
-	instruction_pair fetch_instruction(word address) const;
-	instruction_pair fetch_instruction_debug(word address) const;
+	instruction_pair fetch_instruction(uint32_t address) const;
+	instruction_pair fetch_instruction_debug(uint32_t address) const;
 	bool step();
 	const exception_vector& exceptions() const;
 	memory& mem();

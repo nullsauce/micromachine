@@ -9,23 +9,23 @@ public:
 	using ireg::operator=;
 	using pr11_bits = bits<30, 2>;
 
-	word pri11() const {
+	uint32_t pri11() const {
 		return self<pr11_bits>();
 	}
 
 private:
 	static constexpr uint32_t _mask = (0b11 << 30);
 
-	void set(word word) override {
+	void set(uint32_t word) override {
 		_word = word & _mask;
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return _word & _mask;
 	}
 
 protected:
-	word _word;
+	uint32_t _word;
 };
 
 #endif //MICROMACHINE_EMU_SPHR2_HPP

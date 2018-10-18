@@ -75,7 +75,7 @@ private:
 		return special_register(static_cast<special_reg_instr::SpecialRegister>(val));
 	}
 
-	void invalid_instruction(const halfword instr) override {
+	void invalid_instruction(const uint16_t instr) override {
 		//format("<UNDEFINED> instruction: 0x%04x", (uint16_t)instr);
 		emit_name("UNDEFINED");
 		emit_immediate(instr);

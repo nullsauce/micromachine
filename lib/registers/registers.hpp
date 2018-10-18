@@ -43,7 +43,7 @@ struct registers {
 		_execution_status_register.set_thumb_bit(1);
 	}
 
-	word get(reg_idx i) const {
+	uint32_t get(reg_idx i) const {
 	#ifdef USE_INDIRECT_REG_ACCESS
 		return *_registers[i];
 	#else
@@ -63,7 +63,7 @@ struct registers {
 	#endif
 	}
 
-	void set(reg_idx i, word val) {
+	void set(reg_idx i, uint32_t val) {
 	#ifdef USE_INDIRECT_REG_ACCESS
 		(*_registers[i]) = val;
 	#else
@@ -82,39 +82,39 @@ struct registers {
 	#endif
 	}
 
-	void branch_interworking(word address) {
+	void branch_interworking(uint32_t address) {
 		_pc.branch_interworking(address);
 	}
 
-	void branch_link_interworking(word address) {
+	void branch_link_interworking(uint32_t address) {
 		_pc.branch_link_interworking(address);
 	}
 
-	void branch_alu(word address) {
+	void branch_alu(uint32_t address) {
 		_pc.branch(address);
 	}
 
-	word get_sp() const {
+	uint32_t get_sp() const {
 		return get(SP);
 	}
 
-	void set_sp(word val) {
+	void set_sp(uint32_t val) {
 		set(SP, val);
 	}
 
-	word get_lr() const {
+	uint32_t get_lr() const {
 		return get(LR);
 	}
 
-	void set_lr(word val) {
+	void set_lr(uint32_t val) {
 		set(LR, val);
 	}
 
-	word get_pc() const {
+	uint32_t get_pc() const {
 		return get(PC);
 	}
 
-	void set_pc(word val) {
+	void set_pc(uint32_t val) {
 		set(PC, val);
 	}
 
@@ -181,19 +181,19 @@ struct registers {
 		return _execution_status_register;
 	}
 
-	word& primask_register() {
+	uint32_t& primask_register() {
 		return _primask_register;
 	}
 
-	const word& primask_register() const {
+	const uint32_t& primask_register() const {
 		return _primask_register;
 	}
 
-	word& xpsr_register() {
+	uint32_t& xpsr_register() {
 		return _xpsr_register;
 	}
 
-	const word& xpsr_register() const {
+	const uint32_t& xpsr_register() const {
 		return _xpsr_register;
 	}
 
@@ -202,11 +202,11 @@ private:
 	standard_reg 	_gen_pupose_registers[13];
 	control_reg 	_control_register;
 	exec_mode_reg 	_exec_mode_register;
-	word 			_xpsr_register;
+	uint32_t 			_xpsr_register;
 	apsr_reg 		_app_status_register;
 	ipsr_reg 		_interrupt_status_register;
 	epsr_reg		_execution_status_register;
-	word 			_primask_register;
+	uint32_t 			_primask_register;
 	sp_reg 			_sp;
 	standard_reg 	_lr;
 	pc_reg 			_pc;
