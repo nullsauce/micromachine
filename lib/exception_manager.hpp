@@ -25,7 +25,7 @@ public:
 	void exception_return(uint32_t ret_address) override ;
 	void reset();
 
-	void process_pending_exception(word current_addr, instruction_pair instruction, uint32_t next_instruction_address) {
+	void process_pending_exception(uint32_t current_addr, instruction_pair instruction, uint32_t next_instruction_address) {
 		// Check if this pending exception has priority over the current priority of the
 		// instruction stream.
 		// Lower priority value means higher priority.

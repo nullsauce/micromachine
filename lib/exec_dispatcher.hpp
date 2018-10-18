@@ -29,7 +29,7 @@ private:
 	memory& _mem;
 	bool& _break_signal;
 
-	void invalid_instruction(const halfword instr) override {
+	void invalid_instruction(const uint16_t instr) override {
 		(void)instr;
 		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	}

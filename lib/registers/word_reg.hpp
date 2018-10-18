@@ -17,14 +17,13 @@ and/or distributed without the express permission of Flavio Roth.
 class word_reg : public ireg {
 public:
 	using ireg::operator=;
-	using ireg::operator word;
 	using ireg::operator uint32_t;
 	word_reg() : _word(0) {}
 	void reset() override {
 		set(0);
 	}
 private:
-	virtual void set(word word) = 0;
+	virtual void set(uint32_t word) = 0;
 protected:
 	template<typename bits_t>
 	auto self() {
@@ -35,7 +34,7 @@ protected:
 	auto self() const {
 		return bits_t::of(_word);
 	}
-	word _word;
+	uint32_t _word;
 };
 
 

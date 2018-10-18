@@ -19,7 +19,7 @@ static void unpredictable() {
 
 
 static void exec(const lsl_imm instruction, registers& regs, apsr_reg& status_reg) {
-	word rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm);
 	const bool carry = alu::lsl_c(rm, instruction.shift_offset(), status_reg.carry_flag());
 	status_reg.apply_neg(rm);
 	status_reg.apply_zero(rm);
@@ -28,7 +28,7 @@ static void exec(const lsl_imm instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const lsr_imm instruction, registers& regs, apsr_reg& status_reg) {
-	word rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm);
 	uint32_t applied_offset = instruction.shift_offset();
 	const bool carry = alu::lsr_c(rm, applied_offset, status_reg.carry_flag());
 	status_reg.apply_neg(rm);
@@ -38,7 +38,7 @@ static void exec(const lsr_imm instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const asr_imm instruction, registers& regs, apsr_reg& status_reg) {
-	word rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm);
 	uint32_t applied_offset = instruction.shift_offset();
 	const bool carry = alu::asr_c(rm, applied_offset, status_reg.carry_flag());
 	status_reg.apply_neg(rm);
@@ -49,13 +49,13 @@ static void exec(const asr_imm instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const add_reg instruction, registers& regs, apsr_reg& status_reg) {
-	word rm = regs.get(instruction.rm);
-	word rn = regs.get(instruction.rn);
+	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rn = regs.get(instruction.rn);
 	// left shift of zero is omitted here
 
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, rm, false, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, rm, false, carry, overflow);
 
 	regs.set(instruction.rd, result);
 
@@ -66,13 +66,13 @@ static void exec(const add_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const subs_reg instruction, registers& regs, apsr_reg& status_reg) {
-	word rm = regs.get(instruction.rm);
-	word rn = regs.get(instruction.rn);
+	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rn = regs.get(instruction.rn);
 	// left shift of zero is omitted here
 
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
 
 	regs.set(instruction.rd, result);
 
@@ -85,12 +85,12 @@ static void exec(const subs_reg instruction, registers& regs, apsr_reg& status_r
 
 static void exec(const add_imm instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rn 	= regs.get(instruction.rn);
-	word imm32 	= instruction.imm3;
+	uint32_t rn 	= regs.get(instruction.rn);
+	uint32_t imm32 	= instruction.imm3;
 
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, imm32, false, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, imm32, false, carry, overflow);
 
 	regs.set(instruction.rd, result);
 
@@ -102,12 +102,12 @@ static void exec(const add_imm instruction, registers& regs, apsr_reg& status_re
 
 
 static void exec(const subs_imm instruction, registers& regs, apsr_reg& status_reg) {
-	word rn 	= regs.get(instruction.rn);
-	word imm32 	= instruction.imm3;
+	uint32_t rn 	= regs.get(instruction.rn);
+	uint32_t imm32 	= instruction.imm3;
 
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, ~imm32, true, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, ~imm32, true, carry, overflow);
 
 	regs.set(instruction.rd, result);
 
@@ -118,14 +118,14 @@ static void exec(const subs_imm instruction, registers& regs, apsr_reg& status_r
 }
 
 static void exec(const mov_imm instruction, registers& regs, apsr_reg& status_reg) {
-	word imm32 	= instruction.imm8;
+	uint32_t imm32 	= instruction.imm8;
 	regs.set(instruction.rd, instruction.imm8);
 	status_reg.apply_zero(imm32);
 	status_reg.apply_neg(imm32);
 }
 
 static void exec(const movs instruction, registers& regs, apsr_reg& status_reg) {
-	word val = regs.get(instruction.rm);
+	uint32_t val = regs.get(instruction.rm);
 	regs.set(instruction.rd, val);
 	status_reg.apply_zero(val);
 	status_reg.apply_neg(val);
@@ -133,12 +133,12 @@ static void exec(const movs instruction, registers& regs, apsr_reg& status_reg) 
 
 static void exec(const cmp_imm instruction, const registers& regs, apsr_reg& status_reg) {
 	// like subtraction, but discard the result
-	word imm32 	= instruction.imm8;
-	word rn 	= regs.get(instruction.rn);
+	uint32_t imm32 	= instruction.imm8;
+	uint32_t rn 	= regs.get(instruction.rn);
 	bool carry = false;
 	bool overflow = false;
 
-	word result = alu::add_with_carry(rn, ~imm32, true, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, ~imm32, true, carry, overflow);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -148,12 +148,12 @@ static void exec(const cmp_imm instruction, const registers& regs, apsr_reg& sta
 
 static void exec(const add_imm_t2 instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rn 	= regs.get(instruction.rdn);
-	word imm32 	= instruction.imm8;
+	uint32_t rn 	= regs.get(instruction.rdn);
+	uint32_t imm32 	= instruction.imm8;
 
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, imm32, false, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, imm32, false, carry, overflow);
 
 	regs.set(instruction.rdn, result);
 
@@ -166,12 +166,12 @@ static void exec(const add_imm_t2 instruction, registers& regs, apsr_reg& status
 
 static void exec(const subs_imm8 instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rn 	= regs.get(instruction.rdn);
-	word imm32 	= instruction.imm8;
+	uint32_t rn 	= regs.get(instruction.rdn);
+	uint32_t imm32 	= instruction.imm8;
 
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, ~imm32, true, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, ~imm32, true, carry, overflow);
 
 	regs.set(instruction.rdn, result);
 
@@ -183,11 +183,11 @@ static void exec(const subs_imm8 instruction, registers& regs, apsr_reg& status_
 
 static void exec(const and_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rd = regs.get(instruction.rdn);
-	word rm = regs.get(instruction.rm);
+	uint32_t rd = regs.get(instruction.rdn);
+	uint32_t rm = regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
-	word result = rd & rm;
+	uint32_t result = rd & rm;
 
 	regs.set(instruction.rdn, result);
 
@@ -197,11 +197,11 @@ static void exec(const and_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const eor_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rd = regs.get(instruction.rdn);
-	word rm = regs.get(instruction.rm);
+	uint32_t rd = regs.get(instruction.rdn);
+	uint32_t rm = regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
-	word result = rd ^ rm;
+	uint32_t result = rd ^ rm;
 
 	regs.set(instruction.rdn, result);
 
@@ -210,8 +210,8 @@ static void exec(const eor_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const lsl_reg instruction, registers& regs, apsr_reg& status_reg) {
-	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
+	uint32_t value 			= regs.get(instruction.rdn);
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
 
 	bool carry = alu::lsl_c(value, shift_offset, status_reg.carry_flag());
 
@@ -223,8 +223,8 @@ static void exec(const lsl_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const lsr_reg instruction, registers& regs, apsr_reg& status_reg) {
-	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
+	uint32_t value 			= regs.get(instruction.rdn);
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
 
 	bool carry = alu::lsr_c(value, shift_offset, status_reg.carry_flag());
 
@@ -236,8 +236,8 @@ static void exec(const lsr_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const asr_reg instruction, registers& regs, apsr_reg& status_reg) {
-	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm)); // max 255
+	uint32_t value 			= regs.get(instruction.rdn);
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm)); // max 255
 
 	bool carry = alu::asr_c(value, shift_offset, status_reg.carry_flag());
 
@@ -249,13 +249,13 @@ static void exec(const asr_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const adc instruction, registers& regs, apsr_reg& status_reg) {
-	word rn 	= regs.get(instruction.rdn);
-	word rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rdn);
+	uint32_t rm 	= regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, rm, status_reg.carry_flag(), carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, rm, status_reg.carry_flag(), carry, overflow);
 
 	regs.set(instruction.rdn, result);
 
@@ -266,13 +266,13 @@ static void exec(const adc instruction, registers& regs, apsr_reg& status_reg) {
 }
 
 static void exec(const sbc instruction, registers& regs, apsr_reg& status_reg) {
-	word rn 	= regs.get(instruction.rdn);
-	word rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rdn);
+	uint32_t rm 	= regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, ~rm, status_reg.carry_flag(), carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, ~rm, status_reg.carry_flag(), carry, overflow);
 
 	regs.set(instruction.rdn, result);
 
@@ -283,8 +283,8 @@ static void exec(const sbc instruction, registers& regs, apsr_reg& status_reg) {
 }
 
 static void exec(const ror_reg instruction, registers& regs, apsr_reg& status_reg) {
-	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
+	uint32_t value 			= regs.get(instruction.rdn);
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
 
 	bool carry = alu::ror_c(value, shift_offset, status_reg.carry_flag());
 
@@ -296,23 +296,23 @@ static void exec(const ror_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const tst_reg instruction, const registers& regs, apsr_reg& status_reg) {
-	word rn = regs.get(instruction.rn);
-	word rm = regs.get(instruction.rm);
+	uint32_t rn = regs.get(instruction.rn);
+	uint32_t rm = regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
-	word result = rn & rm;
+	uint32_t result = rn & rm;
 
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
 
 static void exec(const rsb_imm instruction, registers& regs, apsr_reg& status_reg) {
-	word rn 	= regs.get(instruction.rn);
-	word imm32	= 0; // ARMv6-M only supports a value of 0.
+	uint32_t rn 	= regs.get(instruction.rn);
+	uint32_t imm32	= 0; // ARMv6-M only supports a value of 0.
 
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(~rn, imm32, true, carry, overflow);
+	uint32_t result = alu::add_with_carry(~rn, imm32, true, carry, overflow);
 
 	regs.set(instruction.rd, result);
 
@@ -323,13 +323,13 @@ static void exec(const rsb_imm instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const cmp_reg instruction, const registers& regs, apsr_reg& status_reg) {
-	word rn 	= regs.get(instruction.rn);
-	word rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rn);
+	uint32_t rm 	= regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -339,13 +339,13 @@ static void exec(const cmp_reg instruction, const registers& regs, apsr_reg& sta
 
 
 static void exec(const cmn_reg instruction, const registers& regs, apsr_reg& status_reg) {
-	word rn 	= regs.get(instruction.rn);
-	word rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rn);
+	uint32_t rm 	= regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, rm, false, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, rm, false, carry, overflow);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -354,11 +354,11 @@ static void exec(const cmn_reg instruction, const registers& regs, apsr_reg& sta
 }
 
 static void exec(const orr_reg instruction, registers& regs, apsr_reg& status_reg) {
-	word rd = regs.get(instruction.rdn);
-	word rm = regs.get(instruction.rm);
+	uint32_t rd = regs.get(instruction.rdn);
+	uint32_t rm = regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
-	word result = rd | rm;
+	uint32_t result = rd | rm;
 
 	regs.set(instruction.rdn, result);
 
@@ -368,11 +368,11 @@ static void exec(const orr_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const mul_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rm = regs.get(instruction.rdm);
-	word rn = regs.get(instruction.rn);
+	uint32_t rm = regs.get(instruction.rdm);
+	uint32_t rn = regs.get(instruction.rn);
 
 	// left shift of zero is omitted here
-	word result = rm * rn;
+	uint32_t result = rm * rn;
 
 	regs.set(instruction.rdm, result);
 
@@ -382,11 +382,11 @@ static void exec(const mul_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const bic_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rn = regs.get(instruction.rdn);
-	word rm = regs.get(instruction.rm);
+	uint32_t rn = regs.get(instruction.rdn);
+	uint32_t rm = regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
-	word result = rn & ~rm;
+	uint32_t result = rn & ~rm;
 
 	regs.set(instruction.rdn, result);
 
@@ -396,10 +396,10 @@ static void exec(const bic_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const not_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	word rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm);
 
 	// left shift of zero is omitted here
-	word result = ~rm;
+	uint32_t result = ~rm;
 
 	regs.set(instruction.rd, result);
 
@@ -416,12 +416,12 @@ static void exec(const add_highreg instruction, registers& regs) {
 	 */
 
 
-	word rn = regs.get(instruction.high_rd());
-	word rm = regs.get(instruction.high_rm());
+	uint32_t rn = regs.get(instruction.high_rd());
+	uint32_t rm = regs.get(instruction.high_rm());
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, rm, false, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, rm, false, carry, overflow);
 
 
 	if(registers::PC == instruction.high_rd()) {
@@ -445,13 +445,13 @@ static void exec(const cmp_highreg instruction, const registers& regs, apsr_reg&
 		unpredictable();
 	}
 
-	word rn = regs.get(instruction.high_rn());
-	word rm = regs.get(instruction.high_rm());
+	uint32_t rn = regs.get(instruction.high_rn());
+	uint32_t rm = regs.get(instruction.high_rm());
 
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
-	word result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
+	uint32_t result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -465,7 +465,7 @@ static void exec(const cmp_highreg instruction, const registers& regs, apsr_reg&
 static void exec(const mov_highreg instruction, registers& regs) {
 
 	reg_idx high_rm = instruction.high_rm();
-	word result = regs.get(high_rm);
+	uint32_t result = regs.get(high_rm);
 
 	// if rd is PC, just branch
 	if(registers::PC == instruction.high_rd()) {
@@ -492,9 +492,9 @@ static void exec(const blx instruction, registers& regs) {
 		unpredictable();
 	}
 
-	word jump_addr = regs.get(instruction.rm);
+	uint32_t jump_addr = regs.get(instruction.rm);
 	// pc - 2
-	word next_instr_addr = regs.get_pc() - 2; // PC is two instruction ahead because of prefetch
+	uint32_t next_instr_addr = regs.get_pc() - 2; // PC is two instruction ahead because of prefetch
 	bits<0>::of(next_instr_addr) = true; // force thumb bit for lr
 	regs.set_lr(next_instr_addr);
 
@@ -502,48 +502,48 @@ static void exec(const blx instruction, registers& regs) {
 }
 
 static void exec(const ldr_literal instruction, registers& regs, const memory& mem) {
-	word offset = instruction.imm32();
-	word base 	= binops::aligned(regs.get_pc(), 4);
-	word address = base + offset;
-	word value = mem.read32(address);
+	uint32_t offset = instruction.imm32();
+	uint32_t base 	= binops::aligned(regs.get_pc(), 4);
+	uint32_t address = base + offset;
+	uint32_t value = mem.read32(address);
 	regs.set(instruction.rt, value);
 }
 
 static void exec(const str_reg instruction, const registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
-	word value 	=  regs.get(instruction.rt);
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
+	uint32_t value 	=  regs.get(instruction.rt);
 	mem.write32(address, value);
 }
 
 static void exec(const strh_reg instruction, const registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
-	word value 	=  regs.get(instruction.rt);
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
+	uint32_t value 	=  regs.get(instruction.rt);
 	mem.write16(address, bits<0,16>::of((uint16_t)value));
 }
 
 static void exec(const strb_reg instruction, const registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
-	word value 	= regs.get(instruction.rt);
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
+	uint32_t value 	= regs.get(instruction.rt);
 	mem.write8(address, bits<0,8>::of((uint8_t)value));
 }
 
 static void exec(const ldrsb_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
 	int8_t value = mem.read8(address, ok);
 	if(ok) {
@@ -553,11 +553,11 @@ static void exec(const ldrsb_reg instruction, registers& regs, const memory& mem
 
 static void exec(const ldr_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
-	word value = mem.read32(address, ok);
+	uint32_t value = mem.read32(address, ok);
 	if(ok) {
 		regs.set(instruction.rt, value);
 	}
@@ -565,11 +565,11 @@ static void exec(const ldr_reg instruction, registers& regs, const memory& mem) 
 
 static void exec(const ldrh_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base = regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base = regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
-	halfword value = mem.read16(address, ok);
+	uint16_t value = mem.read16(address, ok);
 	if(ok) {
 		regs.set(instruction.rt, (uint32_t) value);
 	}
@@ -577,11 +577,11 @@ static void exec(const ldrh_reg instruction, registers& regs, const memory& mem)
 
 static void exec(const ldrb_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base = regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base = regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
-	byte value = mem.read8(address, ok);
+	uint8_t value = mem.read8(address, ok);
 	if(ok) {
 		regs.set(instruction.rt, (uint32_t) value);
 	}
@@ -589,9 +589,9 @@ static void exec(const ldrb_reg instruction, registers& regs, const memory& mem)
 
 static void exec(const ldrsh_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	word offset = regs.get(instruction.rm);
-	word base = regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = regs.get(instruction.rm);
+	uint32_t base = regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
 	int16_t value = mem.read16(address, ok);
 	if(ok) {
@@ -601,38 +601,38 @@ static void exec(const ldrsh_reg instruction, registers& regs, const memory& mem
 
 
 static void exec(const str_imm instruction, const registers& regs, memory& mem) {
-	word offset = instruction.imm5 << 2;
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
-	word value 	=  regs.get(instruction.rt);
+	uint32_t offset = instruction.imm5 << 2;
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
+	uint32_t value 	=  regs.get(instruction.rt);
 	mem.write32(address, value);
 }
 
 static void exec(const ldr_imm instruction, registers& regs, const memory& mem) {
-	word offset = instruction.imm32();
-	word base = regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = instruction.imm32();
+	uint32_t base = regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
-	word value = mem.read32(address, ok);
+	uint32_t value = mem.read32(address, ok);
 	if (ok) {
 		regs.set(instruction.rt, value);
 	}
 }
 
 static void exec(const strb_imm instruction, const registers& regs, memory& mem) {
-	word offset = instruction.imm5;
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
-	word value 	=  regs.get(instruction.rt);
+	uint32_t offset = instruction.imm5;
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
+	uint32_t value 	=  regs.get(instruction.rt);
 	mem.write8(address, bits<0,8>::of((uint8_t)value));
 }
 
 static void exec(const ldrb_imm instruction, registers& regs, const memory& mem) {
-	word offset = instruction.imm5;
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = instruction.imm5;
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
-	word value = mem.read8(address, ok);
+	uint32_t value = mem.read8(address, ok);
 
 	if(ok) {
 		regs.set(instruction.rt, value);
@@ -640,109 +640,109 @@ static void exec(const ldrb_imm instruction, registers& regs, const memory& mem)
 }
 
 static void exec(const strh_imm instruction, const registers& regs, memory& mem) {
-	word offset = instruction.imm5 << 1;
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
-	word value 	=  regs.get(instruction.rt);
+	uint32_t offset = instruction.imm5 << 1;
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
+	uint32_t value 	=  regs.get(instruction.rt);
 	mem.write16(address, bits<0,16>::of((uint16_t)value));
 }
 
 static void exec(const ldrh_imm instruction, registers& regs, const memory& mem) {
-	word offset = instruction.imm5 << 1;
-	word base 	= regs.get(instruction.rn);
-	word address = base + offset;
+	uint32_t offset = instruction.imm5 << 1;
+	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t address = base + offset;
 	bool ok = false;
-	word value = mem.read16(address, ok);
+	uint32_t value = mem.read16(address, ok);
 	if(ok) {
 		regs.set(instruction.rt, value);
 	}
 }
 
 static void exec(const str_sp_imm instruction, const registers& regs, memory& mem) {
-	word offset = instruction.imm32();
-	word base 	= regs.get_sp(); // SP
-	word address = base + offset;
-	word value 	=  regs.get(instruction.rt);
+	uint32_t offset = instruction.imm32();
+	uint32_t base 	= regs.get_sp(); // SP
+	uint32_t address = base + offset;
+	uint32_t value 	=  regs.get(instruction.rt);
 	mem.write32(address, value);
 }
 
 static void exec(const ldr_sp_imm instruction, registers& regs, const memory& mem) {
-	word offset = instruction.imm8 << 2;
-	word base 	= regs.get_sp(); // SP
-	word address = base + offset;
-	word value = mem.read32(address);
+	uint32_t offset = instruction.imm8 << 2;
+	uint32_t base 	= regs.get_sp(); // SP
+	uint32_t address = base + offset;
+	uint32_t value = mem.read32(address);
 	regs.set(instruction.rt, value);
 }
 
 static void exec(const adr instruction, registers& regs) {
-	word offset = instruction.imm32();
-	word base 	= binops::aligned(regs.get_pc(), 4); // PC
-	word address = base + offset;
+	uint32_t offset = instruction.imm32();
+	uint32_t base 	= binops::aligned(regs.get_pc(), 4); // PC
+	uint32_t address = base + offset;
 	regs.set(instruction.rd, address);
 }
 
 
 static void exec(const add_sp_imm instruction, registers& regs) {
 	// TODO check if other instructions should go here
-	word imm32 = instruction.imm32();
-	word sp = regs.get_sp();
-	word result = alu::add_with_carry(sp, imm32, false);
+	uint32_t imm32 = instruction.imm32();
+	uint32_t sp = regs.get_sp();
+	uint32_t result = alu::add_with_carry(sp, imm32, false);
 	regs.set(instruction.rd, result);
 }
 
 static void exec(const add_sp_imm_t2 instruction, registers& regs) {
 	// TODO check if other instructions should go here
-	word imm32 = instruction.imm32();
-	word sp = regs.get_sp();
-	word result = alu::add_with_carry(sp, imm32, false);
+	uint32_t imm32 = instruction.imm32();
+	uint32_t sp = regs.get_sp();
+	uint32_t result = alu::add_with_carry(sp, imm32, false);
 	regs.set_sp(result);
 }
 
 static void exec(const sub_sp_imm instruction, registers& regs) {
 	// TODO check if other instructions should go here
-	word imm32 = instruction.imm32();
-	word sp = regs.get_sp();
-	word result = alu::add_with_carry(sp, ~imm32, true);
+	uint32_t imm32 = instruction.imm32();
+	uint32_t sp = regs.get_sp();
+	uint32_t result = alu::add_with_carry(sp, ~imm32, true);
 	regs.set_sp(result);
 }
 
 static void exec(const sxth instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	word rm = regs.get(instruction.rm);
-	word extended = binops::sign(rm, 16); // sign-extend 16 bit to 32
+	uint32_t rm = regs.get(instruction.rm);
+	uint32_t extended = binops::sign(rm, 16); // sign-extend 16 bit to 32
 	regs.set(instruction.rd, extended);
 }
 
 static void exec(const sxtb instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	word rm = regs.get(instruction.rm);
-	word extended = binops::sign(rm, 8); // sign-extend 8 bit to 32
+	uint32_t rm = regs.get(instruction.rm);
+	uint32_t extended = binops::sign(rm, 8); // sign-extend 8 bit to 32
 	regs.set(instruction.rd, extended);
 }
 
 static void exec(const uxth instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	halfword rm = bits<0,16>::of(regs.get(instruction.rm));
-	word extended(rm); // zero-extend 16 bit to 32
+	uint16_t rm = bits<0,16>::of(regs.get(instruction.rm));
+	uint32_t extended(rm); // zero-extend 16 bit to 32
 	regs.set(instruction.rd, extended);
 }
 
 static void exec(const uxtb instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	byte rm = bits<0,8>::of(regs.get(instruction.rm));
-	word extended(rm); // zero-extend 8 bit to 32
+	uint8_t rm = bits<0,8>::of(regs.get(instruction.rm));
+	uint32_t extended(rm); // zero-extend 8 bit to 32
 	regs.set(instruction.rd, extended);
 }
 
 static void exec(const push instruction, registers& regs, memory& mem) {
 	precond(instruction.pop_count() > 0, "must push at least one register");
 	const size_t stored_size = 4 * instruction.pop_count();
-	const word start_address = regs.get_sp() - stored_size;
+	const uint32_t start_address = regs.get_sp() - stored_size;
 	//fprintf(stderr, "push stack %08X - %08X\n", start_address, regs.get_sp());
 	size_t count = 0;
 	for(reg_idx rid = 0; rid < registers::NUM_REGS-1; rid++) {
 		if(instruction.is_set(rid)) {
-			word val = regs.get(rid);
+			uint32_t val = regs.get(rid);
 			mem.write32(start_address + (count*4), val);
 			count++;
 		}
@@ -787,7 +787,7 @@ static void exec(const pop instruction, registers& regs, memory& mem) {
 		 * thumb bit when popping PC from
 		 * a previous push LR where LR = 0
 		 */
-		word address = mem.read32(base);
+		uint32_t address = mem.read32(base);
 		if(address == 0xFFFFFFF9) {
 			int k = 0;
 		}
@@ -810,9 +810,9 @@ static void exec(const rev_word instruction, registers& regs) {
 
 static void exec(const rev16 instruction, registers& regs) {
 
-	const word rm = regs.get(instruction.rm);
+	const uint32_t rm = regs.get(instruction.rm);
 
-	word res =  bits<16,8>::of((rm)) << 24 |
+	uint32_t res =  bits<16,8>::of((rm)) << 24 |
 				bits<24,8>::of((rm)) << 16 |
 				bits<0,8>::of((rm)) << 8   |
 				bits<8,8>::of((rm)) << 0;
@@ -822,10 +822,10 @@ static void exec(const rev16 instruction, registers& regs) {
 
 static void exec(const revsh instruction, registers& regs) {
 
-	const word rm = regs.get(instruction.rm);
+	const uint32_t rm = regs.get(instruction.rm);
 
-	word swapped_low16 = (bits<0,8>::of(rm) << 8) | bits<8,8>::of(rm);
-	word res = binops::sign(swapped_low16, 16);
+	uint32_t swapped_low16 = (bits<0,8>::of(rm) << 8) | bits<8,8>::of(rm);
+	uint32_t res = binops::sign(swapped_low16, 16);
 
 	regs.set(instruction.rd, res);
 }
@@ -896,7 +896,7 @@ static void exec(const mrs instruction, registers& regs, apsr_reg& apsr) {
 	switch(sysn_bits) {
 		case 0b00000: {
 			if(bits<0>::of(instruction.sysn)) {
-				bits<0,8>::of(val) = bits<0,8>::of((word)regs.interrupt_status_register().exception_num());
+				bits<0,8>::of(val) = bits<0,8>::of((uint32_t)regs.interrupt_status_register().exception_num());
 			}
 			if(bits<1>::of(instruction.sysn)) {
 				// T-bit reads as zero
@@ -947,12 +947,12 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 		} break;
 		case msr::SpecialRegister::MSP: {
 			// TODO: Should fail if not in privileged mode
-			word sp = bits<2,30>::of(regs.get(instruction.rn)) << 2;
+			uint32_t sp = bits<2,30>::of(regs.get(instruction.rn)) << 2;
 			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main, sp);
 		} break;
 		case msr::SpecialRegister::PSP: {
 			// TODO: Should fail if not in privileged mode
-			word sp = bits<2,30>::of(regs.get(instruction.rn));
+			uint32_t sp = bits<2,30>::of(regs.get(instruction.rn));
 			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process, sp);
 		} break;
 		case msr::SpecialRegister::PRIMASK: {
@@ -961,7 +961,7 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 		} break;
 		case msr::SpecialRegister::CONTROL: {
 			if(regs.exec_mode_register().is_thread_mode()) {
-				word val = regs.get(instruction.rn);
+				uint32_t val = regs.get(instruction.rn);
 				regs.control_register().set_n_priv(bits<0>::of(val));
 				regs.control_register().set_sp_sel(bits<1>::of(val));
 			}
@@ -975,7 +975,7 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 
 static void exec(const bl_imm instruction, registers& regs) {
 	// pc is 4 bytes ahead, so already poiting to the next instruction
-	word next_instr_addr = regs.get_pc();
+	uint32_t next_instr_addr = regs.get_pc();
 	bits<0>::of(next_instr_addr) = true; // force thumb mode
 	regs.set_lr(next_instr_addr);
 	int32_t offset = instruction.offset();

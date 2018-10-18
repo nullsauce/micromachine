@@ -139,14 +139,14 @@ void cpu::reset() {
  */
 }
 
-instruction_pair cpu::fetch_instruction(word address) const {
+instruction_pair cpu::fetch_instruction(uint32_t address) const {
 	return instruction_pair(_mem.read32_unchecked(address));
 }
 
 // used for debug purposes only
-instruction_pair cpu::fetch_instruction_debug(word address) const {
-	halfword first_instr = _mem.read16_unchecked(address);
-	halfword second_instr = _mem.read16_unchecked(address + sizeof(halfword)); // always prefetch
+instruction_pair cpu::fetch_instruction_debug(uint32_t address) const {
+	uint16_t first_instr = _mem.read16_unchecked(address);
+	uint16_t second_instr = _mem.read16_unchecked(address + sizeof(uint16_t)); // always prefetch
 	return instruction_pair(first_instr, second_instr);
 }
 
@@ -163,7 +163,7 @@ bool cpu::step() {
 
 	_system_timer.tick();
 
-	const word current_addr = _regs.get_pc();
+	const uint32_t current_addr = _regs.get_pc();
 	instruction_pair instr = fetch_instruction(current_addr);
 	/*
 	fprintf(stderr, "S %08x: %s\n",
@@ -206,7 +206,7 @@ bool cpu::step() {
 }
 
 uint32_t cpu::get_next_instruction_address() const {
-	const word instr_addr = _regs.get_pc();
+	const uint32_t instr_addr = _regs.get_pc();
 	// TODO: remove unnecessary re-fetch here by storing current instruction
 	// in cpu
 	instruction_pair instruction = fetch_instruction(instr_addr);
