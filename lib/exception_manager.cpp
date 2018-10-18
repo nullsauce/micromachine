@@ -29,7 +29,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	//fprintf(stderr,"exception_return from address %08x\n", ret_address);
 	// bits 4 to 24 are all ones
 	// TODO: make a nice function
-	if((word)binops::make_mask<24>() != (word)bits<4,24>::of(ret_address)) {
+	if((uint32_t)binops::make_mask<24>() != (uint32_t)bits<4,24>::of(ret_address)) {
 		// unpredicatable
 		fprintf(stderr, "unpredicatable.\n");
 	}
@@ -155,7 +155,7 @@ void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
 	_regs.set(12, _mem.read32(frame_ptr+16));
 	_regs.set_lr(_mem.read32(frame_ptr+20));
 	_regs.set_pc(_mem.read32(frame_ptr+24));
-	word psr_bits = _mem.read32(frame_ptr+28);
+	uint32_t psr_bits = _mem.read32(frame_ptr+28);
 	uint32_t stack_align = bits<8>::of(psr_bits) << 2;
 
 	switch((uint8_t)bits<0,4>::of(return_address).extract()) {
@@ -197,7 +197,7 @@ void exception_manager::push_stack(uint32_t return_address) {
 	uint32_t old_sp = _regs.get_sp();
 	_regs.set_sp(frame_ptr);
 
-	word xpsr_status = 0;
+	uint32_t xpsr_status = 0;
 	// TODO: Use cleaner bits copying primitives
 	bits<10,22>::of(xpsr_status) = bits<10,22>::of(_regs.xpsr_register());
 	bits<0,8>::of(xpsr_status) = bits<0,8>::of(_regs.xpsr_register());
@@ -244,7 +244,7 @@ void exception_manager::take_exception(exception_state& exception) {
 	//SetEventRegister();
 	//InstructionSynchronizationBarrier();
 	uint8_t exception_number = exception.number();
-	uint32_t vector_table_offset = sizeof(word) * exception_number;
+	uint32_t vector_table_offset = sizeof(uint32_t) * exception_number;
 	uint32_t handler_address = _mem.read32(vector_table_offset);
 	_regs.branch_link_interworking(handler_address);
 }

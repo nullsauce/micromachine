@@ -509,19 +509,19 @@ public slots:
 private:
 
 	bool instructionAtAddress(uint32_t address, instruction_pair& result) const {
-		halfword first_instr = 0;
-		halfword second_instr = 0;
+		uint16_t first_instr = 0;
+		uint16_t second_instr = 0;
 		// first look at the first halfowrd and
 		// decide if we must fetch another halfword
 		// because the instruction is 4 bytes
 		if(!mMem || !mMem->isValidVirtualAddress(address)) {
 			return false;
 		}
-		halfword* maybe_first_instr = mMem->virtualToHost<halfword*>(address);
+		uint16_t* maybe_first_instr = mMem->virtualToHost<uint16_t*>(address);
 		if(nullptr != maybe_first_instr) {
 			first_instr = *maybe_first_instr;
 			if(instruction_pair::is_wide_intruction(first_instr)) {
-				if(mMem->isValidVirtualAddress(address+sizeof(halfword))) {
+				if(mMem->isValidVirtualAddress(address+sizeof(uint16_t))) {
 					second_instr = maybe_first_instr[1];
 				} else {
 					// the instruction can't be 4 bytes because that would

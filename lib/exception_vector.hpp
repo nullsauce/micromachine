@@ -10,6 +10,7 @@
 #include <stack>
 #include "exception_type.hpp"
 #include "types.hpp"
+#include "precond.hpp"
 
 /// Exception state
 class exception_state {

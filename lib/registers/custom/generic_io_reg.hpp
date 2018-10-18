@@ -13,18 +13,18 @@ public:
 	}
 
 private:
-	void set(word val) override {
+	void set(uint32_t val) override {
 		uint8_t data = static_cast<uint8_t>(bits<0, 8>::of(val));
 		uint8_t op = static_cast<uint8_t>(bits<8, 8>::of(val));
 		if(_callback) _callback(op, data);
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return 0U;
 	}
 
 protected:
-	word _word;
+	uint32_t _word;
 	const callback_t& _callback;
 };
 

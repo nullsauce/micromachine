@@ -14,7 +14,7 @@
 
 struct standard_rd_rm_imm5 {
 
-	standard_rd_rm_imm5(halfword field)
+	standard_rd_rm_imm5(uint16_t field)
 			: rd  (binops::read_uint(field, 0, 3))
 			, rm  (binops::read_uint(field, 3, 3))
 			, imm5(binops::read_uint(field, 6, 5))
@@ -28,7 +28,7 @@ struct standard_rd_rm_imm5 {
 
 struct standard_rd_rm_rn {
 
-	standard_rd_rm_rn(halfword field)
+	standard_rd_rm_rn(uint16_t field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rm(binops::read_uint(field, 3, 3))
 		, rn(binops::read_uint(field, 6, 3))
@@ -41,7 +41,7 @@ struct standard_rd_rm_rn {
 
 struct standard_rd_rn_rm {
 
-	standard_rd_rn_rm(halfword field)
+	standard_rd_rn_rm(uint16_t field)
 			: rd(binops::read_uint(field, 0, 3))
 			, rn(binops::read_uint(field, 3, 3))
 			, rm(binops::read_uint(field, 6, 3))
@@ -54,7 +54,7 @@ struct standard_rd_rn_rm {
 
 struct standard_rd_rm_imm3 {
 
-	standard_rd_rm_imm3(halfword field)
+	standard_rd_rm_imm3(uint16_t field)
 			: rd  (binops::read_uint(field, 0, 3))
 			, rm  (binops::read_uint(field, 3, 3))
 			, imm3(binops::read_uint(field, 6, 3))
@@ -68,7 +68,7 @@ struct standard_rd_rm_imm3 {
 
 struct standard_rd_rn_imm3 {
 
-	standard_rd_rn_imm3(halfword field)
+	standard_rd_rn_imm3(uint16_t field)
 			: rd  (binops::read_uint(field, 0, 3))
 			, rn  (binops::read_uint(field, 3, 3))
 			, imm3(binops::read_uint(field, 6, 3))
@@ -82,7 +82,7 @@ struct standard_rd_rn_imm3 {
 
 struct standard_imm8_rd {
 
-	standard_imm8_rd(halfword field)
+	standard_imm8_rd(uint16_t field)
 		: imm8(binops::read_uint(field, 0, 8))
 		, rd  (binops::read_uint(field, 8, 3))
 	{}
@@ -93,7 +93,7 @@ struct standard_imm8_rd {
 
 struct standard_imm8_rn {
 
-	standard_imm8_rn(halfword field)
+	standard_imm8_rn(uint16_t field)
 			: imm8(binops::read_uint(field, 0, 8))
 			, rn  (binops::read_uint(field, 8, 3))
 	{}
@@ -104,7 +104,7 @@ struct standard_imm8_rn {
 
 struct standard_rdn_rm {
 
-	standard_rdn_rm(halfword field)
+	standard_rdn_rm(uint16_t field)
 		: rdn(binops::read_uint(field, 0, 3))
 		, rm (binops::read_uint(field, 3, 3))
 	{}
@@ -115,7 +115,7 @@ struct standard_rdn_rm {
 
 struct standard_rdm_rn {
 
-	standard_rdm_rn(halfword field)
+	standard_rdm_rn(uint16_t field)
 			: rdm(binops::read_uint(field, 0, 3))
 			, rn (binops::read_uint(field, 3, 3))
 	{}
@@ -127,7 +127,7 @@ struct standard_rdm_rn {
 // rdn can be a high register if dm is set
 struct standard_rdn_rm_dm {
 
-	standard_rdn_rm_dm(halfword field)
+	standard_rdn_rm_dm(uint16_t field)
 		: rdn(binops::read_uint(field, 0, 3))
 		, rm (binops::read_uint(field, 3, 4))
 		, dm (binops::get_bit(field, 7))
@@ -151,7 +151,7 @@ struct standard_rdn_rm_dm {
 // rd can be a high register if dm is set
 struct standard_rn_rm_dm {
 
-	standard_rn_rm_dm(halfword field)
+	standard_rn_rm_dm(uint16_t field)
 			: rn(binops::read_uint(field, 0, 3))
 			, rm(binops::read_uint(field, 3, 4))
 			, dm(binops::get_bit(field, 7))
@@ -176,7 +176,7 @@ struct standard_rn_rm_dm {
 // rd can be a high register if dm is set
 struct standard_rd_rm_d {
 
-	standard_rd_rm_d(halfword field)
+	standard_rd_rm_d(uint16_t field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rm(binops::read_uint(field, 3, 4))
 		, d (binops::get_bit(field, 7))
@@ -199,7 +199,7 @@ struct standard_rd_rm_d {
 
 struct standard_rn_rm {
 
-	standard_rn_rm(halfword field)
+	standard_rn_rm(uint16_t field)
 			: rn(binops::read_uint(field, 0, 3))
 			, rm(binops::read_uint(field, 3, 3))
 	{}
@@ -210,7 +210,7 @@ struct standard_rn_rm {
 
 struct standard_rd_rn {
 
-	standard_rd_rn(halfword field)
+	standard_rd_rn(uint16_t field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rn(binops::read_uint(field, 3, 3))
 	{}
@@ -222,7 +222,7 @@ struct standard_rd_rn {
 
 struct standard_rm {
 
-	standard_rm(halfword field)
+	standard_rm(uint16_t field)
 		: rm(binops::read_uint(field, 3, 4))
 	{}
 
@@ -231,7 +231,7 @@ struct standard_rm {
 
 struct standard_rd_rm {
 
-	standard_rd_rm(halfword field)
+	standard_rd_rm(uint16_t field)
 		: rd(binops::read_uint(field, 0, 3))
 		, rm(binops::read_uint(field, 3, 3))
 	{}
@@ -242,7 +242,7 @@ struct standard_rd_rm {
 
 struct standard_imm8_rdn {
 
-	standard_imm8_rdn(halfword field)
+	standard_imm8_rdn(uint16_t field)
 		: imm8(binops::read_uint(field, 0, 8))
 		, rdn (binops::read_uint(field, 8, 3))
 	{}
@@ -254,7 +254,7 @@ struct standard_imm8_rdn {
 
 struct standard_rt_rn_rm {
 
-	standard_rt_rn_rm(halfword field)
+	standard_rt_rn_rm(uint16_t field)
 		: rt(binops::read_uint(field, 0, 3))
 		, rn(binops::read_uint(field, 3, 3))
 		, rm(binops::read_uint(field, 6, 3))
@@ -267,7 +267,7 @@ struct standard_rt_rn_rm {
 
 struct standard_rt_rn_imm5 {
 
-	standard_rt_rn_imm5(halfword field)
+	standard_rt_rn_imm5(uint16_t field)
 		: rt  (binops::read_uint(field, 0, 3))
 		, rn  (binops::read_uint(field, 3, 3))
 		, imm5(binops::read_uint(field, 6, 5))
@@ -280,7 +280,7 @@ struct standard_rt_rn_imm5 {
 
 struct standard_imm8_rt {
 
-	standard_imm8_rt(halfword field)
+	standard_imm8_rt(uint16_t field)
 		: imm8(binops::read_uint(field, 0, 8))
 		, rt  (binops::read_uint(field, 8, 3))
 	{}
@@ -291,7 +291,7 @@ struct standard_imm8_rt {
 
 struct standard_imm7 {
 
-	standard_imm7(halfword field)
+	standard_imm7(uint16_t field)
 		: imm7(binops::read_uint(field, 0, 7))
 	{}
 
@@ -300,7 +300,7 @@ struct standard_imm7 {
 
 struct standard_imm8 {
 
-	standard_imm8(halfword field)
+	standard_imm8(uint16_t field)
 		: imm8(binops::read_uint(field, 0, 8))
 	{}
 
@@ -309,7 +309,7 @@ struct standard_imm8 {
 
 struct standard_imm11 {
 
-	standard_imm11(halfword field)
+	standard_imm11(uint16_t field)
 		: imm11(binops::read_uint(field, 0, 11))
 	{}
 
@@ -318,7 +318,7 @@ struct standard_imm11 {
 
 struct standard_push_register_list {
 
-	standard_push_register_list(halfword field)
+	standard_push_register_list(uint16_t field)
 		: register_list(
 			(binops::read_uint(field, 0, 8)) |
 			(binops::get_bit(field, 8) << 14)
@@ -340,7 +340,7 @@ struct standard_push_register_list {
 
 struct standard_pop_register_list {
 
-	standard_pop_register_list(halfword field)
+	standard_pop_register_list(uint16_t field)
 			: register_list(
 			(binops::read_uint(field, 0, 8)) |
 			(binops::get_bit(field, 8) << 15)
@@ -359,7 +359,7 @@ struct standard_pop_register_list {
 };
 
 struct standard_register_list_rm {
-	standard_register_list_rm(halfword field)
+	standard_register_list_rm(uint16_t field)
 		: reg_list(binops::read_uint(field, 0, 8))
 		, rm(binops::read_uint(field, 8, 3))
 	{}
@@ -377,7 +377,7 @@ struct standard_register_list_rm {
 };
 
 struct standard_register_list_rn {
-	standard_register_list_rn(halfword field)
+	standard_register_list_rn(uint16_t field)
 			: register_list(binops::read_uint(field, 0, 8))
 			, rn(binops::read_uint(field, 8, 3))
 	{}
@@ -396,7 +396,7 @@ struct standard_register_list_rn {
 
 struct standard_imm8_cond {
 
-	standard_imm8_cond(halfword field)
+	standard_imm8_cond(uint16_t field)
 		: imm8(binops::read_uint(field, 0, 8))
 		, cond(binops::read_uint(field, 8, 4))
 	{}
@@ -441,7 +441,7 @@ struct add_highreg : public standard_rdn_rm_dm {
 struct add_sp_imm : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 
-	word imm32() const {
+	uint32_t imm32() const {
 		return imm8 << 2;
 	}
 };
@@ -449,7 +449,7 @@ struct add_sp_imm : public standard_imm8_rd {
 struct add_sp_imm_t2 : public standard_imm7 {
 	using standard_imm7::standard_imm7;
 	// encoding t2
-	word imm32() const {
+	uint32_t imm32() const {
 		return imm7 << 2;
 	}
 
@@ -458,7 +458,7 @@ struct add_sp_imm_t2 : public standard_imm7 {
 struct adr : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 
-	word imm32() const {
+	uint32_t imm32() const {
 		return imm8 << 2;
 	}
 };
@@ -488,7 +488,7 @@ const char* condition_string(uint8_t condition) {
 struct branch : public standard_imm8_cond {
 	using standard_imm8_cond::standard_imm8_cond;
 
-	word imm32() const {
+	uint32_t imm32() const {
 		return imm8 << 1;
 	}
 
@@ -501,7 +501,7 @@ struct branch : public standard_imm8_cond {
 struct unconditional_branch : public standard_imm11 {
 	using standard_imm11::standard_imm11;
 	// t2 encoding of B
-	word imm32() const {
+	uint32_t imm32() const {
 		return imm11 << 1;
 	}
 
@@ -536,8 +536,8 @@ struct bl_imm {
 	const bool j1;
 	const bool j2;
 	const bool s;
-	const halfword imm10;
-	const halfword imm11;
+	const uint16_t imm10;
+	const uint16_t imm11;
 };
 
 struct bx : public standard_rm {
@@ -854,7 +854,7 @@ struct mrs : special_reg_instr{
 
 
 struct udf {
-	udf(const halfword& instruction)
+	udf(const uint16_t& instruction)
 		: imm32(bits<0,8>::of(instruction)) {
 	}
 	const uint32_t imm32;
@@ -871,7 +871,7 @@ struct udfw {
 };
 
 struct cps {
-	cps(halfword instruction)
+	cps(uint16_t instruction)
 	 : im(bits<4>::of(instruction)){}
 	const bool im;
 };
@@ -881,7 +881,7 @@ struct bkpt : standard_imm8 {
 };
 
 struct hint  {
-	hint(halfword instruction)
+	hint(uint16_t instruction)
 	: opa(bits<4,4>::of(instruction))
 	, opb(bits<0,4>::of(instruction)) {
 	}
