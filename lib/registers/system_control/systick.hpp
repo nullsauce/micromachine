@@ -1,6 +1,7 @@
 #ifndef MICROMACHINE_EMU_SYSTICK_HPP
 #define MICROMACHINE_EMU_SYSTICK_HPP
 
+#include "bits.hpp"
 #include "types.hpp"
 #include "registers/word_reg.hpp"
 
@@ -115,7 +116,7 @@ public:
 	}
 
 	void set_tenms(uint32_t tenms) {
-		_word.bits<0, 24>() = bits<0, 24>::of((word)tenms);
+		bits<0, 24>::of(_word) = bits<0, 24>::of((word)tenms);
 	}
 
 	bool skew() const {

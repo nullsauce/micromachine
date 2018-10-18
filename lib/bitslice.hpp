@@ -137,7 +137,7 @@ private:
 
 	std::reference_wrapper<u_type> _val;
 };
-
+/*
 template<size_t offset, size_t len>
 struct bits {
 
@@ -150,7 +150,7 @@ struct bits {
 	static const bitslice<offset, len, const u_type> of(const u_type& integer) {
 		return bitslice<offset, len, const u_type>(integer);
 	}
-};
+};*/
 
 
 
