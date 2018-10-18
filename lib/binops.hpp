@@ -27,6 +27,11 @@ static constexpr size_t binsize(T val) {
 	return binsize<T>();
 }
 
+template<typename T>
+static constexpr size_t get_sign_bit_index(T val) {
+	return binops::binsize<T>()-1;
+}
+
 template <typename u_type>
 static u_type rlshift(const u_type& source, size_t right_offset, size_t left_offset) {
 	return (source >> right_offset) << left_offset;
@@ -38,6 +43,10 @@ static bool get_bit(const u_type& source, size_t bit_offset) {
 	return source & (1 << bit_offset);
 }
 
+template <typename u_type>
+static bool get_sign_bit(const u_type& source) {
+	return get_bit(source, get_sign_bit_index(source));
+}
 template <typename u_type>
 static void set_bit(u_type& dest, size_t bit_offset) {
 	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
