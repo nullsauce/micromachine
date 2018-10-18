@@ -93,12 +93,12 @@ void pinkySimBase::initContext() {
 		int setOrClear = rand() & 1;
 		if (setOrClear)
 		{
-			_cpu.regs().xpsr_register().set_bit(bit);
+			binops::set_bit(_cpu.regs().xpsr_register(), bit);
 			m_expectedXPSRflags |= (1 << bit);
 		}
 		else
 		{
-			_cpu.regs().xpsr_register().clear_bit(bit);
+			binops::clear_bit(_cpu.regs().xpsr_register(), bit);
 			m_expectedXPSRflags &= ~(1 << bit);
 		}
 	}

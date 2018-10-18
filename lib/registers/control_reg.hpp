@@ -2,27 +2,30 @@
 #define MICROMACHINE_CONTROL_REG_HPP
 
 #include "standard_reg.hpp"
+#include "bits.hpp"
 
 class control_reg : public standard_reg {
 public:
 
 	using standard_reg::standard_reg;
 	using standard_reg::operator=;
+	using n_priv_bit = bits<0>;
+	using sp_selection_bit = bits<1>;
 
 	bool n_priv() const {
-		return _word.bit(0);
+		return n_priv_bit::of(_word);
 	}
 
 	void set_n_priv(bool priv) {
-		_word.write_bit(0, priv);
+		n_priv_bit::of(_word) = priv;
 	}
 
 	bool sp_sel() const {
-		return _word.bit(1);
+		return sp_selection_bit::of(_word);
 	}
 
 	void set_sp_sel(bool sel) {
-		_word.write_bit(1, sel);
+		sp_selection_bit::of(_word) = sel;
 	}
 
 };

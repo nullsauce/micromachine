@@ -8,317 +8,317 @@
 namespace {
 
 	static bool is_siadsumoco(const halfword instruction) {
-		return 0 == instruction.uint(14, 2);
+		return 0 == bits<14,2>::of(instruction);
 	}
 
 	static bool is_data_processing(const halfword instruction) {
-		return 0b010000 == instruction.uint(10, 6);
+		return 0b010000 == bits<10,6>::of(instruction);
 	}
 
 	static bool is_sdibe(const halfword instruction) {
-		return 0b010001 == instruction.uint(10, 6);
+		return 0b010001 == bits<10,6>::of(instruction);
 	}
 
 	static bool is_lsl_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b000 == instruction.uint(11, 3);
+			   0b000 == bits<11,3>::of(instruction);
 
 	}
 
 	static bool is_lsr_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b001 == instruction.uint(11, 3);
+			   0b001 == bits<11,3>::of(instruction);
 	}
 
 	static bool is_asr_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b010 == instruction.uint(11, 3);
+			   0b010 == bits<11,3>::of(instruction);
 	}
 
 	static bool is_add_reg(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b01100 == instruction.uint(9, 5);
+			   0b01100 == bits<9,5>::of(instruction);
 	}
 
 	static bool is_subs_reg(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b01101 == instruction.uint(9, 5);
+			   0b01101 == bits<9,5>::of(instruction);
 	}
 
 	static bool is_add_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b01110 == instruction.uint(9, 5);
+			   0b01110 == bits<9,5>::of(instruction);
 	}
 
 	static bool is_subs_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b01111 == instruction.uint(9, 5);
+			   0b01111 == bits<9,5>::of(instruction);
 	}
 
 	static bool is_mov_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b100 == instruction.uint(11, 3);
+			   0b100 == bits<11,3>::of(instruction);
 	}
 
 	static bool is_cmp_imm(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b101 == instruction.uint(11, 3);
+			   0b101 == bits<11,3>::of(instruction);
 	}
 
 	static bool is_add_imm_t2(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b110 == instruction.uint(11, 3);
+			   0b110 == bits<11,3>::of(instruction);
 	}
 
 	static bool is_subs_imm8(const halfword instruction) {
 		return is_siadsumoco(instruction) &&
-			   0b111 == instruction.uint(11, 3);
+			   0b111 == bits<11,3>::of(instruction);
 	}
 
 
 	static bool is_and_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0000 == instruction.uint(6, 4);
+			   0b0000 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_xor_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0001 == instruction.uint(6, 4);
+			   0b0001 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_lsl_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0010 == instruction.uint(6, 4);
+			   0b0010 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_lsr_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0011 == instruction.uint(6, 4);
+			   0b0011 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_asr_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0100 == instruction.uint(6, 4);
+			   0b0100 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_adc_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0101 == instruction.uint(6, 4);
+			   0b0101 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_sbc(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0110 == instruction.uint(6, 4);
+			   0b0110 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_ror_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b0111 == instruction.uint(6, 4);
+			   0b0111 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_tst_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1000 == instruction.uint(6, 4);
+			   0b1000 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_rsb_imm(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1001 == instruction.uint(6, 4);
+			   0b1001 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_cmn_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1011 == instruction.uint(6, 4);
+			   0b1011 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_cmp_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1010 == instruction.uint(6, 4);
+			   0b1010 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_orr_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1100 == instruction.uint(6, 4);
+			   0b1100 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_mul_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1101 == instruction.uint(6, 4);
+			   0b1101 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_bitclear_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1110 == instruction.uint(6, 4);
+			   0b1110 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_not_reg(const halfword instruction) {
 		return is_data_processing(instruction) &&
-			   0b1111 == instruction.uint(6, 4);
+			   0b1111 == bits<6,4>::of(instruction);
 	}
 
 
 	static bool is_add_highreg(const halfword instruction) {
 		return is_sdibe(instruction) &&
-			   0b00 == instruction.uint(8, 2);
+			   0b00 == bits<8,2>::of(instruction);
 	}
 
 	static bool is_sdibe_unpredictable_0(const halfword instruction) {
 		return is_sdibe(instruction) &&
-			   0b0100 == instruction.uint(6, 4);
+			   0b0100 == bits<6,4>::of(instruction);
 	}
 
 	static bool is_cmp_highreg(const halfword instruction) {
 		return is_sdibe(instruction) && (
-			(0b0101 == instruction.uint(6, 4)) ||
-			(0b011 == instruction.uint(7, 3))
+			(0b0101 == bits<6,4>::of(instruction)) ||
+			(0b011 == bits<7,3>::of(instruction))
 		);
 	}
 
 	static bool is_mov_highreg(const halfword instruction) {
 		return is_sdibe(instruction) &&
-			   0b10 == instruction.uint(8, 2);
+			   0b10 == bits<8,2>::of(instruction);
 	}
 
 	static bool is_bx(const halfword instruction) {
 		return is_sdibe(instruction) &&
-			   0b110 == instruction.uint(7, 3);
+			   0b110 == bits<7,3>::of(instruction);
 	}
 
 	static bool is_blx(const halfword instruction) {
 		return is_sdibe(instruction) &&
-			   0b111 == instruction.uint(7, 3);
+			   0b111 == bits<7,3>::of(instruction);
 	}
 
 	static bool is_ldr_literal(const halfword instruction) {
-		return 0b01001 == instruction.uint(11, 5);
+		return 0b01001 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_str_reg(const halfword instruction) {
-		return 0b0101000 == instruction.uint(9, 7);
+		return 0b0101000 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_strh_reg(const halfword instruction) {
-		return 0b0101001 == instruction.uint(9, 7);
+		return 0b0101001 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_strb_reg(const halfword instruction) {
-		return 0b0101010 == instruction.uint(9, 7);
+		return 0b0101010 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_ldrsb_reg(const halfword instruction) {
-		return 0b0101011 == instruction.uint(9, 7);
+		return 0b0101011 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_ldr_reg(const halfword instruction) {
-		return 0b0101100 == instruction.uint(9, 7);
+		return 0b0101100 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_ldrh_reg(const halfword instruction) {
-		return 0b0101101 == instruction.uint(9, 7);
+		return 0b0101101 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_ldrb_reg(const halfword instruction) {
-		return 0b0101110 == instruction.uint(9, 7);
+		return 0b0101110 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_ldrsh_reg(const halfword instruction) {
-		return 0b0101111 == instruction.uint(9, 7);
+		return 0b0101111 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_str_imm(const halfword instruction) {
-		return 0b01100 == instruction.uint(11, 5);
+		return 0b01100 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_ldr_imm(const halfword instruction) {
-		return 0b01101 == instruction.uint(11, 5);
+		return 0b01101 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_strb_imm(const halfword instruction) {
-		return 0b01110 == instruction.uint(11, 5);
+		return 0b01110 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_ldrb_imm(const halfword instruction) {
-		return 0b01111 == instruction.uint(11, 5);
+		return 0b01111 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_strh_imm(const halfword instruction) {
-		return 0b10000 == instruction.uint(11, 5);
+		return 0b10000 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_ldrh_imm(const halfword instruction) {
-		return 0b10001 == instruction.uint(11, 5);
+		return 0b10001 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_str_sp_imm(const halfword instruction) {
-		return 0b10010 == instruction.uint(11, 5);
+		return 0b10010 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_ldr_sp_imm(const halfword instruction) {
-		return 0b10011 == instruction.uint(11, 5);
+		return 0b10011 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_adr(const halfword instruction) {
-		return 0b10100 == instruction.uint(11, 5);
+		return 0b10100 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_add_sp_imm(const halfword instruction) {
-		return 0b10101 == instruction.uint(11, 5);
+		return 0b10101 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_add_sp_imm_t2(const halfword instruction) {
-		return 0b101100000 == instruction.uint(7, 9);
+		return 0b101100000 == bits<7,9>::of(instruction);
 	}
 
 	static bool is_sub_sp_imm(const halfword instruction) {
-		return 0b101100001 == instruction.uint(7, 9);
+		return 0b101100001 == bits<7,9>::of(instruction);
 	}
 
 	static bool is_sxth(const halfword instruction) {
-		return 0b1011001000 == instruction.uint(6, 10);
+		return 0b1011001000 == bits<6,10>::of(instruction);
 	}
 
 	static bool is_sxtb(const halfword instruction) {
-		return 0b1011001001 == instruction.uint(6, 10);
+		return 0b1011001001 == bits<6,10>::of(instruction);
 	}
 
 	static bool is_uxth(const halfword instruction) {
-		return 0b1011001010 == instruction.uint(6, 10);
+		return 0b1011001010 == bits<6,10>::of(instruction);
 	}
 
 	static bool is_uxtb(const halfword instruction) {
-		return 0b1011001011 == instruction.uint(6, 10);
+		return 0b1011001011 == bits<6,10>::of(instruction);
 	}
 
 	static bool is_push(const halfword instruction) {
-		return 0b1011010 == instruction.uint(9, 7);
+		return 0b1011010 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_cps(const halfword instruction) {
-		return 0b10110110011 == instruction.uint(5, 11);
+		return 0b10110110011 == bits<5,11>::of(instruction);
 	}
 
 	static bool is_rev_word(const halfword instruction) {
-		return 0b1011101000 == instruction.uint(6, 10);
+		return 0b1011101000 == bits<6,10>::of(instruction);
 	}
 
 	static bool is_rev16(const halfword instruction) {
-		return 0b1011101001 == instruction.uint(6, 10);
+		return 0b1011101001 == bits<6,10>::of(instruction);
 	}
 
 	static bool is_revsh(const halfword instruction) {
-		return 0b1011101011 == instruction.uint(6, 10);
+		return 0b1011101011 == bits<6,10>::of(instruction);
 	}
 
 	static bool is_pop(const halfword instruction) {
-		return 0b1011110 == instruction.uint(9, 7);
+		return 0b1011110 == bits<9,7>::of(instruction);
 	}
 
 	static bool is_breakpoint(const halfword instruction) {
-		return 0b10111110 == instruction.uint(8, 8);
+		return 0b10111110 == bits<8,8>::of(instruction);
 	}
 
 	static bool is_hints(const halfword instruction) {
-		return 0b10111111 == instruction.uint(8, 8);
+		return 0b10111111 == bits<8,8>::of(instruction);
 	}
 
 	static bool is_nop(const halfword instruction) {
@@ -326,72 +326,72 @@ namespace {
 	}
 
 	static bool is_stm(const halfword instruction) {
-		return 0b11000 == instruction.uint(11, 5);
+		return 0b11000 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_ldm(const halfword instruction) {
-		return 0b11001 == instruction.uint(11, 5);
+		return 0b11001 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_branch(const halfword instruction) {
-		return 0b1101 == instruction.uint(12, 4) &&
-			   (instruction.uint(9, 3) != 0b111);
+		return 0b1101 == bits<12,4>::of(instruction) &&
+			   (bits<9,3>::of(instruction) != 0b111);
 	}
 
 	static bool is_svc(const halfword instruction) {
-		return 0b1101 == instruction.uint(12, 4) &&
-			   0b1111 == instruction.uint(8, 4);
+		return 0b1101 == bits<12,4>::of(instruction) &&
+			   0b1111 == bits<8,4>::of(instruction);
 	}
 
 
 	static bool is_unconditional_branch(const halfword instruction) {
-		return 0b11100 == instruction.uint(11, 5);
+		return 0b11100 == bits<11,5>::of(instruction);
 	}
 
 	static bool is_32bit_thumb_encoding(const halfword instruction) {
-		return 0b111 == instruction.uint(13, 3) &&
-			   0b00 !=  instruction.uint(11, 2);
+		return 0b111 == bits<13,3>::of(instruction) &&
+			   0b00 !=  bits<11,2>::of(instruction);
 	}
 
 
 	static bool is_32bit_thumb_br_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_encoding(instr.first) &&
-			   0b10 == instr.first.uint(11, 2) &&
-			   0b1  == instr.second.uint(15, 1);
+			   0b10 == bits<11,2>::of(instr.first) &&
+			   0b1  == bits<15,1>::of(instr.second);
 	}
 
 	static bool is_32bit_thumb_msr(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b011100 == instr.first.uint(5, 6) &&
-			   0b000 	== (instr.second.uint(12, 3) & 0b101);
+			   0b011100 == bits<5,6>::of(instr.first) &&
+			   0b000 	== (bits<12,3>::of(instr.second) & 0b101);
 	}
 
 	static bool is_32bit_thumb_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b0111011 == instr.first.uint(4, 7) &&
-			   0b000 	== (instr.second.uint(12, 3) & 0b101);
+			   0b0111011 == bits<4,7>::of(instr.first) &&
+			   0b000 	== (bits<12,3>::of(instr.second) & 0b101);
 	}
 
 	static bool is_32bit_thumb_mrs(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b011111 == instr.first.uint(5, 6) &&
-			   0b000 	== (instr.second.uint(12, 3) & 0b101);
+			   0b011111 == bits<5,6>::of(instr.first) &&
+			   0b000 	== (bits<12,3>::of(instr.second) & 0b101);
 	}
 
 	static bool is_32bit_thumb_bl(const instruction_pair instr) {
-		auto op2 = instr.second.uint(12, 3) & 0b101;
+		auto op2 = bits<12,3>::of(instr.second) & 0b101;
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			 0b101 	== op2 ;
 	}
 
 	static bool is_undefined(const halfword instr) {
-		return 0b11011110 == instr.uint(8, 8);
+		return 0b11011110 == bits<8,8>::of(instr);
 	}
 
 	static bool is_undefined32(const instruction_pair instr) {
 		return is_32bit_thumb_encoding(instr.first) &&
-				0b111101111111 == instr.first.uint(4, 12) &&
-				0b1010 == instr.second.uint(12, 4);
+				0b111101111111 == bits<4,12>::of(instr.first) &&
+				0b1010 == bits<12,4>::of(instr.second);
 	}
 }
 
@@ -408,7 +408,7 @@ public:
 
 		// Shift (immediate), add, subtract, move, and compare
 		if(is_lsl_imm(instr)) {
-			if(0 == instr.uint(6,5)) {
+			if(0 == bits<6,5>::of(instr)) {
 				// imm5 is zero, encoding is movs
 				dispatch(movs(instr));
 			} else {

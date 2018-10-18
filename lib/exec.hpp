@@ -211,7 +211,7 @@ static void exec(const eor_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const lsl_reg instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= regs.get(instruction.rm).uint(0, 8);
+	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
 
 	bool carry = alu::lsl_c(value, shift_offset, status_reg.carry_flag());
 
@@ -224,7 +224,7 @@ static void exec(const lsl_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const lsr_reg instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= regs.get(instruction.rm).uint(0, 8);
+	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
 
 	bool carry = alu::lsr_c(value, shift_offset, status_reg.carry_flag());
 
@@ -237,7 +237,7 @@ static void exec(const lsr_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const asr_reg instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= regs.get(instruction.rm).uint(0, 8); // max 255
+	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm)); // max 255
 
 	bool carry = alu::asr_c(value, shift_offset, status_reg.carry_flag());
 
@@ -284,7 +284,7 @@ static void exec(const sbc instruction, registers& regs, apsr_reg& status_reg) {
 
 static void exec(const ror_reg instruction, registers& regs, apsr_reg& status_reg) {
 	word value 			= regs.get(instruction.rdn);
-	word shift_offset 	= regs.get(instruction.rm).uint(0, 8);
+	word shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
 
 	bool carry = alu::ror_c(value, shift_offset, status_reg.carry_flag());
 
@@ -495,8 +495,7 @@ static void exec(const blx instruction, registers& regs) {
 	word jump_addr = regs.get(instruction.rm);
 	// pc - 2
 	word next_instr_addr = regs.get_pc() - 2; // PC is two instruction ahead because of prefetch
-
-	next_instr_addr.write_bit(0, 1); // force thumb bit for lr
+	bits<0>::of(next_instr_addr) = true; // force thumb bit for lr
 	regs.set_lr(next_instr_addr);
 
 	regs.branch_link_interworking(jump_addr);
@@ -504,7 +503,7 @@ static void exec(const blx instruction, registers& regs) {
 
 static void exec(const ldr_literal instruction, registers& regs, const memory& mem) {
 	word offset = instruction.imm32();
-	word base 	= regs.get_pc().aligned(4);
+	word base 	= binops::aligned(regs.get_pc(), 4);
 	word address = base + offset;
 	word value = mem.read32(address);
 	regs.set(instruction.rt, value);
@@ -527,7 +526,7 @@ static void exec(const strh_reg instruction, const registers& regs, memory& mem)
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
 	word value 	=  regs.get(instruction.rt);
-	mem.write16(address, (uint16_t)value.uint(0, 16));
+	mem.write16(address, bits<0,16>::of((uint16_t)value));
 }
 
 static void exec(const strb_reg instruction, const registers& regs, memory& mem) {
@@ -537,7 +536,7 @@ static void exec(const strb_reg instruction, const registers& regs, memory& mem)
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
 	word value 	= regs.get(instruction.rt);
-	mem.write8(address, (uint8_t)value.uint(0, 8));
+	mem.write8(address, bits<0,8>::of((uint8_t)value));
 }
 
 static void exec(const ldrsb_reg instruction, registers& regs, const memory& mem) {
@@ -625,7 +624,7 @@ static void exec(const strb_imm instruction, const registers& regs, memory& mem)
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
 	word value 	=  regs.get(instruction.rt);
-	mem.write8(address, (uint8_t)value.uint(0, 8));
+	mem.write8(address, bits<0,8>::of((uint8_t)value));
 }
 
 static void exec(const ldrb_imm instruction, registers& regs, const memory& mem) {
@@ -645,7 +644,7 @@ static void exec(const strh_imm instruction, const registers& regs, memory& mem)
 	word base 	= regs.get(instruction.rn);
 	word address = base + offset;
 	word value 	=  regs.get(instruction.rt);
-	mem.write16(address, (uint16_t)value.uint(0, 16));
+	mem.write16(address, bits<0,16>::of((uint16_t)value));
 }
 
 static void exec(const ldrh_imm instruction, registers& regs, const memory& mem) {
@@ -677,7 +676,7 @@ static void exec(const ldr_sp_imm instruction, registers& regs, const memory& me
 
 static void exec(const adr instruction, registers& regs) {
 	word offset = instruction.imm32();
-	word base 	= regs.get_pc().aligned(4); // PC
+	word base 	= binops::aligned(regs.get_pc(), 4); // PC
 	word address = base + offset;
 	regs.set(instruction.rd, address);
 }
@@ -723,14 +722,14 @@ static void exec(const sxtb instruction, registers& regs) {
 
 static void exec(const uxth instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	halfword rm = regs.get(instruction.rm).uint(0, 16);
+	halfword rm = bits<0,16>::of(regs.get(instruction.rm));
 	word extended(rm); // zero-extend 16 bit to 32
 	regs.set(instruction.rd, extended);
 }
 
 static void exec(const uxtb instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	byte rm = regs.get(instruction.rm).uint(0, 8);
+	byte rm = bits<0,8>::of(regs.get(instruction.rm));
 	word extended(rm); // zero-extend 8 bit to 32
 	regs.set(instruction.rd, extended);
 }
@@ -752,7 +751,7 @@ static void exec(const push instruction, registers& regs, memory& mem) {
 }
 
 static void exec(const cps instruction, registers& regs) {
-	regs.primask_register().write_bit(0, instruction.im);
+	bits<0>::of(regs.primask_register()) = instruction.im;
 }
 
 static void exec(const pop instruction, registers& regs, memory& mem) {
@@ -813,10 +812,10 @@ static void exec(const rev16 instruction, registers& regs) {
 
 	const word rm = regs.get(instruction.rm);
 
-	word res =  (rm.uint(16, 8) << 24) |
-				(rm.uint(24, 8) << 16) |
-				(rm.uint(0, 8) << 8)   |
-				(rm.uint(8, 8) << 0);
+	word res =  bits<16,8>::of((rm)) << 24 |
+				bits<24,8>::of((rm)) << 16 |
+				bits<0,8>::of((rm)) << 8   |
+				bits<8,8>::of((rm)) << 0;
 
 	regs.set(instruction.rd, res);
 }
@@ -825,7 +824,7 @@ static void exec(const revsh instruction, registers& regs) {
 
 	const word rm = regs.get(instruction.rm);
 
-	word swapped_low16 = (rm.uint(0, 8) << 8) | rm.uint(8, 8);
+	word swapped_low16 = (bits<0,8>::of(rm) << 8) | bits<8,8>::of(rm);
 	word res = binops::sign(swapped_low16, 16);
 
 	regs.set(instruction.rd, res);
@@ -891,41 +890,42 @@ static void exec(const ldm instruction, registers& regs, memory& mem) {
 
 static void exec(const mrs instruction, registers& regs, apsr_reg& apsr) {
 	// do not keep the value initially present in the register
-	word val = 0;
-
-	switch(instruction.sysn.uint(3, 5)) {
+	uint32_t val = 0;
+	uint8_t instr_sysn = instruction.sysn;
+	uint8_t sysn_bits = bits<3,5>::of(instruction.sysn);
+	switch(sysn_bits) {
 		case 0b00000: {
-			if(instruction.sysn.bit(0)) {
-				val.write_bits(0, 0, (uint8_t)regs.interrupt_status_register().exception_num(), 8);
+			if(bits<0>::of(instruction.sysn)) {
+				bits<0,8>::of(val) = bits<0,8>::of((word)regs.interrupt_status_register().exception_num());
 			}
-			if(instruction.sysn.bit(1)) {
+			if(bits<1>::of(instruction.sysn)) {
 				// T-bit reads as zero
-				val.write_bit(epsr_reg::THUMB_BIT, 0);
+				bits<epsr_reg::THUMB_BIT>::of(val) = false;
 			}
-			if(!instruction.sysn.bit(2)) {
+			if(!bits<2>::of(instruction.sysn)) {
 				// T-bit reads as zero
 				// copy 5 bits from APS
 				// TODO: Why 5 and not 4 ???
-				val.write_bits(27, 27, regs.xpsr_register(), 5);
+				bits<27, 5>::of(val) = bits<27, 5>::of(regs.xpsr_register());
 			}
 		} break;
 		case 0b00001: {
-			switch(instruction.sysn.uint(0, 3)) {
-				case 000: {
+			switch((uint8_t)bits<0,3>::of(instruction.sysn)) {
+				case 0b000: {
 					val = regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
 				} break;
-				case 001: {
+				case 0b001: {
 					val = regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
 				} break;
 			}
 		} break;
 		case 0b00010: {
-			switch(instruction.sysn.uint(0, 3)) {
-				case 000: {
-					val = regs.primask_register().bit(0);
+			switch((uint8_t)bits<0,3>::of(instruction.sysn)) {
+				case 0b000: {
+					val = bits<0>::of(regs.primask_register());
 				} break;
-				case 001: {
-					val.write_bits(0, 0, regs.control_register(), 2);
+				case 0b001: {
+					bits<0, 2>::of(val) = bits<0, 2>::of((uint32_t)regs.control_register());
 				} break;
 			}
 		} break;
@@ -943,28 +943,27 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 		case msr::SpecialRegister::IAPSR:
 		case msr::SpecialRegister::EAPSR:
 		case msr::SpecialRegister::XPSR: {
-			apsr.copy_bits(regs.get(instruction.rn).uint(0, 5));
+			apsr.copy_bits(bits<0,5>::of(regs.get(instruction.rn)));
 		} break;
 		case msr::SpecialRegister::MSP: {
 			// TODO: Should fail if not in privileged mode
-			word sp = regs.get(instruction.rn).uint(2, 30) << 2;
+			word sp = bits<2,30>::of(regs.get(instruction.rn)) << 2;
 			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main, sp);
 		} break;
 		case msr::SpecialRegister::PSP: {
 			// TODO: Should fail if not in privileged mode
-			word sp = regs.get(instruction.rn).uint(2, 30);
+			word sp = bits<2,30>::of(regs.get(instruction.rn));
 			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process, sp);
 		} break;
 		case msr::SpecialRegister::PRIMASK: {
 			// TODO: MSR SpecialRegister::PRIMASK
-			regs.primask_register().write_bit(0, regs.get(instruction.rn).bit(0));
-
+			bits<0>::of(regs.primask_register()) = bits<0>::of(regs.get(instruction.rn));
 		} break;
 		case msr::SpecialRegister::CONTROL: {
 			if(regs.exec_mode_register().is_thread_mode()) {
 				word val = regs.get(instruction.rn);
-				regs.control_register().set_n_priv(val.bit(0));
-				regs.control_register().set_sp_sel(val.bit(1));
+				regs.control_register().set_n_priv(bits<0>::of(val));
+				regs.control_register().set_sp_sel(bits<1>::of(val));
 			}
 		} break;
 		default: {
@@ -977,7 +976,7 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 static void exec(const bl_imm instruction, registers& regs) {
 	// pc is 4 bytes ahead, so already poiting to the next instruction
 	word next_instr_addr = regs.get_pc();
-	next_instr_addr.set_bit(0); // force thumb mode
+	bits<0>::of(next_instr_addr) = true; // force thumb mode
 	regs.set_lr(next_instr_addr);
 	int32_t offset = instruction.offset();
 	int32_t new_pc = regs.get_pc() + offset;

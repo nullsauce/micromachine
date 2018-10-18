@@ -113,7 +113,6 @@ declare_pinksim_test(cpsInstr)
 #declare_pinksim_test(yieldInstr)
 
 declare_test(binary_helpers_tests binary_helpers_tests.cpp)
-declare_test(bits_tests bits_tests.cpp)
 #declare_test(alu_tests alu_tests.cpp)
 declare_test(exception_prioritization exception_prioritization.cpp)
 declare_test(systick systick.cpp)

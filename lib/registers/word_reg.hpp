@@ -12,6 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "types.hpp"
 #include "registers/ireg.hpp"
+#include "bits.hpp"
 
 class word_reg : public ireg {
 public:
@@ -25,6 +26,15 @@ public:
 private:
 	virtual void set(word word) = 0;
 protected:
+	template<typename bits_t>
+	auto self() {
+		return bits_t::of(_word);
+	}
+
+	template<typename bits_t>
+	auto self() const {
+		return bits_t::of(_word);
+	}
 	word _word;
 };
 

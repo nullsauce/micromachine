@@ -2,11 +2,12 @@
 #define MICROMACHINE_INSTRUCTION_PAIR_HPP
 
 #include "types.hpp"
+#include "bits.hpp"
 
 static
 bool is_wide_thumb_encoding(const halfword& instruction) {
-	return 0b111 == instruction.uint(13, 3) &&
-	       0b00 !=  instruction.uint(11, 2);
+	return 0b111 == bits<13,3>::of(instruction) &&
+	       0b00 !=  bits<11,2>::of(instruction);
 }
 
 // TODO: make natively 32 bits
@@ -22,8 +23,8 @@ struct instruction_pair {
 	    , second(0) {}
 
 	instruction_pair(word word)
-	    : first(word.bits<0,16>())
-	    , second(word.bits<16,16>()) {}
+	    : first(bits<0,16>::of(word))
+	    , second(bits<16,16>::of(word)) {}
 
 
 	bool is_wide() const {

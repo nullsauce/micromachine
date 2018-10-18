@@ -8,12 +8,15 @@ class sphr3_reg : public word_reg {
 public:
 	using ireg::operator=;
 
+	using pr14_bits = bits<30, 2>;
+	using pr15_bits = bits<30, 2>;
+
 	word pri14() const {
-		return get().bits<22, 2>();
+		return self<pr14_bits>();
 	}
 
 	word pri15() const {
-		return get().bits<30, 2>();
+		return self<pr15_bits>();
 	}
 
 private:

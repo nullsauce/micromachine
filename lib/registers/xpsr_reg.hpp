@@ -15,11 +15,11 @@ public:
 protected:
 
 	void write_bit(size_t offset, bool value) {
-		_xpsr.write_bit(offset, value);
+		binops::write_bit(_xpsr, offset, value);
 	}
 
 	bool bit(size_t offset) const {
-		return _xpsr.bit(offset);
+		return binops::get_bit(_xpsr, offset);
 	}
 
 	word& _xpsr;
