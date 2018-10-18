@@ -3,8 +3,9 @@
 
 #include <functional>
 
+
 template<size_t offset, size_t len, typename u_type>
-struct   bitslice /*: public integer_ref_holder<u_type>*/ {
+struct bitslice {
 	// TODO: u_type should be called somthing else because it is misleading with integer_type::u_type
 	bitslice(u_type& val) : _val(val) {
 
