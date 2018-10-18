@@ -125,6 +125,11 @@ TEST(BitsTest, SingleBitSliceNotAssignableFromLargerInt) {
 		("bitslice of length 1 should not be assignable from uint8_t");
 }
 
+TEST(BitsTest, SmallBitSliceNotAssignableFromLargerInt) {
+	testing::assert_not_assignable<slice<0, 6, uint16_t>, uint8_t>
+		("bitslice of length 6 should not be assignable from uint8_t");
+}
+
 TEST(BitsTest, SubSliceReadConsistency) {
 	uint16_t a = 0x1234;
 	EXPECT_EQ((bits<6,2>::of(a)), (bits<2,2>::of(bits<4,8>::of(a))));

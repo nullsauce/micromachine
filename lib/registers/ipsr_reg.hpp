@@ -8,27 +8,23 @@
 struct ipsr_reg : public xpsr_reg {
 
 	using xpsr_reg::xpsr_reg;
+	// IPSR bits are XPSR's bit 0 to 5
+	using ipsr_bits = bits<0, 6>;
 
 	void set_exception_number(exception_number number) {
-		mutable_xpsr_bits() = number.int_value();
+		ipsr_bits::of(_xpsr) = ipsr_bits::of(number.int_value());
 	}
 
 	exception_number exception_num() const {
-		return exception_number::from_uint(xpsr_bits().extract());
+		return exception_number::from_uint(ipsr_bits::of(_xpsr));
 	}
 
 private:
-	// IPSR bits are XPSR's bit 0 to 5
-	using ipsr_bits = bitslice<0,6, word>;
-	ipsr_bits mutable_xpsr_bits() {
-		//TODO: bitslice::bits::of(_xpsr)
-		return ipsr_bits(_xpsr);
-	}
 
-	const ipsr_bits xpsr_bits() const {
-		//TODO: bitslice::bits::of(_xpsr)
-		return ipsr_bits(_xpsr);
-	}
+	using ipsr_slice = ipsr_bits::integer_slice<uint32_t>;
+	using ipsr_const_slice = ipsr_bits::const_integer_slice<uint32_t>;
+
+
 };
 
 

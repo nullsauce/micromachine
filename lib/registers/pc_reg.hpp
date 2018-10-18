@@ -23,11 +23,11 @@ public:
 
 	}
 
-	void branch(word address) {
+	void branch(uint32_t address) {
 		set(address & 0xFFFFFFFE);
 	}
 
-	void branch_interworking(word address) {
+	void branch_interworking(uint32_t address) {
 		if(_exec_mode_reg.is_handler_mode() &&
 			0b1111 == bits<28,4>::of(address)) {
 			// TODO ExceptionReturn
@@ -52,7 +52,7 @@ public:
 
 	}
 
-	void branch_link_interworking(word address) {
+	void branch_link_interworking(uint32_t address) {
 		if(!bits<0>::of(address)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
 		// trigger a hard fault on next instruction if Thumb bit is not set
 		_epsr_reg.set_thumb_bit(bits<0>::of(address));
@@ -64,13 +64,13 @@ private:
 
 	static constexpr uint32_t MASK = binops::make_mask<1, 31>();
 
-	void set(word word) override {
+	void set(uint32_t word) override {
 		_word = word;
 		_dirty_status = true;
 	}
 
-	word get() const override {
-		word val = _word & MASK;
+	uint32_t get() const override {
+		uint32_t val = _word & MASK;
 		return val;
 	}
 

@@ -21,12 +21,12 @@ public:
 		Process = 1
 	};
 
-	void set_specific_banked_sp(StackType type, word word) {
+	void set_specific_banked_sp(StackType type, uint32_t word) {
 		//fprintf(stderr, "SET (specific) SP=%08x\n", word);
 		_sps[(size_t)type] = word;
 	}
 
-	word get_specific_banked_sp(StackType type) {
+	uint32_t get_specific_banked_sp(StackType type) {
 		return _sps[(size_t)type];
 	}
 
@@ -38,7 +38,7 @@ private:
 
 	static const uint32_t MASK = binops::make_mask<2, 30>();
 
-	void set(word word) override {
+	void set(uint32_t word) override {
 		// these two bits should always be zero, or UNPREDICTABLE
 		//fprintf(stderr, "SET SP=%08x\n", word);
 		if(word & MASK) {
@@ -47,11 +47,11 @@ private:
 		banked() = word;
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return banked() & MASK;
 	}
 
-	word& banked() {
+	uint32_t& banked() {
 		if(_exec_mode_reg.is_thread_mode()) {
 			return _sps[_ctl_reg.sp_sel()];
 		} else  {
@@ -60,7 +60,7 @@ private:
 		}
 	}
 
-	const word& banked() const {
+	const uint32_t& banked() const {
 		if(_exec_mode_reg.is_thread_mode()) {
 			return _sps[_ctl_reg.sp_sel()];
 		} else {
@@ -72,7 +72,7 @@ private:
 	// stack pointers
 	// 0: SP Main
 	// 1: SP Process
-	word _sps[2];
+	uint32_t _sps[2];
 
 	const exec_mode_reg& _exec_mode_reg;
 	const control_reg& _ctl_reg;

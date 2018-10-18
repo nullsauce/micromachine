@@ -10,7 +10,7 @@ class xpsr_reg {
 
 public:
 
-	xpsr_reg(word& xpsr) : _xpsr(xpsr) {}
+	xpsr_reg(uint32_t& xpsr) : _xpsr(xpsr) {}
 
 protected:
 
@@ -22,7 +22,7 @@ protected:
 		return binops::get_bit(_xpsr, offset);
 	}
 
-	word& _xpsr;
+	uint32_t& _xpsr;
 };
 
 #endif //MICROMACHINE_XPSR_REG_HPP
