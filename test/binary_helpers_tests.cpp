@@ -25,6 +25,16 @@ TEST(BitsTest, SameSliceEqualityAfterAssignation) {
 	EXPECT_EQ(initial_b, b);
 }
 
+TEST(BitsTest, SameSliceEqualityAfterAssignationDifferentSlices) {
+	const uint16_t initial_b = 0b101011001111000;
+	uint16_t a = 0b001001000110100;
+	uint16_t b = initial_b;
+	bits<7, 7>::of(a) = bits<2, 7>::of(b);
+	EXPECT_EQ((bits<7, 7>::of(a)), (bits<2, 7>::of(b)));
+	EXPECT_EQ(initial_b, b);
+	EXPECT_EQ(a, 0b000111100110100);
+}
+
 TEST(BitsTest, SameSliceAssignationCorectness) {
 	using mid_slice = bits<4, 8>;
 	uint16_t a = 0x1234;
@@ -103,11 +113,41 @@ TEST(BitsTest, ClearOneBit) {
 TEST(BitsTest, SingleBitWordConvertibleToBool) {
 	testing::assert_convertible<slice<0, 1, uint16_t>, bool>
 		("bitslice of length 1 should be convertible to bool");
-
 }
 
 TEST(BitsTest, SingleBitSliceAssignableFromBool) {
 	testing::assert_assignable<slice<0, 1, uint16_t>, bool>
 		("bitslice of length 1 should be assignable from bool");
+}
 
+TEST(BitsTest, SingleBitSliceNotAssignableFromLargerInt) {
+	testing::assert_not_assignable<slice<0, 1, uint16_t>, uint8_t>
+		("bitslice of length 1 should not be assignable from uint8_t");
+}
+
+TEST(BitsTest, SubSliceReadConsistency) {
+	uint16_t a = 0x1234;
+	EXPECT_EQ((bits<6,2>::of(a)), (bits<2,2>::of(bits<4,8>::of(a))));
+}
+
+TEST(BitsTest, SubSliceWriteConsistency) {
+	using a_slice = bits<4, 8>;
+	uint16_t a = 0b1111001011110000;
+	bits<4,8>::of(bits<4,12>::of(a)) = (uint8_t)0;
+	EXPECT_EQ(0b0000000011110000, a);
+}
+
+TEST(BitsTest, SelfliceWriteConsistency) {
+	uint16_t a = 0b0000110100001111;
+	bits<4,4>::of(a) = bits<8,4>::of(a);
+	EXPECT_EQ(0b0000110111011111, a);
+}
+
+TEST(BitsTest, ByteSwapWithTemporary) {
+	uint16_t a = 0xdeaf;
+	auto tmp = (uint8_t)bits<0,8>::of(a);
+	bits<0,8>::of(a) = bits<8,8>::of(a);
+	EXPECT_EQ(0xde, (bits<0,8>::of(a)));
+	bits<8,8>::of(a) = tmp;
+	EXPECT_EQ(0xafde, a);
 }
