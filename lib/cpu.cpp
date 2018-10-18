@@ -64,16 +64,6 @@ bool cpu::load_elf(const std::string &path)
 	//std::cout << "Number of sections: " << sec_num << std::endl;
 	for (int i = 0; i < sec_num; ++i) {
 		ELFIO::section *section = elfReader.sections[i];
-		/*
-		fprintf(stderr, "%s:\t\t\t %016X %016X %i %i %i %i\n",
-			section->get_name().c_str(),
-			section->get_address(),
-			section->get_size(),
-			section->get_flags(),
-			section->get_type(),
-			section->get_info(),
-			section->get_index()
-		);*/
 
 		if(section->get_flags() & (SHF_ALLOC | SHF_EXECINSTR)) {
 
