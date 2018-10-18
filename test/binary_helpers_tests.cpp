@@ -66,9 +66,9 @@ TEST(BitsTest, SingleBitSliceAssignationCorectness) {
 	const uint16_t initial_value = 0b0001010100011101;
 	uint16_t a = initial_value;
 	EXPECT_EQ(1, thebit::of(a));
-	thebit::of(a) = 0;
+	thebit::of(a) = false;
 	EXPECT_EQ(0, thebit::of(a));
-	thebit::of(a) = 1;
+	thebit::of(a) = true;
 	EXPECT_EQ(initial_value, a);
 }
 
@@ -98,4 +98,16 @@ TEST(BitsTest, ClearOneBit) {
 	uint16_t v = 0b0001010100011101;
 	bits<2>::of(v).clear();
 	EXPECT_EQ(0b0001010100011001, v);
+}
+
+TEST(BitsTest, SingleBitWordConvertibleToBool) {
+	testing::assert_convertible<slice<0, 1, uint16_t>, bool>
+		("bitslice of length 1 should be convertible to bool");
+
+}
+
+TEST(BitsTest, SingleBitSliceAssignableFromBool) {
+	testing::assert_assignable<slice<0, 1, uint16_t>, bool>
+		("bitslice of length 1 should be assignable from bool");
+
 }
