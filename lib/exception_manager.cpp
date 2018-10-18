@@ -156,7 +156,7 @@ void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
 	_regs.set_lr(_mem.read32(frame_ptr+20));
 	_regs.set_pc(_mem.read32(frame_ptr+24));
 	word psr_bits = _mem.read32(frame_ptr+28);
-	uint32_t stack_align = psr_bits.bit(8) << 2;
+	uint32_t stack_align = bits<8>::of(psr_bits) << 2;
 
 	switch((uint8_t)bits<0,4>::of(return_address).extract()) {
 		case 0b0001: /* return to handler */
@@ -173,16 +173,16 @@ void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
 			break;
 		}
 	}
-
-	_regs.app_status_register().copy_bits(psr_bits.bits<28,4>());
+	// TODO: get rid of copy bits
+	_regs.app_status_register().copy_bits(bits<28,4>::of(psr_bits));
 	bool force_thread = _regs.exec_mode_register().is_thread_mode() && _regs.control_register().n_priv();
 	if(force_thread) {
 		_regs.interrupt_status_register().set_exception_number(exception_number::from_uint(0));
 	} else {
-		_regs.interrupt_status_register().set_exception_number(exception_number::from_uint(psr_bits.uint(0,6)));
+		_regs.interrupt_status_register().set_exception_number(exception_number::from_uint(bits<0,6>::of(psr_bits)));
 	}
 
-	_regs.execution_status_register().set_thumb_bit(psr_bits.bit(epsr_reg::THUMB_BIT));
+	_regs.execution_status_register().set_thumb_bit(bits<epsr_reg::THUMB_BIT>::of(psr_bits));
 
 }
 
@@ -190,25 +190,18 @@ void exception_manager::push_stack(uint32_t return_address) {
 
 	const size_t stack_frame_size = 32;
 	const uint32_t sp_mask = ~((uint32_t)0b100);
-	const bool frame_ptr_align = _regs.get_sp().bit(2);
+	const bool frame_ptr_align = bits<2>::of(_regs.get_sp());
 
 	//TODO: Check docs for conditional stack switch
 	uint32_t frame_ptr = (_regs.get_sp() - stack_frame_size) & sp_mask;
 	uint32_t old_sp = _regs.get_sp();
 	_regs.set_sp(frame_ptr);
 
-	uint xpsr_status2 = _regs.xpsr_register().uint(0, 8) |
-						(frame_ptr_align << 8) |
-						_regs.xpsr_register().uint(10, 22) << 10;
-
-	// TODO: Check why .bits doesnt work without cast to (word)
-	// TODO: Add tests to ensure this binary packing is correct
 	word xpsr_status = 0;
-	xpsr_status.bits<10,22>() = _regs.xpsr_register().bits<10,22>();
-	xpsr_status.bits<0,8>() = _regs.xpsr_register().bits<0,8>();
-	xpsr_status.write_bit(8, frame_ptr_align & 1);
-	//fprintf(stderr, "xpsr1=%s\n", xpsr_status.to_string().c_str());
-	//fprintf(stderr, "xpsr2=%s\n", word(xpsr_status2).to_string().c_str());
+	// TODO: Use cleaner bits copying primitives
+	bits<10,22>::of(xpsr_status) = bits<10,22>::of(_regs.xpsr_register());
+	bits<0,8>::of(xpsr_status) = bits<0,8>::of(_regs.xpsr_register());
+	bits<8>::of(xpsr_status) = (bool)(frame_ptr_align & 1);
 
 	_mem.write32(frame_ptr+0,  _regs.get(0));
 	_mem.write32(frame_ptr+4,  _regs.get(1));
@@ -218,14 +211,6 @@ void exception_manager::push_stack(uint32_t return_address) {
 	_mem.write32(frame_ptr+20, _regs.get_lr());
 	_mem.write32(frame_ptr+24, return_address);
 	_mem.write32(frame_ptr+28, xpsr_status);
-
-	/*
-	fprintf(stderr, "push ctx [0:%08X <- +28:%08X]\n", frame_ptr, old_sp);
-	for(uint32_t t = 0; t < 32; t+=4) {
-		fprintf(stderr, "  %08X: %08X\n", frame_ptr+t, _mem.read32(frame_ptr+t));
-	}
-	fprintf(stderr, "----- %08X\n", frame_ptr);
-	 */
 
 	if(_regs.exec_mode_register().is_handler_mode()) {
 		_regs.set_lr(0xFFFFFFF1); // return to handler

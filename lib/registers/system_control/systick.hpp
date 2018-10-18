@@ -13,39 +13,44 @@ public:
 	static constexpr size_t TICKINT_BIT = 1;
 	static constexpr size_t ENABLE_BIT = 0;
 
+	using countflag_bit = bits<COUNTFLAG_BIT>;
+	using clocksource_bit = bits<CLKSOURCE_BIT>;
+	using tickint_bit = bits<TICKINT_BIT>;
+	using enable_bit = bits<ENABLE_BIT>;
+
 	bool count_flag() {
 		// Reading the COUNTFLAG_BIT clears it to 0
-		bool flag = _word.bit(COUNTFLAG_BIT);
+		bool flag = countflag_bit::of(_word);
 		set_count_flag(0);
 		return flag;
 	}
 
 	void set_count_flag(bool flag) {
-		_word.write_bit(COUNTFLAG_BIT, flag);
+		self<countflag_bit>() = flag;
 	}
 
 	bool clock_source() const {
-		return _word.bit(CLKSOURCE_BIT);
+		return self<clocksource_bit>();
 	}
 
 	void set_clock_source(bool flag) {
-		_word.write_bit(CLKSOURCE_BIT, flag);
+		self<clocksource_bit>() = flag;
 	}
 
 	bool tick_int() const {
-		return _word.bit(TICKINT_BIT);
+		return self<tickint_bit>();
 	}
 
 	void set_tick_int(bool flag) {
-		_word.write_bit(TICKINT_BIT, flag);
+		self<tickint_bit>() = flag;
 	}
 
 	bool enabled() const {
-		return _word.bit(ENABLE_BIT);
+		return self<enable_bit>();
 	}
 
 	void set_enabled(bool flag) {
-		_word.write_bit(ENABLE_BIT, flag);
+		self<enable_bit>() = flag;
 	}
 
 private:
@@ -65,11 +70,11 @@ public:
 	using word_reg::operator=;
 private:
 	void set(word word) override {
-		_word.bits<0, 24>() = word;
+		bits<0,24>::of(_word) = word;
 	}
 
 	word get() const override {
-		return _word.bits<0, 24>();
+		return bits<0,24>::of(_word);
 	}
 };
 
@@ -82,7 +87,7 @@ public:
 	}
 	// this setter does NOT clear the register
 	void set_internal(word word) {
-		_word.bits<0, 24>() = word;
+		bits<0,24>::of(_word) = word;
 	}
 
 	void decrement() {
@@ -92,12 +97,12 @@ public:
 private:
 	void set(word word) override {
 		// Writing to SYST_CVR clears both the register and the COUNTFLAG status bit to zero
-		_word.bits<0, 24>().clear();
+		bits<0,24>::of(_word).clear();
 		_control_reg.set_count_flag(false);
 	}
 
 	word get() const override {
-		return _word.bits<0, 24>();
+		return bits<0,24>::of(_word);
 	}
 
 protected:
@@ -111,28 +116,32 @@ public:
 	static constexpr size_t SKEW_BIT = 30;
 	static constexpr size_t NOREF_BIT = 31;
 
+	using tenms_bits = bits<0,24>;
+	using skew_bit = bits<SKEW_BIT>;
+	using noref_bit = bits<NOREF_BIT>;
+
 	word tenms() const {
-		return _word.bits<0, 24>();
+		return self<tenms_bits>();
 	}
 
 	void set_tenms(uint32_t tenms) {
-		bits<0, 24>::of(_word) = bits<0, 24>::of((word)tenms);
+		self<tenms_bits>() = tenms_bits::of(tenms);
 	}
 
 	bool skew() const {
-		return _word.bit(SKEW_BIT);
+		return self<skew_bit>();
 	}
 
 	void set_skew(bool flag) {
-		_word.write_bit(SKEW_BIT, flag);
+		self<skew_bit>() = flag;
 	}
 
 	bool noref() const {
-		return _word.bit(NOREF_BIT);
+		return self<noref_bit>();
 	}
 
 	void set_noref(bool flag) {
-		_word.write_bit(NOREF_BIT, flag);
+		self<noref_bit>() = flag;
 	}
 
 private:

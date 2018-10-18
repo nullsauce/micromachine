@@ -15,16 +15,16 @@ public:
 
 private:
 
-	void set(word word) override {
+	void set(uint32_t word) override {
 		_word = word;
 	}
 
-	word get() const override {
+	uint32_t get() const override {
 		return _word;
 	}
 
 protected:
-	word _word;
+	uint32_t _word;
 };
 
 #endif //MICROMACHINE_STANDARD_REG_HPP_HPP

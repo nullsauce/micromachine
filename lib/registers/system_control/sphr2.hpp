@@ -7,9 +7,10 @@
 class sphr2_reg : public word_reg {
 public:
 	using ireg::operator=;
+	using pr11_bits = bits<30, 2>;
 
 	word pri11() const {
-		return get().bits<30, 2>();
+		return self<pr11_bits>();
 	}
 
 private:

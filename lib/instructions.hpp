@@ -518,11 +518,11 @@ struct bic_reg : public standard_rdn_rm {
 struct bl_imm {
 
 	bl_imm(const instruction_pair& instr)
-			: j1(instr.second.bit(13))
-			, j2(instr.second.bit(11))
-			, s(instr.first.bit(10))
-			, imm10(instr.first.uint(0, 10))
-			, imm11(instr.second.uint(0, 11))
+			: j1(bits<13>::of(instr.second))
+			, j2(bits<11>::of(instr.second))
+			, s(bits<10>::of(instr.first))
+			, imm10(bits<0,10>::of(instr.first))
+			, imm11(bits<0,11>::of(instr.second))
 	{}
 
 	int32_t offset() const {
@@ -836,8 +836,8 @@ struct special_reg_instr {
 
 struct msr : special_reg_instr{
 	msr(const instruction_pair& instr)
-		: rn(instr.first.uint(0, 4))
-		, sysn((SpecialRegister)instr.second.uint(0, 8)) {
+		: rn(bits<0,4>::of(instr.first))
+		, sysn((SpecialRegister)(uint8_t)bits<0,8>::of(instr.second)) {
 	}
 	const reg_idx rn;
 	const SpecialRegister sysn;
@@ -845,17 +845,17 @@ struct msr : special_reg_instr{
 
 struct mrs : special_reg_instr{
 	mrs(const instruction_pair& instr)
-		: rd(instr.second.uint(8, 4))
-		, sysn(instr.second.uint(0, 8)) {
+		: rd(bits<8,4>::of(instr.second))
+		, sysn(bits<0,8>::of(instr.second)) {
 	}
 	const reg_idx rd;
-	const byte sysn;
+	const uint8_t sysn;
 };
 
 
 struct udf {
 	udf(const halfword& instruction)
-		: imm32(instruction.uint(0, 8)) {
+		: imm32(bits<0,8>::of(instruction)) {
 	}
 	const uint32_t imm32;
 };
@@ -863,8 +863,8 @@ struct udf {
 struct udfw {
 	udfw(const instruction_pair& instr)
 		: imm32(
-			(instr.first.uint(0, 4) << 12) |
-			(instr.second.uint(0, 12))
+			(bits<0,4>::of(instr.first) << 12) |
+			(bits<0,12>::of(instr.second))
 		){
 	}
 	const uint32_t imm32;
@@ -872,7 +872,7 @@ struct udfw {
 
 struct cps {
 	cps(halfword instruction)
-	 : im(instruction.bit(4)){}
+	 : im(bits<4>::of(instruction)){}
 	const bool im;
 };
 
@@ -882,8 +882,8 @@ struct bkpt : standard_imm8 {
 
 struct hint  {
 	hint(halfword instruction)
-	: opa(instruction.uint(4, 4))
-	, opb(instruction.uint(0, 4)) {
+	: opa(bits<4,4>::of(instruction))
+	, opb(bits<0,4>::of(instruction)) {
 	}
 
 	const imm8_t opa;
