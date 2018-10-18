@@ -11,46 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 #define MICROMACHINE_EMU_BITS_HPP
 #define EMU_BITS_STRINGIFY(s) #s
 #include <functional>
-
-namespace binops {
-
-	template<typename T>
-	constexpr size_t binsize() {
-		return sizeof(T) * 8U;
-	}
-
-	template<>
-	constexpr size_t binsize<bool>() {
-		return 1;
-	}
-
-	template<typename integer_type>
-	static integer_type make_mask(const size_t num_bits) {
-		return ((1ULL << num_bits) - 1ULL);
-	}
-
-	template<typename integer_type>
-	static integer_type rlshift(const integer_type& source, size_t right_offset, size_t left_offset) {
-		return (source >> right_offset) << left_offset;
-	}
-
-	template <typename u_type>
-	static bool get_bit(const u_type& source, size_t bit_offset) {
-		return source & (1 << bit_offset);
-	}
-
-	template<typename u_type>
-	std::string to_string(const u_type& value) {
-		const size_t binsize = binops::binsize<u_type>();
-		std::string str(binsize, '0');
-		for(size_t i = 0; i < binsize; i++) {
-			if(get_bit(value, binsize - i - 1)) {
-				str[i] = '1';
-			}
-		}
-		return str;
-	}
-}
+#include "binops.hpp"
 
 template<size_t offset, size_t len, typename integer_type>
 struct slice {
@@ -71,6 +32,10 @@ struct slice {
 
 	template<typename other_integer_type>
 	using enable_only_if_const_differ = typename std::enable_if<!std::is_same<integer_type, other_integer_type>::value, same_type>::type;
+
+
+	template<typename other_integer_type>
+	using enable_only_if_can_store = typename std::enable_if<binops::binsize<other_integer_type>() <= len, same_type>::type;
 
 	using smallest_std_integer = typename std::conditional<len == 1,
 		bool,
@@ -186,7 +151,7 @@ struct slice {
 	}
 
 	template<typename int_type, size_t num_bits = len>
-	same_type& operator=(int_type other) {
+	enable_only_if_can_store<int_type>& operator=(int_type other) {
 		write_val(other);
 		return *this;
 	}
