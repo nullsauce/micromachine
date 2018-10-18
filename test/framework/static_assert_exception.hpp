@@ -39,22 +39,53 @@ namespace testing {
 		}
 	};
 
+	/*
 	template <typename FromType, typename ToType>
-	using conversion_exception = testing::exceptionalize_static_assert<std::is_convertible<FromType, ToType>::value>;
+	struct conversion_assertion {
+		using check_type = std::is_convertible<FromType, ToType>;
+
+		using conversion_exception = testing::exceptionalize_static_assert<check_type::value>;
+
+		using not_conversion_exception = testing::exceptionalize_static_assert<!check_type::value>;
+	};*/
+
+	template<bool Exp>
+	void static_assert_exception(const char* message) {
+		testing::exceptionalize_static_assert<Exp> ex(message);
+	}
 
 	template <typename FromType, typename ToType>
-	using not_conversion_exception = testing::exceptionalize_static_assert<!std::is_convertible<FromType,
-	ToType>::value>;
+	void assert_convertible(const char* message) {
+		static_assert_exception<std::is_convertible<FromType, ToType>::value>(message);
+	}
 
 	template <typename FromType, typename ToType>
-	struct assert_convertible : conversion_exception<FromType, ToType> {
-		assert_convertible(const char* message) : conversion_exception<FromType, ToType>(message) {}
+	void assert_not_convertible(const char* message) {
+		static_assert_exception<!std::is_convertible<FromType, ToType>::value>(message);
+	}
+
+	template <typename FromType, typename ToType>
+	void assert_assignable(const char* message) {
+		static_assert_exception<std::is_assignable<FromType, ToType>::value>(message);
+	}
+
+	template <typename FromType, typename ToType>
+	void assert_not_assignable(const char* message) {
+		static_assert_exception<!std::is_assignable<FromType, ToType>::value>(message);
+	}
+
+	/*
+
+	template <typename FromType, typename ToType>
+	struct assert_convertible : conversion_assertion<FromType, ToType>::conversion_exception {
+		assert_convertible(const char* message) : conversion_assertion<FromType, ToType>::conversion_exception(message) {}
 	};
 
 	template <typename FromType, typename ToType>
-	struct assert_not_convertible : not_conversion_exception<FromType, ToType> {
-		assert_not_convertible(const char* message) : not_conversion_exception<FromType, ToType>(message) {}
-	};
+	struct assert_not_convertible : conversion_exception<FromType, ToType>::not_conversion_exception {
+		assert_not_convertible(const char* message) : conversion_exception<FromType,
+		ToType>::not_conversion_exception(message) {}
+	};*/
 }
 
 #endif //MICROMACHINE_EMU_STATIC_ASSERT_EXCEPTION_HPP

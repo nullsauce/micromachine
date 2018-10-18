@@ -145,11 +145,12 @@ struct slice {
 	}
 
 	// Allow assignment from bool if length equals 1
+	/*
 	template<size_t num_bits = len>
 	typename std::enable_if<num_bits == 1, same_type>::type& operator=(bool other) {
 		write_val(other);
 		return *this;
-	}
+	}*/
 
 	// Allow conversion to uint8 if length is smaller or equal to 8
 	template<size_t num_bits = len>
@@ -185,7 +186,7 @@ struct slice {
 	}
 
 	template<typename int_type, size_t num_bits = len>
-	typename std::enable_if<num_bits != 1, same_type>::type& operator=(int_type other) {
+	same_type& operator=(int_type other) {
 		write_val(other);
 		return *this;
 	}
