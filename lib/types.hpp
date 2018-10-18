@@ -9,9 +9,9 @@
 
 using reg_idx 	= size_t;
 
-using word 		= integer_type<uint32_t>;
-using halfword 	= integer_type<uint16_t>;
-using byte 		= integer_type<uint8_t>;
+using word 		= uint32_t; //integer_type<uint32_t>;
+using halfword 	= uint16_t; //integer_type<uint16_t>;
+using byte 		= uint8_t; //integer_type<uint8_t>;
 
 using imm11_t 	= uint16_t;
 using imm8_t 	= uint8_t;

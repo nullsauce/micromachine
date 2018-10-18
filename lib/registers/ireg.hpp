@@ -7,10 +7,6 @@ class ireg {
 
 public:
 
-	operator word() const {
-		return get();
-	}
-
 	ireg& operator=(uint32_t word) {
 		set(word);
 		return *this;

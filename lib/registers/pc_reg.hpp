@@ -29,18 +29,18 @@ public:
 
 	void branch_interworking(word address) {
 		if(_exec_mode_reg.is_handler_mode() &&
-			0b1111 == address.uint(28,4)) {
+			0b1111 == bits<28,4>::of(address)) {
 			// TODO ExceptionReturn
-			uint32_t return_address = address.uint(0, 28);
+			uint32_t return_address = bits<0,28>::of(address);
 			_exception_return_handler.exception_return(return_address);
 		} else {
 
-			if(!address.bit(0)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
+			if(!bits<0>::of(address)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
 			// trigger a hard fault on next instruction if Thumb bit is not set
-			_epsr_reg.set_thumb_bit(address.bit(0));
+			_epsr_reg.set_thumb_bit(bits<0>::of(address));
 
 			/*
-			if(!address.bit(0)) {
+			if(!bits<0>::of(address)) {
 				// Thumb bit not set, triggers a fault
 				_hardfault_signal = true;
 				fprintf(stderr, "PC: Thumb bit not set\n");
@@ -53,9 +53,9 @@ public:
 	}
 
 	void branch_link_interworking(word address) {
-		if(!address.bit(0)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
+		if(!bits<0>::of(address)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
 		// trigger a hard fault on next instruction if Thumb bit is not set
-		_epsr_reg.set_thumb_bit(address.bit(0));
+		_epsr_reg.set_thumb_bit(bits<0>::of(address));
 		// Inter-working branch, thumb bit is always cleared
 		branch(address);
 	}

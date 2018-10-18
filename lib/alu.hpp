@@ -120,12 +120,12 @@ namespace alu {
 		if(0 == offset) return carry_in;
 		const size_t binsize = binops::binsize(value);
 
-		const uint8_t offsetLower5bits = binops::read_uint(offset, 0, 5);
+		const uint8_t offsetLower5bits = bits<0,5>::of(offset);
 		const bool msb = binops::get_bit(value, binsize - 1U);
 
 		bool carry = msb;
 		if(offsetLower5bits) {
-			carry = value.bit(offsetLower5bits - 1);
+			carry = binops::get_bit(value, offsetLower5bits - 1);
 		}
 
 		value = ((value >> offset) | (value << (binsize - offset)));
@@ -153,7 +153,9 @@ namespace alu {
 		const word ares = a ^ res;
 
 		carry_out = (bigval >> 32) & 1U;
-		overflow_out = !ab.sign_bit() && ares.sign_bit();
+
+
+		overflow_out = !binops::get_sign_bit(ab) && binops::get_sign_bit(ares);
 
 		return res;
 	}
