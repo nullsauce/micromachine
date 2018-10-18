@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <exception>
+#include <string>
 #include <assert.h>
 #include "precond.hpp"
 
@@ -14,6 +15,11 @@ namespace binops {
 template<typename T>
 static constexpr size_t binsize() {
 	return sizeof(T) * 8U;
+}
+
+template<>
+constexpr size_t binsize<bool>() {
+	return 1;
 }
 
 template<typename T>
@@ -172,11 +178,20 @@ static u_type swap(const u_type& value) {
 	}
 }
 
+template<typename u_type>
+std::string to_string(const u_type& value) {
+	const size_t binsize = binops::binsize<u_type>();
+	std::string str(binsize, '0');
+	for(size_t i = 0; i < binsize; i++) {
+		if(get_bit(value, binsize - i - 1)) {
+			str[i] = '1';
+		}
+	}
+	return str;
+}
+
 };
 
-static constexpr bool is_big_endian() {
-	return (*(uint16_t *)"\0\xff" < 0x100);
-}
 
 
 
