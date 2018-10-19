@@ -469,7 +469,7 @@ public:
 		} else if(is_bitclear_reg(instr)) {
 			dispatch(bic_reg(instr));
 		} else if(is_not_reg(instr)) {
-			dispatch(not_reg(instr));
+			dispatch(mvn(instr));
 
 
 			// Special data instructions and branch and exchange
@@ -681,7 +681,7 @@ private:
 	virtual void dispatch(const orr_reg instruction) = 0;
 	virtual void dispatch(const mul_reg instruction) = 0;
 	virtual void dispatch(const bic_reg instruction) = 0;
-	virtual void dispatch(const not_reg instruction) = 0;
+	virtual void dispatch(const mvn instruction) = 0;
 	virtual void dispatch(const add_highreg instruction) = 0;
 	virtual void dispatch(const cmp_highreg instruction) = 0;
 	virtual void dispatch(const mov_highreg instruction) = 0;

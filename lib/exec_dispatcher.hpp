@@ -144,7 +144,7 @@ private:
 	void dispatch(const bic_reg instruction) override {
 		exec(instruction, _regs, _regs.app_status_register());
 	}
-	void dispatch(const not_reg instruction) override {
+	void dispatch(const mvn instruction) override {
 		exec(instruction, _regs, _regs.app_status_register());
 	}
 	void dispatch(const add_highreg instruction) override {
