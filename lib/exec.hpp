@@ -394,7 +394,7 @@ static void exec(const bic_reg instruction, registers& regs, apsr_reg& status_re
 	status_reg.apply_neg(result);
 }
 
-static void exec(const not_reg instruction, registers& regs, apsr_reg& status_reg) {
+static void exec(const mvn instruction, registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rm = regs.get(instruction.rm);
 

@@ -272,7 +272,7 @@ private:
 		emit_reg(instruction.rdn);
 		emit_reg(instruction.rm);
 	}
-	void dispatch(const not_reg instruction) override {
+	void dispatch(const mvn instruction) override {
 		//format("mvns %s, %s", R(instruction.rd), R(instruction.rm));
 		emit_name("mvns");
 		emit_reg(instruction.rd);

@@ -245,7 +245,7 @@ private:
 	void dispatch(const bic_reg instruction) override {
 		format("bics %s, %s", R(instruction.rdn), R(instruction.rm));
 	}
-	void dispatch(const not_reg instruction) override {
+	void dispatch(const mvn instruction) override {
 		format("mvns %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const add_highreg instruction) override {
