@@ -679,7 +679,7 @@ struct mul_reg : public standard_rdm_rn {
 	using standard_rdm_rn::standard_rdm_rn;
 };
 
-struct not_reg : public standard_rd_rm {
+struct mvn : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
 
