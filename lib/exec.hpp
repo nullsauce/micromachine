@@ -463,7 +463,10 @@ static void exec(const cmp_highreg instruction, const registers& regs, apsr_reg&
 
 
 static void exec(const mov_highreg instruction, registers& regs) {
-
+	/*
+	 * Note that if both register ids are smaller than 8, this instruction must be encoded as
+	 * a regular mov instruction. It is unpredictable otherwise.
+	 */
 	reg_idx high_rm = instruction.high_rm();
 	uint32_t result = regs.get(high_rm);
 

@@ -10,7 +10,6 @@ bool is_wide_thumb_encoding(const uint16_t& instruction) {
 	       0b00 !=  bits<11,2>::of(instruction);
 }
 
-// TODO: make natively 32 bits
 struct instruction_pair {
 
 	using first_intruction_bits = bits<0, 16>;

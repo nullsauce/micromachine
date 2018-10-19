@@ -17,7 +17,7 @@
 #include "registers/ipsr_reg.hpp"
 #include "registers/epsr_reg.hpp"
 #include "exception_return_handler.hpp"
-#define USE_INDIRECT_REG_ACCESS
+//#define USE_INDIRECT_REG_ACCESS
 struct registers {
 
 	registers(exception_return_handler& exception_return_handler)
