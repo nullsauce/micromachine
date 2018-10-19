@@ -355,31 +355,31 @@ namespace {
 
 
 	static bool is_32bit_thumb_br_misc_ctl(const instruction_pair instr) {
-		return is_32bit_thumb_encoding(instr.first) &&
-			   0b10 == bits<11,2>::of(instr.first) &&
-			   0b1  == bits<15,1>::of(instr.second);
+		return is_32bit_thumb_encoding(instr.first()) &&
+			   0b10 == bits<11,2>::of(instr.first()) &&
+			   0b1  == bits<15,1>::of(instr.second());
 	}
 
 	static bool is_32bit_thumb_msr(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b011100 == bits<5,6>::of(instr.first) &&
-			   0b000 	== (bits<12,3>::of(instr.second) & 0b101);
+			   0b011100 == bits<5,6>::of(instr.first()) &&
+			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101);
 	}
 
 	static bool is_32bit_thumb_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b0111011 == bits<4,7>::of(instr.first) &&
-			   0b000 	== (bits<12,3>::of(instr.second) & 0b101);
+			   0b0111011 == bits<4,7>::of(instr.first()) &&
+			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101);
 	}
 
 	static bool is_32bit_thumb_mrs(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b011111 == bits<5,6>::of(instr.first) &&
-			   0b000 	== (bits<12,3>::of(instr.second) & 0b101);
+			   0b011111 == bits<5,6>::of(instr.first()) &&
+			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101);
 	}
 
 	static bool is_32bit_thumb_bl(const instruction_pair instr) {
-		auto op2 = bits<12,3>::of(instr.second) & 0b101;
+		auto op2 = bits<12,3>::of(instr.second()) & 0b101;
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			 0b101 	== op2 ;
 	}
@@ -389,9 +389,9 @@ namespace {
 	}
 
 	static bool is_undefined32(const instruction_pair instr) {
-		return is_32bit_thumb_encoding(instr.first) &&
-				0b111101111111 == bits<4,12>::of(instr.first) &&
-				0b1010 == bits<12,4>::of(instr.second);
+		return is_32bit_thumb_encoding(instr.first()) &&
+				0b111101111111 == bits<4,12>::of(instr.first()) &&
+				0b1010 == bits<12,4>::of(instr.second());
 	}
 }
 
@@ -402,7 +402,7 @@ public:
 
 	void dispatch_instruction(const instruction_pair instruction_pair) {
 
-		const uint16_t instr = instruction_pair.first;
+		const uint16_t instr = instruction_pair.first();
 		if(is_nop(instr)) dispatch(nop());
 		//fprintf(stderr, "%s\n", instr.to_string().c_str());
 
@@ -631,8 +631,8 @@ public:
 				}
 			} else {
 				fprintf(stderr, "undefined 32bit instruction %04x %04x\n",
-					(uint16_t)instruction_pair.first,
-					(uint16_t)instruction_pair.second
+					(uint16_t)instruction_pair.first(),
+					(uint16_t)instruction_pair.second()
 				);
 				invalid_instruction(instruction_pair);
 			}
