@@ -25,20 +25,6 @@ struct standard_rd_rm_imm5 {
 	const imm5_t  imm5;
 };
 
-
-struct standard_rd_rm_rn {
-
-	standard_rd_rm_rn(uint16_t field)
-		: rd(binops::read_uint(field, 0, 3))
-		, rm(binops::read_uint(field, 3, 3))
-		, rn(binops::read_uint(field, 6, 3))
-	{}
-
-	const reg_idx rd;
-	const reg_idx rm;
-	const reg_idx rn;
-};
-
 struct standard_rd_rn_rm {
 
 	standard_rd_rn_rm(uint16_t field)
@@ -50,19 +36,6 @@ struct standard_rd_rn_rm {
 	const reg_idx rd;
 	const reg_idx rn;
 	const reg_idx rm;
-};
-
-struct standard_rd_rm_imm3 {
-
-	standard_rd_rm_imm3(uint16_t field)
-			: rd  (binops::read_uint(field, 0, 3))
-			, rm  (binops::read_uint(field, 3, 3))
-			, imm3(binops::read_uint(field, 6, 3))
-	{}
-
-	const reg_idx rd;
-	const reg_idx rm;
-	const imm3_t  imm3;
 };
 
 
@@ -356,24 +329,6 @@ struct standard_pop_register_list {
 	}
 
 	const register_list_t register_list;
-};
-
-struct standard_register_list_rm {
-	standard_register_list_rm(uint16_t field)
-		: reg_list(binops::read_uint(field, 0, 8))
-		, rm(binops::read_uint(field, 8, 3))
-	{}
-
-	bool is_set(reg_idx reg) const {
-		return binops::get_bit(reg_list, reg);
-	}
-
-	uint32_t pop_count() const {
-		return __builtin_popcount(reg_list);
-	}
-
-	const register_list_t reg_list;
-	const reg_idx rm;
 };
 
 struct standard_register_list_rn {
