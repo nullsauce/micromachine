@@ -518,11 +518,11 @@ struct bic_reg : public standard_rdn_rm {
 struct bl_imm {
 
 	bl_imm(const instruction_pair& instr)
-			: j1(bits<13>::of(instr.second))
-			, j2(bits<11>::of(instr.second))
-			, s(bits<10>::of(instr.first))
-			, imm10(bits<0,10>::of(instr.first))
-			, imm11(bits<0,11>::of(instr.second))
+			: j1(bits<13>::of(instr.second()))
+			, j2(bits<11>::of(instr.second()))
+			, s(bits<10>::of(instr.first()))
+			, imm10(bits<0,10>::of(instr.first()))
+			, imm11(bits<0,11>::of(instr.second()))
 	{}
 
 	int32_t offset() const {
@@ -836,8 +836,8 @@ struct special_reg_instr {
 
 struct msr : special_reg_instr{
 	msr(const instruction_pair& instr)
-		: rn(bits<0,4>::of(instr.first))
-		, sysn((SpecialRegister)(uint8_t)bits<0,8>::of(instr.second)) {
+		: rn(bits<0,4>::of(instr.first()))
+		, sysn((SpecialRegister)(uint8_t)bits<0,8>::of(instr.second())) {
 	}
 	const reg_idx rn;
 	const SpecialRegister sysn;
@@ -845,8 +845,8 @@ struct msr : special_reg_instr{
 
 struct mrs : special_reg_instr{
 	mrs(const instruction_pair& instr)
-		: rd(bits<8,4>::of(instr.second))
-		, sysn(bits<0,8>::of(instr.second)) {
+		: rd(bits<8,4>::of(instr.second()))
+		, sysn(bits<0,8>::of(instr.second())) {
 	}
 	const reg_idx rd;
 	const uint8_t sysn;
@@ -863,8 +863,8 @@ struct udf {
 struct udfw {
 	udfw(const instruction_pair& instr)
 		: imm32(
-			(bits<0,4>::of(instr.first) << 12) |
-			(bits<0,12>::of(instr.second))
+			(bits<0,4>::of(instr.first()) << 12) |
+			(bits<0,12>::of(instr.second()))
 		){
 	}
 	const uint32_t imm32;
