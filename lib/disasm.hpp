@@ -145,7 +145,7 @@ private:
 	}
 
 	void invalid_instruction(const instruction_pair instr) override {
-		format("<UNDEFINED> instruction: 0x%08x", instr.first << 16 | instr.second);
+		format("<UNDEFINED> instruction: 0x%08x", instr.first() << 16 | instr.second());
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
