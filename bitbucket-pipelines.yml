@@ -24,6 +24,7 @@ pipelines:
           - cmake ..
           - make all_tests
           - ctest -V
+          - make sdk
 definitions:
   caches:
     externaldeps: build/external
