@@ -4,7 +4,7 @@
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
 #image: gcc:6.1
-image: rikorose/gcc-cmake
+image: flavioroth/micromachine-builder:1
 
 pipelines:
   default:
@@ -13,8 +13,9 @@ pipelines:
         caches:
           - externaldeps
         script:
-          # install deps
-          - apt-get update && apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
+          # system info
+          - echo $(uname -a)
+          - echo $(nproc)
           # version infos
           - gcc --version
           - cmake --version
