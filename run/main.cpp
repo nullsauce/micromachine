@@ -12,7 +12,11 @@ int main(int argc, const char** argv) {
 	}
 
 	cpu c;
-	c.load_elf(argv[1]);
+	if(!c.load_elf(argv[1])) {
+		fprintf(stderr, "Error: invalid ELF file given\n", argv[0]);
+		return EXIT_FAILURE;
+	}
+
 	c.set_io_callback([](uint8_t op, uint8_t data){
 		write(STDOUT_FILENO, &data, 1);
 	});
