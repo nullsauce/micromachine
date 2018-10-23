@@ -10,13 +10,13 @@ endfunction()
 
 add_test_command(
 	md5_test
-	${CMAKE_SOURCE_DIR}/build/examples/md5sum/md5sum
+	${CMAKE_BINARY_DIR}/examples/md5sum/md5sum
 	${CMAKE_SOURCE_DIR}/examples/md5sum/expected_stdout.txt
 )
 
 add_test_command(
 	timer_test
-	${CMAKE_SOURCE_DIR}/build/examples/timer_test/timer_test
+	${CMAKE_BINARY_DIR}/examples/timer_test/timer_test
 	${CMAKE_SOURCE_DIR}/examples/timer_test/expected_stdout.txt
 )
 
