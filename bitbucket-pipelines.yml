@@ -23,9 +23,9 @@ pipelines:
           - mkdir -p build
           - cd build
           - cmake ..
-          - make all_tests
+          - make -j $(nproc) all_tests
           - ctest -V
-          - make sdk
+          - make -j $(nproc) sdk
 definitions:
   caches:
     externaldeps: build/external
