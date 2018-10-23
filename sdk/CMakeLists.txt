@@ -1,7 +1,12 @@
 
 project(micromachine-sdk)
+enable_testing()
+set(MICROMACHINE_VM CACHE STRING "" )
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_BINARY_DIR}/micromachine.toolchain")
 cmake_minimum_required(VERSION 3.2)
+
+
+
 
 function(add_micromachine_executable)
 	set_property(TARGET ${ARGV0} PROPERTY C_STANDARD 11)
@@ -34,3 +39,4 @@ add_subdirectory(runtime-abi)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/system/include)
 add_subdirectory(system)
 add_subdirectory(examples)
+add_subdirectory(test)
