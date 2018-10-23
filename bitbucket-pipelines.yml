@@ -10,12 +10,17 @@ pipelines:
   default:
     - step:
         name: Build and run tests
-        script: # Modify the commands below to build your repository.
+        caches:
+          - externaldeps
+        script:
           # version infos
           - gcc --version
           - cmake --version
-          - mkdir build
+          - mkdir -p build
           - cd build
           - cmake ..
           - make all_tests
           - ctest -V
+definitions:
+  caches:
+    externaldeps: build/external
