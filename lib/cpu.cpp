@@ -152,12 +152,11 @@ instruction_pair cpu::fetch_instruction_debug(uint32_t address) const {
 
 
 
-bool cpu::step() {
+cpu::State cpu::step() {
 
 	if(_break_signal) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		return true;
-
+		return cpu::State::BREAK;
 	}
 	_debug_instruction_counter++;
 
@@ -193,16 +192,8 @@ bool cpu::step() {
 		// Otherwise the PC is set here
 		_regs.set_pc(next_instruction_address);
 	}
-	/*
-	fprintf(stderr, "E %08x: %s\n",
-		(size_t)current_addr,
-		disasm::disassemble_instruction(instr, current_addr).c_str()
-	);*/
 
-	//_regs.set_pc(next_instruction_address);
-	//_regs.reset_pc_dirty_status();
-
-	return hard_fault;
+	return hard_fault ? cpu::State::FAULT : cpu::State::RUN;
 }
 
 uint32_t cpu::get_next_instruction_address() const {

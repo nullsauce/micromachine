@@ -21,10 +21,9 @@ int main(int argc, const char** argv) {
 	auto start = std::chrono::steady_clock::now();
 	decltype(start) end;
 	for(;;) {
-		bool fault = c.step();
-		if(fault) {
+		cpu::State state = c.step();
+		if(state == cpu::State::BREAK || state == cpu::State::FAULT) {
 			end = std::chrono::steady_clock::now();
-			fprintf(stderr, "Too many faults. Aborting\n");
 			break;
 		}
 	}
