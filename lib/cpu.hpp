@@ -30,10 +30,16 @@ public:
 
 	cpu();
 
+	enum class State {
+		RUN,
+		FAULT,
+		BREAK,
+	};
+
 	void reset();
 	instruction_pair fetch_instruction(uint32_t address) const;
 	instruction_pair fetch_instruction_debug(uint32_t address) const;
-	bool step();
+	State step();
 	const exception_vector& exceptions() const;
 	memory& mem();
 	const memory& mem() const;
