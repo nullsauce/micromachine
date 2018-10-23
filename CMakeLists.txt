@@ -26,7 +26,7 @@ ExternalProject_Add(micromachine_sdk_project
 	-DMICROMACHINE_VM=$<TARGET_FILE:run_micromachine>
 	BUILD_COMMAND make
 	INSTALL_COMMAND ""
-	TEST_COMMAND ctest
+	TEST_COMMAND ctest -V
 )
 
 add_custom_target(sdk ALL DEPENDS micromachine_sdk_project)
