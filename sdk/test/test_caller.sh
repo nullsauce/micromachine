@@ -16,6 +16,7 @@ else
     echo "Test failed:"
     echo "Expected stdout file: ${expected_stdout_file}"
     echo "Actual stdout file: ${actual_stdout_file}"
+    diff ${expected_stdout_file} ${actual_stdout_file}
 fi
 
 exit -1
