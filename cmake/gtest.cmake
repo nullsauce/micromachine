@@ -4,13 +4,26 @@ set(GTEST_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external/googletest)
 
 message(STATUS "Will install googletest in ${GTEST_INSTALL_LOCATION}")
 
-ExternalProject_Add(compile_googletest
-    GIT_REPOSITORY https://github.com/google/googletest
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL_LOCATION}
-)
-
 set(GTEST_INCLUDE_PATH "${GTEST_INSTALL_LOCATION}/include")
 set(GTEST_LIB_PATH "${GTEST_INSTALL_LOCATION}/lib")
+
+find_library(TRY_FIND_GTEST
+	NAMES libgtest.a
+	PATHS ${GTEST_LIB_PATH}
+	DOC "Find gtest static library"
+	NO_DEFAULT_PATH
+)
+
+if(NOT TRY_FIND_GTEST)
+	message(WARNING "GTest library not found. Will download and install in ${GTEST_INSTALL_LOCATION}")
+	ExternalProject_Add(compile_googletest
+		GIT_REPOSITORY https://github.com/google/googletest
+		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL_LOCATION}
+	)
+endif()
+
+
+
 
 # this directory has to exist for INTERFACE_INCLUDE_DIRECTORIES to work
 file(MAKE_DIRECTORY ${GTEST_INCLUDE_PATH})
