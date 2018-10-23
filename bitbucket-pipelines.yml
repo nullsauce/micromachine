@@ -13,9 +13,12 @@ pipelines:
         caches:
           - externaldeps
         script:
+          # install deps
+          - apt-get update && apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
           # version infos
           - gcc --version
           - cmake --version
+          - arm-none-eabi-gcc --version
           - mkdir -p build
           - cd build
           - cmake ..
