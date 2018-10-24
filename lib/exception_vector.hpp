@@ -38,7 +38,8 @@ public:
 				// TODO:
 				uint32_t reg = (_number.int_value() - 16) / 4;
 				uint32_t section = _number.int_value() % 4;
-				return 0; // UInt(NVIC_IPR:r.PRI_N:v)
+				//_nvic.external_interrupt_priority(_number.int_value() - 16);
+				return 0;
 			} else {
 				// Reserved exceptions
 				return 4;

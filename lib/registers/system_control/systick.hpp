@@ -106,7 +106,6 @@ private:
 	}
 
 protected:
-	uint32_t _word;
 	systick_control_reg& _control_reg;
 };
 

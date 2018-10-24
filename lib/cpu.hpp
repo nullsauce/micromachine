@@ -21,6 +21,7 @@
 #include "exec_dispatcher.hpp"
 #include "disasm.hpp"
 #include "timer.hpp"
+#include "nvic.hpp"
 
 class cpu {
 
@@ -76,6 +77,7 @@ private:
 	bool				_break_signal;
 	exec_dispatcher 	_exec_dispatcher;
 	exception_manager 	_exception_manager;
+	nvic				_nvic;
 
 	// TODO: this is not needed here
 	uint32_t _initial_pc;

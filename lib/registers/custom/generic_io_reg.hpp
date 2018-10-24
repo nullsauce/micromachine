@@ -24,7 +24,6 @@ private:
 	}
 
 protected:
-	uint32_t _word;
 	const callback_t& _callback;
 };
 
