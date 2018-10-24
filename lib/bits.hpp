@@ -21,7 +21,7 @@ struct slice {
 
 	static_assert(len > 0,
 				  "cannot declare a bit slice of length 0");
-	static_assert(offset <= binops::binsize<integer_type>(),
+	static_assert(offset < binops::binsize<integer_type>(),
 				  "source offset must be smaller than the total number of available bits");
 	static_assert(offset + len <= binops::binsize<integer_type>(),
 				  "the binary slice cannot cover more than the total number of available bits");
