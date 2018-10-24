@@ -27,6 +27,12 @@ static constexpr size_t binsize(T val) {
 	return binsize<T>();
 }
 
+template<typename u_type>
+static u_type make_mask(const size_t num_bits) {
+	precond(num_bits <= binsize<u_type>(), "dest value can't hold num_bits");
+	return ((1ULL<<num_bits)-1ULL);
+}
+
 template<typename T>
 static constexpr size_t get_sign_bit_index(T val) {
 	return binops::binsize<T>()-1;
@@ -42,6 +48,14 @@ static bool get_bit(const u_type& source, size_t bit_offset) {
 	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
 	return source & (1 << bit_offset);
 }
+
+template <typename u_type>
+static u_type get_bits(const u_type& source, size_t bit_offset, size_t len) {
+	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
+	precond(bit_offset+len <= binsize<u_type>(), "len is too big");
+	return (source >> bit_offset) & binops::make_mask<u_type>(len);
+}
+
 
 template <typename u_type>
 static bool get_sign_bit(const u_type& source) {
@@ -77,12 +91,6 @@ static constexpr size_t make_mask() {
 template<size_t offset, size_t num_bits>
 static constexpr size_t make_mask() {
 	return make_mask<num_bits>() << offset;
-}
-
-template<typename u_type>
-static u_type make_mask(const size_t num_bits) {
-	precond(num_bits <= binsize<u_type>(), "dest value can't hold num_bits");
-	return ((1ULL<<num_bits)-1ULL);
 }
 
 template<size_t _offset, size_t _size>
