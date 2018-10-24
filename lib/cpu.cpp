@@ -11,6 +11,21 @@ and/or distributed without the express permission of Flavio Roth.
 #include "elfio/elfio.hpp"
 #include <thread>
 
+namespace  {
+	const uint32_t NVIC_ISER = 0xE000E100;
+	const uint32_t NVIC_ICER = 0xE000E180;
+	const uint32_t NVIC_ISPR = 0xE000E200;
+	const uint32_t NVIC_ICPR = 0xE000E280;
+	const uint32_t NVIC_IPR0 = 0xE000E400;
+	const uint32_t NVIC_IPR1 = 0xE000E404;
+	const uint32_t NVIC_IPR2 = 0xE000E408;
+	const uint32_t NVIC_IPR3 = 0xE000E40C;
+	const uint32_t NVIC_IPR4 = 0xE000E40E;
+	const uint32_t NVIC_IPR5 = 0xE000E410;
+	const uint32_t NVIC_IPR6 = 0xE000E414;
+	const uint32_t NVIC_IPR7 = 0xE000E418;
+}
+
 cpu::cpu()
 	: _regs(_exception_manager)
 	, _generic_io_reg(std::ref(_io_reg_callback))
@@ -23,19 +38,19 @@ cpu::cpu()
 		std::make_pair(0xE000E018, std::ref(_system_timer.current_value_register())),
 		std::make_pair(0xE000E01C, std::ref(_system_timer.calib_value_register())),
 		std::make_pair(0xE000EF90, std::ref(_generic_io_reg)),
-		std::make_pair(nvic::NVIC_ISER, std::ref(_nvic._iser_reg)),
-		std::make_pair(nvic::NVIC_ICER, std::ref(_nvic._icer_reg)),
-		std::make_pair(nvic::NVIC_ISPR, std::ref(_nvic._ispr_reg)),
-		std::make_pair(nvic::NVIC_ICPR, std::ref(_nvic._icpr_reg)),
-		std::make_pair(nvic::NVIC_ICPR, std::ref(_nvic._icpr_reg)),
-		std::make_pair(nvic::NVIC_IPR0, std::ref(_nvic.priority_reg_at(0))),
-		std::make_pair(nvic::NVIC_IPR1, std::ref(_nvic.priority_reg_at(1))),
-		std::make_pair(nvic::NVIC_IPR2, std::ref(_nvic.priority_reg_at(2))),
-		std::make_pair(nvic::NVIC_IPR3, std::ref(_nvic.priority_reg_at(3))),
-		std::make_pair(nvic::NVIC_IPR4, std::ref(_nvic.priority_reg_at(4))),
-		std::make_pair(nvic::NVIC_IPR5, std::ref(_nvic.priority_reg_at(5))),
-		std::make_pair(nvic::NVIC_IPR6, std::ref(_nvic.priority_reg_at(6))),
-		std::make_pair(nvic::NVIC_IPR7, std::ref(_nvic.priority_reg_at(7))),
+		std::make_pair(NVIC_ISER, std::ref(_nvic._iser_reg)),
+		std::make_pair(NVIC_ICER, std::ref(_nvic._icer_reg)),
+		std::make_pair(NVIC_ISPR, std::ref(_nvic._ispr_reg)),
+		std::make_pair(NVIC_ICPR, std::ref(_nvic._icpr_reg)),
+		std::make_pair(NVIC_ICPR, std::ref(_nvic._icpr_reg)),
+		std::make_pair(NVIC_IPR0, std::ref(_nvic.priority_reg_at(0))),
+		std::make_pair(NVIC_IPR1, std::ref(_nvic.priority_reg_at(1))),
+		std::make_pair(NVIC_IPR2, std::ref(_nvic.priority_reg_at(2))),
+		std::make_pair(NVIC_IPR3, std::ref(_nvic.priority_reg_at(3))),
+		std::make_pair(NVIC_IPR4, std::ref(_nvic.priority_reg_at(4))),
+		std::make_pair(NVIC_IPR5, std::ref(_nvic.priority_reg_at(5))),
+		std::make_pair(NVIC_IPR6, std::ref(_nvic.priority_reg_at(6))),
+		std::make_pair(NVIC_IPR7, std::ref(_nvic.priority_reg_at(7))),
 	})
 	, _break_signal(false)
 	, _exec_dispatcher(_regs, _mem, _exception_vector, _break_signal)
