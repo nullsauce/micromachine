@@ -14,17 +14,22 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/ireg.hpp"
 #include "bits.hpp"
 
-class word_reg : public ireg {
+class iword_reg : public ireg {
+	public:
+		using ireg::operator=;
+		using ireg::operator uint32_t;
+		void reset() override {
+			set(0);
+		}
+	private:
+		virtual void set(uint32_t word) = 0;
+};
+
+class word_reg : public iword_reg {
 public:
 	using ireg::operator=;
 	using ireg::operator uint32_t;
 	word_reg() : _word(0) {}
-	void reset() override {
-		set(0);
-	}
-private:
-	virtual void set(uint32_t word) = 0;
-protected:
 	template<typename bits_t>
 	auto self() {
 		return bits_t::of(_word);
