@@ -73,11 +73,12 @@ private:
 	sphr3_reg 			_sphr3_reg;
 	generic_io_reg		_generic_io_reg;
 	systick				_system_timer;
+	nvic				_nvic;
 	memory 				_mem;
 	bool				_break_signal;
 	exec_dispatcher 	_exec_dispatcher;
 	exception_manager 	_exception_manager;
-	nvic				_nvic;
+
 
 	// TODO: this is not needed here
 	uint32_t _initial_pc;
