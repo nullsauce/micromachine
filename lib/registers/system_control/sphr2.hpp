@@ -23,9 +23,6 @@ private:
 	uint32_t get() const override {
 		return _word & _mask;
 	}
-
-protected:
-	uint32_t _word;
 };
 
 #endif //MICROMACHINE_EMU_SPHR2_HPP
