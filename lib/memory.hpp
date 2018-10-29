@@ -10,8 +10,8 @@
 #include <unordered_map>
 #include <type_traits>
 #include <registers/system_control/systick.hpp>
-#include "registers/system_control/sphr2.hpp"
-#include "registers/system_control/sphr3.hpp"
+#include "registers/system_control/shpr2.hpp"
+#include "registers/system_control/shpr3.hpp"
 #include "registers/system_control/systick.hpp"
 #include "exception_vector.hpp"
 

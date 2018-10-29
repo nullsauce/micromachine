@@ -69,8 +69,8 @@ private:
 	exception_vector	_exception_vector;
 	generic_io_reg::callback_t _io_reg_callback;
 	registers 			_regs;
-	sphr2_reg 			_sphr2_reg;
-	sphr3_reg 			_sphr3_reg;
+	shpr2_reg 			_sphr2_reg;
+	shpr3_reg 			_sphr3_reg;
 	generic_io_reg		_generic_io_reg;
 	systick				_system_timer;
 	nvic				_nvic;

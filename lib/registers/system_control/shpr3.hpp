@@ -4,7 +4,7 @@
 #include "types.hpp"
 #include "registers/word_reg.hpp"
 
-class sphr3_reg : public word_reg {
+class shpr3_reg : public word_reg {
 public:
 	using ireg::operator=;
 
