@@ -44,15 +44,9 @@ private:
 
 	void exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair current_instruction, uint32_t next_instruction_address);
 
-	void enter_handler_mode();
-	void enter_thread_mode();
-
 	void pop_stack(uint32_t frame_ptr, uint32_t return_address);
 	void push_stack(uint32_t return_address);
 
-
-	bool is_priviledged_mode() const;
-	void take_exception(exception_state& exception);
 
 	registers& 			_regs;
 	memory& _mem;
