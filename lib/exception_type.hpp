@@ -13,9 +13,6 @@
 #include <memory>
 
 
-
-
-
 struct exception_number {
 private:
 	using exception_number_t = uint8_t;
@@ -62,6 +59,22 @@ public:
 		IRQ_13 = 29,
 		IRQ_14 = 30,
 		IRQ_15 = 31,
+		IRQ_16 = 32,
+		IRQ_17 = 33,
+		IRQ_18 = 34,
+		IRQ_19 = 35,
+		IRQ_20 = 36,
+		IRQ_21 = 37,
+		IRQ_22 = 38,
+		IRQ_23 = 39,
+		IRQ_24 = 40,
+		IRQ_25 = 41,
+		IRQ_26 = 42,
+		IRQ_27 = 43,
+		IRQ_28 = 44,
+		IRQ_29 = 45,
+		IRQ_30 = 46,
+		IRQ_31 = 47,
 	};
 	//exception_number() = default;
 	exception_number(exception_number_t number) : _integer_value(number) {}
