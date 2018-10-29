@@ -18,8 +18,10 @@ UNSET(CMAKE_C_FLAGS CACHE)
 UNSET(CMAKE_CXX_FLAGS CACHE)
 set(CMAKE_C_FLAGS "-c -g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m"
     CACHE STRING "" FORCE)
-set(CMAKE_CXX_FLAGS "-g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m"
-    CACHE STRING "" FORCE)
+# note that to avoid undefined reference to `__cxa_guard_acquire' the threadsafe static initialization of c++11 is
+# disabled
+# note that to avoid undefined reference to  `__dso_handle and `__aeabi_atexit the option -fno-use-cxa-atexit is added
+set(CMAKE_CXX_FLAGS "-g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions -march=armv6s-m" CACHE STRING "" FORCE)
 
 set(CUSTOM_LD_FLAGS "-nostdlib -nodefaultlibs -nostartfiles")
 
