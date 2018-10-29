@@ -18,8 +18,8 @@ set(SRCS
     registers/sp_reg.hpp
     registers/standard_reg.hpp
     registers/control_reg.hpp
-    registers/system_control/sphr2.hpp
-    registers/system_control/sphr3.hpp
+    registers/system_control/shpr2.hpp
+    registers/system_control/shpr3.hpp
     registers/system_control/systick.hpp
     registers/custom/generic_io_reg.hpp
     memory.hpp

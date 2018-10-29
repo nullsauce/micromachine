@@ -4,7 +4,7 @@
 #include "types.hpp"
 #include "registers/word_reg.hpp"
 
-class sphr2_reg : public word_reg {
+class shpr2_reg : public word_reg {
 public:
 	using ireg::operator=;
 	using pr11_bits = bits<30, 2>;
