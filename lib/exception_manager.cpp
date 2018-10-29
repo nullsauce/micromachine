@@ -21,7 +21,7 @@ exception_manager::exception_manager(
 }
 
 void exception_manager::reset() {
-	enter_thread_mode();
+	_regs.exec_mode_register().set_thread_mode();
 }
 
 void exception_manager::exception_return(uint32_t ret_address) {
@@ -51,7 +51,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 				fprintf(stderr, "exception mismatch\n");
 			} else {
 				frame_ptr = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
-				enter_handler_mode();
+				_regs.exec_mode_register().set_handler_mode();
 				_regs.control_register().set_sp_sel(0);
 			}
 			break;
@@ -63,7 +63,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 				fprintf(stderr, "return to thread exception mismatch\n");
 			} else {
 				frame_ptr = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
-				enter_thread_mode();
+				_regs.exec_mode_register().set_thread_mode();
 				_regs.control_register().set_sp_sel(0);
 			}
 			break;
@@ -75,7 +75,7 @@ void exception_manager::exception_return(uint32_t ret_address) {
 				fprintf(stderr, "return to thread exception mismatch\n");
 			} else {
 				frame_ptr = _regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
-				enter_thread_mode();
+				_regs.exec_mode_register().set_thread_mode();
 				_regs.control_register().set_sp_sel(1);
 				// Assigning CurrentMode to Mode_Thread causes a drop in privilege
 				// if CONTROL.nPRIV is set to 1
@@ -113,40 +113,53 @@ void exception_manager::exception_return(uint32_t ret_address) {
 	// IMPLEMENTATION DEFINED
 }
 
-void exception_manager::exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair
+void exception_manager::exception_entry(exception_state& exception, uint32_t instruction_address, instruction_pair
 current_instruction, uint32_t next_instruction_address) {
 
-	//fprintf(stderr, "enter exception %s\n", ex.number().str().c_str());
-	// address of next instruction by default;
 	//TODO: I think return_address should be based on real next address.
-	// Otherwise, the return address might be wrong if a breanch instruction is pre-empted
+	// Otherwise, the return address might be wrong if a branch instruction is pre-empted
 	uint32_t return_address = instruction_address + current_instruction.size();
 
-    if(exception_number::ex_name::HARDFAULT == ex.number()) {
+	// 1. Compute the return address
+    if(exception_number::ex_name::HARDFAULT == exception.number()) {
 		// address of the instruction causing fault
 		return_address = instruction_address;
-	} else if(exception_number::ex_name::SVCALL == ex.number()) {
+	} else if(exception_number::ex_name::SVCALL == exception.number()) {
 		// address of the next instruction after svc
         return_address = next_instruction_address;
-	} else if(exception_number::ex_name::PENDSV == ex.number() || exception_number::ex_name::SYSTICK == ex.number()) {
+	} else if(exception_number::ex_name::PENDSV == exception.number() || exception_number::ex_name::SYSTICK == exception.number()) {
 		// address of instruction to be executed after the irq
 		return_address = next_instruction_address;
 	}
 
+	// 2. Save context
 	push_stack(return_address);
-	take_exception(ex);
+
+	// 3. Take exception
+
+	// enter handler mode
+	_regs.exec_mode_register().set_handler_mode();
+
+	// set ipsr with exception number
+	_regs.interrupt_status_register().set_exception_number(exception.number());
+
+	// stack is now SP_main
+	_regs.control_register().set_sp_sel(0);
+
+	// activate it
+	_exception_vector.activate(exception);
+
+	//SCS_UpdateStatusRegs();
+	//SetEventRegister();
+	//InstructionSynchronizationBarrier();
+	uint8_t exception_number = exception.number();
+	uint32_t vector_table_offset = sizeof(uint32_t) * exception_number;
+	uint32_t handler_address = _mem.read32(vector_table_offset);
+	_regs.branch_link_interworking(handler_address);
 }
 
 
 void exception_manager::pop_stack(uint32_t frame_ptr, uint32_t return_address) {
-
-	/*
-	fprintf(stderr, "pop ctx 0:%08X -> +28:%08X\n", frame_ptr, frame_ptr+32);
-	for(uint32_t t = 0; t < 32; t+=4) {
-		fprintf(stderr, "  %08X: %08X\n", frame_ptr+t, _mem.read32(frame_ptr+t));
-	}
-	fprintf(stderr, "----- %08X\n", frame_ptr);
-	*/
 
 	_regs.set(0, _mem.read32(frame_ptr+0));
 	_regs.set(1, _mem.read32(frame_ptr+4));
@@ -194,7 +207,7 @@ void exception_manager::push_stack(uint32_t return_address) {
 
 	//TODO: Check docs for conditional stack switch
 	uint32_t frame_ptr = (_regs.get_sp() - stack_frame_size) & sp_mask;
-	uint32_t old_sp = _regs.get_sp();
+
 	_regs.set_sp(frame_ptr);
 
 	uint32_t xpsr_status = 0;
@@ -221,39 +234,3 @@ void exception_manager::push_stack(uint32_t return_address) {
 	}
 }
 
-
-
-bool exception_manager::is_priviledged_mode() const {
-	return _regs.exec_mode_register().is_handler_mode() &&
-		!_regs.control_register().n_priv();
-}
-
-void exception_manager::take_exception(exception_state& exception) {
-	// enter handler mode
-	enter_handler_mode();
-
-	// set ipsr with exception number
-	_regs.interrupt_status_register().set_exception_number(exception.number());
-
-	// stack is now SP_main
-	_regs.control_register().set_sp_sel(0);
-
-	_exception_vector.activate(exception);
-
-	//SCS_UpdateStatusRegs();
-	//SetEventRegister();
-	//InstructionSynchronizationBarrier();
-	uint8_t exception_number = exception.number();
-	uint32_t vector_table_offset = sizeof(uint32_t) * exception_number;
-	uint32_t handler_address = _mem.read32(vector_table_offset);
-	_regs.branch_link_interworking(handler_address);
-}
-
-
-void exception_manager::enter_handler_mode() {
-	_regs.exec_mode_register().set_handler_mode();
-}
-
-void exception_manager::enter_thread_mode() {
-	_regs.exec_mode_register().set_thread_mode();
-}
