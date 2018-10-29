@@ -18,18 +18,39 @@ and/or distributed without the express permission of Flavio Roth.
 
 extern char _heap_start;
 
+void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
+	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
+}
+
+void printf_putc(void* ptr, char c) {
+	io_call(0, c, 0, 0);
+}
+
+
+
 class Singleton {
 public:
-	Singleton() {}
+	static Singleton& get() {
+		static Singleton instance;
+		return instance;
+	}
+	int val() const {
+		return _val;
+	}
 private:
-	int a;
+	Singleton()
+		: _val(42) {
+		printf("Singleton::Singleton()\n");
+	}
+	~Singleton() {
+		printf("Singleton::Singleton()\n");
+	}
+	int _val;
 };
 
 void main()  {
-	Singleton a;
-	Singleton* b = &a;
-	Singleton* c = new Singleton();
-
+	init_printf(NULL, printf_putc);
+	printf("Singleton::get() = %i\n", Singleton::get().val());
 }
 
 
