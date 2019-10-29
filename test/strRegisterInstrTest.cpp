@@ -51,7 +51,7 @@ TEST_F(CpuTestHarness, strRegister_AttemptUnalignedStore)
 	emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 2);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 
@@ -60,6 +60,6 @@ TEST_F(CpuTestHarness, strRegister_AttemptStoreToInvalidAddress)
 	emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

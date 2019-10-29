@@ -76,7 +76,7 @@
 #define SYS_PRIMASK 16
 #define SYS_CONTROL 20
 
-/* Register names / indices into PinkySimContext::R array for first 13 registers. */
+/* Register names */
 #define R0  0
 #define R1  1
 #define R2  2
@@ -95,27 +95,23 @@
 #define PC  15
 
 
-/* Values that can be returned from the step() or pinkySimRun() function. */
-#define PINKYSIM_STEP_OK            0   /* Executed instruction successfully. */
-#define PINKYSIM_STEP_UNDEFINED     1   /* Encountered undefined instruction. */
-#define PINKYSIM_STEP_UNPREDICTABLE 2   /* Encountered instruction with unpredictable behaviour. */
-#define PINKYSIM_STEP_HARDFAULT     3   /* Encountered instruction which generates hard fault. */
-#define PINKYSIM_STEP_BKPT          4   /* Encountered BKPT instruction or other debug event. */
-#define PINKYSIM_STEP_UNSUPPORTED   5   /* Encountered instruction not supported by simulator. */
-#define PINKYSIM_STEP_SVC           11   /* Encountered SVC instruction. */
-#define PINKYSIM_RUN_INTERRUPT      7   /* pinkySimRun() callback signalled interrupt. */
-#define PINKYSIM_RUN_WATCHPOINT     8   /* pinkySimRun() callback signalled watchpoint event. */
-#define PINKYSIM_RUN_SINGLESTEP     9   /* pinkySimRun() callback signalled single step. */
+/* Values that can be returned from the step() or run() function. */
+
+#define CPU_STEP_OK            0   /* Executed instruction successfully. */
+#define CPU_STEP_UNDEFINED     1   /* Encountered undefined instruction. */
+#define CPU_STEP_UNPREDICTABLE 2   /* Encountered instruction with unpredictable behaviour. */
+#define CPU_STEP_HARDFAULT     3   /* Encountered instruction which generates hard fault. */
+#define CPU_STEP_BKPT          4   /* Encountered BKPT instruction or other debug event. */
+#define CPU_STEP_UNSUPPORTED   5   /* Encountered instruction not supported by simulator. */
+#define CPU_STEP_SVC           11
+#define CPU_RUN_INTERRUPT      7
+#define CPU_RUN_WATCHPOINT     8
+#define CPU_RUN_SINGLESTEP     9
 
 
 
 #define READ_WRITE 0
 #define READ_ONLY  1
-
-struct PinkySimContext
-{
-	void *pMemory;
-};
 
 class CpuTestHarness : public ::testing::Test
 {
@@ -133,72 +129,37 @@ protected:
 	uint32_t m_expectedIPSR;
 	uint32_t m_emitAddress;
 	uint32_t PRIMASK;
-	PinkySimContext m_context;
-
-
-	using IMemory = void;
 
 	void memory_write_32(uint32_t address, uint32_t value);
-
 	uint32_t memory_read_32(uint32_t address);
-
 	void step();
-
 	void setup();
-
 	void teardown();
-
 	virtual void SetUp();
-
 	void initContext();
-
 	virtual void TearDown();
-
 	void setExpectedStackGrowthSinceBeginning(int growth);
-
 	void setExpectedExceptionTaken(int exceptionNumber);
-
 	void setExpectedStepReturn(int expectedStepReturn);
-
 	void setExpectedSPMain(uint32_t sp);
-
 	void setExpectedXPSRflags(const char *pExpectedFlags);
-
 	void setExpectedIPSR(uint32_t expectedValue);
-
 	void setExpectedRegisterValue(int index, uint32_t expectedValue);
-
 	void setRegisterValue(int index, uint32_t value);
-
 	void emitInstruction16(const char *pEncoding, ...);
-
 	void emitInstruction32(const char *pEncoding1, const char *pEncoding2, ...);
-
 	void emitInstruction16Varg(const char *pEncoding, va_list valist);
-
 	void pinkySimStep();
-
 	void validateSignaledException();
-
 	void validateXPSR();
-
 	void validateRegisters();
-
 	void setCarry();
-
 	void clearCarry();
-
 	void setZero();
-
 	void clearZero();
-
 	void setNegative();
-
 	void clearNegative();
-
 	void setOverflow();
-
 	void clearOverflow();
-
 	void setIPSR(uint32_t ipsr);
 };

@@ -61,7 +61,7 @@ TEST_F(CpuTestHarness, ldrshRegister_AttemptUnalignedLoad)
 	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 1);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 
@@ -70,6 +70,6 @@ TEST_F(CpuTestHarness, ldrshRegister_AttemptLoadFromInvalidAddress)
 	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

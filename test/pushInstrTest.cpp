@@ -59,14 +59,14 @@ TEST_SIM_ONLY(push, HardFaultFromInvalidMemoryWrite)
 {
     emitInstruction16("1011010Mrrrrrrrr", 0, 1);
     setRegisterValue(SP, 0xFFFFFFFC);
-    setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
+    setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
 
 TEST_SIM_ONLY(push, UnpredictableToPushNoRegisters)
 {
     emitInstruction16("1011010Mrrrrrrrr", 0, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     step(&m_context);
 }
 */

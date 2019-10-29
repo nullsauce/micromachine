@@ -78,7 +78,7 @@ void CpuTestHarness::initContext()
 	m_emitAddress = 0;
 	PRIMASK = 0;
 
-	m_expectedStepReturn = PINKYSIM_STEP_OK;
+	m_expectedStepReturn = CPU_STEP_OK;
 
 	// fake vector table
 	for (uint32_t i = 1; i < 32; i++) {
@@ -354,7 +354,7 @@ void CpuTestHarness::pinkySimStep()
 
 void CpuTestHarness::validateSignaledException()
 {
-	if (PINKYSIM_STEP_HARDFAULT == m_expectedStepReturn) {
+	if (CPU_STEP_HARDFAULT == m_expectedStepReturn) {
 		EXPECT_TRUE(_cpu.exceptions().is_active(exception_number::ex_name::HARDFAULT));
 	} else {
 		assert("TODO implement");

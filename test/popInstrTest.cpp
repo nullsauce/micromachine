@@ -77,7 +77,7 @@ TEST_F(CpuTestHarness, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 
 	const uint16_t NOP = 0xBF00;
 	memory_write_32(INITIAL_PC + 16, NOP);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 /*
@@ -85,14 +85,14 @@ TEST_F(CpuTestHarness, pop_HardFaultFromInvalidMemoryRead)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 1);
     setRegisterValue(SP, 0xFFFFFFFC);
-    setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
+    setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     step(&m_context);
 }*/
 /*
 TEST_SIM_ONLY(pop, UnpredictableToPopNoRegisters)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     step(&m_context);
 }
 */
