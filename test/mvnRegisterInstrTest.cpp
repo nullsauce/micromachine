@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, mvnRegister_UseLowestRegisterForAllArgs)
 	setExpectedXPSRflags("NzC");
 	setCarry();
 	setExpectedRegisterValue(R0, ~0U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, mvnRegister_UseHigestRegisterForAllArgs)
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, mvnRegister_UseHigestRegisterForAllArgs)
 	setExpectedXPSRflags("Nzc");
 	clearCarry();
 	setExpectedRegisterValue(R7, ~0x77777777U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, mvnRegister_UseDifferentRegistersForEachArg)
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper, mvnRegister_UseDifferentRegistersForEachArg)
 	emitInstruction16("0100001111mmmddd", R2, R1);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R1, ~0x22222222U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, mvnRegister_MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag)
@@ -50,5 +50,5 @@ TEST_F(CpuTestHelper, mvnRegister_MoveANegationOfNegativeOne_ClearsNegativeFlagA
 	setRegisterValue(R2, -1);
 	setExpectedXPSRflags("nZ");
 	setExpectedRegisterValue(R1, 0U);
-	pinkySimStep(&m_context);
+	step();
 }

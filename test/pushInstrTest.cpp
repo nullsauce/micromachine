@@ -20,27 +20,27 @@ TEST_F(CpuTestHelper, push_JustPushLR)
 {
 	emitInstruction16("1011010Mrrrrrrrr", 1, 0);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 4, 0x0, READ_WRITE);
-	pinkySimStep(&m_context);
-	EXPECT_EQ(INITIAL_LR, memory_read_32(m_context.pMemory, INITIAL_SP - 4));
+	memory_write_32(INITIAL_SP - 4, 0x0);
+	step();
+	EXPECT_EQ(INITIAL_LR, memory_read_32(INITIAL_SP - 4));
 }
 
 TEST_F(CpuTestHelper, push_JustPushR0)
 {
 	emitInstruction16("1011010Mrrrrrrrr", 0, 1);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_WRITE);
-	pinkySimStep(&m_context);
-	EXPECT_EQ(0x0, memory_read_32(m_context.pMemory, INITIAL_SP - 4));
+	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
+	step();
+	EXPECT_EQ(0x0, memory_read_32(INITIAL_SP - 4));
 }
 
 TEST_F(CpuTestHelper, push_JustPushR7)
 {
 	emitInstruction16("1011010Mrrrrrrrr", 0, 1 << 7);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_WRITE);
-	pinkySimStep(&m_context);
-	EXPECT_EQ(0x77777777, memory_read_32(m_context.pMemory, INITIAL_SP - 4));
+	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
+	step();
+	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_SP - 4));
 }
 
 TEST_F(CpuTestHelper, push_PushAll)
@@ -48,11 +48,11 @@ TEST_F(CpuTestHelper, push_PushAll)
 	emitInstruction16("1011010Mrrrrrrrr", 1, 0xFF);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4 * 9);
 	for (int i = 1; i <= 9; i++)
-		memory_write_32(m_context.pMemory, INITIAL_SP - 4 * i, 0xFFFFFFFF, READ_WRITE);
-	pinkySimStep(&m_context);
+		memory_write_32(INITIAL_SP - 4 * i, 0xFFFFFFFF);
+	step();
 	for (int i = 0; i < 8; i++)
-		EXPECT_EQ(0x11111111U * i, memory_read_32(m_context.pMemory, INITIAL_SP - 4 * (9 - i)));
-	EXPECT_EQ(INITIAL_LR, memory_read_32(m_context.pMemory, INITIAL_SP - 4));
+		EXPECT_EQ(0x11111111U * i, memory_read_32(INITIAL_SP - 4 * (9 - i)));
+	EXPECT_EQ(INITIAL_LR, memory_read_32(INITIAL_SP - 4));
 }
 /*
 TEST_SIM_ONLY(push, HardFaultFromInvalidMemoryWrite)
@@ -67,6 +67,6 @@ TEST_SIM_ONLY(push, UnpredictableToPushNoRegisters)
 {
     emitInstruction16("1011010Mrrrrrrrr", 0, 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

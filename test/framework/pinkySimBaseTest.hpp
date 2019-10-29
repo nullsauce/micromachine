@@ -62,11 +62,11 @@ protected:
 
 	using IMemory = void;
 
-	void memory_write_32(IMemory *pMem, uint32_t address, uint32_t value, int readOnly);
+	void memory_write_32(uint32_t address, uint32_t value);
 
-	uint32_t memory_read_32(IMemory *pThis, uint32_t address);
+	uint32_t memory_read_32(uint32_t address);
 
-	void pinkySimStep(PinkySimContext *ctx);
+	void step();
 
 	void setup();
 

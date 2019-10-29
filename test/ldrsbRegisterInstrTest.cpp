@@ -21,9 +21,9 @@ TEST_F(CpuTestHelper, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R0, 0xFFFFFFED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_NegativeValue)
@@ -31,9 +31,9 @@ TEST_F(CpuTestHelper, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_Neg
 	emitInstruction16("0101011mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
 	setRegisterValue(R1, 5);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R7, 0xFFFFFFFE);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_NegativeValue)
@@ -41,9 +41,9 @@ TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_Nega
 	emitInstruction16("0101011mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 6);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R4, 0xFFFFFFAD);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_NegativeValue)
@@ -51,9 +51,9 @@ TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_Neg
 	emitInstruction16("0101011mmmnnnttt", R0, R7, R5);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 7);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R5, 0xFFFFFFBA);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrsbRegister_LoadAPositiveValue)
@@ -61,9 +61,9 @@ TEST_F(CpuTestHelper, ldrsbRegister_LoadAPositiveValue)
 	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xFFFFFF7F, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xFFFFFF7F);
 	setExpectedRegisterValue(R0, 0x7F);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrsbRegister_AttemptLoadInvalidAddress)
@@ -72,5 +72,5 @@ TEST_F(CpuTestHelper, ldrsbRegister_AttemptLoadInvalidAddress)
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }

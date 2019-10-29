@@ -21,9 +21,9 @@ TEST_F(CpuTestHelper, ldrhRegister_UseAMixOfRegistersWordAligned)
 	emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R0, 0xFEED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
@@ -31,9 +31,9 @@ TEST_F(CpuTestHelper, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
 	emitInstruction16("0101101mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
 	setRegisterValue(R1, 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R7, 0xFEED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
@@ -41,9 +41,9 @@ TEST_F(CpuTestHelper, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
 	emitInstruction16("0101101mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 6);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R4, 0xBAAD);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrhRegister_AttemptUnalignedLoad)
@@ -52,7 +52,7 @@ TEST_F(CpuTestHelper, ldrhRegister_AttemptUnalignedLoad)
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 1);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrhRegister_AttemptLoadFromInvalidAddress)
@@ -61,5 +61,5 @@ TEST_F(CpuTestHelper, ldrhRegister_AttemptLoadFromInvalidAddress)
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }

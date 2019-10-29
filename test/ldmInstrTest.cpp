@@ -22,8 +22,8 @@ TEST_F(CpuTestHelper, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
 	setRegisterValue(R7, INITIAL_PC + 16);
 	setExpectedRegisterValue(R7, INITIAL_PC + 16 + 1 * 4);
 	setExpectedRegisterValue(R0, 0xFFFFFFFF);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_ONLY);
-	pinkySimStep(&m_context);
+	memory_write_32(INITIAL_PC + 16, 0xFFFFFFFF);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
@@ -32,8 +32,8 @@ TEST_F(CpuTestHelper, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
 	setRegisterValue(R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(R0, INITIAL_PC + 16 + 1 * 4);
 	setExpectedRegisterValue(R7, 0xFFFFFFFF);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_ONLY);
-	pinkySimStep(&m_context);
+	memory_write_32(INITIAL_PC + 16, 0xFFFFFFFF);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldm_PopAllNoWriteback)
@@ -49,8 +49,8 @@ TEST_F(CpuTestHelper, ldm_PopAllNoWriteback)
 	setExpectedRegisterValue(R6, 6);
 	setExpectedRegisterValue(R7, 7);
 	for (int i = 0; i < 8; i++)
-		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, i, READ_ONLY);
-	pinkySimStep(&m_context);
+		memory_write_32(INITIAL_PC + 16 + 4 * i, i);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldm_PopAllButAddressRegister_WritebackNewAddress)
@@ -66,8 +66,8 @@ TEST_F(CpuTestHelper, ldm_PopAllButAddressRegister_WritebackNewAddress)
 	setExpectedRegisterValue(R6, 6);
 	setExpectedRegisterValue(R7, INITIAL_PC + 16 + 7 * 4);
 	for (int i = 0; i < 7; i++)
-		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, i, READ_ONLY);
-	pinkySimStep(&m_context);
+		memory_write_32(INITIAL_PC + 16 + 4 * i, i);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldm_HardFaultFromInvalidMemoryRead)
@@ -75,7 +75,7 @@ TEST_F(CpuTestHelper, ldm_HardFaultFromInvalidMemoryRead)
 	emitInstruction16("11001nnnrrrrrrrr", 0, (1 << 0));
 	setRegisterValue(R0, 0xFFFFFFFC);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
 /*
 TEST_SIM_ONLY(ldm, UnpredictableToPopNoRegisters)
@@ -83,6 +83,6 @@ TEST_SIM_ONLY(ldm, UnpredictableToPopNoRegisters)
     emitInstruction16("11001nnnrrrrrrrr", 0, 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

@@ -20,54 +20,54 @@ TEST_F(CpuTestHelper, ldrbImmediate_UseAMixOfRegistersWordAligned)
 {
 	emitInstruction16("01111iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R0, 0xED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrbImmediate_UseAnotherMixOfRegistersSecondByteInWord)
 {
 	emitInstruction16("01111iiiiinnnttt", 1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC + 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R7, 0xFE);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrbImmediate_YetAnotherMixOfRegistersThirdByteInWord)
 {
 	emitInstruction16("01111iiiiinnnttt", 2, R1, R4);
 	setRegisterValue(R1, INITIAL_PC + 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R4, 0xAD);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrbImmediate_YetAnotherMixOfRegistersFourthByteInWord)
 {
 	emitInstruction16("01111iiiiinnnttt", 3, R2, R5);
 	setRegisterValue(R2, INITIAL_PC + 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R5, 0xBA);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrbImmediate_UseLargestOffset)
 {
 	emitInstruction16("01111iiiiinnnttt", 31, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 28, 0x12345678, READ_ONLY);
+	memory_write_32(INITIAL_PC + 28, 0x12345678);
 	setExpectedRegisterValue(R0, 0x12);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrbImmediate_LoadAPositiveValue)
 {
 	emitInstruction16("01111iiiiinnnttt", 0, R3, R0);
 	setRegisterValue(R3, INITIAL_PC + 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xFFFFFF7F, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xFFFFFF7F);
 	setExpectedRegisterValue(R0, 0x7F);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrbImmediate_AttemptLoadInvalidAddress)
@@ -75,5 +75,5 @@ TEST_F(CpuTestHelper, ldrbImmediate_AttemptLoadInvalidAddress)
 	emitInstruction16("01111iiiiinnnttt", 0, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
