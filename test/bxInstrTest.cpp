@@ -16,26 +16,27 @@
 
 /* BX (Branch and Exchange)
    Encoding: 010001 11 0 Rm:4 (0)(0)(0) */
-TEST_F(pinkySimBase, bx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
+TEST_F(CpuTestHelper,
+	   bx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
 {
-    emitInstruction16("010001110mmmm000", R0);
-    setExpectedXPSRflags("t");
-    setRegisterValue(R0, INITIAL_PC + 16);
-    setExpectedRegisterValue(PC, INITIAL_PC + 16);
-    pinkySimStep(&m_context);
+	emitInstruction16("010001110mmmm000", R0);
+	setExpectedXPSRflags("t");
+	setRegisterValue(R0, INITIAL_PC + 16);
+	setExpectedRegisterValue(PC, INITIAL_PC + 16);
+	pinkySimStep(&m_context);
 
-    const uint16_t NOP = 0xBF00;
+	const uint16_t NOP = 0xBF00;
 	memory_write_32(m_context.pMemory, INITIAL_PC + 16, NOP, READ_ONLY);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-    pinkySimStep(&m_context);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb)
+TEST_F(CpuTestHelper, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb)
 {
-    emitInstruction16("010001110mmmm000", LR);
-    setRegisterValue(LR, (INITIAL_PC + 16) | 1);
-    setExpectedRegisterValue(PC, INITIAL_PC + 16);
-    pinkySimStep(&m_context);
+	emitInstruction16("010001110mmmm000", LR);
+	setRegisterValue(LR, (INITIAL_PC + 16) | 1);
+	setExpectedRegisterValue(PC, INITIAL_PC + 16);
+	pinkySimStep(&m_context);
 }
 /*
 TEST_SIM_ONLY(bx, UnpredictableToUseR15)

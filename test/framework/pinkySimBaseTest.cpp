@@ -11,38 +11,45 @@ and/or distributed without the express permission of Flavio Roth.
 
 #define RETURN_TO_THREAD_FROM_SP_MAIN 0xFFFFFFF9
 
-static uint32_t interrupt_handler_address(uint32_t exception_number) {
+static uint32_t interrupt_handler_address(uint32_t exception_number)
+{
 	uint32_t offset = exception_number * sizeof(uint32_t);
 	return (100U + offset);
 }
 
-void pinkySimBase::memory_write_32(IMemory *pMem, uint32_t address, uint32_t value, int readOnly) {
+void CpuTestHelper::memory_write_32(IMemory *pMem, uint32_t address, uint32_t value, int readOnly)
+{
 	_cpu.mem().write32(address, value);
 }
 
-uint32_t pinkySimBase::memory_read_32(IMemory *pThis, uint32_t address) {
+uint32_t CpuTestHelper::memory_read_32(IMemory *pThis, uint32_t address)
+{
 	return _cpu.mem().read32(address);
 }
 
-void pinkySimBase::pinkySimStep(PinkySimContext* ctx) {
+void CpuTestHelper::pinkySimStep(PinkySimContext *ctx)
+{
 	// unused method.
 	// here to satisfy pinkysim test files
 	pinkySimStep();
 }
 
-void pinkySimBase::setup() {
+void CpuTestHelper::setup()
+{
 	// unused method.
 	// here to satisfy pinkysim test files
 	assert(false);
 }
 
-void pinkySimBase::teardown() {
+void CpuTestHelper::teardown()
+{
 	// unused method.
 	// here to satisfy pinkysim test files
 	assert(false);
 }
 
-void pinkySimBase::SetUp() {
+void CpuTestHelper::SetUp()
+{
 
 	// allocate memory
 	_memory.resize(MEMORY_SIZE);
@@ -53,7 +60,8 @@ void pinkySimBase::SetUp() {
 	initContext();
 }
 
-void pinkySimBase::initContext() {
+void CpuTestHelper::initContext()
+{
 
 	// zero memory
 	std::fill(_memory.begin(), _memory.end(), 0);
@@ -73,7 +81,7 @@ void pinkySimBase::initContext() {
 	m_expectedStepReturn = PINKYSIM_STEP_OK;
 
 	// fake vector table
-	for(uint32_t i = 1; i < 32; i++) {
+	for (uint32_t i = 1; i < 32; i++) {
 		uint32_t vt_offset = i * sizeof(uint32_t);
 		_cpu.mem().write32(vt_offset, interrupt_handler_address(i) | 1);
 	}
@@ -89,16 +97,12 @@ void pinkySimBase::initContext() {
 
 	/* Randomly initialize each APSR flag to help verify that the simulator doesn't clear/set a bit that the
 	   specification indicates shouldn't be modified by an instruction. */
-	for (uint32_t bit = 28 ; bit < 32 ; bit++)
-	{
+	for (uint32_t bit = 28; bit < 32; bit++) {
 		int setOrClear = rand() & 1;
-		if (setOrClear)
-		{
+		if (setOrClear) {
 			binops::set_bit(_cpu.regs().xpsr_register(), bit);
 			m_expectedXPSRflags |= (1 << bit);
-		}
-		else
-		{
+		} else {
 			binops::clear_bit(_cpu.regs().xpsr_register(), bit);
 			m_expectedXPSRflags &= ~(1 << bit);
 		}
@@ -107,8 +111,7 @@ void pinkySimBase::initContext() {
 	/* Place 0x11111111 in R1, 0x22222222 in R2, etc. */
 	uint32_t value = 0;
 
-	for (int i = 0 ; i < 13 ; i++)
-	{
+	for (int i = 0; i < 13; i++) {
 		_cpu.regs().set(i, value);
 		m_expectedRegisterValues[i] = value;
 		value += 0x11111111;
@@ -123,87 +126,91 @@ void pinkySimBase::initContext() {
 
 }
 
-void pinkySimBase::TearDown() {
+void CpuTestHelper::TearDown()
+{
 
 }
 
-void pinkySimBase::setExpectedStackGrowthSinceBeginning(int growth) {
+void CpuTestHelper::setExpectedStackGrowthSinceBeginning(int growth)
+{
 	setExpectedSPMain(INITIAL_SP - growth);
 }
 
-void pinkySimBase::setExpectedExceptionTaken(int exceptionNumber) {
+void CpuTestHelper::setExpectedExceptionTaken(int exceptionNumber)
+{
 	setExpectedXPSRflags("T");
 	setExpectedStepReturn(exceptionNumber);
 	setExpectedIPSR(exceptionNumber);
-	setExpectedStackGrowthSinceBeginning(32); // taking an exception wil save context on the stack (32 words)
-	setExpectedRegisterValue(LR, RETURN_TO_THREAD_FROM_SP_MAIN); // return to thread using main stack
+	setExpectedStackGrowthSinceBeginning(
+		32); // taking an exception wil save context on the stack (32 words)
+	setExpectedRegisterValue(LR,
+							 RETURN_TO_THREAD_FROM_SP_MAIN); // return to thread using main stack
 	setExpectedRegisterValue(PC, interrupt_handler_address(exceptionNumber));
 }
 
-void pinkySimBase::setExpectedStepReturn(int expectedStepReturn)
+void CpuTestHelper::setExpectedStepReturn(int expectedStepReturn)
 {
 	m_expectedStepReturn = expectedStepReturn;
 }
 
-void pinkySimBase::setExpectedSPMain(uint32_t sp) {
+void CpuTestHelper::setExpectedSPMain(uint32_t sp)
+{
 	m_expectedSPmain = sp;
 }
 
-void pinkySimBase::setExpectedXPSRflags(const char* pExpectedFlags)
+void CpuTestHelper::setExpectedXPSRflags(const char *pExpectedFlags)
 {
 	// Remember what expected APSR flags should be after instruction execution and flip initial flag state to make
 	// sure that simular correctly flips the state and doesn't just get lucky to match a pre-existing condition.
 	//uint32_t apsr = 0;
-	while (*pExpectedFlags)
-	{
-		switch (*pExpectedFlags)
-		{
-		case 'n':
-			m_expectedXPSRflags &= ~APSR_N;
-			_cpu.regs().app_status_register().write_neg_flag(true);
-			//apsr |= APSR_N;
-			break;
-		case 'N':
-			m_expectedXPSRflags |= APSR_N;
-			_cpu.regs().app_status_register().write_neg_flag(false);
-			//apsr &= ~APSR_N;
-			break;
-		case 'z':
-			m_expectedXPSRflags &= ~APSR_Z;
-			_cpu.regs().app_status_register().write_zero_flag(true);
-			//apsr |= APSR_Z;
-			break;
-		case 'Z':
-			m_expectedXPSRflags |= APSR_Z;
-			_cpu.regs().app_status_register().write_zero_flag(false);
-			//apsr &= ~APSR_Z;
-			break;
-		case 'c':
-			m_expectedXPSRflags &= ~APSR_C;
-			_cpu.regs().app_status_register().write_carry_flag(true);
-			//apsr |= APSR_C;
-			break;
-		case 'C':
-			m_expectedXPSRflags |= APSR_C;
-			_cpu.regs().app_status_register().write_carry_flag(false);
-			//apsr &= ~APSR_C;
-			break;
-		case 'v':
-			m_expectedXPSRflags &= ~APSR_V;
-			_cpu.regs().app_status_register().write_overflow_flag(true);
-			//apsr |= APSR_V;
-			break;
-		case 'V':
-			m_expectedXPSRflags |= APSR_V;
-			_cpu.regs().app_status_register().write_overflow_flag(false);
-			//apsr &= ~APSR_V;
-			break;
-		case 't':
-			m_expectedXPSRflags &= ~EPSR_T;
-			break;
-		case 'T':
-			m_expectedXPSRflags |= EPSR_T;
-			break;
+	while (*pExpectedFlags) {
+		switch (*pExpectedFlags) {
+			case 'n':
+				m_expectedXPSRflags &= ~APSR_N;
+				_cpu.regs().app_status_register().write_neg_flag(true);
+				//apsr |= APSR_N;
+				break;
+			case 'N':
+				m_expectedXPSRflags |= APSR_N;
+				_cpu.regs().app_status_register().write_neg_flag(false);
+				//apsr &= ~APSR_N;
+				break;
+			case 'z':
+				m_expectedXPSRflags &= ~APSR_Z;
+				_cpu.regs().app_status_register().write_zero_flag(true);
+				//apsr |= APSR_Z;
+				break;
+			case 'Z':
+				m_expectedXPSRflags |= APSR_Z;
+				_cpu.regs().app_status_register().write_zero_flag(false);
+				//apsr &= ~APSR_Z;
+				break;
+			case 'c':
+				m_expectedXPSRflags &= ~APSR_C;
+				_cpu.regs().app_status_register().write_carry_flag(true);
+				//apsr |= APSR_C;
+				break;
+			case 'C':
+				m_expectedXPSRflags |= APSR_C;
+				_cpu.regs().app_status_register().write_carry_flag(false);
+				//apsr &= ~APSR_C;
+				break;
+			case 'v':
+				m_expectedXPSRflags &= ~APSR_V;
+				_cpu.regs().app_status_register().write_overflow_flag(true);
+				//apsr |= APSR_V;
+				break;
+			case 'V':
+				m_expectedXPSRflags |= APSR_V;
+				_cpu.regs().app_status_register().write_overflow_flag(false);
+				//apsr &= ~APSR_V;
+				break;
+			case 't':
+				m_expectedXPSRflags &= ~EPSR_T;
+				break;
+			case 'T':
+				m_expectedXPSRflags |= EPSR_T;
+				break;
 		}
 
 		pExpectedFlags++;
@@ -212,12 +219,12 @@ void pinkySimBase::setExpectedXPSRflags(const char* pExpectedFlags)
 
 }
 
-void pinkySimBase::setExpectedIPSR(uint32_t expectedValue)
+void CpuTestHelper::setExpectedIPSR(uint32_t expectedValue)
 {
 	m_expectedIPSR = expectedValue;
 }
 
-void pinkySimBase::setExpectedRegisterValue(int index, uint32_t expectedValue)
+void CpuTestHelper::setExpectedRegisterValue(int index, uint32_t expectedValue)
 {
 	assert (index >= 0 && index <= PC);
 
@@ -231,15 +238,14 @@ void pinkySimBase::setExpectedRegisterValue(int index, uint32_t expectedValue)
 		m_expectedRegisterValues[index] = expectedValue;
 }
 
-void pinkySimBase::setRegisterValue(int index, uint32_t value)
+void CpuTestHelper::setRegisterValue(int index, uint32_t value)
 {
 	assert (index >= 0 && index <= PC);
 
 	setExpectedRegisterValue(index, value);
 	_cpu.regs().set(index, value);
 
-	if (index == PC)
-	{
+	if (index == PC) {
 		setExpectedRegisterValue(index, value + 2);
 
 	}
@@ -247,19 +253,18 @@ void pinkySimBase::setRegisterValue(int index, uint32_t value)
 }
 
 
-
-void pinkySimBase::emitInstruction16(const char* pEncoding, ...)
+void CpuTestHelper::emitInstruction16(const char *pEncoding, ...)
 {
-	va_list     valist;
+	va_list valist;
 
 	va_start(valist, pEncoding);
 	emitInstruction16Varg(pEncoding, valist);
 	va_end(valist);
 }
 
-void pinkySimBase::emitInstruction32(const char* pEncoding1, const char* pEncoding2, ...)
+void CpuTestHelper::emitInstruction32(const char *pEncoding1, const char *pEncoding2, ...)
 {
-	va_list     valist;
+	va_list valist;
 
 	va_start(valist, pEncoding2);
 	emitInstruction16Varg(pEncoding1, valist);
@@ -269,16 +274,16 @@ void pinkySimBase::emitInstruction32(const char* pEncoding1, const char* pEncodi
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 }
 
-void pinkySimBase::emitInstruction16Varg(const char* pEncoding, va_list valist)
+void CpuTestHelper::emitInstruction16Varg(const char *pEncoding, va_list valist)
 {
-	uint16_t    instr = 0;
-	size_t      i = 0;
-	char        last = '\0';
-	const char* p;
+	uint16_t instr = 0;
+	size_t i = 0;
+	char last = '\0';
+	const char *p;
 	struct Field
 	{
 		uint32_t value;
-		char     c;
+		char c;
 	} fields[6];
 
 	assert (16 == strlen(pEncoding));
@@ -286,24 +291,20 @@ void pinkySimBase::emitInstruction16Varg(const char* pEncoding, va_list valist)
 
 	// Go through pEncoding from left to right and find all fields to be inserted.
 	p = pEncoding;
-	while (*p)
-	{
+	while (*p) {
 		char c = *p++;
 
-		if (c != '1' && c != '0' && c != last)
-		{
+		if (c != '1' && c != '0' && c != last) {
 			// Determine if we already saw this field earlier.
 			bool found = false;
-			for (size_t j = 0 ; j < i ; j++)
-			{
+			for (size_t j = 0; j < i; j++) {
 				if (fields[j].c == c)
 					found = true;
 			}
 
 			// If this is the first time we have seen the field, then save its value in fields array.
-			if (!found)
-			{
-				assert (i < sizeof(fields)/sizeof(fields[0]));
+			if (!found) {
+				assert (i < sizeof(fields) / sizeof(fields[0]));
 
 				fields[i].value = va_arg(valist, uint32_t);
 				fields[i].c = c;
@@ -315,25 +316,18 @@ void pinkySimBase::emitInstruction16Varg(const char* pEncoding, va_list valist)
 
 	// Go through pEncoding again from right to left and insert field bits.
 	p = pEncoding + 15;
-	while (p >= pEncoding)
-	{
+	while (p >= pEncoding) {
 		char c = *p--;
 
 		instr >>= 1;
 
-		if (c == '1')
-		{
+		if (c == '1') {
 			instr |= (1 << 15);
-		}
-		else if (c == '0')
-		{
+		} else if (c == '0') {
 			instr |= (0 << 15);
-		}
-		else
-		{
+		} else {
 			size_t j;
-			for (j = 0 ; j < i ; j++)
-			{
+			for (j = 0; j < i; j++) {
 				if (fields[j].c == c)
 					break;
 			}
@@ -348,7 +342,7 @@ void pinkySimBase::emitInstruction16Varg(const char* pEncoding, va_list valist)
 	m_emitAddress += 2;
 }
 
-void pinkySimBase::pinkySimStep()
+void CpuTestHelper::pinkySimStep()
 {
 	_cpu.regs().primask_register() = PRIMASK;
 	_cpu.step();
@@ -358,15 +352,16 @@ void pinkySimBase::pinkySimStep()
 	PRIMASK = _cpu.regs().primask_register();
 }
 
-void pinkySimBase::validateSignaledException() {
-	if(PINKYSIM_STEP_HARDFAULT == m_expectedStepReturn) {
+void CpuTestHelper::validateSignaledException()
+{
+	if (PINKYSIM_STEP_HARDFAULT == m_expectedStepReturn) {
 		EXPECT_TRUE(_cpu.exceptions().is_active(exception_number::ex_name::HARDFAULT));
 	} else {
 		assert("TODO implement");
 	}
 }
 
-void pinkySimBase::validateXPSR()
+void CpuTestHelper::validateXPSR()
 {
 
 	char expectedFlagsStr[6] = {
@@ -394,56 +389,57 @@ void pinkySimBase::validateXPSR()
 	EXPECT_EQ(m_expectedIPSR, _cpu.regs().xpsr_register() & IPSR_MASK);
 }
 
-void pinkySimBase::validateRegisters()
+void CpuTestHelper::validateRegisters()
 {
-	for (int i = 0 ; i < 13 ; i++)
+	for (int i = 0; i < 13; i++)
 		EXPECT_EQ(m_expectedRegisterValues[i], _cpu.regs().get(i));
-	EXPECT_EQ(m_expectedSPmain, _cpu.regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
+	EXPECT_EQ(m_expectedSPmain,
+			  _cpu.regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
 	EXPECT_EQ(m_expectedLR, _cpu.regs().get_lr());
 	EXPECT_EQ(m_expectedPC, _cpu.regs().get_pc());
 }
 
-void pinkySimBase::setCarry()
+void CpuTestHelper::setCarry()
 {
 	_cpu.regs().app_status_register().write_carry_flag(true);
 }
 
-void pinkySimBase::clearCarry()
+void CpuTestHelper::clearCarry()
 {
 	_cpu.regs().app_status_register().write_carry_flag(false);
 }
 
-void pinkySimBase::setZero()
+void CpuTestHelper::setZero()
 {
 	_cpu.regs().app_status_register().write_zero_flag(true);
 }
 
-void pinkySimBase::clearZero()
+void CpuTestHelper::clearZero()
 {
 	_cpu.regs().app_status_register().write_zero_flag(false);
 }
 
-void pinkySimBase::setNegative()
+void CpuTestHelper::setNegative()
 {
 	_cpu.regs().app_status_register().write_neg_flag(true);
 }
 
-void pinkySimBase::clearNegative()
+void CpuTestHelper::clearNegative()
 {
 	_cpu.regs().app_status_register().write_neg_flag(false);
 }
 
-void pinkySimBase::setOverflow()
+void CpuTestHelper::setOverflow()
 {
 	_cpu.regs().app_status_register().write_overflow_flag(true);
 }
 
-void pinkySimBase::clearOverflow()
+void CpuTestHelper::clearOverflow()
 {
 	_cpu.regs().app_status_register().write_overflow_flag(false);
 }
 
-void pinkySimBase::setIPSR(uint32_t ipsr)
+void CpuTestHelper::setIPSR(uint32_t ipsr)
 {
 	_cpu.regs().xpsr_register() = (_cpu.regs().xpsr_register() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
 }

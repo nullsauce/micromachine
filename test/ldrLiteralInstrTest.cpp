@@ -16,42 +16,42 @@
 
 /* LDR - Literal
    Encoding: 01001 Rt:3 Imm:8 */
-TEST_F(pinkySimBase, ldrLiteral_LoadOffset0IntoHighestRegister)
+TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegister)
 {
-    emitInstruction16("01001tttiiiiiiii", R7, 0);
+	emitInstruction16("01001tttiiiiiiii", R7, 0);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R7, 0xBAADFEED);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R7, 0xBAADFEED);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
+TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
 {
-    // Emit UNDEFINED 16-bit instruction.
-    emitInstruction16("1101111000000000");
-    // Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
-    emitInstruction16("01001tttiiiiiiii", R7, 0);
+	// Emit UNDEFINED 16-bit instruction.
+	emitInstruction16("1101111000000000");
+	// Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
+	emitInstruction16("01001tttiiiiiiii", R7, 0);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
-    // Move PC to point to second instruction.
-    setRegisterValue(PC, _cpu.regs().get_pc() + 2);
-    setExpectedRegisterValue(R7, 0xBAADFEED);
-    pinkySimStep(&m_context);
+	// Move PC to point to second instruction.
+	setRegisterValue(PC, _cpu.regs().get_pc() + 2);
+	setExpectedRegisterValue(R7, 0xBAADFEED);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
+TEST_F(CpuTestHelper, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
 {
-    emitInstruction16("01001tttiiiiiiii", R0, 255);
+	emitInstruction16("01001tttiiiiiiii", R0, 255);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 4 + 255 * 4, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R0, 0xBAADFEED);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R0, 0xBAADFEED);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrLiteral_AttemptToLoadFromInvalidAddress)
+TEST_F(CpuTestHelper, ldrLiteral_AttemptToLoadFromInvalidAddress)
 {
-    m_emitAddress = INITIAL_SP - 128;
-    setRegisterValue(PC, INITIAL_SP - 128);
-    setExpectedRegisterValue(PC, INITIAL_SP - 128);
+	m_emitAddress = INITIAL_SP - 128;
+	setRegisterValue(PC, INITIAL_SP - 128);
+	setExpectedRegisterValue(PC, INITIAL_SP - 128);
 	memory_write_32(m_context.pMemory, INITIAL_SP - 128, 0, READ_WRITE);
-    emitInstruction16("01001tttiiiiiiii", R0, 255);
+	emitInstruction16("01001tttiiiiiiii", R0, 255);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-    pinkySimStep(&m_context);
+	pinkySimStep(&m_context);
 }

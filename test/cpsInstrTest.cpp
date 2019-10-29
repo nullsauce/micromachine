@@ -16,7 +16,7 @@
 /* CPS
    Encoding: 1011 0110 011 im:1 (0)(0)(1)(0) */
 
-TEST_F(pinkySimBase, cps_InterruptEnable)
+TEST_F(CpuTestHelper, cps_InterruptEnable)
 {
 	emitInstruction16("10110110011i0010", 0);
 	PRIMASK |= PRIMASK_PM;
@@ -24,7 +24,7 @@ TEST_F(pinkySimBase, cps_InterruptEnable)
 	EXPECT_FALSE(PRIMASK & PRIMASK_PM);
 }
 
-TEST_F(pinkySimBase, cps_InterruptDisable)
+TEST_F(CpuTestHelper, cps_InterruptDisable)
 {
 	emitInstruction16("10110110011i0010", 1);
 	PRIMASK &= ~PRIMASK_PM;

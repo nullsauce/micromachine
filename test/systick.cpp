@@ -5,7 +5,8 @@
 #include <gtest/gtest.h>
 #include "timer.hpp"
 
-TEST(SystickOperation, WhenDisabledTimerDoeNotCountsDown) {
+TEST(SystickOperation, WhenDisabledTimerDoeNotCountsDown)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(false);
@@ -15,7 +16,8 @@ TEST(SystickOperation, WhenDisabledTimerDoeNotCountsDown) {
 	EXPECT_EQ(10, syst.current_value_register());
 }
 
-TEST(SystickOperation, WhenEnabledTimerCountsDownFromValueInSYST_CVR) {
+TEST(SystickOperation, WhenEnabledTimerCountsDownFromValueInSYST_CVR)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -25,7 +27,9 @@ TEST(SystickOperation, WhenEnabledTimerCountsDownFromValueInSYST_CVR) {
 	EXPECT_EQ(9, syst.current_value_register());
 }
 
-TEST(SystickOperation, WhenTheCounterReachesZeroItReloadsTheValueInSYST_RVRonTheNextClockAndDecrementsAfter) {
+TEST(SystickOperation,
+	 WhenTheCounterReachesZeroItReloadsTheValueInSYST_RVRonTheNextClockAndDecrementsAfter)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -42,7 +46,8 @@ TEST(SystickOperation, WhenTheCounterReachesZeroItReloadsTheValueInSYST_RVRonThe
 	EXPECT_EQ(999, syst.current_value_register());
 }
 
-TEST(SystickOperation, WhenTheCounterTransitionsToZeroItSetsTheCOUNTFLAGstatusBitToOne) {
+TEST(SystickOperation, WhenTheCounterTransitionsToZeroItSetsTheCOUNTFLAGstatusBitToOne)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -53,7 +58,8 @@ TEST(SystickOperation, WhenTheCounterTransitionsToZeroItSetsTheCOUNTFLAGstatusBi
 	EXPECT_TRUE(syst.control_register().count_flag());
 }
 
-TEST(SystickOperation, ReadingTheCOUNTFLAGstatusBitClearsItToZero) {
+TEST(SystickOperation, ReadingTheCOUNTFLAGstatusBitClearsItToZero)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -64,7 +70,8 @@ TEST(SystickOperation, ReadingTheCOUNTFLAGstatusBitClearsItToZero) {
 	EXPECT_FALSE(syst.control_register().count_flag());
 }
 
-TEST(SystickOperation, WritingToSYST_CVRclearsBothTheRegisterAndTheCOUNTFLAGstatusBit) {
+TEST(SystickOperation, WritingToSYST_CVRclearsBothTheRegisterAndTheCOUNTFLAGstatusBit)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -78,7 +85,8 @@ TEST(SystickOperation, WritingToSYST_CVRclearsBothTheRegisterAndTheCOUNTFLAGstat
 	EXPECT_EQ(0, syst.control_register().count_flag());
 }
 
-TEST(SystickOperation, WritingToSYST_CVRcausesAReloadOfSYST_CVRfromSYST_RVRonNextTick) {
+TEST(SystickOperation, WritingToSYST_CVRcausesAReloadOfSYST_CVRfromSYST_RVRonNextTick)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -94,7 +102,8 @@ TEST(SystickOperation, WritingToSYST_CVRcausesAReloadOfSYST_CVRfromSYST_RVRonNex
 	EXPECT_EQ(1000, syst.current_value_register());
 }
 
-TEST(SystickOperation, WritingAvalueOfZeroToSYST_RVRdisablesTheCounterOnTheNextWrap) {
+TEST(SystickOperation, WritingAvalueOfZeroToSYST_RVRdisablesTheCounterOnTheNextWrap)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -106,7 +115,8 @@ TEST(SystickOperation, WritingAvalueOfZeroToSYST_RVRdisablesTheCounterOnTheNextW
 	EXPECT_FALSE(syst.control_register().enabled());
 }
 
-TEST(SystickOperation, SYSTICKIsPendingAfterCounterReachesZero) {
+TEST(SystickOperation, SYSTICKIsPendingAfterCounterReachesZero)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
@@ -116,7 +126,8 @@ TEST(SystickOperation, SYSTICKIsPendingAfterCounterReachesZero) {
 	EXPECT_TRUE(ev.is_pending(exception_number::ex_name::SYSTICK));
 }
 
-TEST(SystickOperation, AwriteToSYST_CVRdoesNotTriggerTheSysTickExceptionLogic) {
+TEST(SystickOperation, AwriteToSYST_CVRdoesNotTriggerTheSysTickExceptionLogic)
+{
 	exception_vector ev;
 	systick syst(ev);
 	syst.control_register().set_enabled(true);
