@@ -18,22 +18,8 @@ extern "C"
 }
 #include "mri4simBaseTest.h"
 
-TEST_GROUP_BASE(watchpointTests, mri4simBase)
-{
-    void setup()
-    {
-        mri4simBase::setup();
-    }
 
-    void teardown()
-    {
-        mri4simBase::teardown();
-        MallocFailureInject_Restore();
-    }
-};
-
-
-PINKY_TEST(watchpointTests, Set4ByteReadWatchpoint_RunUntilThatAddressIsRead_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set4ByteReadWatchpoint_RunUntilThatAddressIsRead_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -60,10 +46,10 @@ PINKY_TEST(watchpointTests, Set4ByteReadWatchpoint_RunUntilThatAddressIsRead_But
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0xBAADF00D, m_pContext->R[0]);
+    EXPECT_EQ(0xBAADF00D, m_pContext->R[0]);
 }
 
-PINKY_TEST(watchpointTests, Set4ByteWriteWatchpoint_RunUntilThatAddressIsWritten_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set4ByteWriteWatchpoint_RunUntilThatAddressIsWritten_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -90,10 +76,10 @@ PINKY_TEST(watchpointTests, Set4ByteWriteWatchpoint_RunUntilThatAddressIsWritten
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0xBAADF00D, IMemory_Read32(m_pContext->pMemory, INITIAL_SP - 4));
+    EXPECT_EQ(0xBAADF00D, IMemory_Read32(m_pContext->pMemory, INITIAL_SP - 4));
 }
 
-PINKY_TEST(watchpointTests, Set4ByteReadWriteWatchpoint_RunUntilThatAddressIsWritten_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set4ByteReadWriteWatchpoint_RunUntilThatAddressIsWritten_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -120,10 +106,10 @@ PINKY_TEST(watchpointTests, Set4ByteReadWriteWatchpoint_RunUntilThatAddressIsWri
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0xBAADF00D, IMemory_Read32(m_pContext->pMemory, INITIAL_SP - 4));
+    EXPECT_EQ(0xBAADF00D, IMemory_Read32(m_pContext->pMemory, INITIAL_SP - 4));
 }
 
-PINKY_TEST(watchpointTests, Set4ByteReadWriteWatchpoint_RunUntilThatAddressIsRead_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set4ByteReadWriteWatchpoint_RunUntilThatAddressIsRead_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -150,10 +136,10 @@ PINKY_TEST(watchpointTests, Set4ByteReadWriteWatchpoint_RunUntilThatAddressIsRea
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0xBAADF00D, m_pContext->R[0]);
+    EXPECT_EQ(0xBAADF00D, m_pContext->R[0]);
 }
 
-PINKY_TEST(watchpointTests, Set4ByteReadWatchpoint_RunUntilThatAddressIsRead_ClearAndMakeSureThatNextReadNoHit)
+TEST_F(pinkySimBase, watchpointTests_Set4ByteReadWatchpoint_RunUntilThatAddressIsRead_ClearAndMakeSureThatNextReadNoHit)
 {
     emitNOP();
     emitNOP();
@@ -191,7 +177,7 @@ PINKY_TEST(watchpointTests, Set4ByteReadWatchpoint_RunUntilThatAddressIsRead_Cle
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
 }
 
-PINKY_TEST(watchpointTests, Set1ByteReadWatchpoint_RunUntilThatAddressIsRead_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set1ByteReadWatchpoint_RunUntilThatAddressIsRead_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -218,10 +204,10 @@ PINKY_TEST(watchpointTests, Set1ByteReadWatchpoint_RunUntilThatAddressIsRead_But
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0x5A, m_pContext->R[0]);
+    EXPECT_EQ(0x5A, m_pContext->R[0]);
 }
 
-PINKY_TEST(watchpointTests, Set2ByteWriteWatchpoint_RunUntilThatAddressIsWrite_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set2ByteWriteWatchpoint_RunUntilThatAddressIsWrite_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -248,10 +234,10 @@ PINKY_TEST(watchpointTests, Set2ByteWriteWatchpoint_RunUntilThatAddressIsWrite_B
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0xF00D, IMemory_Read16(m_pContext->pMemory, INITIAL_SP - 4));
+    EXPECT_EQ(0xF00D, IMemory_Read16(m_pContext->pMemory, INITIAL_SP - 4));
 }
 
-PINKY_TEST(watchpointTests, Set8ByteWriteWatchpoint_RunUntilThatAddressIsWrite_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set8ByteWriteWatchpoint_RunUntilThatAddressIsWrite_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -278,10 +264,10 @@ PINKY_TEST(watchpointTests, Set8ByteWriteWatchpoint_RunUntilThatAddressIsWrite_B
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0xF00D, IMemory_Read16(m_pContext->pMemory, INITIAL_SP - 4));
+    EXPECT_EQ(0xF00D, IMemory_Read16(m_pContext->pMemory, INITIAL_SP - 4));
 }
 
-PINKY_TEST(watchpointTests, Set8ByteReadWatchpoint_RunUntilSecondWordIsRead_ButHaltsOnNextInstruction)
+TEST_F(pinkySimBase, watchpointTests_Set8ByteReadWatchpoint_RunUntilSecondWordIsRead_ButHaltsOnNextInstruction)
 {
     emitNOP();
     emitNOP();
@@ -308,10 +294,10 @@ PINKY_TEST(watchpointTests, Set8ByteReadWatchpoint_RunUntilSecondWordIsRead_ButH
     appendExpectedTPacket(SIGTRAP, 0, INITIAL_SP, INITIAL_LR, INITIAL_PC + 6);
     appendExpectedString("+");
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
-    CHECK_EQUAL(0xBAADF00D, m_pContext->R[0]);
+    EXPECT_EQ(0xBAADF00D, m_pContext->R[0]);
 }
 
-PINKY_TEST(watchpointTests, FailMemoryAllocation_AttemptToSet4ByteReadWatchpoint_ShouldReturnErrorMessage)
+TEST_F(pinkySimBase, watchpointTests_FailMemoryAllocation_AttemptToSet4ByteReadWatchpoint_ShouldReturnErrorMessage)
 {
     char commands[64];
     snprintf(commands, sizeof(commands), "+$Z3,%x,4#", INITIAL_SP - 4);
@@ -323,7 +309,7 @@ PINKY_TEST(watchpointTests, FailMemoryAllocation_AttemptToSet4ByteReadWatchpoint
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
 }
 
-PINKY_TEST(watchpointTests, AttemptToSet4ByteReadWatchpoint_AtInvalidAddress_ShouldReturnErrorMessage)
+TEST_F(pinkySimBase, watchpointTests_AttemptToSet4ByteReadWatchpoint_AtInvalidAddress_ShouldReturnErrorMessage)
 {
     mockIComm_InitReceiveChecksummedData("+$Z3,fffffffc,4#", "+$c#");
         mri4simRun(mockIComm_Get(), TRUE);
@@ -332,7 +318,7 @@ PINKY_TEST(watchpointTests, AttemptToSet4ByteReadWatchpoint_AtInvalidAddress_Sho
     STRCMP_EQUAL(checksumExpected(), mockIComm_GetTransmittedData());
 }
 
-PINKY_TEST(watchpointTests, AttemptToClear4ByteReadWatchpoint_AtInvalidAddress_ShouldReturnErrorMessage)
+TEST_F(pinkySimBase, watchpointTests_AttemptToClear4ByteReadWatchpoint_AtInvalidAddress_ShouldReturnErrorMessage)
 {
     mockIComm_InitReceiveChecksummedData("+$z3,fffffffc,4#", "+$c#");
         mri4simRun(mockIComm_Get(), TRUE);

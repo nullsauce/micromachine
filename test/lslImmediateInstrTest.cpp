@@ -21,23 +21,9 @@
 #define IMM_31 31
 
 
-TEST_GROUP_BASE(lslImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
-
 /* LSL - Immediate (Logical Shift Left)
    Encoding: 000 00 imm:5 Rm:3 Rd:3 */
-PINKY_TEST(lslImmediate, MovR7toR0_CarryUnmodified)
+TEST_F(pinkySimBase, lslImmediate_MovR7toR0_CarryUnmodified)
 {
     emitInstruction16("00000iiiiimmmddd", IMM_0, R7, R0);
     setExpectedXPSRflags("nzc");
@@ -46,7 +32,7 @@ PINKY_TEST(lslImmediate, MovR7toR0_CarryUnmodified)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lslImmediate, MovR0toR7_ZeroResultAndCarryUnmodified)
+TEST_F(pinkySimBase, lslImmediate_MovR0toR7_ZeroResultAndCarryUnmodified)
 {
     emitInstruction16("00000iiiiimmmddd", IMM_0, R0, R7);
     setExpectedXPSRflags("nZC");
@@ -55,7 +41,7 @@ PINKY_TEST(lslImmediate, MovR0toR7_ZeroResultAndCarryUnmodified)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lslImmediate, ShiftR1by3_ResultInNegativeValue)
+TEST_F(pinkySimBase, lslImmediate_ShiftR1by3_ResultInNegativeValue)
 {
     emitInstruction16("00000iiiiimmmddd", IMM_3, R1, R0);
     setExpectedXPSRflags("Nzc");
@@ -63,7 +49,7 @@ PINKY_TEST(lslImmediate, ShiftR1by3_ResultInNegativeValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lslImmediate, ShiftR1by4_HasCarryOut)
+TEST_F(pinkySimBase, lslImmediate_ShiftR1by4_HasCarryOut)
 {
     emitInstruction16("00000iiiiimmmddd", IMM_4, R1, R0);
     setExpectedXPSRflags("nzC");
@@ -71,7 +57,7 @@ PINKY_TEST(lslImmediate, ShiftR1by4_HasCarryOut)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lslImmediate, ShiftR0by31_PushesLowestbitIntoSignBit)
+TEST_F(pinkySimBase, lslImmediate_ShiftR0by31_PushesLowestbitIntoSignBit)
 {
     emitInstruction16("00000iiiiimmmddd", IMM_31, R0, R0);
     setExpectedXPSRflags("Nzc");
@@ -80,7 +66,7 @@ PINKY_TEST(lslImmediate, ShiftR0by31_PushesLowestbitIntoSignBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lslImmediate, CarryOutFromHighestBit)
+TEST_F(pinkySimBase, lslImmediate_CarryOutFromHighestBit)
 {
     emitInstruction16("00000iiiiimmmddd", IMM_1, R0, R0);
     setExpectedXPSRflags("nzC");
@@ -89,7 +75,7 @@ PINKY_TEST(lslImmediate, CarryOutFromHighestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lslImmediate, CarryOutFromLowestBit)
+TEST_F(pinkySimBase, lslImmediate_CarryOutFromLowestBit)
 {
     emitInstruction16("00000iiiiimmmddd", IMM_31, R0, R0);
     setExpectedXPSRflags("nZC");

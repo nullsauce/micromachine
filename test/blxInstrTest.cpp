@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(blx, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* BLX (Branch with Link and Exchange)
    Encoding: 010001 11 1 Rm:4 (0)(0)(0) */
-PINKY_TEST(blx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
+TEST_F(pinkySimBase, blx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
 {
     emitInstruction16("010001111mmmm000", R0);
     setExpectedXPSRflags("t");
@@ -44,7 +31,7 @@ PINKY_TEST(blx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCaus
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(blx, UseHighestRegisterToBranchToOddAddressAsRequiredForThumb)
+TEST_F(pinkySimBase, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForThumb)
 {
     emitInstruction16("010001111mmmm000", LR);
     setRegisterValue(LR, (INITIAL_PC + 16) | 1);

@@ -13,37 +13,24 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(addSP, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* ADD SP Plus Immediate - Encoding T1
    Encoding: 1010 1 Rd:3 Imm:8 */
-PINKY_TEST(addSP, T1UseHighestRegisterAddSmallestImmediate)
+TEST_F(pinkySimBase, addSP_T1UseHighestRegisterAddSmallestImmediate)
 {
     emitInstruction16("10101dddiiiiiiii", R7, 0);
     setExpectedRegisterValue(R7, INITIAL_SP + 0);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(addSP, T1UseLowestRegisterAddLargestImmediate)
+TEST_F(pinkySimBase, addSP_T1UseLowestRegisterAddLargestImmediate)
 {
     emitInstruction16("10101dddiiiiiiii", R0, 255);
     setExpectedRegisterValue(R0, INITIAL_SP + 255 * 4);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(addSP, T1UseIntermediateValues)
+TEST_F(pinkySimBase, addSP_T1UseIntermediateValues)
 {
     emitInstruction16("10101dddiiiiiiii", R3, 128);
     setExpectedRegisterValue(R3, INITIAL_SP + 128 * 4);
@@ -54,7 +41,7 @@ PINKY_TEST(addSP, T1UseIntermediateValues)
 
 /* ADD SP Plus Immediate - Encoding T2
    Encoding: 1011 0000 0 Imm:7 */
-PINKY_TEST(addSP, T2SmallestImmediate)
+TEST_F(pinkySimBase, addSP_T2SmallestImmediate)
 {
     emitInstruction16("101100000iiiiiii", 0);
     setRegisterValue(SP, INITIAL_PC + 1024);
@@ -62,7 +49,7 @@ PINKY_TEST(addSP, T2SmallestImmediate)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(addSP, T2LargestImmediate)
+TEST_F(pinkySimBase, addSP_T2LargestImmediate)
 {
     emitInstruction16("101100000iiiiiii", 127);
     setRegisterValue(SP, INITIAL_PC + 1024);
@@ -70,7 +57,7 @@ PINKY_TEST(addSP, T2LargestImmediate)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(addSP, T2IntermediateValues)
+TEST_F(pinkySimBase, addSP_T2IntermediateValues)
 {
     emitInstruction16("101100000iiiiiii", 64);
     setRegisterValue(SP, INITIAL_PC + 1024);

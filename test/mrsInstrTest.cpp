@@ -13,18 +13,6 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(mrs, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
 
 // IPSR value can't be changed from within a debug monitor.
 #ifdef THUNK2REAL
@@ -37,7 +25,7 @@ TEST_GROUP_BASE(mrs, pinkySimBase)
 /* MRS
    Encoding: 11110 0 1111 1 (0) (1)(1)(1)(1)
              10 (0) 0 Rd:4 SYSm:8 */
-PINKY_TEST(mrs, FromAPSR)
+TEST_F(pinkySimBase, mrs_FromAPSR)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_APSR);
     setExpectedXPSRflags("NzCv");
@@ -49,7 +37,7 @@ PINKY_TEST(mrs, FromAPSR)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromIAPSR)
+TEST_F(pinkySimBase, mrs_FromIAPSR)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R0, SYS_IAPSR);
     setExpectedXPSRflags("NzCv");
@@ -61,7 +49,7 @@ PINKY_TEST(mrs, FromIAPSR)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromEAPSR)
+TEST_F(pinkySimBase, mrs_FromEAPSR)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EAPSR);
     setExpectedXPSRflags("NzCv");
@@ -73,7 +61,7 @@ PINKY_TEST(mrs, FromEAPSR)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromXPSR)
+TEST_F(pinkySimBase, mrs_FromXPSR)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_XPSR);
     setExpectedXPSRflags("NzCv");
@@ -85,7 +73,7 @@ PINKY_TEST(mrs, FromXPSR)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromIPSR)
+TEST_F(pinkySimBase, mrs_FromIPSR)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IPSR);
     setExpectedXPSRflags("NzCv");
@@ -97,7 +85,7 @@ PINKY_TEST(mrs, FromIPSR)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromEPSR)
+TEST_F(pinkySimBase, mrs_FromEPSR)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EPSR);
     setExpectedXPSRflags("NzCv");
@@ -109,7 +97,7 @@ PINKY_TEST(mrs, FromEPSR)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromIEPSR)
+TEST_F(pinkySimBase, mrs_FromIEPSR)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IEPSR);
     setExpectedXPSRflags("NzCv");
@@ -121,7 +109,7 @@ PINKY_TEST(mrs, FromIEPSR)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromMSP)
+TEST_F(pinkySimBase, mrs_FromMSP)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_MSP);
     setRegisterValue(R12, 0xFFFFFFFF);
@@ -129,7 +117,7 @@ PINKY_TEST(mrs, FromMSP)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromPSP)
+TEST_F(pinkySimBase, mrs_FromPSP)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PSP);
     setRegisterValue(R12, 0xFFFFFFFF);
@@ -137,7 +125,7 @@ PINKY_TEST(mrs, FromPSP)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, FromPRIMASKsetTo1)
+TEST_F(pinkySimBase, mrs_FromPRIMASKsetTo1)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
     setRegisterValue(R12, 0xFFFFFFFF);
@@ -146,7 +134,7 @@ PINKY_TEST(mrs, FromPRIMASKsetTo1)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, PRIMASKto0)
+TEST_F(pinkySimBase, mrs_PRIMASKto0)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
     setRegisterValue(R12, 0xFFFFFFFF);
@@ -155,7 +143,7 @@ PINKY_TEST(mrs, PRIMASKto0)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, CONTROLIgnored)
+TEST_F(pinkySimBase, mrs_CONTROLIgnored)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_CONTROL);
     setRegisterValue(R12, 0xFFFFFFFF);
@@ -163,7 +151,7 @@ PINKY_TEST(mrs, CONTROLIgnored)
     pinkySimStep(&m_context);
 }
 /*
-PINKY_TEST(mrs, R13IsUnpredictable)
+TEST_F(pinkySimBase, mrs_R13IsUnpredictable)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", SP, SYS_XPSR);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
@@ -171,7 +159,7 @@ PINKY_TEST(mrs, R13IsUnpredictable)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mrs, R15IsUnpredictable)
+TEST_F(pinkySimBase, mrs_R15IsUnpredictable)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", PC, SYS_XPSR);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);

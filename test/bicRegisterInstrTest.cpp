@@ -13,24 +13,11 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(bicRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* BIC - Register
    Encoding: 010000 1110 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-PINKY_TEST(bicRegister, UseLowestRegisterForBothArgs)
+TEST_F(pinkySimBase, bicRegister_UseLowestRegisterForBothArgs)
 {
     emitInstruction16("0100001110mmmddd", R0, R0);
     // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -40,7 +27,7 @@ PINKY_TEST(bicRegister, UseLowestRegisterForBothArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(bicRegister, UseHighestRegisterForBothArgs)
+TEST_F(pinkySimBase, bicRegister_UseHighestRegisterForBothArgs)
 {
     emitInstruction16("0100001110mmmddd", R7, R7);
     setExpectedXPSRflags("nZC");
@@ -49,7 +36,7 @@ PINKY_TEST(bicRegister, UseHighestRegisterForBothArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(bicRegister, UseR3andR7)
+TEST_F(pinkySimBase, bicRegister_UseR3andR7)
 {
     emitInstruction16("0100001110mmmddd", R3, R7);
     setExpectedXPSRflags("nz");
@@ -57,7 +44,7 @@ PINKY_TEST(bicRegister, UseR3andR7)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(bicRegister, UseBicToClearLSbit)
+TEST_F(pinkySimBase, bicRegister_UseBicToClearLSbit)
 {
     emitInstruction16("0100001110mmmddd", R6, R1);
     setRegisterValue(R1, -1);

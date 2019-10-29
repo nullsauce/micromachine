@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(mul, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* MUL
    Encoding: 010000 1101 Rn:3 Rdm:3 */
-PINKY_TEST(mul, UseLowestRegisterForAllArgs)
+TEST_F(pinkySimBase, mul_UseLowestRegisterForAllArgs)
 {
     emitInstruction16("0100001101nnnddd", R0, R0);
     setExpectedXPSRflags("nZ");
@@ -37,7 +24,7 @@ PINKY_TEST(mul, UseLowestRegisterForAllArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mul, UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
+TEST_F(pinkySimBase, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
 {
     emitInstruction16("0100001101nnnddd", R7, R7);
     setExpectedXPSRflags("Nz");
@@ -45,7 +32,7 @@ PINKY_TEST(mul, UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mul, UseDifferentRegistersForEachArg)
+TEST_F(pinkySimBase, mul_UseDifferentRegistersForEachArg)
 {
     emitInstruction16("0100001101nnnddd", R1, R2);
     setRegisterValue(R1, 0xA5A5);
@@ -55,7 +42,7 @@ PINKY_TEST(mul, UseDifferentRegistersForEachArg)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(mul, MultiplyBy16BitMaximumValues)
+TEST_F(pinkySimBase, mul_MultiplyBy16BitMaximumValues)
 {
     emitInstruction16("0100001101nnnddd", R1, R2);
     setRegisterValue(R1, 0xFFFF);

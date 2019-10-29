@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(subImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* SUB - Immediate - Encoding T1
    Encoding: 000 11 1 1 Imm:3 Rn:3 Rd:3 */
-PINKY_TEST(subImmediate, T1UseLowestRegisterOnly_SmallestImmediate)
+TEST_F(pinkySimBase, subImmediate_T1UseLowestRegisterOnly_SmallestImmediate)
 {
     emitInstruction16("0001111iiinnnddd", 0, R0, R0);
     setExpectedXPSRflags("nZCv");
@@ -37,7 +24,7 @@ PINKY_TEST(subImmediate, T1UseLowestRegisterOnly_SmallestImmediate)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subImmediate, T1UseHigestRegisterOnly_LargestImmediate)
+TEST_F(pinkySimBase, subImmediate_T1UseHigestRegisterOnly_LargestImmediate)
 {
     emitInstruction16("0001111iiinnnddd", 7, R7, R7);
     setExpectedXPSRflags("nzCv");
@@ -45,7 +32,7 @@ PINKY_TEST(subImmediate, T1UseHigestRegisterOnly_LargestImmediate)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subImmediate, T1UseDifferentRegistersForEachArg)
+TEST_F(pinkySimBase, subImmediate_T1UseDifferentRegistersForEachArg)
 {
     emitInstruction16("0001111iiinnnddd", 3, R0, R2);
     setExpectedXPSRflags("Nzcv");
@@ -53,7 +40,7 @@ PINKY_TEST(subImmediate, T1UseDifferentRegistersForEachArg)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subImmediate, T1ForceOverflowPastLargestNegativeInteger)
+TEST_F(pinkySimBase, subImmediate_T1ForceOverflowPastLargestNegativeInteger)
 {
     emitInstruction16("0001111iiinnnddd", 1, R1, R6);
     setExpectedXPSRflags("nzCV");
@@ -66,7 +53,7 @@ PINKY_TEST(subImmediate, T1ForceOverflowPastLargestNegativeInteger)
 
 /* SUB - Immediate - Encoding T2
    Encoding: 001 11 Rdn:3 Imm:8 */
-PINKY_TEST(subImmediate, T2LowestRegister_SmallestImmediate)
+TEST_F(pinkySimBase, subImmediate_T2LowestRegister_SmallestImmediate)
 {
     emitInstruction16("00111dddiiiiiiii", R0, 0);
     setExpectedXPSRflags("nZCv");
@@ -74,7 +61,7 @@ PINKY_TEST(subImmediate, T2LowestRegister_SmallestImmediate)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subImmediate, T2HigestRegister_LargestImmediate)
+TEST_F(pinkySimBase, subImmediate_T2HigestRegister_LargestImmediate)
 {
     emitInstruction16("00111dddiiiiiiii", R7, 255);
     setExpectedXPSRflags("nzCv");
@@ -82,7 +69,7 @@ PINKY_TEST(subImmediate, T2HigestRegister_LargestImmediate)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subImmediate, T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult)
+TEST_F(pinkySimBase, subImmediate_T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult)
 {
     emitInstruction16("00111dddiiiiiiii", R0, 127);
     setExpectedXPSRflags("Nzcv");
@@ -90,7 +77,7 @@ PINKY_TEST(subImmediate, T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNega
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subImmediate, T2ForceOverflowPastLargestNegativeInteger)
+TEST_F(pinkySimBase, subImmediate_T2ForceOverflowPastLargestNegativeInteger)
 {
     emitInstruction16("00111dddiiiiiiii", R3, 1);
     setExpectedXPSRflags("nzCV");

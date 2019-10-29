@@ -13,44 +13,31 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(cmpRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* CMP - Register - Encoding T1
    Encoding: 010000 1010 Rm:3 Rn:3 */
-PINKY_TEST(cmpRegister, T1UseLowestRegisterForAllArgs)
+TEST_F(pinkySimBase, cmpRegister_T1UseLowestRegisterForAllArgs)
 {
     emitInstruction16("0100001010mmmnnn", R0, R0);
     setExpectedXPSRflags("nZCv");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T1UseHigestRegisterForAllArgs)
+TEST_F(pinkySimBase, cmpRegister_T1UseHigestRegisterForAllArgs)
 {
     emitInstruction16("0100001010mmmnnn", R7, R7);
     setExpectedXPSRflags("nZCv");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T1RnLargerThanRm)
+TEST_F(pinkySimBase, cmpRegister_T1RnLargerThanRm)
 {
     emitInstruction16("0100001010mmmnnn", R1, R2);
     setExpectedXPSRflags("nzCv");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T1RnSmallerThanRm)
+TEST_F(pinkySimBase, cmpRegister_T1RnSmallerThanRm)
 {
     emitInstruction16("0100001010mmmnnn", R1, R0);
     setExpectedXPSRflags("Nzcv");
@@ -58,7 +45,7 @@ PINKY_TEST(cmpRegister, T1RnSmallerThanRm)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T1ForceNegativeOverflow)
+TEST_F(pinkySimBase, cmpRegister_T1ForceNegativeOverflow)
 {
     emitInstruction16("0100001010mmmnnn", R1, R2);
     setExpectedXPSRflags("nzCV");
@@ -67,7 +54,7 @@ PINKY_TEST(cmpRegister, T1ForceNegativeOverflow)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T1ForcePositiveOverflow)
+TEST_F(pinkySimBase, cmpRegister_T1ForcePositiveOverflow)
 {
     emitInstruction16("0100001010mmmnnn", R1, R2);
     setExpectedXPSRflags("NzcV");
@@ -81,7 +68,7 @@ PINKY_TEST(cmpRegister, T1ForcePositiveOverflow)
 /* CMP - Register - Encoding T2
    Encoding: 010001 01 N:1 Rm:4 Rn:3
    NOTE: At least one register must be high register, R8 - R14. */
-PINKY_TEST(cmpRegister, T2CompareLowestRegisterToHighestRegister)
+TEST_F(pinkySimBase, cmpRegister_T2CompareLowestRegisterToHighestRegister)
 {
     emitInstruction16("01000101nmmmmnnn", R0, LR);
     setRegisterValue(LR, 0xEEEEEEEE);
@@ -89,7 +76,7 @@ PINKY_TEST(cmpRegister, T2CompareLowestRegisterToHighestRegister)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T2CompareHighestRegisterToLowestRegister)
+TEST_F(pinkySimBase, cmpRegister_T2CompareHighestRegisterToLowestRegister)
 {
     emitInstruction16("01000101nmmmmnnn", LR, R0);
     setRegisterValue(LR, 0xEEEEEEEE);
@@ -97,14 +84,14 @@ PINKY_TEST(cmpRegister, T2CompareHighestRegisterToLowestRegister)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T2CompareR8ToItself)
+TEST_F(pinkySimBase, cmpRegister_T2CompareR8ToItself)
 {
     emitInstruction16("01000101nmmmmnnn", R8, R8);
     setExpectedXPSRflags("nZCv");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T2ForceNegativeOverflow)
+TEST_F(pinkySimBase, cmpRegister_T2ForceNegativeOverflow)
 {
     emitInstruction16("01000101nmmmmnnn", R11, R12);
     setExpectedXPSRflags("nzCV");
@@ -113,7 +100,7 @@ PINKY_TEST(cmpRegister, T2ForceNegativeOverflow)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpRegister, T2ForcePositiveOverflow)
+TEST_F(pinkySimBase, cmpRegister_T2ForcePositiveOverflow)
 {
     emitInstruction16("01000101nmmmmnnn", R11, R12);
     setExpectedXPSRflags("NzcV");

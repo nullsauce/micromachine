@@ -13,50 +13,37 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(push, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* PUSH
    Encoding: 1011 0 10 M:1 RegisterList:8 */
-PINKY_TEST(push, JustPushLR)
+TEST_F(pinkySimBase, push_JustPushLR)
 {
     emitInstruction16("1011010Mrrrrrrrr", 1, 0);
     setExpectedRegisterValue(SP, INITIAL_SP - 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4, 0x0, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(INITIAL_LR, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
+    EXPECT_EQ(INITIAL_LR, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
 }
 
-PINKY_TEST(push, JustPushR0)
+TEST_F(pinkySimBase, push_JustPushR0)
 {
     emitInstruction16("1011010Mrrrrrrrr", 0, 1);
     setExpectedRegisterValue(SP, INITIAL_SP - 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0x0, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
+    EXPECT_EQ(0x0, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
 }
 
-PINKY_TEST(push, JustPushR7)
+TEST_F(pinkySimBase, push_JustPushR7)
 {
     emitInstruction16("1011010Mrrrrrrrr", 0, 1 << 7);
     setExpectedRegisterValue(SP, INITIAL_SP - 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0x77777777, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
+    EXPECT_EQ(0x77777777, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
 }
 
-PINKY_TEST(push, PushAll)
+TEST_F(pinkySimBase, push_PushAll)
 {
     emitInstruction16("1011010Mrrrrrrrr", 1, 0xFF);
     setExpectedRegisterValue(SP, INITIAL_SP - 4 * 9);
@@ -64,8 +51,8 @@ PINKY_TEST(push, PushAll)
         SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4 * i, 0xFFFFFFFF, READ_WRITE);
     pinkySimStep(&m_context);
     for (int i = 0 ; i < 8 ; i++)
-        CHECK_EQUAL(0x11111111U * i, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4 * (9 - i)));
-    CHECK_EQUAL(INITIAL_LR, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
+        EXPECT_EQ(0x11111111U * i, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4 * (9 - i)));
+    EXPECT_EQ(INITIAL_LR, IMemory_Read32(m_context.pMemory, INITIAL_SP - 4));
 }
 /*
 TEST_SIM_ONLY(push, HardFaultFromInvalidMemoryWrite)

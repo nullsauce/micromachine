@@ -13,50 +13,37 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(movRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* MOV - Register Encoding 1
    Encoding: 010001 10 D:1 Rm:4 Rd:3
    NOTE: This encoding doesn't update the APSR flags. */
-PINKY_TEST(movRegister, UseLowestRegisterForAllArgs)
+TEST_F(pinkySimBase, movRegister_UseLowestRegisterForAllArgs)
 {
     emitInstruction16("01000110dmmmmddd", R0, R0);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movRegister, UseHighRegisterForAllArgs)
+TEST_F(pinkySimBase, movRegister_UseHighRegisterForAllArgs)
 {
     emitInstruction16("01000110dmmmmddd", LR, LR);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movRegister, MoveHighRegisterToLowRegister)
+TEST_F(pinkySimBase, movRegister_MoveHighRegisterToLowRegister)
 {
     emitInstruction16("01000110dmmmmddd", R7, R12);
     setExpectedRegisterValue(R7, 0xCCCCCCCC);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movRegister, MoveLowRegisterToLHighRegister)
+TEST_F(pinkySimBase, movRegister_MoveLowRegisterToLHighRegister)
 {
     emitInstruction16("01000110dmmmmddd", R12, R7);
     setExpectedRegisterValue(R12, 0x77777777);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movRegister, MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
+TEST_F(pinkySimBase, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 {
     emitInstruction16("01000110dmmmmddd", PC, R1);
     setRegisterValue(R1, INITIAL_PC + 1025);
@@ -64,7 +51,7 @@ PINKY_TEST(movRegister, MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movRegister, MoveEvenAddressIntoPC)
+TEST_F(pinkySimBase, movRegister_MoveEvenAddressIntoPC)
 {
     emitInstruction16("01000110dmmmmddd", PC, R2);
     setRegisterValue(R2, INITIAL_PC + 1024);
@@ -72,7 +59,7 @@ PINKY_TEST(movRegister, MoveEvenAddressIntoPC)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movRegister, MovePCintoOtherRegister)
+TEST_F(pinkySimBase, movRegister_MovePCintoOtherRegister)
 {
     emitInstruction16("01000110dmmmmddd", R3, PC);
     setExpectedRegisterValue(R3, INITIAL_PC + 4);

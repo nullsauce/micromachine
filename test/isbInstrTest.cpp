@@ -13,30 +13,17 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(isb, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* ISB
    Encoding: 11110 0 111 01 1 (1)(1)(1)(1)
              10 (0) 0 (1)(1)(1)(1) 0110 option:4 */
-PINKY_TEST(isb, OptionSetTo15)
+TEST_F(pinkySimBase, isb_OptionSetTo15)
 {
     emitInstruction32("1111001110111111", "100011110110oooo", 15);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(isb, OptionSetTo0)
+TEST_F(pinkySimBase, isb_OptionSetTo0)
 {
     emitInstruction32("1111001110111111", "100011110110oooo", 0);
     pinkySimStep(&m_context);
