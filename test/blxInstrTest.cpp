@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness,
 
 	const uint16_t NOP = 0xBF00;
 	memory_write_32(INITIAL_PC + 16, NOP);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 
@@ -44,7 +44,7 @@ TEST_F(CpuTestHarness, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForTh
 TEST_SIM_ONLY(blx, UnpredictableToUseR15)
 {
     emitInstruction16("010001111mmmm000", PC);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -52,7 +52,7 @@ TEST_SIM_ONLY(blx, UnpredictableToUseR15)
 TEST_SIM_ONLY(blx, UnpredictableForBit0ToBeHigh)
 {
     emitInstruction16("010001111mmmm001", R0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -60,7 +60,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit0ToBeHigh)
 TEST_SIM_ONLY(blx, UnpredictableForBit1ToBeHigh)
 {
     emitInstruction16("010001111mmmm010", R0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -68,7 +68,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit1ToBeHigh)
 TEST_SIM_ONLY(blx, UnpredictableForBit2ToBeHigh)
 {
     emitInstruction16("010001111mmmm100", R0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
 }

@@ -74,14 +74,14 @@ TEST_F(CpuTestHarness, ldm_HardFaultFromInvalidMemoryRead)
 {
 	emitInstruction16("11001nnnrrrrrrrr", 0, (1 << 0));
 	setRegisterValue(R0, 0xFFFFFFFC);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 /*
 TEST_SIM_ONLY(ldm, UnpredictableToPopNoRegisters)
 {
     emitInstruction16("11001nnnrrrrrrrr", 0, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
 }

@@ -156,7 +156,7 @@ TEST_F(CpuTestHarness, addRegister_T2Add2ToPC)
 TEST_SIM_ONLY(addRegister, T2ItIsUnpredictableToHaveBothArgsBePC)
 {
     emitInstruction16("01000100dmmmmddd", PC, PC);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
 }

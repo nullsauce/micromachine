@@ -129,7 +129,7 @@ TEST_F(CpuTestHarness, msr_CONTROLIgnored)
 TEST_SIM_ONLY(msr, R13IsUnpredictable)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", SP, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -137,7 +137,7 @@ TEST_SIM_ONLY(msr, R13IsUnpredictable)
 TEST_SIM_ONLY(msr, R15IsUnpredictable)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", PC, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -157,7 +157,7 @@ TEST_SIM_ONLY(msr, UnpredictableSYSm)
         {
             initContext();
             emitInstruction32("111100111000nnnn", "10001000ssssssss", R0, i);
-            setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+            setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
             setExpectedRegisterValue(PC, INITIAL_PC);
             pinkySimStep(&m_context);
         }
@@ -167,7 +167,7 @@ TEST_SIM_ONLY(msr, UnpredictableSYSm)
 TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_8)
 {
     emitInstruction32("111100111000nnnn", "10001001ssssssss", R0, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -175,7 +175,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_8)
 TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_9)
 {
     emitInstruction32("111100111000nnnn", "10001010ssssssss", R0, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -183,7 +183,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_9)
 TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_10)
 {
     emitInstruction32("111100111000nnnn", "10001100ssssssss", R0, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -191,7 +191,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_10)
 TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_11)
 {
     emitInstruction32("111100111000nnnn", "10000000ssssssss", R0, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -199,7 +199,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_11)
 TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_13)
 {
     emitInstruction32("111100111000nnnn", "10101000ssssssss", R0, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -207,7 +207,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_13)
 TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit1_4)
 {
     emitInstruction32("111100111001nnnn", "10001000ssssssss", R0, SYS_XPSR);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
 }

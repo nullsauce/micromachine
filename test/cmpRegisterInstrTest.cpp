@@ -112,7 +112,7 @@ TEST_F(CpuTestHarness, cmpRegister_T2ForcePositiveOverflow)
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForBothArgsToBeLowRegisters)
 {
     emitInstruction16("01000101nmmmmnnn", R6, R7);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -120,7 +120,7 @@ TEST_SIM_ONLY(cmpRegister, T2UnpredictableForBothArgsToBeLowRegisters)
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRnToBeR15)
 {
     emitInstruction16("01000101nmmmmnnn", PC, R8);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -128,7 +128,7 @@ TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRnToBeR15)
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRmToBeR15)
 {
     emitInstruction16("01000101nmmmmnnn", R8, PC);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
 }
