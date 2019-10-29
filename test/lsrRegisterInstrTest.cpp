@@ -16,84 +16,84 @@
 
 /* LSR - Register (Logical Shift Right)
    Encoding: 010000 0011 Rm:3 Rdn:3 */
-TEST_F(pinkySimBase, lsrRegister_ShiftValue1by1_CarryOutFromLowestBit)
+TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by1_CarryOutFromLowestBit)
 {
-    emitInstruction16("0100000011mmmddd", R0, R7);
-    setExpectedXPSRflags("nZC");
-    setRegisterValue(R0, 1);
-    setRegisterValue(R7, 1);
-    setExpectedRegisterValue(R7, 0);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R0, R7);
+	setExpectedXPSRflags("nZC");
+	setRegisterValue(R0, 1);
+	setRegisterValue(R7, 1);
+	setExpectedRegisterValue(R7, 0);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrRegister_ShiftValue1by0_MinimumShift_CarryUnmodified)
+TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by0_MinimumShift_CarryUnmodified)
 {
-    emitInstruction16("0100000011mmmddd", R0, R7);
-    setExpectedXPSRflags("nzc");
-    clearCarry();
-    setRegisterValue(R7, 1);
-    setRegisterValue(R0, 0);
-    setExpectedRegisterValue(R7, 1);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R0, R7);
+	setExpectedXPSRflags("nzc");
+	clearCarry();
+	setRegisterValue(R7, 1);
+	setRegisterValue(R0, 0);
+	setExpectedRegisterValue(R7, 1);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrRegister_ShiftValue2by1_NoCarry)
+TEST_F(CpuTestHelper, lsrRegister_ShiftValue2by1_NoCarry)
 {
-    emitInstruction16("0100000011mmmddd", R3, R2);
-    setExpectedXPSRflags("nzc");
-    setRegisterValue(R2, 2);
-    setRegisterValue(R3, 1);
-    setExpectedRegisterValue(R2, 2 >> 1);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R3, R2);
+	setExpectedXPSRflags("nzc");
+	setRegisterValue(R2, 2);
+	setRegisterValue(R3, 1);
+	setExpectedRegisterValue(R2, 2 >> 1);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrRegister_ShiftNegativeValueBy31)
+TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy31)
 {
-    emitInstruction16("0100000011mmmddd", R3, R2);
-    setExpectedXPSRflags("nzC");
-    setRegisterValue(R2, -1);
-    setRegisterValue(R3, 31);
-    setExpectedRegisterValue(R2, -1U >> 31);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R3, R2);
+	setExpectedXPSRflags("nzC");
+	setRegisterValue(R2, -1);
+	setRegisterValue(R3, 31);
+	setExpectedRegisterValue(R2, -1U >> 31);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrRegister_ShiftNegativeValueBy32_CarryOutFromHighestBit)
+TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy32_CarryOutFromHighestBit)
 {
-    emitInstruction16("0100000011mmmddd", R7, R0);
-    setExpectedXPSRflags("nZC");
-    setRegisterValue(R0, 0x80000000);
-    setRegisterValue(R7, 32);
-    setExpectedRegisterValue(R0, 0);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R7, R0);
+	setExpectedXPSRflags("nZC");
+	setRegisterValue(R0, 0x80000000);
+	setRegisterValue(R7, 32);
+	setExpectedRegisterValue(R0, 0);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrRegister_ShiftNegativeValueBy33_ResultIsZero_CarryClear)
+TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy33_ResultIsZero_CarryClear)
 {
-    emitInstruction16("0100000011mmmddd", R3, R2);
-    setExpectedXPSRflags("nZc");
-    setRegisterValue(R2, -1);
-    setRegisterValue(R3, 33);
-    setExpectedRegisterValue(R2, 0);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R3, R2);
+	setExpectedXPSRflags("nZc");
+	setRegisterValue(R2, -1);
+	setRegisterValue(R3, 33);
+	setExpectedRegisterValue(R2, 0);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrRegister_MaximumShiftOf255_ResultIsZero_CarryClear)
+TEST_F(CpuTestHelper, lsrRegister_MaximumShiftOf255_ResultIsZero_CarryClear)
 {
-    emitInstruction16("0100000011mmmddd", R3, R2);
-    setExpectedXPSRflags("nZc");
-    setRegisterValue(R2, -1);
-    setRegisterValue(R3, 255);
-    setExpectedRegisterValue(R2, 0);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R3, R2);
+	setExpectedXPSRflags("nZc");
+	setRegisterValue(R2, -1);
+	setRegisterValue(R3, 255);
+	setExpectedRegisterValue(R2, 0);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrRegister_ShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
+TEST_F(CpuTestHelper, lsrRegister_ShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
 {
-    emitInstruction16("0100000011mmmddd", R7, R0);
-    setExpectedXPSRflags("NzC");
-    setCarry();
-    setRegisterValue(R0, -1);
-    setRegisterValue(R7, 256);
-    setExpectedRegisterValue(R0, -1);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000011mmmddd", R7, R0);
+	setExpectedXPSRflags("NzC");
+	setCarry();
+	setRegisterValue(R0, -1);
+	setRegisterValue(R7, 256);
+	setExpectedRegisterValue(R0, -1);
+	pinkySimStep(&m_context);
 }

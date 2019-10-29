@@ -16,7 +16,7 @@
 
 /* LDM
    Encoding: 1100 1 Rn:3 RegisterList:8 */
-TEST_F(pinkySimBase, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
+TEST_F(CpuTestHelper, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
 {
 	emitInstruction16("11001nnnrrrrrrrr", R7, (1 << 0));
 	setRegisterValue(R7, INITIAL_PC + 16);
@@ -26,7 +26,7 @@ TEST_F(pinkySimBase, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
+TEST_F(CpuTestHelper, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
 {
 	emitInstruction16("11001nnnrrrrrrrr", R0, (1 << 7));
 	setRegisterValue(R0, INITIAL_PC + 16);
@@ -36,7 +36,7 @@ TEST_F(pinkySimBase, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldm_PopAllNoWriteback)
+TEST_F(CpuTestHelper, ldm_PopAllNoWriteback)
 {
 	emitInstruction16("11001nnnrrrrrrrr", R0, 0xFF);
 	setRegisterValue(R0, INITIAL_PC + 16);
@@ -53,7 +53,7 @@ TEST_F(pinkySimBase, ldm_PopAllNoWriteback)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldm_PopAllButAddressRegister_WritebackNewAddress)
+TEST_F(CpuTestHelper, ldm_PopAllButAddressRegister_WritebackNewAddress)
 {
 	emitInstruction16("11001nnnrrrrrrrr", R7, 0x7F);
 	setRegisterValue(R7, INITIAL_PC + 16);
@@ -70,7 +70,7 @@ TEST_F(pinkySimBase, ldm_PopAllButAddressRegister_WritebackNewAddress)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldm_HardFaultFromInvalidMemoryRead)
+TEST_F(CpuTestHelper, ldm_HardFaultFromInvalidMemoryRead)
 {
 	emitInstruction16("11001nnnrrrrrrrr", 0, (1 << 0));
 	setRegisterValue(R0, 0xFFFFFFFC);

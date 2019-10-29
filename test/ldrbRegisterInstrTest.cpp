@@ -16,7 +16,7 @@
 
 /* LDRB - Register
    Encoding: 0101 110 Rm:3 Rn:3 Rt:3 */
-TEST_F(pinkySimBase, lsrldrbRegister_UseAMixOfRegistersWordAligned)
+TEST_F(CpuTestHelper, lsrldrbRegister_UseAMixOfRegistersWordAligned)
 {
 	emitInstruction16("0101110mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -26,7 +26,7 @@ TEST_F(pinkySimBase, lsrldrbRegister_UseAMixOfRegistersWordAligned)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrldrbRegister_UseAnotherMixOfRegistersSecondByteInWord)
+TEST_F(CpuTestHelper, lsrldrbRegister_UseAnotherMixOfRegistersSecondByteInWord)
 {
 	emitInstruction16("0101110mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -36,7 +36,7 @@ TEST_F(pinkySimBase, lsrldrbRegister_UseAnotherMixOfRegistersSecondByteInWord)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrldrbRegister_YetAnotherMixOfRegistersThirdByteInWord)
+TEST_F(CpuTestHelper, lsrldrbRegister_YetAnotherMixOfRegistersThirdByteInWord)
 {
 	emitInstruction16("0101110mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -46,7 +46,7 @@ TEST_F(pinkySimBase, lsrldrbRegister_YetAnotherMixOfRegistersThirdByteInWord)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrldrbRegister_YetAnotherMixOfRegistersFourthByteInWord)
+TEST_F(CpuTestHelper, lsrldrbRegister_YetAnotherMixOfRegistersFourthByteInWord)
 {
 	emitInstruction16("0101110mmmnnnttt", R0, R7, R5);
 	setRegisterValue(R7, INITIAL_PC);
@@ -56,7 +56,7 @@ TEST_F(pinkySimBase, lsrldrbRegister_YetAnotherMixOfRegistersFourthByteInWord)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrldrbRegister_LoadAPositiveValue)
+TEST_F(CpuTestHelper, lsrldrbRegister_LoadAPositiveValue)
 {
 	emitInstruction16("0101110mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -66,7 +66,7 @@ TEST_F(pinkySimBase, lsrldrbRegister_LoadAPositiveValue)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, lsrldrbRegister_AttemptLoadInvalidAddress)
+TEST_F(CpuTestHelper, lsrldrbRegister_AttemptLoadInvalidAddress)
 {
 	emitInstruction16("0101110mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);

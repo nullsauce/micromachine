@@ -15,24 +15,32 @@ and/or distributed without the express permission of The Micromachine project.
 
 namespace testing {
 
-	struct exceptionalized_static_assert : std::logic_error{
-		exceptionalized_static_assert(char const* what)
-		: std::logic_error(what){};
-		virtual ~exceptionalized_static_assert() noexcept {}
+	struct exceptionalized_static_assert : std::logic_error
+	{
+		exceptionalized_static_assert(char const *what)
+			: std::logic_error(what)
+		{};
+
+		virtual ~exceptionalized_static_assert() noexcept
+		{}
 	};
 
 	template<bool Cond>
 	struct exceptionalize_static_assert;
 
 	template<>
-	struct exceptionalize_static_assert<true> {
-		explicit exceptionalize_static_assert(const char*) {}
+	struct exceptionalize_static_assert<true>
+	{
+		explicit exceptionalize_static_assert(const char *)
+		{}
 	};
 
 
 	template<>
-	struct exceptionalize_static_assert<false> {
-		explicit exceptionalize_static_assert(char const * reason) {
+	struct exceptionalize_static_assert<false>
+	{
+		explicit exceptionalize_static_assert(char const *reason)
+		{
 			std::string s("static_assert would fail with reason: ");
 			s += reason;
 			throw exceptionalized_static_assert(s.c_str());
@@ -50,27 +58,32 @@ namespace testing {
 	};*/
 
 	template<bool Exp>
-	void static_assert_exception(const char* message) {
+	void static_assert_exception(const char *message)
+	{
 		testing::exceptionalize_static_assert<Exp> ex(message);
 	}
 
-	template <typename FromType, typename ToType>
-	void assert_convertible(const char* message) {
+	template<typename FromType, typename ToType>
+	void assert_convertible(const char *message)
+	{
 		static_assert_exception<std::is_convertible<FromType, ToType>::value>(message);
 	}
 
-	template <typename FromType, typename ToType>
-	void assert_not_convertible(const char* message) {
+	template<typename FromType, typename ToType>
+	void assert_not_convertible(const char *message)
+	{
 		static_assert_exception<!std::is_convertible<FromType, ToType>::value>(message);
 	}
 
-	template <typename FromType, typename ToType>
-	void assert_assignable(const char* message) {
+	template<typename FromType, typename ToType>
+	void assert_assignable(const char *message)
+	{
 		static_assert_exception<std::is_assignable<FromType, ToType>::value>(message);
 	}
 
-	template <typename FromType, typename ToType>
-	void assert_not_assignable(const char* message) {
+	template<typename FromType, typename ToType>
+	void assert_not_assignable(const char *message)
+	{
 		static_assert_exception<!std::is_assignable<FromType, ToType>::value>(message);
 	}
 

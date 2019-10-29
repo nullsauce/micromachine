@@ -25,7 +25,7 @@
 /* MRS
    Encoding: 11110 0 1111 1 (0) (1)(1)(1)(1)
              10 (0) 0 Rd:4 SYSm:8 */
-TEST_F(pinkySimBase, mrs_FromAPSR)
+TEST_F(CpuTestHelper, mrs_FromAPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_APSR);
 	setExpectedXPSRflags("NzCv");
@@ -40,7 +40,7 @@ TEST_F(pinkySimBase, mrs_FromAPSR)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromIAPSR)
+TEST_F(CpuTestHelper, mrs_FromIAPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R0, SYS_IAPSR);
 	setExpectedXPSRflags("NzCv");
@@ -55,7 +55,7 @@ TEST_F(pinkySimBase, mrs_FromIAPSR)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromEAPSR)
+TEST_F(CpuTestHelper, mrs_FromEAPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EAPSR);
 	setExpectedXPSRflags("NzCv");
@@ -70,7 +70,7 @@ TEST_F(pinkySimBase, mrs_FromEAPSR)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromXPSR)
+TEST_F(CpuTestHelper, mrs_FromXPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_XPSR);
 	setExpectedXPSRflags("NzCv");
@@ -85,7 +85,7 @@ TEST_F(pinkySimBase, mrs_FromXPSR)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromIPSR)
+TEST_F(CpuTestHelper, mrs_FromIPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IPSR);
 	setExpectedXPSRflags("NzCv");
@@ -100,7 +100,7 @@ TEST_F(pinkySimBase, mrs_FromIPSR)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromEPSR)
+TEST_F(CpuTestHelper, mrs_FromEPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EPSR);
 	setExpectedXPSRflags("NzCv");
@@ -115,7 +115,7 @@ TEST_F(pinkySimBase, mrs_FromEPSR)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromIEPSR)
+TEST_F(CpuTestHelper, mrs_FromIEPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IEPSR);
 	setExpectedXPSRflags("NzCv");
@@ -130,7 +130,7 @@ TEST_F(pinkySimBase, mrs_FromIEPSR)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromMSP)
+TEST_F(CpuTestHelper, mrs_FromMSP)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_MSP);
 	setRegisterValue(R12, 0xFFFFFFFF);
@@ -138,7 +138,7 @@ TEST_F(pinkySimBase, mrs_FromMSP)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromPSP)
+TEST_F(CpuTestHelper, mrs_FromPSP)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PSP);
 	setRegisterValue(R12, 0xFFFFFFFF);
@@ -146,7 +146,7 @@ TEST_F(pinkySimBase, mrs_FromPSP)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_FromPRIMASKsetTo1)
+TEST_F(CpuTestHelper, mrs_FromPRIMASKsetTo1)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
 	setRegisterValue(R12, 0xFFFFFFFF);
@@ -155,7 +155,7 @@ TEST_F(pinkySimBase, mrs_FromPRIMASKsetTo1)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_PRIMASKto0)
+TEST_F(CpuTestHelper, mrs_PRIMASKto0)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
 	setRegisterValue(R12, 0xFFFFFFFF);
@@ -164,7 +164,7 @@ TEST_F(pinkySimBase, mrs_PRIMASKto0)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_CONTROLIgnored)
+TEST_F(CpuTestHelper, mrs_CONTROLIgnored)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_CONTROL);
 	setRegisterValue(R12, 0xFFFFFFFF);
@@ -172,7 +172,7 @@ TEST_F(pinkySimBase, mrs_CONTROLIgnored)
 	pinkySimStep(&m_context);
 }
 /*
-TEST_F(pinkySimBase, mrs_R13IsUnpredictable)
+TEST_F(CpuTestHelper, mrs_R13IsUnpredictable)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", SP, SYS_XPSR);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
@@ -180,7 +180,7 @@ TEST_F(pinkySimBase, mrs_R13IsUnpredictable)
     pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mrs_R15IsUnpredictable)
+TEST_F(CpuTestHelper, mrs_R15IsUnpredictable)
 {
     emitInstruction32("1111001111101111", "1000ddddssssssss", PC, SYS_XPSR);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
