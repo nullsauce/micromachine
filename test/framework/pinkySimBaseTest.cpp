@@ -7,7 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#include "pinkySimBaseTest.h"
+#include "pinkySimBaseTest.hpp"
 
 #define RETURN_TO_THREAD_FROM_SP_MAIN 0xFFFFFFF9
 
@@ -44,24 +44,25 @@ void pinkySimBase::teardown() {
 
 void pinkySimBase::SetUp() {
 
-	_host_mem = (uint8_t*) malloc(mem_size);
+	// allocate memory
+	_memory.resize(MEMORY_SIZE);
 
-	// map host mem
-	_cpu.mem().map(_host_mem, 0, mem_size);
+	// map host memory
+	_cpu.mem().map(_memory.data(), 0, _memory.size());
 
 	initContext();
-
 }
 
 void pinkySimBase::initContext() {
 
-	memset(_host_mem, 0, mem_size);
+	// zero memory
+	std::fill(_memory.begin(), _memory.end(), 0);
 
 	_cpu.reset();
 
 	m_expectedStepReturn = 0;
 	m_expectedXPSRflags = 0;
-	memset(m_expectedRegisterValues, 0,sizeof(uint32_t)*13);
+	std::fill(m_expectedRegisterValues.begin(), m_expectedRegisterValues.end(), 0);
 	m_expectedSPmain = 0;
 	m_expectedLR = 0;
 	m_expectedPC = 0;
@@ -123,10 +124,7 @@ void pinkySimBase::initContext() {
 }
 
 void pinkySimBase::TearDown() {
-	if(_host_mem) {
-		free(_host_mem);
-		_host_mem = nullptr;
-	}
+
 }
 
 void pinkySimBase::setExpectedStackGrowthSinceBeginning(int growth) {

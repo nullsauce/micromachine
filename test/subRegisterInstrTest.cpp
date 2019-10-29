@@ -11,7 +11,7 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.h"
+#include "framework/pinkySimBaseTest.hpp"
 
 TEST_GROUP_BASE(subRegister, pinkySimBase)
 {
@@ -69,7 +69,7 @@ PINKY_TEST(subRegister, ForceNegativeOverflow)
     setExpectedXPSRflags("nzCV");
     setRegisterValue(R2, 0x80000000U);
     setRegisterValue(R1, 1U);
-    setExpectedRegisterValue(R0, (int32_t)0x80000000U - 1);
+    setExpectedRegisterValue(R0, 0x7FFFFFFF);
     pinkySimStep(&m_context);
 }
 

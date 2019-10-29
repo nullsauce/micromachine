@@ -11,7 +11,7 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.h"
+#include "framework/pinkySimBaseTest.hpp"
 
 TEST_GROUP_BASE(isb, pinkySimBase)
 {
