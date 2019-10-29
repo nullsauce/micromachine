@@ -16,34 +16,34 @@
 
 /* SXTH (Sign ExTend Halfword)
    Encoding: 1011 0010 00 Rm:3 Rd:3 */
-TEST_F(pinkySimBase, sxth_SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
+TEST_F(CpuTestHelper, sxth_SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
 {
-    emitInstruction16("1011001000mmmddd", R7, R0);
-    setRegisterValue(R7, 0x7FFF);
-    setExpectedRegisterValue(R0, 0x7FFF);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011001000mmmddd", R7, R0);
+	setRegisterValue(R7, 0x7FFF);
+	setExpectedRegisterValue(R0, 0x7FFF);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sxth_SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
+TEST_F(CpuTestHelper, sxth_SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
 {
-    emitInstruction16("1011001000mmmddd", R0, R7);
-    setRegisterValue(R0, 0x8000);
-    setExpectedRegisterValue(R7, 0xFFFF8000);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011001000mmmddd", R0, R7);
+	setRegisterValue(R0, 0x8000);
+	setExpectedRegisterValue(R7, 0xFFFF8000);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sxth_OverwriteUpperBits_PositiveValue)
+TEST_F(CpuTestHelper, sxth_OverwriteUpperBits_PositiveValue)
 {
-    emitInstruction16("1011001000mmmddd", R6, R1);
-    setRegisterValue(R6, 0xF00D7FFF);
-    setExpectedRegisterValue(R1, 0x00007FFF);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011001000mmmddd", R6, R1);
+	setRegisterValue(R6, 0xF00D7FFF);
+	setExpectedRegisterValue(R1, 0x00007FFF);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sxth_OverwriteUpperBits_NegativeValue)
+TEST_F(CpuTestHelper, sxth_OverwriteUpperBits_NegativeValue)
 {
-    emitInstruction16("1011001000mmmddd", R2, R5);
-    setRegisterValue(R2, 0xF00D8000);
-    setExpectedRegisterValue(R5, 0xFFFF8000);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011001000mmmddd", R2, R5);
+	setRegisterValue(R2, 0xF00D8000);
+	setExpectedRegisterValue(R5, 0xFFFF8000);
+	pinkySimStep(&m_context);
 }

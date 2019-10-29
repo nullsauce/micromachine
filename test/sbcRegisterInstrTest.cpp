@@ -16,7 +16,7 @@
 
 /* SBC - Register (SUBtract with Carry)
    Encoding: 010000 0110 Rm:3 Rdn:3 */
-TEST_F(pinkySimBase, sbcRegister_UseLowestRegisterForAllArgsAndShouldBeZeroWithCarrySetForNoBorrow)
+TEST_F(CpuTestHelper, sbcRegister_UseLowestRegisterForAllArgsAndShouldBeZeroWithCarrySetForNoBorrow)
 {
 	emitInstruction16("0100000110mmmddd", R0, R0);
 	setExpectedXPSRflags("nZCv");
@@ -25,7 +25,7 @@ TEST_F(pinkySimBase, sbcRegister_UseLowestRegisterForAllArgsAndShouldBeZeroWithC
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sbcRegister_UseHigestRegisterForAllArgsAndShouldBeZeroWithCarrySetForNoBorrow)
+TEST_F(CpuTestHelper, sbcRegister_UseHigestRegisterForAllArgsAndShouldBeZeroWithCarrySetForNoBorrow)
 {
 	emitInstruction16("0100000110mmmddd", R7, R7);
 	setExpectedXPSRflags("nZCv");
@@ -34,7 +34,7 @@ TEST_F(pinkySimBase, sbcRegister_UseHigestRegisterForAllArgsAndShouldBeZeroWithC
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase,
+TEST_F(CpuTestHelper,
 	   sbcRegister_UseDifferentRegistersForEachArgAndOnlyCarryShouldBeSetToIndicateNoBorrow)
 {
 	emitInstruction16("0100000110mmmddd", R1, R2);
@@ -44,7 +44,7 @@ TEST_F(pinkySimBase,
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sbcRegister_ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
+TEST_F(CpuTestHelper, sbcRegister_ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
 {
 	emitInstruction16("0100000110mmmddd", R1, R0);
 	setExpectedXPSRflags("Nzcv");
@@ -54,7 +54,7 @@ TEST_F(pinkySimBase, sbcRegister_ForceCarryClearToIndicateBorrowAndResultWillBeN
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sbcRegister_ForceNegativeOverflow)
+TEST_F(CpuTestHelper, sbcRegister_ForceNegativeOverflow)
 {
 	emitInstruction16("0100000110mmmddd", R1, R2);
 	setExpectedXPSRflags("nzCV");
@@ -65,7 +65,7 @@ TEST_F(pinkySimBase, sbcRegister_ForceNegativeOverflow)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sbcRegister_ForcePositiveOverflow)
+TEST_F(CpuTestHelper, sbcRegister_ForcePositiveOverflow)
 {
 	emitInstruction16("0100000110mmmddd", R1, R2);
 	setExpectedXPSRflags("NzcV");
@@ -76,7 +76,7 @@ TEST_F(pinkySimBase, sbcRegister_ForcePositiveOverflow)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, sbcRegister_ClearCarryToCauseABorrowToOccur)
+TEST_F(CpuTestHelper, sbcRegister_ClearCarryToCauseABorrowToOccur)
 {
 	emitInstruction16("0100000110mmmddd", R1, R2);
 	setExpectedXPSRflags("nzCv");

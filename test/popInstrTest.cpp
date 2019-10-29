@@ -16,7 +16,7 @@
 
 /* POP
    Encoding: 1011 1 10 P:1 RegisterList:8 */
-TEST_F(pinkySimBase, pop_JustPopPC)
+TEST_F(CpuTestHelper, pop_JustPopPC)
 {
 	emitInstruction16("1011110Prrrrrrrr", 1, 0);
 	setRegisterValue(SP, INITIAL_SP - 4);
@@ -26,7 +26,7 @@ TEST_F(pinkySimBase, pop_JustPopPC)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, pop_JustPopR0)
+TEST_F(CpuTestHelper, pop_JustPopR0)
 {
 	emitInstruction16("1011110Prrrrrrrr", 0, 1);
 	setRegisterValue(SP, INITIAL_SP - 4);
@@ -36,7 +36,7 @@ TEST_F(pinkySimBase, pop_JustPopR0)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, pop_JustPopR7)
+TEST_F(CpuTestHelper, pop_JustPopR7)
 {
 	emitInstruction16("1011110Prrrrrrrr", 0, (1 << 7));
 	setRegisterValue(SP, INITIAL_SP - 4);
@@ -46,7 +46,7 @@ TEST_F(pinkySimBase, pop_JustPopR7)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, pop_PopAll)
+TEST_F(CpuTestHelper, pop_PopAll)
 {
 	emitInstruction16("1011110Prrrrrrrr", 1, 0xFF);
 	setRegisterValue(SP, INITIAL_SP - 4 * 9);
@@ -65,7 +65,7 @@ TEST_F(pinkySimBase, pop_PopAll)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
+TEST_F(CpuTestHelper, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 {
 	emitInstruction16("1011110Prrrrrrrr", 1, 0);
 	setExpectedXPSRflags("t");
@@ -81,7 +81,7 @@ TEST_F(pinkySimBase, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 	pinkySimStep(&m_context);
 }
 /*
-TEST_F(pinkySimBase, pop_HardFaultFromInvalidMemoryRead)
+TEST_F(CpuTestHelper, pop_HardFaultFromInvalidMemoryRead)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 1);
     setRegisterValue(SP, 0xFFFFFFFC);

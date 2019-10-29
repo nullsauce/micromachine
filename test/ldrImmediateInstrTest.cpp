@@ -16,7 +16,7 @@
 
 /* LDR - Immediate Encoding T1
    Encoding: 011 0 1 Imm:5 Rn:3 Rt:3 */
-TEST_F(pinkySimBase, ldrImmediate_T1UseAMixOfRegistersWithSmallestOffset)
+TEST_F(CpuTestHelper, ldrImmediate_T1UseAMixOfRegistersWithSmallestOffset)
 {
 	emitInstruction16("01101iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
@@ -25,7 +25,7 @@ TEST_F(pinkySimBase, ldrImmediate_T1UseAMixOfRegistersWithSmallestOffset)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrImmediate_T1UseAnotherMixOfRegistersWithLargestOffset)
+TEST_F(CpuTestHelper, ldrImmediate_T1UseAnotherMixOfRegistersWithLargestOffset)
 {
 	emitInstruction16("01101iiiiinnnttt", 31, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -34,7 +34,7 @@ TEST_F(pinkySimBase, ldrImmediate_T1UseAnotherMixOfRegistersWithLargestOffset)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrImmediate_T1AttemptUnalignedLoad)
+TEST_F(CpuTestHelper, ldrImmediate_T1AttemptUnalignedLoad)
 {
 	emitInstruction16("01101iiiiinnnttt", 0, R3, R2);
 	setRegisterValue(R3, INITIAL_PC + 2);
@@ -42,7 +42,7 @@ TEST_F(pinkySimBase, ldrImmediate_T1AttemptUnalignedLoad)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrImmediate_T1AttemptLoadFromInvalidAddress)
+TEST_F(CpuTestHelper, ldrImmediate_T1AttemptLoadFromInvalidAddress)
 {
 	emitInstruction16("01101iiiiinnnttt", 16, R3, R2);
 	setRegisterValue(R3, 0xFFFFFFFC - 16 * 4);
@@ -54,7 +54,7 @@ TEST_F(pinkySimBase, ldrImmediate_T1AttemptLoadFromInvalidAddress)
 
 /* LDR - Immediate Encoding T2 (SP is base register)
    Encoding: 1001 1 Rt:3 Imm:8 */
-TEST_F(pinkySimBase, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
+TEST_F(CpuTestHelper, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
 {
 	emitInstruction16("10011tttiiiiiiii", R7, 0);
 	setRegisterValue(SP, INITIAL_PC + 1024);
@@ -63,7 +63,7 @@ TEST_F(pinkySimBase, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrImmediate_T2UseLowestRegisterWithLargestOffset)
+TEST_F(CpuTestHelper, ldrImmediate_T2UseLowestRegisterWithLargestOffset)
 {
 	emitInstruction16("10011tttiiiiiiii", R0, 255);
 	setRegisterValue(SP, INITIAL_PC + 1024);

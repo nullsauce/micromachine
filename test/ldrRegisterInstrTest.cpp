@@ -16,7 +16,7 @@
 
 /* LDR - Register
    Encoding: 0101 100 Rm:3 Rn:3 Rt:3 */
-TEST_F(pinkySimBase, ldrRegister_UseAMixOfRegisters)
+TEST_F(CpuTestHelper, ldrRegister_UseAMixOfRegisters)
 {
 	emitInstruction16("0101100mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -26,7 +26,7 @@ TEST_F(pinkySimBase, ldrRegister_UseAMixOfRegisters)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrRegister_UseAnotherMixOfRegisters)
+TEST_F(CpuTestHelper, ldrRegister_UseAnotherMixOfRegisters)
 {
 	emitInstruction16("0101100mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -36,7 +36,7 @@ TEST_F(pinkySimBase, ldrRegister_UseAnotherMixOfRegisters)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrRegister_YetAnotherMixOfRegisters)
+TEST_F(CpuTestHelper, ldrRegister_YetAnotherMixOfRegisters)
 {
 	emitInstruction16("0101100mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -46,7 +46,7 @@ TEST_F(pinkySimBase, ldrRegister_YetAnotherMixOfRegisters)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrRegister_AttemptUnalignedLoad)
+TEST_F(CpuTestHelper, ldrRegister_AttemptUnalignedLoad)
 {
 	emitInstruction16("0101100mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -55,7 +55,7 @@ TEST_F(pinkySimBase, ldrRegister_AttemptUnalignedLoad)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrRegister_AttemptLoadFromInvalidAddress)
+TEST_F(CpuTestHelper, ldrRegister_AttemptLoadFromInvalidAddress)
 {
 	emitInstruction16("0101100mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);

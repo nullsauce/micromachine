@@ -16,37 +16,37 @@
 
 /* LDRH - Immediate
    Encoding: 1000 1 Imm:5 Rn:3 Rt:3 */
-TEST_F(pinkySimBase, ldrhImmediate_UseAMixOfRegistersWordAligned)
+TEST_F(CpuTestHelper, ldrhImmediate_UseAMixOfRegistersWordAligned)
 {
-    emitInstruction16("10001iiiiinnnttt", 0, R7, R0);
-    setRegisterValue(R7, INITIAL_PC + 4);
+	emitInstruction16("10001iiiiinnnttt", 0, R7, R0);
+	setRegisterValue(R7, INITIAL_PC + 4);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R0, 0xFEED);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R0, 0xFEED);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrhImmediate_UseAnotherMixOfRegistersNotWordAligned)
+TEST_F(CpuTestHelper, ldrhImmediate_UseAnotherMixOfRegistersNotWordAligned)
 {
-    emitInstruction16("10001iiiiinnnttt", 1, R0, R7);
-    setRegisterValue(R0, INITIAL_PC + 4);
+	emitInstruction16("10001iiiiinnnttt", 1, R0, R7);
+	setRegisterValue(R0, INITIAL_PC + 4);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R7, 0xBAAD);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R7, 0xBAAD);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrhImmediate_LargestOffset)
+TEST_F(CpuTestHelper, ldrhImmediate_LargestOffset)
 {
-    emitInstruction16("10001iiiiinnnttt", 31, R1, R6);
-    setRegisterValue(R1, INITIAL_PC);
+	emitInstruction16("10001iiiiinnnttt", 31, R1, R6);
+	setRegisterValue(R1, INITIAL_PC);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 60, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R6, 0xBAAD);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R6, 0xBAAD);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, ldrhImmediate_AttemptLoadFromInvalidAddress)
+TEST_F(CpuTestHelper, ldrhImmediate_AttemptLoadFromInvalidAddress)
 {
-    emitInstruction16("10001iiiiinnnttt", 0, R3, R0);
-    setRegisterValue(R3, 0xFFFFFFFC);
+	emitInstruction16("10001iiiiinnnttt", 0, R3, R0);
+	setRegisterValue(R3, 0xFFFFFFFC);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-    pinkySimStep(&m_context);
+	pinkySimStep(&m_context);
 }

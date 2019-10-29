@@ -36,60 +36,93 @@
 #define READ_WRITE 0
 #define READ_ONLY  1
 
-struct PinkySimContext {
-	void* pMemory;
+struct PinkySimContext
+{
+	void *pMemory;
 };
 
-class pinkySimBase : public ::testing::Test
+class CpuTestHelper : public ::testing::Test
 {
 protected:
 	const size_t MEMORY_SIZE = 0x8000;
-	cpu 			_cpu;
-	std::vector<uint8_t>	_memory;
+	cpu _cpu;
+	std::vector<uint8_t> _memory;
 
-	int             m_expectedStepReturn;
-	uint32_t        m_expectedXPSRflags;
+	int m_expectedStepReturn;
+	uint32_t m_expectedXPSRflags;
 	std::array<uint32_t, 13> m_expectedRegisterValues;
-	uint32_t        m_expectedSPmain;
-	uint32_t        m_expectedLR;
-	uint32_t        m_expectedPC;
-	uint32_t        m_expectedIPSR;
-	uint32_t        m_emitAddress;
-	uint32_t		PRIMASK;
+	uint32_t m_expectedSPmain;
+	uint32_t m_expectedLR;
+	uint32_t m_expectedPC;
+	uint32_t m_expectedIPSR;
+	uint32_t m_emitAddress;
+	uint32_t PRIMASK;
 	PinkySimContext m_context;
 
 
 	using IMemory = void;
+
 	void memory_write_32(IMemory *pMem, uint32_t address, uint32_t value, int readOnly);
+
 	uint32_t memory_read_32(IMemory *pThis, uint32_t address);
-	void pinkySimStep(PinkySimContext* ctx);
+
+	void pinkySimStep(PinkySimContext *ctx);
+
 	void setup();
+
 	void teardown();
+
 	virtual void SetUp();
+
 	void initContext();
+
 	virtual void TearDown();
+
 	void setExpectedStackGrowthSinceBeginning(int growth);
+
 	void setExpectedExceptionTaken(int exceptionNumber);
+
 	void setExpectedStepReturn(int expectedStepReturn);
+
 	void setExpectedSPMain(uint32_t sp);
-	void setExpectedXPSRflags(const char* pExpectedFlags);
+
+	void setExpectedXPSRflags(const char *pExpectedFlags);
+
 	void setExpectedIPSR(uint32_t expectedValue);
+
 	void setExpectedRegisterValue(int index, uint32_t expectedValue);
+
 	void setRegisterValue(int index, uint32_t value);
-	void emitInstruction16(const char* pEncoding, ...);
-	void emitInstruction32(const char* pEncoding1, const char* pEncoding2, ...);
-	void emitInstruction16Varg(const char* pEncoding, va_list valist);
+
+	void emitInstruction16(const char *pEncoding, ...);
+
+	void emitInstruction32(const char *pEncoding1, const char *pEncoding2, ...);
+
+	void emitInstruction16Varg(const char *pEncoding, va_list valist);
+
 	void pinkySimStep();
+
 	void validateSignaledException();
+
 	void validateXPSR();
+
 	void validateRegisters();
+
 	void setCarry();
+
 	void clearCarry();
+
 	void setZero();
+
 	void clearZero();
+
 	void setNegative();
+
 	void clearNegative();
+
 	void setOverflow();
+
 	void clearOverflow();
+
 	void setIPSR(uint32_t ipsr);
 };

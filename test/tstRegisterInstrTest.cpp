@@ -17,35 +17,35 @@
 /* TST - Register
    Encoding: 010000 1000 Rm:3 Rn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(pinkySimBase, tstRegister_UseLowestRegisterForBothArgsAndResultShouldBeZero)
+TEST_F(CpuTestHelper, tstRegister_UseLowestRegisterForBothArgsAndResultShouldBeZero)
 {
-    emitInstruction16("0100001000mmmnnn", R0, R0);
-    // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-    setExpectedXPSRflags("nZc");
-    clearCarry();
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001000mmmnnn", R0, R0);
+	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
+	setExpectedXPSRflags("nZc");
+	clearCarry();
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, tstRegister_UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged)
+TEST_F(CpuTestHelper, tstRegister_UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged)
 {
-    emitInstruction16("0100001000mmmnnn", R7, R7);
-    setExpectedXPSRflags("nzC");
-    setCarry();
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001000mmmnnn", R7, R7);
+	setExpectedXPSRflags("nzC");
+	setCarry();
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, tstRegister_AndR3andR7)
+TEST_F(CpuTestHelper, tstRegister_AndR3andR7)
 {
-    emitInstruction16("0100001000mmmnnn", R3, R7);
-    setExpectedXPSRflags("nz");
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001000mmmnnn", R3, R7);
+	setExpectedXPSRflags("nz");
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, tstRegister_UseAndToJustKeepNegativeSignBit)
+TEST_F(CpuTestHelper, tstRegister_UseAndToJustKeepNegativeSignBit)
 {
-    emitInstruction16("0100001000mmmnnn", R7, R0);
-    setRegisterValue(R0, -1);
-    setRegisterValue(R7, 0x80000000);
-    setExpectedXPSRflags("Nz");
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001000mmmnnn", R7, R0);
+	setRegisterValue(R0, -1);
+	setRegisterValue(R7, 0x80000000);
+	setExpectedXPSRflags("Nz");
+	pinkySimStep(&m_context);
 }

@@ -16,14 +16,14 @@
 
 /* SVC
    Encoding: 1101 1111 Imm:8 */
-TEST_F(pinkySimBase, svc_SmallestImmediate)
+TEST_F(CpuTestHelper, svc_SmallestImmediate)
 {
 	emitInstruction16("11011111iiiiiiii", 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, svc_LargestImmediate)
+TEST_F(CpuTestHelper, svc_LargestImmediate)
 {
 	emitInstruction16("11011111iiiiiiii", 255);
 	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);

@@ -16,7 +16,7 @@
 
 /* STRH - Immediate
    Encoding: 1000 0 Imm:5 Rn:3 Rt:3 */
-TEST_F(pinkySimBase, strhImmediate_UseAMixOfRegistersWordAlignedWithSmallestOffset)
+TEST_F(CpuTestHelper, strhImmediate_UseAMixOfRegistersWordAlignedWithSmallestOffset)
 {
 	emitInstruction16("10000iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
@@ -25,7 +25,7 @@ TEST_F(pinkySimBase, strhImmediate_UseAMixOfRegistersWordAlignedWithSmallestOffs
 	EXPECT_EQ(0xBAAD0000, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-TEST_F(pinkySimBase, strhImmediate_AnotherMixOfRegistersNotWordAligned)
+TEST_F(CpuTestHelper, strhImmediate_AnotherMixOfRegistersNotWordAligned)
 {
 	emitInstruction16("10000iiiiinnnttt", 1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC + 4);
@@ -34,7 +34,7 @@ TEST_F(pinkySimBase, strhImmediate_AnotherMixOfRegistersNotWordAligned)
 	EXPECT_EQ(0x7777FEED, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-TEST_F(pinkySimBase, strhImmediate_LargestOffset)
+TEST_F(CpuTestHelper, strhImmediate_LargestOffset)
 {
 	emitInstruction16("10000iiiiinnnttt", 31, R1, R6);
 	setRegisterValue(R1, INITIAL_PC);
@@ -43,7 +43,7 @@ TEST_F(pinkySimBase, strhImmediate_LargestOffset)
 	EXPECT_EQ(0x6666FEED, memory_read_32(m_context.pMemory, INITIAL_PC + 60));
 }
 
-TEST_F(pinkySimBase, strhImmediate_AttemptStoreToInvalidAddress)
+TEST_F(CpuTestHelper, strhImmediate_AttemptStoreToInvalidAddress)
 {
 	emitInstruction16("10000iiiiinnnttt", 0, R3, R1);
 	setRegisterValue(R3, 0xFFFFFFFC);
