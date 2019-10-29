@@ -21,7 +21,7 @@ TEST_F(CpuTestHelper, mul_UseLowestRegisterForAllArgs)
 	emitInstruction16("0100001101nnnddd", R0, R0);
 	setExpectedXPSRflags("nZ");
 	setExpectedRegisterValue(R0, 0U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
@@ -29,7 +29,7 @@ TEST_F(CpuTestHelper, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult
 	emitInstruction16("0100001101nnnddd", R7, R7);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R7, 0x77777777U * 0x77777777U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, mul_UseDifferentRegistersForEachArg)
@@ -39,7 +39,7 @@ TEST_F(CpuTestHelper, mul_UseDifferentRegistersForEachArg)
 	setRegisterValue(R2, 2);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R2, 0xA5A5U << 1U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, mul_MultiplyBy16BitMaximumValues)
@@ -49,5 +49,5 @@ TEST_F(CpuTestHelper, mul_MultiplyBy16BitMaximumValues)
 	setRegisterValue(R2, 0xFFFF);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R2, 0xFFFE0001);
-	pinkySimStep(&m_context);
+	step();
 }

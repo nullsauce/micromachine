@@ -23,7 +23,7 @@ TEST_F(CpuTestHelper, bl_OffsetOf0)
 	emitInstruction32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0, 1, 1, 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 4) | 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, bl_MaximumPositiveOffset)
@@ -31,7 +31,7 @@ TEST_F(CpuTestHelper, bl_MaximumPositiveOffset)
 	emitInstruction32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0x3FF, 0, 0, 0x7FF);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 + 16777214);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 4) | 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, bl_MaximumNegativeOffset)
@@ -39,5 +39,5 @@ TEST_F(CpuTestHelper, bl_MaximumNegativeOffset)
 	emitInstruction32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 1, 0, 0, 0, 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 - 16777216);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 4) | 1);
-	pinkySimStep(&m_context);
+	step();
 }

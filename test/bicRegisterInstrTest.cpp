@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, bicRegister_UseLowestRegisterForBothArgs)
 	setExpectedXPSRflags("nZc");
 	clearCarry();
 	setExpectedRegisterValue(R0, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, bicRegister_UseHighestRegisterForBothArgs)
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, bicRegister_UseHighestRegisterForBothArgs)
 	setExpectedXPSRflags("nZC");
 	setCarry();
 	setExpectedRegisterValue(R7, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, bicRegister_UseR3andR7)
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper, bicRegister_UseR3andR7)
 	emitInstruction16("0100001110mmmddd", R3, R7);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R7, 0x77777777 & ~0x33333333);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, bicRegister_UseBicToClearLSbit)
@@ -51,5 +51,5 @@ TEST_F(CpuTestHelper, bicRegister_UseBicToClearLSbit)
 	setRegisterValue(R6, 1);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R1, -1U & ~1);
-	pinkySimStep(&m_context);
+	step();
 }

@@ -19,9 +19,9 @@
 TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegister)
 {
 	emitInstruction16("01001tttiiiiiiii", R7, 0);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R7, 0xBAADFEED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
@@ -30,19 +30,19 @@ TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
 	emitInstruction16("1101111000000000");
 	// Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
 	emitInstruction16("01001tttiiiiiiii", R7, 0);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	// Move PC to point to second instruction.
 	setRegisterValue(PC, _cpu.regs().get_pc() + 2);
 	setExpectedRegisterValue(R7, 0xBAADFEED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
 {
 	emitInstruction16("01001tttiiiiiiii", R0, 255);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4 + 255 * 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4 + 255 * 4, 0xBAADFEED);
 	setExpectedRegisterValue(R0, 0xBAADFEED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrLiteral_AttemptToLoadFromInvalidAddress)
@@ -50,8 +50,8 @@ TEST_F(CpuTestHelper, ldrLiteral_AttemptToLoadFromInvalidAddress)
 	m_emitAddress = INITIAL_SP - 128;
 	setRegisterValue(PC, INITIAL_SP - 128);
 	setExpectedRegisterValue(PC, INITIAL_SP - 128);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 128, 0, READ_WRITE);
+	memory_write_32(INITIAL_SP - 128, 0);
 	emitInstruction16("01001tttiiiiiiii", R0, 255);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }

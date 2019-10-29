@@ -73,7 +73,7 @@
 #define PC  15
 
 
-/* Values that can be returned from the pinkySimStep() or pinkySimRun() function. */
+/* Values that can be returned from the step() or pinkySimRun() function. */
 #define PINKYSIM_STEP_OK            0   /* Executed instruction successfully. */
 #define PINKYSIM_STEP_UNDEFINED     1   /* Encountered undefined instruction. */
 #define PINKYSIM_STEP_UNPREDICTABLE 2   /* Encountered instruction with unpredictable behaviour. */

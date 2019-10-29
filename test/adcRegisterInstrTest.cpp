@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, adcRegister_UseR1ForAllArgs)
 	setExpectedRegisterValue(R1, 0x11111111U + 0x11111111U);
 	// Carry In state is important for ADC tests.
 	clearCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, adcRegister_UseLowestRegisterForAllArgs)
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, adcRegister_UseLowestRegisterForAllArgs)
 	setExpectedXPSRflags("nZcv");
 	setExpectedRegisterValue(R0, 0U);
 	clearCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, adcRegister_UseHigestRegisterForAllArgsPositiveOverflow)
@@ -42,7 +42,7 @@ TEST_F(CpuTestHelper, adcRegister_UseHigestRegisterForAllArgsPositiveOverflow)
 	setExpectedXPSRflags("NzcV");
 	setExpectedRegisterValue(R7, 0x77777777U + 0x77777777U);
 	clearCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, adcRegister_UseDifferentRegistersForEachArg)
@@ -51,7 +51,7 @@ TEST_F(CpuTestHelper, adcRegister_UseDifferentRegistersForEachArg)
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R2, 0x11111111U + 0x22222222U);
 	clearCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, adcRegister_Add0to0WithCarryInSetToGiveAResultOf1)
@@ -60,7 +60,7 @@ TEST_F(CpuTestHelper, adcRegister_Add0to0WithCarryInSetToGiveAResultOf1)
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R0, 0U + 0U + 1U);
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 // Force APSR flags to be set which haven't already been covered above.
@@ -72,7 +72,7 @@ TEST_F(CpuTestHelper, adcRegister_ForceCarryOut)
 	setRegisterValue(R2, 1);
 	setExpectedRegisterValue(R2, -1 + 1);
 	clearCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, adcRegister_ForceCarryOutAndOverflow)
@@ -83,5 +83,5 @@ TEST_F(CpuTestHelper, adcRegister_ForceCarryOutAndOverflow)
 	setRegisterValue(R2, 0x80000000U);
 	setExpectedRegisterValue(R2, 0x7FFFFFFF);
 	clearCarry();
-	pinkySimStep(&m_context);
+	step();
 }

@@ -24,12 +24,12 @@ TEST_F(CpuTestHelper,
 	setRegisterValue(R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 2) | 1);
-	pinkySimStep(&m_context);
+	step();
 
 	const uint16_t NOP = 0xBF00;
-	memory_write_32(m_context.pMemory, INITIAL_PC + 16, NOP, READ_ONLY);
+	memory_write_32(INITIAL_PC + 16, NOP);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForThumb)
@@ -38,7 +38,7 @@ TEST_F(CpuTestHelper, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForThu
 	setRegisterValue(LR, (INITIAL_PC + 16) | 1);
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 2) | 1);
-	pinkySimStep(&m_context);
+	step();
 }
 /*
 TEST_SIM_ONLY(blx, UnpredictableToUseR15)
@@ -70,6 +70,6 @@ TEST_SIM_ONLY(blx, UnpredictableForBit2ToBeHigh)
     emitInstruction16("010001111mmmm100", R0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

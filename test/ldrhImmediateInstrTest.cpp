@@ -20,27 +20,27 @@ TEST_F(CpuTestHelper, ldrhImmediate_UseAMixOfRegistersWordAligned)
 {
 	emitInstruction16("10001iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R0, 0xFEED);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrhImmediate_UseAnotherMixOfRegistersNotWordAligned)
 {
 	emitInstruction16("10001iiiiinnnttt", 1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC + 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R7, 0xBAAD);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrhImmediate_LargestOffset)
 {
 	emitInstruction16("10001iiiiinnnttt", 31, R1, R6);
 	setRegisterValue(R1, INITIAL_PC);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 60, 0xBAADFEED, READ_ONLY);
+	memory_write_32(INITIAL_PC + 60, 0xBAADFEED);
 	setExpectedRegisterValue(R6, 0xBAAD);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, ldrhImmediate_AttemptLoadFromInvalidAddress)
@@ -48,5 +48,5 @@ TEST_F(CpuTestHelper, ldrhImmediate_AttemptLoadFromInvalidAddress)
 	emitInstruction16("10001iiiiinnnttt", 0, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }

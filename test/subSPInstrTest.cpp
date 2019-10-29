@@ -20,19 +20,19 @@ TEST_F(CpuTestHelper, subSP_SmallestImmediate)
 {
 	emitInstruction16("101100001iiiiiii", 0);
 	setExpectedRegisterValue(SP, INITIAL_SP - 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subSP_LargestImmediate)
 {
 	emitInstruction16("101100001iiiiiii", 127);
 	setExpectedRegisterValue(SP, INITIAL_SP - 127 * 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subSP_UseIntermediateValues)
 {
 	emitInstruction16("101100001iiiiiii", 64);
 	setExpectedRegisterValue(SP, INITIAL_SP - 64 * 4);
-	pinkySimStep(&m_context);
+	step();
 }
