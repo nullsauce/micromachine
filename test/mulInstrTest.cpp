@@ -16,38 +16,38 @@
 
 /* MUL
    Encoding: 010000 1101 Rn:3 Rdm:3 */
-TEST_F(pinkySimBase, mul_UseLowestRegisterForAllArgs)
+TEST_F(CpuTestHelper, mul_UseLowestRegisterForAllArgs)
 {
-    emitInstruction16("0100001101nnnddd", R0, R0);
-    setExpectedXPSRflags("nZ");
-    setExpectedRegisterValue(R0, 0U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001101nnnddd", R0, R0);
+	setExpectedXPSRflags("nZ");
+	setExpectedRegisterValue(R0, 0U);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
+TEST_F(CpuTestHelper, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
 {
-    emitInstruction16("0100001101nnnddd", R7, R7);
-    setExpectedXPSRflags("Nz");
-    setExpectedRegisterValue(R7, 0x77777777U * 0x77777777U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001101nnnddd", R7, R7);
+	setExpectedXPSRflags("Nz");
+	setExpectedRegisterValue(R7, 0x77777777U * 0x77777777U);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mul_UseDifferentRegistersForEachArg)
+TEST_F(CpuTestHelper, mul_UseDifferentRegistersForEachArg)
 {
-    emitInstruction16("0100001101nnnddd", R1, R2);
-    setRegisterValue(R1, 0xA5A5);
-    setRegisterValue(R2, 2);
-    setExpectedXPSRflags("nz");
-    setExpectedRegisterValue(R2, 0xA5A5U << 1U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001101nnnddd", R1, R2);
+	setRegisterValue(R1, 0xA5A5);
+	setRegisterValue(R2, 2);
+	setExpectedXPSRflags("nz");
+	setExpectedRegisterValue(R2, 0xA5A5U << 1U);
+	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, mul_MultiplyBy16BitMaximumValues)
+TEST_F(CpuTestHelper, mul_MultiplyBy16BitMaximumValues)
 {
-    emitInstruction16("0100001101nnnddd", R1, R2);
-    setRegisterValue(R1, 0xFFFF);
-    setRegisterValue(R2, 0xFFFF);
-    setExpectedXPSRflags("Nz");
-    setExpectedRegisterValue(R2, 0xFFFE0001);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001101nnnddd", R1, R2);
+	setRegisterValue(R1, 0xFFFF);
+	setRegisterValue(R2, 0xFFFF);
+	setExpectedXPSRflags("Nz");
+	setExpectedRegisterValue(R2, 0xFFFE0001);
+	pinkySimStep(&m_context);
 }

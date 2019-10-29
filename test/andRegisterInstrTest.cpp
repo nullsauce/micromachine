@@ -17,7 +17,7 @@
 /* AND - Register
    Encoding: 010000 0000 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(pinkySimBase, andRegister_UseLowestRegisterForBothArgs)
+TEST_F(CpuTestHelper, andRegister_UseLowestRegisterForBothArgs)
 {
 	emitInstruction16("0100000000mmmddd", R0, R0);
 	setExpectedXPSRflags("nZc");
@@ -27,7 +27,7 @@ TEST_F(pinkySimBase, andRegister_UseLowestRegisterForBothArgs)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, andRegister_UseHighestRegisterForBothArgs)
+TEST_F(CpuTestHelper, andRegister_UseHighestRegisterForBothArgs)
 {
 	emitInstruction16("0100000000mmmddd", R7, R7);
 	setExpectedXPSRflags("nzC");
@@ -35,7 +35,7 @@ TEST_F(pinkySimBase, andRegister_UseHighestRegisterForBothArgs)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, andRegister_AndR3andR7)
+TEST_F(CpuTestHelper, andRegister_AndR3andR7)
 {
 	emitInstruction16("0100000000mmmddd", R3, R7);
 	setExpectedXPSRflags("nz");
@@ -43,7 +43,7 @@ TEST_F(pinkySimBase, andRegister_AndR3andR7)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, andRegister_UseAndToJustKeepNegativeSignBit)
+TEST_F(CpuTestHelper, andRegister_UseAndToJustKeepNegativeSignBit)
 {
 	emitInstruction16("0100000000mmmddd", R6, R1);
 	setRegisterValue(R1, -1);
@@ -53,7 +53,7 @@ TEST_F(pinkySimBase, andRegister_UseAndToJustKeepNegativeSignBit)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, andRegister_HaveAndResultNotBeSameAsEitherSource)
+TEST_F(CpuTestHelper, andRegister_HaveAndResultNotBeSameAsEitherSource)
 {
 	emitInstruction16("0100000000mmmddd", R5, R2);
 	setRegisterValue(R2, 0x12345678);

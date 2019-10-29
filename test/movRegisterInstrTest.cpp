@@ -17,33 +17,33 @@
 /* MOV - Register Encoding 1
    Encoding: 010001 10 D:1 Rm:4 Rd:3
    NOTE: This encoding doesn't update the APSR flags. */
-TEST_F(pinkySimBase, movRegister_UseLowestRegisterForAllArgs)
+TEST_F(CpuTestHelper, movRegister_UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("01000110dmmmmddd", R0, R0);
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, movRegister_UseHighRegisterForAllArgs)
+TEST_F(CpuTestHelper, movRegister_UseHighRegisterForAllArgs)
 {
 	emitInstruction16("01000110dmmmmddd", LR, LR);
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, movRegister_MoveHighRegisterToLowRegister)
+TEST_F(CpuTestHelper, movRegister_MoveHighRegisterToLowRegister)
 {
 	emitInstruction16("01000110dmmmmddd", R7, R12);
 	setExpectedRegisterValue(R7, 0xCCCCCCCC);
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, movRegister_MoveLowRegisterToLHighRegister)
+TEST_F(CpuTestHelper, movRegister_MoveLowRegisterToLHighRegister)
 {
 	emitInstruction16("01000110dmmmmddd", R12, R7);
 	setExpectedRegisterValue(R12, 0x77777777);
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
+TEST_F(CpuTestHelper, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 {
 	emitInstruction16("01000110dmmmmddd", PC, R1);
 	setRegisterValue(R1, INITIAL_PC + 1025);
@@ -51,7 +51,7 @@ TEST_F(pinkySimBase, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, movRegister_MoveEvenAddressIntoPC)
+TEST_F(CpuTestHelper, movRegister_MoveEvenAddressIntoPC)
 {
 	emitInstruction16("01000110dmmmmddd", PC, R2);
 	setRegisterValue(R2, INITIAL_PC + 1024);
@@ -59,7 +59,7 @@ TEST_F(pinkySimBase, movRegister_MoveEvenAddressIntoPC)
 	pinkySimStep(&m_context);
 }
 
-TEST_F(pinkySimBase, movRegister_MovePCintoOtherRegister)
+TEST_F(CpuTestHelper, movRegister_MovePCintoOtherRegister)
 {
 	emitInstruction16("01000110dmmmmddd", R3, PC);
 	setExpectedRegisterValue(R3, INITIAL_PC + 4);

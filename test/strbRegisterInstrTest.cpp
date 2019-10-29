@@ -16,7 +16,7 @@
 
 /* STRB - Register
    Encoding: 0101 010 Rm:3 Rn:3 Rt:3 */
-TEST_F(pinkySimBase, strbRegister_UseAMixOfRegistersWordAligned)
+TEST_F(CpuTestHelper, strbRegister_UseAMixOfRegistersWordAligned)
 {
 	emitInstruction16("0101010mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -26,7 +26,7 @@ TEST_F(pinkySimBase, strbRegister_UseAMixOfRegistersWordAligned)
 	EXPECT_EQ(0xBAADFE00, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-TEST_F(pinkySimBase, strbRegister_UseAnotherMixOfRegistersSecondByteInWord)
+TEST_F(CpuTestHelper, strbRegister_UseAnotherMixOfRegistersSecondByteInWord)
 {
 	emitInstruction16("0101010mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -36,7 +36,7 @@ TEST_F(pinkySimBase, strbRegister_UseAnotherMixOfRegistersSecondByteInWord)
 	EXPECT_EQ(0xBAAD77ED, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-TEST_F(pinkySimBase, strbRegister_YetAnotherMixOfRegistersThirdByteInWord)
+TEST_F(CpuTestHelper, strbRegister_YetAnotherMixOfRegistersThirdByteInWord)
 {
 	emitInstruction16("0101010mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -46,7 +46,7 @@ TEST_F(pinkySimBase, strbRegister_YetAnotherMixOfRegistersThirdByteInWord)
 	EXPECT_EQ(0xBA44FEED, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-TEST_F(pinkySimBase, strbRegister_YetAnotherMixOfRegistersFourthByteInWord)
+TEST_F(CpuTestHelper, strbRegister_YetAnotherMixOfRegistersFourthByteInWord)
 {
 	emitInstruction16("0101010mmmnnnttt", R0, R7, R5);
 	setRegisterValue(R7, INITIAL_PC);
@@ -56,7 +56,7 @@ TEST_F(pinkySimBase, strbRegister_YetAnotherMixOfRegistersFourthByteInWord)
 	EXPECT_EQ(0x55ADFEED, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-TEST_F(pinkySimBase, strbRegister_AttemptStoreToInvalidAddress)
+TEST_F(CpuTestHelper, strbRegister_AttemptStoreToInvalidAddress)
 {
 	emitInstruction16("0101010mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);

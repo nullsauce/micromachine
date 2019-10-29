@@ -5,18 +5,21 @@
 #include <gtest/gtest.h>
 #include "exception_vector.hpp"
 
-TEST(ExceptionsTest, NotPendingWhenEmpty) {
+TEST(ExceptionsTest, NotPendingWhenEmpty)
+{
 	exception_vector vec;
 	EXPECT_FALSE(vec.any_pending());
 }
 
-TEST(ExceptionsTest, RasingOnePendingShouldBePending) {
+TEST(ExceptionsTest, RasingOnePendingShouldBePending)
+{
 	exception_vector vec;
 	vec.raise(exception_number::ex_name::HARDFAULT);
 	EXPECT_TRUE(vec.any_pending());
 }
 
-TEST(ExceptionsTest, RasingOnePendingShouldBeTheSamePending) {
+TEST(ExceptionsTest, RasingOnePendingShouldBeTheSamePending)
+{
 	exception_vector vec;
 	vec.raise(exception_number::ex_name::HARDFAULT);
 	EXPECT_TRUE(vec.any_pending());
@@ -24,7 +27,8 @@ TEST(ExceptionsTest, RasingOnePendingShouldBeTheSamePending) {
 	EXPECT_EQ(exception_number::ex_name::HARDFAULT, vec.top_pending_exception()->number());
 }
 
-TEST(ExceptionsTest, PendingFlagScope) {
+TEST(ExceptionsTest, PendingFlagScope)
+{
 	exception_vector vec;
 	vec.raise(exception_number::ex_name::HARDFAULT);
 	EXPECT_TRUE(vec.any_pending());
@@ -34,7 +38,8 @@ TEST(ExceptionsTest, PendingFlagScope) {
 	EXPECT_FALSE(vec.any_pending());
 }
 
-TEST(ExceptionsTest, TopPendingShouldBeHighestPriority) {
+TEST(ExceptionsTest, TopPendingShouldBeHighestPriority)
+{
 	exception_vector vec;
 
 	// Raise a HARDFAULT exception
@@ -63,7 +68,6 @@ TEST(ExceptionsTest, TopPendingShouldBeHighestPriority) {
 
 	// There should be no more pending exceptions
 	EXPECT_EQ(nullptr, vec.top_pending_exception());
-
 
 
 }

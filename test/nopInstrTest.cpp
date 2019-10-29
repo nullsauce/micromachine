@@ -16,7 +16,7 @@
 
 /* NOP
    Encoding: 1011 1111 0000 0000 */
-TEST_F(pinkySimBase, nop_BasicTest)
+TEST_F(CpuTestHelper, nop_BasicTest)
 {
 	emitInstruction16("1011111100000000");
 	pinkySimStep(&m_context);
@@ -27,7 +27,7 @@ TEST_F(pinkySimBase, nop_BasicTest)
 /* Unallocated hint encodings with OpB == 0 are treated as NOP as well. */
 // TODO: The doc says it should raise and UNDEFINED excepption
 /*
-TEST_F(pinkySimBase, nop_UnallocatedHints)
+TEST_F(CpuTestHelper, nop_UnallocatedHints)
 {
     for (uint32_t opA = 5 ; opA < 16 ; opA++)
     {
