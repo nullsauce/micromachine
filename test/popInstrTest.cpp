@@ -22,7 +22,7 @@ TEST_F(pinkySimBase, pop_JustPopPC)
     setRegisterValue(SP, INITIAL_SP - 4);
     setExpectedRegisterValue(SP, INITIAL_SP);
     setExpectedRegisterValue(PC, INITIAL_PC + 16);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4, (INITIAL_PC + 16) | 1, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_SP - 4, (INITIAL_PC + 16) | 1, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
@@ -32,7 +32,7 @@ TEST_F(pinkySimBase, pop_JustPopR0)
     setRegisterValue(SP, INITIAL_SP - 4);
     setExpectedRegisterValue(SP, INITIAL_SP);
     setExpectedRegisterValue(R0, 0xFFFFFFFF);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
@@ -42,7 +42,7 @@ TEST_F(pinkySimBase, pop_JustPopR7)
     setRegisterValue(SP, INITIAL_SP - 4);
     setExpectedRegisterValue(SP, INITIAL_SP);
     setExpectedRegisterValue(R7, 0xFFFFFFFF);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
@@ -61,7 +61,7 @@ TEST_F(pinkySimBase, pop_PopAll)
     setExpectedRegisterValue(R7, 2);
     setExpectedRegisterValue(PC, 1 & ~1);
     for (int i = 1 ; i <= 9 ; i++)
-        SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4 * i, i, READ_ONLY);
+		memory_write_32(m_context.pMemory, INITIAL_SP - 4 * i, i, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
@@ -72,11 +72,11 @@ TEST_F(pinkySimBase, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
     setRegisterValue(SP, INITIAL_SP - 4);
     setExpectedRegisterValue(SP, INITIAL_SP);
     setExpectedRegisterValue(PC, INITIAL_PC + 16);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_SP - 4, INITIAL_PC + 16, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_SP - 4, INITIAL_PC + 16, READ_ONLY);
     pinkySimStep(&m_context);
 
     const uint16_t NOP = 0xBF00;
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16, NOP, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 16, NOP, READ_ONLY);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }

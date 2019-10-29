@@ -21,9 +21,9 @@ TEST_F(pinkySimBase, stm_JustPushR0WithR7AsAddress)
     emitInstruction16("11000nnnrrrrrrrr", R7, (1 << 0));
     setRegisterValue(R7, INITIAL_PC + 16);
     setExpectedRegisterValue(R7, INITIAL_PC + 16 + 1 * 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0x0, IMemory_Read32(m_context.pMemory, INITIAL_PC + 16));
+    EXPECT_EQ(0x0, memory_read_32(m_context.pMemory, INITIAL_PC + 16));
 }
 
 TEST_F(pinkySimBase, stm_JustPushR7WithR0AsAddress)
@@ -31,9 +31,9 @@ TEST_F(pinkySimBase, stm_JustPushR7WithR0AsAddress)
     emitInstruction16("11000nnnrrrrrrrr", R0, (1 << 7));
     setRegisterValue(R0, INITIAL_PC + 16);
     setExpectedRegisterValue(R0, INITIAL_PC + 16 + 1 * 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0x77777777, IMemory_Read32(m_context.pMemory, INITIAL_PC + 16));
+    EXPECT_EQ(0x77777777, memory_read_32(m_context.pMemory, INITIAL_PC + 16));
 }
 
 TEST_F(pinkySimBase, stm_PushAllWithR0AsAddress)
@@ -42,11 +42,11 @@ TEST_F(pinkySimBase, stm_PushAllWithR0AsAddress)
     setRegisterValue(R0, INITIAL_PC + 16);
     setExpectedRegisterValue(R0, INITIAL_PC + 16 + 8 * 4);
     for (int i = 0 ; i < 8 ; i++)
-        SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16 + 4 * i, 0xFFFFFFFF, READ_WRITE);
+		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, 0xFFFFFFFF, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(INITIAL_PC + 16, IMemory_Read32(m_context.pMemory, INITIAL_PC + 16 + 4 * 0));
+    EXPECT_EQ(INITIAL_PC + 16, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * 0));
     for (int i = 1 ; i < 8 ; i++)
-        EXPECT_EQ(0x11111111U * i, IMemory_Read32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
+        EXPECT_EQ(0x11111111U * i, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
 }
 
 TEST_F(pinkySimBase, stm_PushAllButR7WithR7AsAddress)
@@ -55,10 +55,10 @@ TEST_F(pinkySimBase, stm_PushAllButR7WithR7AsAddress)
     setRegisterValue(R7, INITIAL_PC + 16);
     setExpectedRegisterValue(R7, INITIAL_PC + 16 + 7 * 4);
     for (int i = 0 ; i < 7 ; i++)
-        SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16 + 4 * i, 0xFFFFFFFF, READ_WRITE);
+		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, 0xFFFFFFFF, READ_WRITE);
     pinkySimStep(&m_context);
     for (int i = 0 ; i < 7 ; i++)
-        EXPECT_EQ(0x11111111U * i, IMemory_Read32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
+        EXPECT_EQ(0x11111111U * i, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
 }
 
 TEST_F(pinkySimBase, stm_HardFaultFromInvalidMemoryWrite)
