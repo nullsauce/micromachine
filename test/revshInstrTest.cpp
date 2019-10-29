@@ -21,7 +21,7 @@ TEST_F(CpuTestHelper, revsh_RevR0toR7)
 	emitInstruction16("1011101011mmmddd", R0, R7);
 	setRegisterValue(R0, 0x12345678);
 	setExpectedRegisterValue(R7, 0x7856);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, revsh_RevR7toR0)
@@ -29,7 +29,7 @@ TEST_F(CpuTestHelper, revsh_RevR7toR0)
 	emitInstruction16("1011101011mmmddd", R7, R0);
 	setRegisterValue(R7, 0x12345678);
 	setExpectedRegisterValue(R0, 0x7856);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, revsh_PositiveValue)
@@ -37,7 +37,7 @@ TEST_F(CpuTestHelper, revsh_PositiveValue)
 	emitInstruction16("1011101011mmmddd", R7, R0);
 	setRegisterValue(R7, 0xFF7F);
 	setExpectedRegisterValue(R0, 0x7FFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, revsh_NegativeValue)
@@ -45,5 +45,5 @@ TEST_F(CpuTestHelper, revsh_NegativeValue)
 	emitInstruction16("1011101011mmmddd", R7, R0);
 	setRegisterValue(R7, 0x0080);
 	setExpectedRegisterValue(R0, 0xFFFF8000);
-	pinkySimStep(&m_context);
+	step();
 }

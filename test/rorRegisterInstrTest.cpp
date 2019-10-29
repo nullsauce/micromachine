@@ -23,7 +23,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate1by1_CarryOutFromLowestBit)
 	setRegisterValue(R0, 1);
 	setRegisterValue(R7, 1);
 	setExpectedRegisterValue(R7, 0x80000000);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
 	setRegisterValue(R0, 1);
 	setRegisterValue(R7, 0);
 	setExpectedRegisterValue(R0, 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_Rotate2by1_NoCarry)
@@ -43,7 +43,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate2by1_NoCarry)
 	setRegisterValue(R2, 2);
 	setRegisterValue(R3, 1);
 	setExpectedRegisterValue(R2, 2 >> 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_Rotate16Bits)
@@ -53,7 +53,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate16Bits)
 	setRegisterValue(R2, 0x12345678);
 	setRegisterValue(R3, 16);
 	setExpectedRegisterValue(R2, 0x56781234);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf31)
@@ -63,7 +63,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf31)
 	setRegisterValue(R2, 0x80000000);
 	setRegisterValue(R3, 31);
 	setExpectedRegisterValue(R2, 0x00000001);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_RotateBy32_CarryOutHighestBit)
@@ -73,7 +73,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateBy32_CarryOutHighestBit)
 	setRegisterValue(R0, 0x80000000);
 	setRegisterValue(R7, 32);
 	setExpectedRegisterValue(R0, 0x80000000);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_RotateBy33)
@@ -83,7 +83,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateBy33)
 	setRegisterValue(R2, 0x80000001);
 	setRegisterValue(R3, 33);
 	setExpectedRegisterValue(R2, 0xC0000000);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_RotateWithMaximumShiftOf255)
@@ -93,7 +93,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateWithMaximumShiftOf255)
 	setRegisterValue(R2, 0x80000000);
 	setRegisterValue(R3, 255);
 	setExpectedRegisterValue(R2, 0x00000001);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
@@ -103,7 +103,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_C
 	setRegisterValue(R0, 0x80000000);
 	setRegisterValue(R7, 256);
 	setExpectedRegisterValue(R0, 0x80000000);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, rorRegister_Rotate0by16)
@@ -113,5 +113,5 @@ TEST_F(CpuTestHelper, rorRegister_Rotate0by16)
 	setRegisterValue(R0, 0);
 	setRegisterValue(R7, 16);
 	setExpectedRegisterValue(R0, 0);
-	pinkySimStep(&m_context);
+	step();
 }

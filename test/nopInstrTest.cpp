@@ -19,7 +19,7 @@
 TEST_F(CpuTestHelper, nop_BasicTest)
 {
 	emitInstruction16("1011111100000000");
-	pinkySimStep(&m_context);
+	step();
 }
 
 
@@ -32,7 +32,7 @@ TEST_F(CpuTestHelper, nop_UnallocatedHints)
     for (uint32_t opA = 5 ; opA < 16 ; opA++)
     {
         emitInstruction16("10111111aaaa0000", opA);
-        pinkySimStep(&m_context);
+        step(&m_context);
         initContext();
     }
 }*/

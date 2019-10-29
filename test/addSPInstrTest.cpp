@@ -20,21 +20,21 @@ TEST_F(CpuTestHelper, addSP_T1UseHighestRegisterAddSmallestImmediate)
 {
 	emitInstruction16("10101dddiiiiiiii", R7, 0);
 	setExpectedRegisterValue(R7, INITIAL_SP + 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addSP_T1UseLowestRegisterAddLargestImmediate)
 {
 	emitInstruction16("10101dddiiiiiiii", R0, 255);
 	setExpectedRegisterValue(R0, INITIAL_SP + 255 * 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addSP_T1UseIntermediateValues)
 {
 	emitInstruction16("10101dddiiiiiiii", R3, 128);
 	setExpectedRegisterValue(R3, INITIAL_SP + 128 * 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, addSP_T2SmallestImmediate)
 	emitInstruction16("101100000iiiiiii", 0);
 	setRegisterValue(SP, INITIAL_PC + 1024);
 	setExpectedRegisterValue(SP, INITIAL_PC + 1024 + 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addSP_T2LargestImmediate)
@@ -54,7 +54,7 @@ TEST_F(CpuTestHelper, addSP_T2LargestImmediate)
 	emitInstruction16("101100000iiiiiii", 127);
 	setRegisterValue(SP, INITIAL_PC + 1024);
 	setExpectedRegisterValue(SP, INITIAL_PC + 1024 + 127 * 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addSP_T2IntermediateValues)
@@ -62,5 +62,5 @@ TEST_F(CpuTestHelper, addSP_T2IntermediateValues)
 	emitInstruction16("101100000iiiiiii", 64);
 	setRegisterValue(SP, INITIAL_PC + 1024);
 	setExpectedRegisterValue(SP, INITIAL_PC + 1024 + 64 * 4);
-	pinkySimStep(&m_context);
+	step();
 }

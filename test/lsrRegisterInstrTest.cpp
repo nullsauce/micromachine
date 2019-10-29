@@ -23,7 +23,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by1_CarryOutFromLowestBit)
 	setRegisterValue(R0, 1);
 	setRegisterValue(R7, 1);
 	setExpectedRegisterValue(R7, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by0_MinimumShift_CarryUnmodified)
@@ -34,7 +34,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by0_MinimumShift_CarryUnmodified)
 	setRegisterValue(R7, 1);
 	setRegisterValue(R0, 0);
 	setExpectedRegisterValue(R7, 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrRegister_ShiftValue2by1_NoCarry)
@@ -44,7 +44,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftValue2by1_NoCarry)
 	setRegisterValue(R2, 2);
 	setRegisterValue(R3, 1);
 	setExpectedRegisterValue(R2, 2 >> 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy31)
@@ -54,7 +54,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy31)
 	setRegisterValue(R2, -1);
 	setRegisterValue(R3, 31);
 	setExpectedRegisterValue(R2, -1U >> 31);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy32_CarryOutFromHighestBit)
@@ -64,7 +64,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy32_CarryOutFromHighestBit)
 	setRegisterValue(R0, 0x80000000);
 	setRegisterValue(R7, 32);
 	setExpectedRegisterValue(R0, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy33_ResultIsZero_CarryClear)
@@ -74,7 +74,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy33_ResultIsZero_CarryClear
 	setRegisterValue(R2, -1);
 	setRegisterValue(R3, 33);
 	setExpectedRegisterValue(R2, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrRegister_MaximumShiftOf255_ResultIsZero_CarryClear)
@@ -84,7 +84,7 @@ TEST_F(CpuTestHelper, lsrRegister_MaximumShiftOf255_ResultIsZero_CarryClear)
 	setRegisterValue(R2, -1);
 	setRegisterValue(R3, 255);
 	setExpectedRegisterValue(R2, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrRegister_ShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
@@ -95,5 +95,5 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodi
 	setRegisterValue(R0, -1);
 	setRegisterValue(R7, 256);
 	setExpectedRegisterValue(R0, -1);
-	pinkySimStep(&m_context);
+	step();
 }

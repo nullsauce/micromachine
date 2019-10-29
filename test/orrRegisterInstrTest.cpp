@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, orrRegister_UseLowestRegisterForBothArgs)
 	setExpectedXPSRflags("nZc");
 	clearCarry();
 	setExpectedRegisterValue(R0, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, orrRegister_UseHighestRegisterForBothArgs)
@@ -32,7 +32,7 @@ TEST_F(CpuTestHelper, orrRegister_UseHighestRegisterForBothArgs)
 	emitInstruction16("0100001100mmmddd", R7, R7);
 	setExpectedXPSRflags("nzC");
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, orrRegister_OrR3andR7)
@@ -40,7 +40,7 @@ TEST_F(CpuTestHelper, orrRegister_OrR3andR7)
 	emitInstruction16("0100001100mmmddd", R3, R7);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R7, 0x33333333 | 0x77777777);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, orrRegister_UseOrToTurnOnNegativeSignBit)
@@ -50,7 +50,7 @@ TEST_F(CpuTestHelper, orrRegister_UseOrToTurnOnNegativeSignBit)
 	setRegisterValue(R7, 0x80000000);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R0, 0x7FFFFFFF | 0x80000000);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, orrRegister_HaveAndResultNotBeSameAsEitherSource)
@@ -60,5 +60,5 @@ TEST_F(CpuTestHelper, orrRegister_HaveAndResultNotBeSameAsEitherSource)
 	setRegisterValue(R7, 0xF0F0F0F0);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R7, 0xF2F4F6F8);
-	pinkySimStep(&m_context);
+	step();
 }

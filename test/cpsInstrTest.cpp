@@ -20,7 +20,7 @@ TEST_F(CpuTestHelper, cps_InterruptEnable)
 {
 	emitInstruction16("10110110011i0010", 0);
 	PRIMASK |= PRIMASK_PM;
-	pinkySimStep(&m_context);
+	step();
 	EXPECT_FALSE(PRIMASK & PRIMASK_PM);
 }
 
@@ -28,7 +28,7 @@ TEST_F(CpuTestHelper, cps_InterruptDisable)
 {
 	emitInstruction16("10110110011i0010", 1);
 	PRIMASK &= ~PRIMASK_PM;
-	pinkySimStep(&m_context);
+	step();
 	EXPECT_TRUE(PRIMASK & PRIMASK_PM);
 }
 
@@ -38,7 +38,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit0)
     emitInstruction16("10110110011i0011", 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 *//*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit1)
@@ -46,7 +46,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit1)
     emitInstruction16("10110110011i0000", 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 *//*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit2)
@@ -54,7 +54,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit2)
     emitInstruction16("10110110011i0110", 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 *//*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit3)
@@ -62,6 +62,6 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit3)
     emitInstruction16("10110110011i1010", 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

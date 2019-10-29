@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, msr_ToAPSR)
 	clearCarry();
 	clearOverflow();
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToIAPSR)
@@ -38,7 +38,7 @@ TEST_F(CpuTestHelper, msr_ToIAPSR)
 	clearCarry();
 	clearOverflow();
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToEAPSR)
@@ -50,7 +50,7 @@ TEST_F(CpuTestHelper, msr_ToEAPSR)
 	clearCarry();
 	clearOverflow();
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToXPSR)
@@ -62,28 +62,28 @@ TEST_F(CpuTestHelper, msr_ToXPSR)
 	clearCarry();
 	clearOverflow();
 	setRegisterValue(R0, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToIPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_IPSR);
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToEPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_EPSR);
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToIEPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_IEPSR);
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToMSP)
@@ -91,21 +91,21 @@ TEST_F(CpuTestHelper, msr_ToMSP)
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_MSP);
 	setRegisterValue(R12, INITIAL_PC + 1024 + 2);
 	setExpectedRegisterValue(SP, INITIAL_PC + 1024);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_ToPSP)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PSP);
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, msr_PRIMASKto1)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
 	setRegisterValue(R12, 0xFFFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 	EXPECT_EQ(1, PRIMASK);
 }
 
@@ -113,7 +113,7 @@ TEST_F(CpuTestHelper, msr_PRIMASKto0)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
 	setRegisterValue(R12, 0xFFFFFFFE);
-	pinkySimStep(&m_context);
+	step();
 	EXPECT_EQ(0, PRIMASK);
 }
 /*
@@ -121,7 +121,7 @@ TEST_F(CpuTestHelper, msr_CONTROLIgnored)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_CONTROL);
     setRegisterValue(R12, 0xFFFFFFFF);
-    pinkySimStep(&m_context);
+    step(&m_context);
     EXPECT_EQ(0, CONTROL);
 }
 */
@@ -209,6 +209,6 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit1_4)
     emitInstruction32("111100111001nnnn", "10001000ssssssss", R0, SYS_XPSR);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

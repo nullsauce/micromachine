@@ -21,7 +21,7 @@ TEST_F(CpuTestHelper, subImmediate_T1UseLowestRegisterOnly_SmallestImmediate)
 	emitInstruction16("0001111iiinnnddd", 0, R0, R0);
 	setExpectedXPSRflags("nZCv");
 	setExpectedRegisterValue(R0, 0U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subImmediate_T1UseHigestRegisterOnly_LargestImmediate)
@@ -29,7 +29,7 @@ TEST_F(CpuTestHelper, subImmediate_T1UseHigestRegisterOnly_LargestImmediate)
 	emitInstruction16("0001111iiinnnddd", 7, R7, R7);
 	setExpectedXPSRflags("nzCv");
 	setExpectedRegisterValue(R7, 0x77777777U - 7U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subImmediate_T1UseDifferentRegistersForEachArg)
@@ -37,7 +37,7 @@ TEST_F(CpuTestHelper, subImmediate_T1UseDifferentRegistersForEachArg)
 	emitInstruction16("0001111iiinnnddd", 3, R0, R2);
 	setExpectedXPSRflags("Nzcv");
 	setExpectedRegisterValue(R2, 0U - 3U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subImmediate_T1ForceOverflowPastLargestNegativeInteger)
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, subImmediate_T1ForceOverflowPastLargestNegativeInteger)
 	setExpectedXPSRflags("nzCV");
 	setRegisterValue(R1, 0x80000000);
 	setExpectedRegisterValue(R6, 0x80000000U - 1U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 
@@ -58,7 +58,7 @@ TEST_F(CpuTestHelper, subImmediate_T2LowestRegister_SmallestImmediate)
 	emitInstruction16("00111dddiiiiiiii", R0, 0);
 	setExpectedXPSRflags("nZCv");
 	setExpectedRegisterValue(R0, 0U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subImmediate_T2HigestRegister_LargestImmediate)
@@ -66,7 +66,7 @@ TEST_F(CpuTestHelper, subImmediate_T2HigestRegister_LargestImmediate)
 	emitInstruction16("00111dddiiiiiiii", R7, 255);
 	setExpectedXPSRflags("nzCv");
 	setExpectedRegisterValue(R7, 0x77777777U - 255U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subImmediate_T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult)
@@ -74,7 +74,7 @@ TEST_F(CpuTestHelper, subImmediate_T2Subtract127FromR0CausesNoCarryToIndicateBor
 	emitInstruction16("00111dddiiiiiiii", R0, 127);
 	setExpectedXPSRflags("Nzcv");
 	setExpectedRegisterValue(R0, 0U - 127U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, subImmediate_T2ForceOverflowPastLargestNegativeInteger)
@@ -83,5 +83,5 @@ TEST_F(CpuTestHelper, subImmediate_T2ForceOverflowPastLargestNegativeInteger)
 	setExpectedXPSRflags("nzCV");
 	setRegisterValue(R3, 0x80000000);
 	setExpectedRegisterValue(R3, 0x80000000U - 1U);
-	pinkySimStep(&m_context);
+	step();
 }

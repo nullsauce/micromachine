@@ -23,7 +23,7 @@ TEST_F(CpuTestHelper, asrRegister_Shift1by1_CarryOutFromLowestBit)
 	setRegisterValue(R0, 1);
 	setExpectedXPSRflags("nZC");
 	setExpectedRegisterValue(R7, (int32_t) 1U >> 1U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
 	setRegisterValue(R0, 0);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R7, (int32_t) 1 >> 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_Shift2by1_NoCarryFromLowestBit)
@@ -43,7 +43,7 @@ TEST_F(CpuTestHelper, asrRegister_Shift2by1_NoCarryFromLowestBit)
 	setRegisterValue(R3, 1);
 	setExpectedXPSRflags("nzc");
 	setExpectedRegisterValue(R2, (int32_t) 2 >> 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftNegativeNumberby31)
@@ -53,7 +53,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftNegativeNumberby31)
 	setRegisterValue(R3, 31);
 	setExpectedXPSRflags("NzC");
 	setExpectedRegisterValue(R2, (int32_t) -1 >> 31);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
@@ -63,7 +63,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHigh
 	setRegisterValue(R7, 32);
 	setExpectedXPSRflags("NzC");
 	setExpectedRegisterValue(R0, -1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueby33)
@@ -73,7 +73,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueby33)
 	setRegisterValue(R3, 33);
 	setExpectedXPSRflags("NzC");
 	setExpectedRegisterValue(R2, -1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftPositiveValueby33)
@@ -83,7 +83,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftPositiveValueby33)
 	setRegisterValue(R3, 33);
 	setExpectedXPSRflags("nZc");
 	setExpectedRegisterValue(R2, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
@@ -93,7 +93,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
 	setRegisterValue(R3, 255);
 	setExpectedXPSRflags("NzC");
 	setExpectedRegisterValue(R2, -1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
@@ -103,7 +103,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmod
 	setRegisterValue(R7, 256);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R0, (int32_t) -1 >> 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftLargestPositiveNumberBy31)
@@ -113,7 +113,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftLargestPositiveNumberBy31)
 	setRegisterValue(R2, 31);
 	setExpectedXPSRflags("nZC");
 	setExpectedRegisterValue(R3, (int32_t) 0x7FFFFFFF >> 31);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, asrRegister_ShiftLargestNegativeNumberBy1)
@@ -123,5 +123,5 @@ TEST_F(CpuTestHelper, asrRegister_ShiftLargestNegativeNumberBy1)
 	setRegisterValue(R2, 1);
 	setExpectedXPSRflags("Nzc");
 	setExpectedRegisterValue(R3, (int32_t) 0x80000000 >> 1);
-	pinkySimStep(&m_context);
+	step();
 }

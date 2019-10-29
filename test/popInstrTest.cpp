@@ -22,8 +22,8 @@ TEST_F(CpuTestHelper, pop_JustPopPC)
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 4, (INITIAL_PC + 16) | 1, READ_ONLY);
-	pinkySimStep(&m_context);
+	memory_write_32(INITIAL_SP - 4, (INITIAL_PC + 16) | 1);
+	step();
 }
 
 TEST_F(CpuTestHelper, pop_JustPopR0)
@@ -32,8 +32,8 @@ TEST_F(CpuTestHelper, pop_JustPopR0)
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(R0, 0xFFFFFFFF);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_ONLY);
-	pinkySimStep(&m_context);
+	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
+	step();
 }
 
 TEST_F(CpuTestHelper, pop_JustPopR7)
@@ -42,8 +42,8 @@ TEST_F(CpuTestHelper, pop_JustPopR7)
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(R7, 0xFFFFFFFF);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 4, 0xFFFFFFFF, READ_ONLY);
-	pinkySimStep(&m_context);
+	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
+	step();
 }
 
 TEST_F(CpuTestHelper, pop_PopAll)
@@ -61,8 +61,8 @@ TEST_F(CpuTestHelper, pop_PopAll)
 	setExpectedRegisterValue(R7, 2);
 	setExpectedRegisterValue(PC, 1 & ~1);
 	for (int i = 1; i <= 9; i++)
-		memory_write_32(m_context.pMemory, INITIAL_SP - 4 * i, i, READ_ONLY);
-	pinkySimStep(&m_context);
+		memory_write_32(INITIAL_SP - 4 * i, i);
+	step();
 }
 
 TEST_F(CpuTestHelper, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
@@ -72,13 +72,13 @@ TEST_F(CpuTestHelper, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
-	memory_write_32(m_context.pMemory, INITIAL_SP - 4, INITIAL_PC + 16, READ_ONLY);
-	pinkySimStep(&m_context);
+	memory_write_32(INITIAL_SP - 4, INITIAL_PC + 16);
+	step();
 
 	const uint16_t NOP = 0xBF00;
-	memory_write_32(m_context.pMemory, INITIAL_PC + 16, NOP, READ_ONLY);
+	memory_write_32(INITIAL_PC + 16, NOP);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
 /*
 TEST_F(CpuTestHelper, pop_HardFaultFromInvalidMemoryRead)
@@ -86,13 +86,13 @@ TEST_F(CpuTestHelper, pop_HardFaultFromInvalidMemoryRead)
     emitInstruction16("1011110Prrrrrrrr", 0, 1);
     setRegisterValue(SP, 0xFFFFFFFC);
     setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }*/
 /*
 TEST_SIM_ONLY(pop, UnpredictableToPopNoRegisters)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 0);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

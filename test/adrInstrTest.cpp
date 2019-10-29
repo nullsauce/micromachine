@@ -20,14 +20,14 @@ TEST_F(CpuTestHelper, adr_LowestRegisterWithLargestOffset)
 {
 	emitInstruction16("10100dddiiiiiiii", R0, 255);
 	setExpectedRegisterValue(R0, INITIAL_PC + 4 + 255 * 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, adr_HighesttRegisterWithSmallestOffset)
 {
 	emitInstruction16("10100dddiiiiiiii", R7, 0);
 	setExpectedRegisterValue(R7, INITIAL_PC + 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, adr_pcWillNeedToBeWordAlignedBeforeAdd)
@@ -38,5 +38,5 @@ TEST_F(CpuTestHelper, adr_pcWillNeedToBeWordAlignedBeforeAdd)
 	emitInstruction16("10100dddiiiiiiii", R3, 0);
 	setRegisterValue(PC, INITIAL_PC + 2);
 	setExpectedRegisterValue(R3, INITIAL_PC + 4);
-	pinkySimStep(&m_context);
+	step();
 }

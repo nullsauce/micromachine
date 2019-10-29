@@ -1,9 +1,0 @@
-//
-// Created by fla on 17-5-20.
-//
-
-#ifndef MICROMACHINE_PINKYSIM_GLUE_HPP
-#define MICROMACHINE_PINKYSIM_GLUE_HPP
-
-
-#endif //MICROMACHINE_PINKYSIM_GLUE_HPP
