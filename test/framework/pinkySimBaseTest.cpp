@@ -16,11 +16,11 @@ static uint32_t interrupt_handler_address(uint32_t exception_number) {
 	return (100U + offset);
 }
 
-void pinkySimBase::SimpleMemory_SetMemory(IMemory* pMem, uint32_t address, uint32_t value, int readOnly) {
+void pinkySimBase::memory_write_32(IMemory *pMem, uint32_t address, uint32_t value, int readOnly) {
 	_cpu.mem().write32(address, value);
 }
 
-uint32_t pinkySimBase::IMemory_Read32(IMemory* pThis, uint32_t address) {
+uint32_t pinkySimBase::memory_read_32(IMemory *pThis, uint32_t address) {
 	return _cpu.mem().read32(address);
 }
 

@@ -21,7 +21,7 @@ TEST_F(pinkySimBase, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue)
     emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
     setRegisterValue(R7, 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R0, 0xFFFFFFED);
     pinkySimStep(&m_context);
 }
@@ -31,7 +31,7 @@ TEST_F(pinkySimBase, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_Nega
     emitInstruction16("0101011mmmnnnttt", R1, R0, R7);
     setRegisterValue(R0, INITIAL_PC);
     setRegisterValue(R1, 5);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R7, 0xFFFFFFFE);
     pinkySimStep(&m_context);
 }
@@ -41,7 +41,7 @@ TEST_F(pinkySimBase, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_Negat
     emitInstruction16("0101011mmmnnnttt", R0, R7, R4);
     setRegisterValue(R7, INITIAL_PC);
     setRegisterValue(R0, 6);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R4, 0xFFFFFFAD);
     pinkySimStep(&m_context);
 }
@@ -51,7 +51,7 @@ TEST_F(pinkySimBase, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_Nega
     emitInstruction16("0101011mmmnnnttt", R0, R7, R5);
     setRegisterValue(R7, INITIAL_PC);
     setRegisterValue(R0, 7);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R5, 0xFFFFFFBA);
     pinkySimStep(&m_context);
 }
@@ -61,7 +61,7 @@ TEST_F(pinkySimBase, ldrsbRegister_LoadAPositiveValue)
     emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
     setRegisterValue(R7, 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xFFFFFF7F, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xFFFFFF7F, READ_ONLY);
     setExpectedRegisterValue(R0, 0x7F);
     pinkySimStep(&m_context);
 }
