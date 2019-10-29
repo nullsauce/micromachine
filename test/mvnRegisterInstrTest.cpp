@@ -19,36 +19,36 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(pinkySimBase, mvnRegister_UseLowestRegisterForAllArgs)
 {
-    // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-    emitInstruction16("0100001111mmmddd", R0, R0);
-    setExpectedXPSRflags("NzC");
-    setCarry();
-    setExpectedRegisterValue(R0, ~0U);
-    pinkySimStep(&m_context);
+	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
+	emitInstruction16("0100001111mmmddd", R0, R0);
+	setExpectedXPSRflags("NzC");
+	setCarry();
+	setExpectedRegisterValue(R0, ~0U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mvnRegister_UseHigestRegisterForAllArgs)
 {
-    emitInstruction16("0100001111mmmddd", R7, R7);
-    setExpectedXPSRflags("Nzc");
-    clearCarry();
-    setExpectedRegisterValue(R7, ~0x77777777U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001111mmmddd", R7, R7);
+	setExpectedXPSRflags("Nzc");
+	clearCarry();
+	setExpectedRegisterValue(R7, ~0x77777777U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mvnRegister_UseDifferentRegistersForEachArg)
 {
-    emitInstruction16("0100001111mmmddd", R2, R1);
-    setExpectedXPSRflags("Nz");
-    setExpectedRegisterValue(R1, ~0x22222222U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001111mmmddd", R2, R1);
+	setExpectedXPSRflags("Nz");
+	setExpectedRegisterValue(R1, ~0x22222222U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mvnRegister_MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag)
 {
-    emitInstruction16("0100001111mmmddd", R2, R1);
-    setRegisterValue(R2, -1);
-    setExpectedXPSRflags("nZ");
-    setExpectedRegisterValue(R1, 0U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001111mmmddd", R2, R1);
+	setRegisterValue(R2, -1);
+	setExpectedXPSRflags("nZ");
+	setExpectedRegisterValue(R1, 0U);
+	pinkySimStep(&m_context);
 }

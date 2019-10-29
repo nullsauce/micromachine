@@ -19,37 +19,37 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(pinkySimBase, bicRegister_UseLowestRegisterForBothArgs)
 {
-    emitInstruction16("0100001110mmmddd", R0, R0);
-    // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-    setExpectedXPSRflags("nZc");
-    clearCarry();
-    setExpectedRegisterValue(R0, 0);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001110mmmddd", R0, R0);
+	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
+	setExpectedXPSRflags("nZc");
+	clearCarry();
+	setExpectedRegisterValue(R0, 0);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, bicRegister_UseHighestRegisterForBothArgs)
 {
-    emitInstruction16("0100001110mmmddd", R7, R7);
-    setExpectedXPSRflags("nZC");
-    setCarry();
-    setExpectedRegisterValue(R7, 0);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001110mmmddd", R7, R7);
+	setExpectedXPSRflags("nZC");
+	setCarry();
+	setExpectedRegisterValue(R7, 0);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, bicRegister_UseR3andR7)
 {
-    emitInstruction16("0100001110mmmddd", R3, R7);
-    setExpectedXPSRflags("nz");
-    setExpectedRegisterValue(R7, 0x77777777 & ~0x33333333);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001110mmmddd", R3, R7);
+	setExpectedXPSRflags("nz");
+	setExpectedRegisterValue(R7, 0x77777777 & ~0x33333333);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, bicRegister_UseBicToClearLSbit)
 {
-    emitInstruction16("0100001110mmmddd", R6, R1);
-    setRegisterValue(R1, -1);
-    setRegisterValue(R6, 1);
-    setExpectedXPSRflags("Nz");
-    setExpectedRegisterValue(R1, -1U & ~1);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001110mmmddd", R6, R1);
+	setRegisterValue(R1, -1);
+	setRegisterValue(R6, 1);
+	setExpectedXPSRflags("Nz");
+	setExpectedRegisterValue(R1, -1U & ~1);
+	pinkySimStep(&m_context);
 }

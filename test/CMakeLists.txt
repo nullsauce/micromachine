@@ -6,35 +6,35 @@ find_package(Threads)
 set(ALL_TEST_OBJS "")
 
 set(CPU_TESTS_COMMON_FILES
-    framework/pinksim.hpp
-    framework/pinkysim_glue.hpp
-    framework/SimpleMemory_glue.hpp
-    framework/pinkySimBaseTest.hpp
-    framework/pinkySimBaseTest.cpp
-)
+		framework/pinksim.hpp
+		framework/pinkysim_glue.hpp
+		framework/SimpleMemory_glue.hpp
+		framework/pinkySimBaseTest.hpp
+		framework/pinkySimBaseTest.cpp
+		)
 
 macro(declare_test test_name test_files)
-    add_executable(test_of_${test_name} ${test_files})
-    target_include_directories(test_of_${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
-    target_include_directories(test_of_${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
-    target_include_directories(test_of_${test_name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/framework)
-    target_link_libraries(test_of_${test_name} libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
-    # append the test src file to the global test executable
-    list(APPEND ALL_TESTS_SRC ${test_files})
+	add_executable(test_of_${test_name} ${test_files})
+	target_include_directories(test_of_${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
+	target_include_directories(test_of_${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
+	target_include_directories(test_of_${test_name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/framework)
+	target_link_libraries(test_of_${test_name} libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
+	# append the test src file to the global test executable
+	list(APPEND ALL_TESTS_SRC ${test_files})
 endmacro()
 
 set(ALL_TESTS_SRC ${CPU_TESTS_COMMON_FILES})
 
 macro(declare_pinksim_test test_name)
-    # name of the source test file
-    set(TEST_SRC_FILE "${test_name}Test.cpp")
-    add_executable(test_of_${test_name} ${TEST_SRC_FILE} ${CPU_TESTS_COMMON_FILES})
-    target_include_directories(test_of_${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
-    target_include_directories(test_of_${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
-    target_include_directories(test_of_${test_name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/framework)
-    target_link_libraries(test_of_${test_name} libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
-    # append the test src file to the global test executable
-    list(APPEND ALL_TESTS_SRC "${TEST_SRC_FILE}")
+	# name of the source test file
+	set(TEST_SRC_FILE "${test_name}Test.cpp")
+	add_executable(test_of_${test_name} ${TEST_SRC_FILE} ${CPU_TESTS_COMMON_FILES})
+	target_include_directories(test_of_${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
+	target_include_directories(test_of_${test_name} PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
+	target_include_directories(test_of_${test_name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/framework)
+	target_link_libraries(test_of_${test_name} libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
+	# append the test src file to the global test executable
+	list(APPEND ALL_TESTS_SRC "${TEST_SRC_FILE}")
 endmacro()
 
 declare_pinksim_test(adcRegisterInstr)

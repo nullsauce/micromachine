@@ -18,36 +18,36 @@
    Encoding: 011 0 1 Imm:5 Rn:3 Rt:3 */
 TEST_F(pinkySimBase, ldrImmediate_T1UseAMixOfRegistersWithSmallestOffset)
 {
-    emitInstruction16("01101iiiiinnnttt", 0, R7, R0);
-    setRegisterValue(R7, INITIAL_PC + 4);
+	emitInstruction16("01101iiiiinnnttt", 0, R7, R0);
+	setRegisterValue(R7, INITIAL_PC + 4);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R0, 0xBAADFEED);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R0, 0xBAADFEED);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, ldrImmediate_T1UseAnotherMixOfRegistersWithLargestOffset)
 {
-    emitInstruction16("01101iiiiinnnttt", 31, R0, R7);
-    setRegisterValue(R0, INITIAL_PC);
+	emitInstruction16("01101iiiiinnnttt", 31, R0, R7);
+	setRegisterValue(R0, INITIAL_PC);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 31 * 4, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R7, 0xBAADFEED);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R7, 0xBAADFEED);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, ldrImmediate_T1AttemptUnalignedLoad)
 {
-    emitInstruction16("01101iiiiinnnttt", 0, R3, R2);
-    setRegisterValue(R3, INITIAL_PC + 2);
+	emitInstruction16("01101iiiiinnnttt", 0, R3, R2);
+	setRegisterValue(R3, INITIAL_PC + 2);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-    pinkySimStep(&m_context);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, ldrImmediate_T1AttemptLoadFromInvalidAddress)
 {
-    emitInstruction16("01101iiiiinnnttt", 16, R3, R2);
-    setRegisterValue(R3, 0xFFFFFFFC - 16 * 4);
+	emitInstruction16("01101iiiiinnnttt", 16, R3, R2);
+	setRegisterValue(R3, 0xFFFFFFFC - 16 * 4);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-    pinkySimStep(&m_context);
+	pinkySimStep(&m_context);
 }
 
 
@@ -56,20 +56,20 @@ TEST_F(pinkySimBase, ldrImmediate_T1AttemptLoadFromInvalidAddress)
    Encoding: 1001 1 Rt:3 Imm:8 */
 TEST_F(pinkySimBase, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
 {
-    emitInstruction16("10011tttiiiiiiii", R7, 0);
-    setRegisterValue(SP, INITIAL_PC + 1024);
+	emitInstruction16("10011tttiiiiiiii", R7, 0);
+	setRegisterValue(SP, INITIAL_PC + 1024);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R7, 0xBAADFEED);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R7, 0xBAADFEED);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, ldrImmediate_T2UseLowestRegisterWithLargestOffset)
 {
-    emitInstruction16("10011tttiiiiiiii", R0, 255);
-    setRegisterValue(SP, INITIAL_PC + 1024);
+	emitInstruction16("10011tttiiiiiiii", R0, 255);
+	setRegisterValue(SP, INITIAL_PC + 1024);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED, READ_ONLY);
-    setExpectedRegisterValue(R0, 0xBAADFEED);
-    pinkySimStep(&m_context);
+	setExpectedRegisterValue(R0, 0xBAADFEED);
+	pinkySimStep(&m_context);
 }
 /*
 TEST_SIM_ONLY(ldrImmediate, T2AttemptUnalignedLoad)

@@ -18,8 +18,8 @@
    Encoding: 1011 1111 0000 0000 */
 TEST_F(pinkySimBase, nop_BasicTest)
 {
-    emitInstruction16("1011111100000000");
-    pinkySimStep(&m_context);
+	emitInstruction16("1011111100000000");
+	pinkySimStep(&m_context);
 }
 
 

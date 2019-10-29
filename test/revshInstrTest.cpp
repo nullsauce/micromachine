@@ -18,32 +18,32 @@
    Encoding: 1011 1010 11 Rm:3 Rd:3 */
 TEST_F(pinkySimBase, revsh_RevR0toR7)
 {
-    emitInstruction16("1011101011mmmddd", R0, R7);
-    setRegisterValue(R0, 0x12345678);
-    setExpectedRegisterValue(R7, 0x7856);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011101011mmmddd", R0, R7);
+	setRegisterValue(R0, 0x12345678);
+	setExpectedRegisterValue(R7, 0x7856);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, revsh_RevR7toR0)
 {
-    emitInstruction16("1011101011mmmddd", R7, R0);
-    setRegisterValue(R7, 0x12345678);
-    setExpectedRegisterValue(R0, 0x7856);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011101011mmmddd", R7, R0);
+	setRegisterValue(R7, 0x12345678);
+	setExpectedRegisterValue(R0, 0x7856);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, revsh_PositiveValue)
 {
-    emitInstruction16("1011101011mmmddd", R7, R0);
-    setRegisterValue(R7, 0xFF7F);
-    setExpectedRegisterValue(R0, 0x7FFF);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011101011mmmddd", R7, R0);
+	setRegisterValue(R7, 0xFF7F);
+	setExpectedRegisterValue(R0, 0x7FFF);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, revsh_NegativeValue)
 {
-    emitInstruction16("1011101011mmmddd", R7, R0);
-    setRegisterValue(R7, 0x0080);
-    setExpectedRegisterValue(R0, 0xFFFF8000);
-    pinkySimStep(&m_context);
+	emitInstruction16("1011101011mmmddd", R7, R0);
+	setRegisterValue(R7, 0x0080);
+	setExpectedRegisterValue(R0, 0xFFFF8000);
+	pinkySimStep(&m_context);
 }
