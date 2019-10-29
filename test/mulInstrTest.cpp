@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* MUL
    Encoding: 010000 1101 Rn:3 Rdm:3 */
-TEST_F(CpuTestHelper, mul_UseLowestRegisterForAllArgs)
+TEST_F(CpuTestHarness, mul_UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("0100001101nnnddd", R0, R0);
 	setExpectedXPSRflags("nZ");
@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, mul_UseLowestRegisterForAllArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
+TEST_F(CpuTestHarness, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
 {
 	emitInstruction16("0100001101nnnddd", R7, R7);
 	setExpectedXPSRflags("Nz");
@@ -32,7 +32,7 @@ TEST_F(CpuTestHelper, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult
 	step();
 }
 
-TEST_F(CpuTestHelper, mul_UseDifferentRegistersForEachArg)
+TEST_F(CpuTestHarness, mul_UseDifferentRegistersForEachArg)
 {
 	emitInstruction16("0100001101nnnddd", R1, R2);
 	setRegisterValue(R1, 0xA5A5);
@@ -42,7 +42,7 @@ TEST_F(CpuTestHelper, mul_UseDifferentRegistersForEachArg)
 	step();
 }
 
-TEST_F(CpuTestHelper, mul_MultiplyBy16BitMaximumValues)
+TEST_F(CpuTestHarness, mul_MultiplyBy16BitMaximumValues)
 {
 	emitInstruction16("0100001101nnnddd", R1, R2);
 	setRegisterValue(R1, 0xFFFF);

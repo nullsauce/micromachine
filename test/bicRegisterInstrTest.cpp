@@ -11,13 +11,13 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* BIC - Register
    Encoding: 010000 1110 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(CpuTestHelper, bicRegister_UseLowestRegisterForBothArgs)
+TEST_F(CpuTestHarness, bicRegister_UseLowestRegisterForBothArgs)
 {
 	emitInstruction16("0100001110mmmddd", R0, R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -27,7 +27,7 @@ TEST_F(CpuTestHelper, bicRegister_UseLowestRegisterForBothArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, bicRegister_UseHighestRegisterForBothArgs)
+TEST_F(CpuTestHarness, bicRegister_UseHighestRegisterForBothArgs)
 {
 	emitInstruction16("0100001110mmmddd", R7, R7);
 	setExpectedXPSRflags("nZC");
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, bicRegister_UseHighestRegisterForBothArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, bicRegister_UseR3andR7)
+TEST_F(CpuTestHarness, bicRegister_UseR3andR7)
 {
 	emitInstruction16("0100001110mmmddd", R3, R7);
 	setExpectedXPSRflags("nz");
@@ -44,7 +44,7 @@ TEST_F(CpuTestHelper, bicRegister_UseR3andR7)
 	step();
 }
 
-TEST_F(CpuTestHelper, bicRegister_UseBicToClearLSbit)
+TEST_F(CpuTestHarness, bicRegister_UseBicToClearLSbit)
 {
 	emitInstruction16("0100001110mmmddd", R6, R1);
 	setRegisterValue(R1, -1);

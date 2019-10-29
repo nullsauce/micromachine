@@ -11,26 +11,26 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* CMN - Register (Compare Negative)
    Encoding: 010000 1011 Rm:3 Rn:3 */
-TEST_F(CpuTestHelper, cmnRegister_UseLowestRegisterForAllArgs)
+TEST_F(CpuTestHarness, cmnRegister_UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("0100001011mmmnnn", R0, R0);
 	setExpectedXPSRflags("nZcv");
 	step();
 }
 
-TEST_F(CpuTestHelper, cmnRegister_UseHigestRegisterForAllArgs)
+TEST_F(CpuTestHarness, cmnRegister_UseHigestRegisterForAllArgs)
 {
 	emitInstruction16("0100001011mmmnnn", R7, R7);
 	setExpectedXPSRflags("NzcV");
 	step();
 }
 
-TEST_F(CpuTestHelper, cmnRegister_UseDifferentRegistersForEachArg)
+TEST_F(CpuTestHarness, cmnRegister_UseDifferentRegistersForEachArg)
 {
 	emitInstruction16("0100001011mmmnnn", R1, R2);
 	setExpectedXPSRflags("nzcv");
@@ -38,7 +38,7 @@ TEST_F(CpuTestHelper, cmnRegister_UseDifferentRegistersForEachArg)
 }
 
 // Force APSR flags to be set which haven't already been covered above.
-TEST_F(CpuTestHelper, cmnRegister_ForceCarryWithNoOverflow)
+TEST_F(CpuTestHarness, cmnRegister_ForceCarryWithNoOverflow)
 {
 	emitInstruction16("0100001011mmmnnn", R1, R2);
 	setExpectedXPSRflags("nZCv");
@@ -47,7 +47,7 @@ TEST_F(CpuTestHelper, cmnRegister_ForceCarryWithNoOverflow)
 	step();
 }
 
-TEST_F(CpuTestHelper, cmnRegister_ForceCarryAndOverflow)
+TEST_F(CpuTestHarness, cmnRegister_ForceCarryAndOverflow)
 {
 	emitInstruction16("0100001011mmmnnn", R1, R2);
 	setExpectedXPSRflags("nzCV");

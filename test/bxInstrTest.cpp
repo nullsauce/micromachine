@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* BX (Branch and Exchange)
    Encoding: 010001 11 0 Rm:4 (0)(0)(0) */
-TEST_F(CpuTestHelper,
+TEST_F(CpuTestHarness,
 	   bx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
 {
 	emitInstruction16("010001110mmmm000", R0);
@@ -31,7 +31,7 @@ TEST_F(CpuTestHelper,
 	step();
 }
 
-TEST_F(CpuTestHelper, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb)
+TEST_F(CpuTestHarness, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb)
 {
 	emitInstruction16("010001110mmmm000", LR);
 	setRegisterValue(LR, (INITIAL_PC + 16) | 1);

@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* STR - Immediate Encoding T1
    Encoding: 011 0 0 Imm:5 Rn:3 Rt:3 */
-TEST_F(CpuTestHelper, strImmediate_T1UseAMixOfRegistersWithSmallestImmediateOffset)
+TEST_F(CpuTestHarness, strImmediate_T1UseAMixOfRegistersWithSmallestImmediateOffset)
 {
 	emitInstruction16("01100iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
@@ -25,7 +25,7 @@ TEST_F(CpuTestHelper, strImmediate_T1UseAMixOfRegistersWithSmallestImmediateOffs
 	EXPECT_EQ(0x00000000, memory_read_32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHelper, strImmediate_T1UseAnotherMixOfRegistersWithLargestImmediateOffset)
+TEST_F(CpuTestHarness, strImmediate_T1UseAnotherMixOfRegistersWithLargestImmediateOffset)
 {
 	emitInstruction16("01100iiiiinnnttt", 31, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -34,7 +34,7 @@ TEST_F(CpuTestHelper, strImmediate_T1UseAnotherMixOfRegistersWithLargestImmediat
 	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_PC + 31 * 4));
 }
 
-TEST_F(CpuTestHelper, strImmediate_T1AttemptUnalignedStore)
+TEST_F(CpuTestHarness, strImmediate_T1AttemptUnalignedStore)
 {
 	emitInstruction16("01100iiiiinnnttt", 0, R3, R2);
 	setRegisterValue(R3, INITIAL_PC + 2);
@@ -42,7 +42,7 @@ TEST_F(CpuTestHelper, strImmediate_T1AttemptUnalignedStore)
 	step();
 }
 
-TEST_F(CpuTestHelper, strImmediate_T1AttemptStoreToInvalidAddress)
+TEST_F(CpuTestHarness, strImmediate_T1AttemptStoreToInvalidAddress)
 {
 	emitInstruction16("01100iiiiinnnttt", 16, R3, R2);
 	setRegisterValue(R3, 0xFFFFFFFC - 16 * 4);
@@ -54,7 +54,7 @@ TEST_F(CpuTestHelper, strImmediate_T1AttemptStoreToInvalidAddress)
 
 /* STR - Immediate Encoding T2 (SP is base register)
    Encoding: 1001 0 Rt:3 Imm:8 */
-TEST_F(CpuTestHelper, strImmediate_T2HighestRegisterWithSmallestImmediateOffset)
+TEST_F(CpuTestHarness, strImmediate_T2HighestRegisterWithSmallestImmediateOffset)
 {
 	emitInstruction16("10010tttiiiiiiii", R7, 0);
 	setRegisterValue(SP, INITIAL_PC + 1024);
@@ -63,7 +63,7 @@ TEST_F(CpuTestHelper, strImmediate_T2HighestRegisterWithSmallestImmediateOffset)
 	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_PC + 1024));
 }
 
-TEST_F(CpuTestHelper, strImmediate_T2LowestRegisterWithLargestImmediateOffset)
+TEST_F(CpuTestHarness, strImmediate_T2LowestRegisterWithLargestImmediateOffset)
 {
 	emitInstruction16("10010tttiiiiiiii", R0, 255);
 	setRegisterValue(SP, INITIAL_PC + 1024);

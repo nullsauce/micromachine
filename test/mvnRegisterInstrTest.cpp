@@ -11,13 +11,13 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* MVN - Register (MOve Negative)
    Encoding: 010000 1111 Rm:3 Rd:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(CpuTestHelper, mvnRegister_UseLowestRegisterForAllArgs)
+TEST_F(CpuTestHarness, mvnRegister_UseLowestRegisterForAllArgs)
 {
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	emitInstruction16("0100001111mmmddd", R0, R0);
@@ -27,7 +27,7 @@ TEST_F(CpuTestHelper, mvnRegister_UseLowestRegisterForAllArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, mvnRegister_UseHigestRegisterForAllArgs)
+TEST_F(CpuTestHarness, mvnRegister_UseHigestRegisterForAllArgs)
 {
 	emitInstruction16("0100001111mmmddd", R7, R7);
 	setExpectedXPSRflags("Nzc");
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, mvnRegister_UseHigestRegisterForAllArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, mvnRegister_UseDifferentRegistersForEachArg)
+TEST_F(CpuTestHarness, mvnRegister_UseDifferentRegistersForEachArg)
 {
 	emitInstruction16("0100001111mmmddd", R2, R1);
 	setExpectedXPSRflags("Nz");
@@ -44,7 +44,7 @@ TEST_F(CpuTestHelper, mvnRegister_UseDifferentRegistersForEachArg)
 	step();
 }
 
-TEST_F(CpuTestHelper, mvnRegister_MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag)
+TEST_F(CpuTestHarness, mvnRegister_MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag)
 {
 	emitInstruction16("0100001111mmmddd", R2, R1);
 	setRegisterValue(R2, -1);

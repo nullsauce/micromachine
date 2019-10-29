@@ -10,31 +10,31 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
-TEST_F(CpuTestHelper, undefined_Undedfined16BitWithAllZeroesForImmedaite)
+TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllZeroesForImmedaite)
 {
 	emitInstruction16("11011110iiiiiiii", 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
 	step();
 }
 
-TEST_F(CpuTestHelper, undefined_Undedfined16BitWithAllOnesForImmedaite)
+TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllOnesForImmedaite)
 {
 	emitInstruction16("11011110iiiiiiii", -1);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
 	step();
 }
 
-TEST_F(CpuTestHelper, undefined_Undefined32BitWithAllZeroesForImmediate)
+TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllZeroesForImmediate)
 {
 	emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", 0, 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
 	step();
 }
 
-TEST_F(CpuTestHelper, undefined_Undefined32BitWithAllOnesForImmediate)
+TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllOnesForImmediate)
 {
 	emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", -1, -1);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);

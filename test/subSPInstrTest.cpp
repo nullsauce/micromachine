@@ -11,26 +11,26 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* SUB SP Minus Immediate
    Encoding: 1011 0000 1 Imm:7 */
-TEST_F(CpuTestHelper, subSP_SmallestImmediate)
+TEST_F(CpuTestHarness, subSP_SmallestImmediate)
 {
 	emitInstruction16("101100001iiiiiii", 0);
 	setExpectedRegisterValue(SP, INITIAL_SP - 0);
 	step();
 }
 
-TEST_F(CpuTestHelper, subSP_LargestImmediate)
+TEST_F(CpuTestHarness, subSP_LargestImmediate)
 {
 	emitInstruction16("101100001iiiiiii", 127);
 	setExpectedRegisterValue(SP, INITIAL_SP - 127 * 4);
 	step();
 }
 
-TEST_F(CpuTestHelper, subSP_UseIntermediateValues)
+TEST_F(CpuTestHarness, subSP_UseIntermediateValues)
 {
 	emitInstruction16("101100001iiiiiii", 64);
 	setExpectedRegisterValue(SP, INITIAL_SP - 64 * 4);

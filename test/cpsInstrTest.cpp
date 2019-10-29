@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 /* CPS
    Encoding: 1011 0110 011 im:1 (0)(0)(1)(0) */
 
-TEST_F(CpuTestHelper, cps_InterruptEnable)
+TEST_F(CpuTestHarness, cps_InterruptEnable)
 {
 	emitInstruction16("10110110011i0010", 0);
 	PRIMASK |= PRIMASK_PM;
@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, cps_InterruptEnable)
 	EXPECT_FALSE(PRIMASK & PRIMASK_PM);
 }
 
-TEST_F(CpuTestHelper, cps_InterruptDisable)
+TEST_F(CpuTestHarness, cps_InterruptDisable)
 {
 	emitInstruction16("10110110011i0010", 1);
 	PRIMASK &= ~PRIMASK_PM;

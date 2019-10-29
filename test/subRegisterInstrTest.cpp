@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* SUB - Register
    Encoding: 000 11 0 1 Rm:3 Rn:3 Rd:3 */
-TEST_F(CpuTestHelper, subRegister_UseLowestRegisterForAllArgs)
+TEST_F(CpuTestHarness, subRegister_UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("0001101mmmnnnddd", R0, R0, R0);
 	setExpectedXPSRflags("nZCv");
@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, subRegister_UseLowestRegisterForAllArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, subRegister_UseHigestRegisterForAllArgs)
+TEST_F(CpuTestHarness, subRegister_UseHigestRegisterForAllArgs)
 {
 	emitInstruction16("0001101mmmnnnddd", R7, R7, R7);
 	setExpectedXPSRflags("nZCv");
@@ -32,7 +32,7 @@ TEST_F(CpuTestHelper, subRegister_UseHigestRegisterForAllArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, subRegister_UseDifferentRegistersForEachArg)
+TEST_F(CpuTestHarness, subRegister_UseDifferentRegistersForEachArg)
 {
 	emitInstruction16("0001101mmmnnnddd", R1, R2, R0);
 	setExpectedXPSRflags("nzCv");
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper, subRegister_UseDifferentRegistersForEachArg)
 }
 
 // Force APSR flags to be set which haven't already been covered above.
-TEST_F(CpuTestHelper, subRegister_ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
+TEST_F(CpuTestHarness, subRegister_ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
 {
 	emitInstruction16("0001101mmmnnnddd", R1, R0, R2);
 	setExpectedXPSRflags("Nzcv");
@@ -50,7 +50,7 @@ TEST_F(CpuTestHelper, subRegister_ForceCarryClearToIndicateBorrowAndResultWillBe
 	step();
 }
 
-TEST_F(CpuTestHelper, subRegister_ForceNegativeOverflow)
+TEST_F(CpuTestHarness, subRegister_ForceNegativeOverflow)
 {
 	emitInstruction16("0001101mmmnnnddd", R1, R2, R0);
 	setExpectedXPSRflags("nzCV");
@@ -60,7 +60,7 @@ TEST_F(CpuTestHelper, subRegister_ForceNegativeOverflow)
 	step();
 }
 
-TEST_F(CpuTestHelper, subRegister_ForcePositiveOverflow)
+TEST_F(CpuTestHarness, subRegister_ForcePositiveOverflow)
 {
 	emitInstruction16("0001101mmmnnnddd", R1, R2, R0);
 	setExpectedXPSRflags("NzcV");
