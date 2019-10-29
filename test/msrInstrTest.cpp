@@ -11,13 +11,13 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* MSR
    Encoding: 11110 0 1110 0 (0) Rn:4
              10 (0) 0 (1) (0) (0) (0) SYSm:8 */
-TEST_F(CpuTestHelper, msr_ToAPSR)
+TEST_F(CpuTestHarness, msr_ToAPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_APSR);
 	setExpectedXPSRflags("NZCV");
@@ -29,7 +29,7 @@ TEST_F(CpuTestHelper, msr_ToAPSR)
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToIAPSR)
+TEST_F(CpuTestHarness, msr_ToIAPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_IAPSR);
 	setExpectedXPSRflags("NZCV");
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper, msr_ToIAPSR)
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToEAPSR)
+TEST_F(CpuTestHarness, msr_ToEAPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_EAPSR);
 	setExpectedXPSRflags("NZCV");
@@ -53,7 +53,7 @@ TEST_F(CpuTestHelper, msr_ToEAPSR)
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToXPSR)
+TEST_F(CpuTestHarness, msr_ToXPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R0, SYS_XPSR);
 	setExpectedXPSRflags("NZCV");
@@ -65,28 +65,28 @@ TEST_F(CpuTestHelper, msr_ToXPSR)
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToIPSR)
+TEST_F(CpuTestHarness, msr_ToIPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_IPSR);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToEPSR)
+TEST_F(CpuTestHarness, msr_ToEPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_EPSR);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToIEPSR)
+TEST_F(CpuTestHarness, msr_ToIEPSR)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_IEPSR);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToMSP)
+TEST_F(CpuTestHarness, msr_ToMSP)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_MSP);
 	setRegisterValue(R12, INITIAL_PC + 1024 + 2);
@@ -94,14 +94,14 @@ TEST_F(CpuTestHelper, msr_ToMSP)
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_ToPSP)
+TEST_F(CpuTestHarness, msr_ToPSP)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PSP);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
 
-TEST_F(CpuTestHelper, msr_PRIMASKto1)
+TEST_F(CpuTestHarness, msr_PRIMASKto1)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
 	setRegisterValue(R12, 0xFFFFFFFF);
@@ -109,7 +109,7 @@ TEST_F(CpuTestHelper, msr_PRIMASKto1)
 	EXPECT_EQ(1, PRIMASK);
 }
 
-TEST_F(CpuTestHelper, msr_PRIMASKto0)
+TEST_F(CpuTestHarness, msr_PRIMASKto0)
 {
 	emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
 	setRegisterValue(R12, 0xFFFFFFFE);
@@ -117,7 +117,7 @@ TEST_F(CpuTestHelper, msr_PRIMASKto0)
 	EXPECT_EQ(0, PRIMASK);
 }
 /*
-TEST_F(CpuTestHelper, msr_CONTROLIgnored)
+TEST_F(CpuTestHarness, msr_CONTROLIgnored)
 {
     emitInstruction32("111100111000nnnn", "10001000ssssssss", R12, SYS_CONTROL);
     setRegisterValue(R12, 0xFFFFFFFF);

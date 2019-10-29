@@ -11,39 +11,39 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* MOV - Register Encoding 1
    Encoding: 010001 10 D:1 Rm:4 Rd:3
    NOTE: This encoding doesn't update the APSR flags. */
-TEST_F(CpuTestHelper, movRegister_UseLowestRegisterForAllArgs)
+TEST_F(CpuTestHarness, movRegister_UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("01000110dmmmmddd", R0, R0);
 	step();
 }
 
-TEST_F(CpuTestHelper, movRegister_UseHighRegisterForAllArgs)
+TEST_F(CpuTestHarness, movRegister_UseHighRegisterForAllArgs)
 {
 	emitInstruction16("01000110dmmmmddd", LR, LR);
 	step();
 }
 
-TEST_F(CpuTestHelper, movRegister_MoveHighRegisterToLowRegister)
+TEST_F(CpuTestHarness, movRegister_MoveHighRegisterToLowRegister)
 {
 	emitInstruction16("01000110dmmmmddd", R7, R12);
 	setExpectedRegisterValue(R7, 0xCCCCCCCC);
 	step();
 }
 
-TEST_F(CpuTestHelper, movRegister_MoveLowRegisterToLHighRegister)
+TEST_F(CpuTestHarness, movRegister_MoveLowRegisterToLHighRegister)
 {
 	emitInstruction16("01000110dmmmmddd", R12, R7);
 	setExpectedRegisterValue(R12, 0x77777777);
 	step();
 }
 
-TEST_F(CpuTestHelper, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
+TEST_F(CpuTestHarness, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 {
 	emitInstruction16("01000110dmmmmddd", PC, R1);
 	setRegisterValue(R1, INITIAL_PC + 1025);
@@ -51,7 +51,7 @@ TEST_F(CpuTestHelper, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 	step();
 }
 
-TEST_F(CpuTestHelper, movRegister_MoveEvenAddressIntoPC)
+TEST_F(CpuTestHarness, movRegister_MoveEvenAddressIntoPC)
 {
 	emitInstruction16("01000110dmmmmddd", PC, R2);
 	setRegisterValue(R2, INITIAL_PC + 1024);
@@ -59,7 +59,7 @@ TEST_F(CpuTestHelper, movRegister_MoveEvenAddressIntoPC)
 	step();
 }
 
-TEST_F(CpuTestHelper, movRegister_MovePCintoOtherRegister)
+TEST_F(CpuTestHarness, movRegister_MovePCintoOtherRegister)
 {
 	emitInstruction16("01000110dmmmmddd", R3, PC);
 	setExpectedRegisterValue(R3, INITIAL_PC + 4);

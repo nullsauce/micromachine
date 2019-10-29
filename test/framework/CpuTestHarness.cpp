@@ -7,7 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#include "pinkySimBaseTest.hpp"
+#include "CpuTestHarness.hpp"
 
 #define RETURN_TO_THREAD_FROM_SP_MAIN 0xFFFFFFF9
 
@@ -17,38 +17,38 @@ static uint32_t interrupt_handler_address(uint32_t exception_number)
 	return (100U + offset);
 }
 
-void CpuTestHelper::memory_write_32(uint32_t address, uint32_t value)
+void CpuTestHarness::memory_write_32(uint32_t address, uint32_t value)
 {
 	_cpu.mem().write32(address, value);
 }
 
-uint32_t CpuTestHelper::memory_read_32(uint32_t address)
+uint32_t CpuTestHarness::memory_read_32(uint32_t address)
 {
 	return _cpu.mem().read32(address);
 }
 
-void CpuTestHelper::step()
+void CpuTestHarness::step()
 {
 	// unused method.
 	// here to satisfy pinkysim test files
 	pinkySimStep();
 }
 
-void CpuTestHelper::setup()
+void CpuTestHarness::setup()
 {
 	// unused method.
 	// here to satisfy pinkysim test files
 	assert(false);
 }
 
-void CpuTestHelper::teardown()
+void CpuTestHarness::teardown()
 {
 	// unused method.
 	// here to satisfy pinkysim test files
 	assert(false);
 }
 
-void CpuTestHelper::SetUp()
+void CpuTestHarness::SetUp()
 {
 
 	// allocate memory
@@ -60,7 +60,7 @@ void CpuTestHelper::SetUp()
 	initContext();
 }
 
-void CpuTestHelper::initContext()
+void CpuTestHarness::initContext()
 {
 
 	// zero memory
@@ -126,17 +126,17 @@ void CpuTestHelper::initContext()
 
 }
 
-void CpuTestHelper::TearDown()
+void CpuTestHarness::TearDown()
 {
 
 }
 
-void CpuTestHelper::setExpectedStackGrowthSinceBeginning(int growth)
+void CpuTestHarness::setExpectedStackGrowthSinceBeginning(int growth)
 {
 	setExpectedSPMain(INITIAL_SP - growth);
 }
 
-void CpuTestHelper::setExpectedExceptionTaken(int exceptionNumber)
+void CpuTestHarness::setExpectedExceptionTaken(int exceptionNumber)
 {
 	setExpectedXPSRflags("T");
 	setExpectedStepReturn(exceptionNumber);
@@ -148,17 +148,17 @@ void CpuTestHelper::setExpectedExceptionTaken(int exceptionNumber)
 	setExpectedRegisterValue(PC, interrupt_handler_address(exceptionNumber));
 }
 
-void CpuTestHelper::setExpectedStepReturn(int expectedStepReturn)
+void CpuTestHarness::setExpectedStepReturn(int expectedStepReturn)
 {
 	m_expectedStepReturn = expectedStepReturn;
 }
 
-void CpuTestHelper::setExpectedSPMain(uint32_t sp)
+void CpuTestHarness::setExpectedSPMain(uint32_t sp)
 {
 	m_expectedSPmain = sp;
 }
 
-void CpuTestHelper::setExpectedXPSRflags(const char *pExpectedFlags)
+void CpuTestHarness::setExpectedXPSRflags(const char *pExpectedFlags)
 {
 	// Remember what expected APSR flags should be after instruction execution and flip initial flag state to make
 	// sure that simular correctly flips the state and doesn't just get lucky to match a pre-existing condition.
@@ -219,12 +219,12 @@ void CpuTestHelper::setExpectedXPSRflags(const char *pExpectedFlags)
 
 }
 
-void CpuTestHelper::setExpectedIPSR(uint32_t expectedValue)
+void CpuTestHarness::setExpectedIPSR(uint32_t expectedValue)
 {
 	m_expectedIPSR = expectedValue;
 }
 
-void CpuTestHelper::setExpectedRegisterValue(int index, uint32_t expectedValue)
+void CpuTestHarness::setExpectedRegisterValue(int index, uint32_t expectedValue)
 {
 	assert (index >= 0 && index <= PC);
 
@@ -238,7 +238,7 @@ void CpuTestHelper::setExpectedRegisterValue(int index, uint32_t expectedValue)
 		m_expectedRegisterValues[index] = expectedValue;
 }
 
-void CpuTestHelper::setRegisterValue(int index, uint32_t value)
+void CpuTestHarness::setRegisterValue(int index, uint32_t value)
 {
 	assert (index >= 0 && index <= PC);
 
@@ -253,7 +253,7 @@ void CpuTestHelper::setRegisterValue(int index, uint32_t value)
 }
 
 
-void CpuTestHelper::emitInstruction16(const char *pEncoding, ...)
+void CpuTestHarness::emitInstruction16(const char *pEncoding, ...)
 {
 	va_list valist;
 
@@ -262,7 +262,7 @@ void CpuTestHelper::emitInstruction16(const char *pEncoding, ...)
 	va_end(valist);
 }
 
-void CpuTestHelper::emitInstruction32(const char *pEncoding1, const char *pEncoding2, ...)
+void CpuTestHarness::emitInstruction32(const char *pEncoding1, const char *pEncoding2, ...)
 {
 	va_list valist;
 
@@ -274,7 +274,7 @@ void CpuTestHelper::emitInstruction32(const char *pEncoding1, const char *pEncod
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 }
 
-void CpuTestHelper::emitInstruction16Varg(const char *pEncoding, va_list valist)
+void CpuTestHarness::emitInstruction16Varg(const char *pEncoding, va_list valist)
 {
 	uint16_t instr = 0;
 	size_t i = 0;
@@ -342,7 +342,7 @@ void CpuTestHelper::emitInstruction16Varg(const char *pEncoding, va_list valist)
 	m_emitAddress += 2;
 }
 
-void CpuTestHelper::pinkySimStep()
+void CpuTestHarness::pinkySimStep()
 {
 	_cpu.regs().primask_register() = PRIMASK;
 	_cpu.step();
@@ -352,7 +352,7 @@ void CpuTestHelper::pinkySimStep()
 	PRIMASK = _cpu.regs().primask_register();
 }
 
-void CpuTestHelper::validateSignaledException()
+void CpuTestHarness::validateSignaledException()
 {
 	if (PINKYSIM_STEP_HARDFAULT == m_expectedStepReturn) {
 		EXPECT_TRUE(_cpu.exceptions().is_active(exception_number::ex_name::HARDFAULT));
@@ -361,7 +361,7 @@ void CpuTestHelper::validateSignaledException()
 	}
 }
 
-void CpuTestHelper::validateXPSR()
+void CpuTestHarness::validateXPSR()
 {
 
 	char expectedFlagsStr[6] = {
@@ -389,7 +389,7 @@ void CpuTestHelper::validateXPSR()
 	EXPECT_EQ(m_expectedIPSR, _cpu.regs().xpsr_register() & IPSR_MASK);
 }
 
-void CpuTestHelper::validateRegisters()
+void CpuTestHarness::validateRegisters()
 {
 	for (int i = 0; i < 13; i++)
 		EXPECT_EQ(m_expectedRegisterValues[i], _cpu.regs().get(i));
@@ -399,47 +399,47 @@ void CpuTestHelper::validateRegisters()
 	EXPECT_EQ(m_expectedPC, _cpu.regs().get_pc());
 }
 
-void CpuTestHelper::setCarry()
+void CpuTestHarness::setCarry()
 {
 	_cpu.regs().app_status_register().write_carry_flag(true);
 }
 
-void CpuTestHelper::clearCarry()
+void CpuTestHarness::clearCarry()
 {
 	_cpu.regs().app_status_register().write_carry_flag(false);
 }
 
-void CpuTestHelper::setZero()
+void CpuTestHarness::setZero()
 {
 	_cpu.regs().app_status_register().write_zero_flag(true);
 }
 
-void CpuTestHelper::clearZero()
+void CpuTestHarness::clearZero()
 {
 	_cpu.regs().app_status_register().write_zero_flag(false);
 }
 
-void CpuTestHelper::setNegative()
+void CpuTestHarness::setNegative()
 {
 	_cpu.regs().app_status_register().write_neg_flag(true);
 }
 
-void CpuTestHelper::clearNegative()
+void CpuTestHarness::clearNegative()
 {
 	_cpu.regs().app_status_register().write_neg_flag(false);
 }
 
-void CpuTestHelper::setOverflow()
+void CpuTestHarness::setOverflow()
 {
 	_cpu.regs().app_status_register().write_overflow_flag(true);
 }
 
-void CpuTestHelper::clearOverflow()
+void CpuTestHarness::clearOverflow()
 {
 	_cpu.regs().app_status_register().write_overflow_flag(false);
 }
 
-void CpuTestHelper::setIPSR(uint32_t ipsr)
+void CpuTestHarness::setIPSR(uint32_t ipsr)
 {
 	_cpu.regs().xpsr_register() = (_cpu.regs().xpsr_register() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
 }

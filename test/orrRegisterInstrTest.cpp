@@ -11,13 +11,13 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* ORR - Register
    Encoding: 010000 1100 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(CpuTestHelper, orrRegister_UseLowestRegisterForBothArgs)
+TEST_F(CpuTestHarness, orrRegister_UseLowestRegisterForBothArgs)
 {
 	emitInstruction16("0100001100mmmddd", R0, R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -27,7 +27,7 @@ TEST_F(CpuTestHelper, orrRegister_UseLowestRegisterForBothArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, orrRegister_UseHighestRegisterForBothArgs)
+TEST_F(CpuTestHarness, orrRegister_UseHighestRegisterForBothArgs)
 {
 	emitInstruction16("0100001100mmmddd", R7, R7);
 	setExpectedXPSRflags("nzC");
@@ -35,7 +35,7 @@ TEST_F(CpuTestHelper, orrRegister_UseHighestRegisterForBothArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, orrRegister_OrR3andR7)
+TEST_F(CpuTestHarness, orrRegister_OrR3andR7)
 {
 	emitInstruction16("0100001100mmmddd", R3, R7);
 	setExpectedXPSRflags("nz");
@@ -43,7 +43,7 @@ TEST_F(CpuTestHelper, orrRegister_OrR3andR7)
 	step();
 }
 
-TEST_F(CpuTestHelper, orrRegister_UseOrToTurnOnNegativeSignBit)
+TEST_F(CpuTestHarness, orrRegister_UseOrToTurnOnNegativeSignBit)
 {
 	emitInstruction16("0100001100mmmddd", R7, R0);
 	setRegisterValue(R0, 0x7FFFFFFF);
@@ -53,7 +53,7 @@ TEST_F(CpuTestHelper, orrRegister_UseOrToTurnOnNegativeSignBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, orrRegister_HaveAndResultNotBeSameAsEitherSource)
+TEST_F(CpuTestHarness, orrRegister_HaveAndResultNotBeSameAsEitherSource)
 {
 	emitInstruction16("0100001100mmmddd", R0, R7);
 	setRegisterValue(R0, 0x12345678);

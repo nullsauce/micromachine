@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* LSR - Register (Logical Shift Right)
    Encoding: 010000 0011 Rm:3 Rdn:3 */
-TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by1_CarryOutFromLowestBit)
+TEST_F(CpuTestHarness, lsrRegister_ShiftValue1by1_CarryOutFromLowestBit)
 {
 	emitInstruction16("0100000011mmmddd", R0, R7);
 	setExpectedXPSRflags("nZC");
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by1_CarryOutFromLowestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by0_MinimumShift_CarryUnmodified)
+TEST_F(CpuTestHarness, lsrRegister_ShiftValue1by0_MinimumShift_CarryUnmodified)
 {
 	emitInstruction16("0100000011mmmddd", R0, R7);
 	setExpectedXPSRflags("nzc");
@@ -37,7 +37,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftValue1by0_MinimumShift_CarryUnmodified)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrRegister_ShiftValue2by1_NoCarry)
+TEST_F(CpuTestHarness, lsrRegister_ShiftValue2by1_NoCarry)
 {
 	emitInstruction16("0100000011mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
@@ -47,7 +47,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftValue2by1_NoCarry)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy31)
+TEST_F(CpuTestHarness, lsrRegister_ShiftNegativeValueBy31)
 {
 	emitInstruction16("0100000011mmmddd", R3, R2);
 	setExpectedXPSRflags("nzC");
@@ -57,7 +57,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy31)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy32_CarryOutFromHighestBit)
+TEST_F(CpuTestHarness, lsrRegister_ShiftNegativeValueBy32_CarryOutFromHighestBit)
 {
 	emitInstruction16("0100000011mmmddd", R7, R0);
 	setExpectedXPSRflags("nZC");
@@ -67,7 +67,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy32_CarryOutFromHighestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy33_ResultIsZero_CarryClear)
+TEST_F(CpuTestHarness, lsrRegister_ShiftNegativeValueBy33_ResultIsZero_CarryClear)
 {
 	emitInstruction16("0100000011mmmddd", R3, R2);
 	setExpectedXPSRflags("nZc");
@@ -77,7 +77,7 @@ TEST_F(CpuTestHelper, lsrRegister_ShiftNegativeValueBy33_ResultIsZero_CarryClear
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrRegister_MaximumShiftOf255_ResultIsZero_CarryClear)
+TEST_F(CpuTestHarness, lsrRegister_MaximumShiftOf255_ResultIsZero_CarryClear)
 {
 	emitInstruction16("0100000011mmmddd", R3, R2);
 	setExpectedXPSRflags("nZc");
@@ -87,7 +87,7 @@ TEST_F(CpuTestHelper, lsrRegister_MaximumShiftOf255_ResultIsZero_CarryClear)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrRegister_ShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
+TEST_F(CpuTestHarness, lsrRegister_ShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
 {
 	emitInstruction16("0100000011mmmddd", R7, R0);
 	setExpectedXPSRflags("NzC");

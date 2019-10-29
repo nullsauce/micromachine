@@ -11,7 +11,7 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 // Immediate values used for shift amount in tests.
@@ -21,7 +21,7 @@
 
 /* ASR - Immediate (Arithmetic Shift Right)
    Encoding: 000 10 imm:5 Rm:3 Rd:3 */
-TEST_F(CpuTestHelper, asrImmediate_ShiftNegativeNumberBy1_Shift0OutFromLowestBit)
+TEST_F(CpuTestHarness, asrImmediate_ShiftNegativeNumberBy1_Shift0OutFromLowestBit)
 {
 	emitInstruction16("00010iiiiimmmddd", IMM_1, R0, R7);
 	setRegisterValue(R0, 0x80000000U);
@@ -30,7 +30,7 @@ TEST_F(CpuTestHelper, asrImmediate_ShiftNegativeNumberBy1_Shift0OutFromLowestBit
 	step();
 }
 
-TEST_F(CpuTestHelper, asrImmediate_ShiftPositiveNumberBy1_Shift1OutFromLowestBit)
+TEST_F(CpuTestHarness, asrImmediate_ShiftPositiveNumberBy1_Shift1OutFromLowestBit)
 {
 	emitInstruction16("00010iiiiimmmddd", IMM_1, R7, R0);
 	setRegisterValue(R7, 0x7FFFFFFFU);
@@ -39,7 +39,7 @@ TEST_F(CpuTestHelper, asrImmediate_ShiftPositiveNumberBy1_Shift1OutFromLowestBit
 	step();
 }
 
-TEST_F(CpuTestHelper, asrImmediate_NegativeNumberBy32_Shift1OutFromHighestBit)
+TEST_F(CpuTestHarness, asrImmediate_NegativeNumberBy32_Shift1OutFromHighestBit)
 {
 	emitInstruction16("00010iiiiimmmddd", IMM_32, R0, R0);
 	setRegisterValue(R0, 0x80000000U);
@@ -48,7 +48,7 @@ TEST_F(CpuTestHelper, asrImmediate_NegativeNumberBy32_Shift1OutFromHighestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrImmediate_PositiveNumberBy32_Shift0FromHighestBit)
+TEST_F(CpuTestHarness, asrImmediate_PositiveNumberBy32_Shift0FromHighestBit)
 {
 	emitInstruction16("00010iiiiimmmddd", IMM_32, R1, R6);
 	setRegisterValue(R1, 0x7FFFFFFFU);
@@ -57,7 +57,7 @@ TEST_F(CpuTestHelper, asrImmediate_PositiveNumberBy32_Shift0FromHighestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrImmediate_R1by1ToR7)
+TEST_F(CpuTestHarness, asrImmediate_R1by1ToR7)
 {
 	emitInstruction16("00010iiiiimmmddd", IMM_1, R1, R7);
 	setExpectedXPSRflags("nzC");
@@ -65,7 +65,7 @@ TEST_F(CpuTestHelper, asrImmediate_R1by1ToR7)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrImmediate_R7by1ToR2)
+TEST_F(CpuTestHarness, asrImmediate_R7by1ToR2)
 {
 	emitInstruction16("00010iiiiimmmddd", IMM_1, R7, R2);
 	setExpectedXPSRflags("nzC");
@@ -73,7 +73,7 @@ TEST_F(CpuTestHelper, asrImmediate_R7by1ToR2)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrImmediate_R0by1)
+TEST_F(CpuTestHarness, asrImmediate_R0by1)
 {
 	emitInstruction16("00010iiiiimmmddd", IMM_1, R0, R0);
 	setExpectedXPSRflags("nZc");

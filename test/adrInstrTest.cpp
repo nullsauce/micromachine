@@ -11,26 +11,26 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* ADR (ADDress of label)
    Encoding: 1010 0 Rd:3 Imm:8 */
-TEST_F(CpuTestHelper, adr_LowestRegisterWithLargestOffset)
+TEST_F(CpuTestHarness, adr_LowestRegisterWithLargestOffset)
 {
 	emitInstruction16("10100dddiiiiiiii", R0, 255);
 	setExpectedRegisterValue(R0, INITIAL_PC + 4 + 255 * 4);
 	step();
 }
 
-TEST_F(CpuTestHelper, adr_HighesttRegisterWithSmallestOffset)
+TEST_F(CpuTestHarness, adr_HighesttRegisterWithSmallestOffset)
 {
 	emitInstruction16("10100dddiiiiiiii", R7, 0);
 	setExpectedRegisterValue(R7, INITIAL_PC + 4);
 	step();
 }
 
-TEST_F(CpuTestHelper, adr_pcWillNeedToBeWordAlignedBeforeAdd)
+TEST_F(CpuTestHarness, adr_pcWillNeedToBeWordAlignedBeforeAdd)
 {
 	// Emit UNDEFINED 16-bit instruction.
 	emitInstruction16("1101111000000000");

@@ -11,13 +11,13 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* EOR - Register
    Encoding: 010000 0001 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(CpuTestHelper, eorRegister_UseLowestRegisterForBothArgs)
+TEST_F(CpuTestHarness, eorRegister_UseLowestRegisterForBothArgs)
 {
 	emitInstruction16("0100000001mmmddd", R0, R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -27,7 +27,7 @@ TEST_F(CpuTestHelper, eorRegister_UseLowestRegisterForBothArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, eorRegister_UseHighestRegisterForBothArgs)
+TEST_F(CpuTestHarness, eorRegister_UseHighestRegisterForBothArgs)
 {
 	emitInstruction16("0100000001mmmddd", R7, R7);
 	setExpectedXPSRflags("nZC");
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, eorRegister_UseHighestRegisterForBothArgs)
 	step();
 }
 
-TEST_F(CpuTestHelper, eorRegister_XorR3andR7)
+TEST_F(CpuTestHarness, eorRegister_XorR3andR7)
 {
 	emitInstruction16("0100000001mmmddd", R3, R7);
 	setExpectedXPSRflags("nzc");
@@ -45,7 +45,7 @@ TEST_F(CpuTestHelper, eorRegister_XorR3andR7)
 	step();
 }
 
-TEST_F(CpuTestHelper, eorRegister_UseXorToJustFlipNegativeSignBitOn)
+TEST_F(CpuTestHarness, eorRegister_UseXorToJustFlipNegativeSignBitOn)
 {
 	emitInstruction16("0100000001mmmddd", R6, R3);
 	setRegisterValue(R6, 0x80000000);

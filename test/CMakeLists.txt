@@ -6,9 +6,8 @@ find_package(Threads)
 set(ALL_TEST_OBJS "")
 
 set(CPU_TESTS_COMMON_FILES
-	framework/pinksim.hpp
-	framework/pinkySimBaseTest.hpp
-	framework/pinkySimBaseTest.cpp
+		framework/CpuTestHarness.hpp
+		framework/CpuTestHarness.cpp
 )
 
 macro(declare_test test_name test_files)
