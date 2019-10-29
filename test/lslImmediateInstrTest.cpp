@@ -11,7 +11,7 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.h"
+#include "framework/pinkySimBaseTest.hpp"
 
 // Immediate values used for shift amount in tests.
 #define IMM_0  0

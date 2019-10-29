@@ -11,7 +11,7 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.h"
+#include "framework/pinkySimBaseTest.hpp"
 
 TEST_GROUP_BASE(mul, pinkySimBase)
 {
@@ -61,6 +61,6 @@ PINKY_TEST(mul, MultiplyBy16BitMaximumValues)
     setRegisterValue(R1, 0xFFFF);
     setRegisterValue(R2, 0xFFFF);
     setExpectedXPSRflags("Nz");
-    setExpectedRegisterValue(R2, 0xFFFF * 0xFFFF);
+    setExpectedRegisterValue(R2, 0xFFFE0001);
     pinkySimStep(&m_context);
 }
