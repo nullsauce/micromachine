@@ -65,14 +65,14 @@ TEST_F(CpuTestHarness, stm_HardFaultFromInvalidMemoryWrite)
 {
 	emitInstruction16("11000nnnrrrrrrrr", R0, 1 << 0);
 	setRegisterValue(R0, 0xFFFFFFFC);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 /*
 TEST_SIM_ONLY(stm, UnpredictableToPushNoRegisters)
 {
     emitInstruction16("11000nnnrrrrrrrr", R0, 0);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
@@ -81,7 +81,7 @@ TEST_SIM_ONLY(stm, UnpredictableToPushWritebackRegisterWhichIsntFirstSaved)
 {
     emitInstruction16("11000nnnrrrrrrrr", R7, 0xFF);
     setRegisterValue(R7, INITIAL_PC + 16);
-    setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
+    setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
 }*/
