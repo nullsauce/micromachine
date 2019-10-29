@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(subRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* SUB - Register
    Encoding: 000 11 0 1 Rm:3 Rn:3 Rd:3 */
-PINKY_TEST(subRegister, UseLowestRegisterForAllArgs)
+TEST_F(pinkySimBase, subRegister_UseLowestRegisterForAllArgs)
 {
     emitInstruction16("0001101mmmnnnddd", R0, R0, R0);
     setExpectedXPSRflags("nZCv");
@@ -37,7 +24,7 @@ PINKY_TEST(subRegister, UseLowestRegisterForAllArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subRegister, UseHigestRegisterForAllArgs)
+TEST_F(pinkySimBase, subRegister_UseHigestRegisterForAllArgs)
 {
     emitInstruction16("0001101mmmnnnddd", R7, R7, R7);
     setExpectedXPSRflags("nZCv");
@@ -45,7 +32,7 @@ PINKY_TEST(subRegister, UseHigestRegisterForAllArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subRegister, UseDifferentRegistersForEachArg)
+TEST_F(pinkySimBase, subRegister_UseDifferentRegistersForEachArg)
 {
     emitInstruction16("0001101mmmnnnddd", R1, R2, R0);
     setExpectedXPSRflags("nzCv");
@@ -54,7 +41,7 @@ PINKY_TEST(subRegister, UseDifferentRegistersForEachArg)
 }
 
 // Force APSR flags to be set which haven't already been covered above.
-PINKY_TEST(subRegister, ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
+TEST_F(pinkySimBase, subRegister_ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
 {
     emitInstruction16("0001101mmmnnnddd", R1, R0, R2);
     setExpectedXPSRflags("Nzcv");
@@ -63,7 +50,7 @@ PINKY_TEST(subRegister, ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subRegister, ForceNegativeOverflow)
+TEST_F(pinkySimBase, subRegister_ForceNegativeOverflow)
 {
     emitInstruction16("0001101mmmnnnddd", R1, R2, R0);
     setExpectedXPSRflags("nzCV");
@@ -73,7 +60,7 @@ PINKY_TEST(subRegister, ForceNegativeOverflow)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subRegister, ForcePositiveOverflow)
+TEST_F(pinkySimBase, subRegister_ForcePositiveOverflow)
 {
     emitInstruction16("0001101mmmnnnddd", R1, R2, R0);
     setExpectedXPSRflags("NzcV");

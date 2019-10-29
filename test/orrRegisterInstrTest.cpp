@@ -13,24 +13,11 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(orrRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* ORR - Register
    Encoding: 010000 1100 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-PINKY_TEST(orrRegister, UseLowestRegisterForBothArgs)
+TEST_F(pinkySimBase, orrRegister_UseLowestRegisterForBothArgs)
 {
     emitInstruction16("0100001100mmmddd", R0, R0);
     // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -40,7 +27,7 @@ PINKY_TEST(orrRegister, UseLowestRegisterForBothArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(orrRegister, UseHighestRegisterForBothArgs)
+TEST_F(pinkySimBase, orrRegister_UseHighestRegisterForBothArgs)
 {
     emitInstruction16("0100001100mmmddd", R7, R7);
     setExpectedXPSRflags("nzC");
@@ -48,7 +35,7 @@ PINKY_TEST(orrRegister, UseHighestRegisterForBothArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(orrRegister, OrR3andR7)
+TEST_F(pinkySimBase, orrRegister_OrR3andR7)
 {
     emitInstruction16("0100001100mmmddd", R3, R7);
     setExpectedXPSRflags("nz");
@@ -56,7 +43,7 @@ PINKY_TEST(orrRegister, OrR3andR7)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(orrRegister, UseOrToTurnOnNegativeSignBit)
+TEST_F(pinkySimBase, orrRegister_UseOrToTurnOnNegativeSignBit)
 {
     emitInstruction16("0100001100mmmddd", R7, R0);
     setRegisterValue(R0, 0x7FFFFFFF);
@@ -66,7 +53,7 @@ PINKY_TEST(orrRegister, UseOrToTurnOnNegativeSignBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(orrRegister, HaveAndResultNotBeSameAsEitherSource)
+TEST_F(pinkySimBase, orrRegister_HaveAndResultNotBeSameAsEitherSource)
 {
     emitInstruction16("0100001100mmmddd", R0, R7);
     setRegisterValue(R0, 0x12345678);

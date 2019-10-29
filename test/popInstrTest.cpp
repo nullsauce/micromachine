@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(pop, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* POP
    Encoding: 1011 1 10 P:1 RegisterList:8 */
-PINKY_TEST(pop, JustPopPC)
+TEST_F(pinkySimBase, pop_JustPopPC)
 {
     emitInstruction16("1011110Prrrrrrrr", 1, 0);
     setRegisterValue(SP, INITIAL_SP - 4);
@@ -39,7 +26,7 @@ PINKY_TEST(pop, JustPopPC)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(pop, JustPopR0)
+TEST_F(pinkySimBase, pop_JustPopR0)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 1);
     setRegisterValue(SP, INITIAL_SP - 4);
@@ -49,7 +36,7 @@ PINKY_TEST(pop, JustPopR0)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(pop, JustPopR7)
+TEST_F(pinkySimBase, pop_JustPopR7)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, (1 << 7));
     setRegisterValue(SP, INITIAL_SP - 4);
@@ -59,7 +46,7 @@ PINKY_TEST(pop, JustPopR7)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(pop, PopAll)
+TEST_F(pinkySimBase, pop_PopAll)
 {
     emitInstruction16("1011110Prrrrrrrr", 1, 0xFF);
     setRegisterValue(SP, INITIAL_SP - 4 * 9);
@@ -78,7 +65,7 @@ PINKY_TEST(pop, PopAll)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(pop, PopToSetPCToEvenAddressWhichGeneratesHardFault)
+TEST_F(pinkySimBase, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 {
     emitInstruction16("1011110Prrrrrrrr", 1, 0);
     setExpectedXPSRflags("t");
@@ -94,7 +81,7 @@ PINKY_TEST(pop, PopToSetPCToEvenAddressWhichGeneratesHardFault)
     pinkySimStep(&m_context);
 }
 /*
-PINKY_TEST(pop, HardFaultFromInvalidMemoryRead)
+TEST_F(pinkySimBase, pop_HardFaultFromInvalidMemoryRead)
 {
     emitInstruction16("1011110Prrrrrrrr", 0, 1);
     setRegisterValue(SP, 0xFFFFFFFC);

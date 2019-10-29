@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(ldrLiteral, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* LDR - Literal
    Encoding: 01001 Rt:3 Imm:8 */
-PINKY_TEST(ldrLiteral, LoadOffset0IntoHighestRegister)
+TEST_F(pinkySimBase, ldrLiteral_LoadOffset0IntoHighestRegister)
 {
     emitInstruction16("01001tttiiiiiiii", R7, 0);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
@@ -37,7 +24,7 @@ PINKY_TEST(ldrLiteral, LoadOffset0IntoHighestRegister)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrLiteral, LoadOffset0IntoHighestRegisterNot4ByteAligned)
+TEST_F(pinkySimBase, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
 {
     // Emit UNDEFINED 16-bit instruction.
     emitInstruction16("1101111000000000");
@@ -50,7 +37,7 @@ PINKY_TEST(ldrLiteral, LoadOffset0IntoHighestRegisterNot4ByteAligned)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrLiteral, LoadMaximumOffsetIntoLowestRegister)
+TEST_F(pinkySimBase, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
 {
     emitInstruction16("01001tttiiiiiiii", R0, 255);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4 + 255*4, 0xBAADFEED, READ_ONLY);
@@ -58,7 +45,7 @@ PINKY_TEST(ldrLiteral, LoadMaximumOffsetIntoLowestRegister)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrLiteral, AttemptToLoadFromInvalidAddress)
+TEST_F(pinkySimBase, ldrLiteral_AttemptToLoadFromInvalidAddress)
 {
     m_emitAddress = INITIAL_SP - 128;
     setRegisterValue(PC, INITIAL_SP - 128);

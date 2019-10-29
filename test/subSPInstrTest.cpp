@@ -13,37 +13,24 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(subSP, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* SUB SP Minus Immediate
    Encoding: 1011 0000 1 Imm:7 */
-PINKY_TEST(subSP, SmallestImmediate)
+TEST_F(pinkySimBase, subSP_SmallestImmediate)
 {
     emitInstruction16("101100001iiiiiii", 0);
     setExpectedRegisterValue(SP, INITIAL_SP - 0);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subSP, LargestImmediate)
+TEST_F(pinkySimBase, subSP_LargestImmediate)
 {
     emitInstruction16("101100001iiiiiii", 127);
     setExpectedRegisterValue(SP, INITIAL_SP - 127 * 4);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(subSP, UseIntermediateValues)
+TEST_F(pinkySimBase, subSP_UseIntermediateValues)
 {
     emitInstruction16("101100001iiiiiii", 64);
     setExpectedRegisterValue(SP, INITIAL_SP - 64 * 4);

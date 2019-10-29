@@ -13,30 +13,17 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(dmb, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* DMB
    Encoding: 11110 0 111 01 1 (1)(1)(1)(1)
              10 (0) 0 (1)(1)(1)(1) 0101 option:4 */
-PINKY_TEST(dmb, OptionSetTo15)
+TEST_F(pinkySimBase, dmb_OptionSetTo15)
 {
     emitInstruction32("1111001110111111", "100011110101oooo", 15);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(dmb, OptionSetTo0)
+TEST_F(pinkySimBase, dmb_OptionSetTo0)
 {
     emitInstruction32("1111001110111111", "100011110101oooo", 0);
     pinkySimStep(&m_context);

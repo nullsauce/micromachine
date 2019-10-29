@@ -13,44 +13,31 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(cmpImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* CMP - Immediate
    Encoding: 001 01 Rn:3 Imm:8 */
-PINKY_TEST(cmpImmediate, CompareLowestRegisterToEqualValue)
+TEST_F(pinkySimBase, cmpImmediate_CompareLowestRegisterToEqualValue)
 {
     emitInstruction16("00101nnniiiiiiii", R0, 0);
     setExpectedXPSRflags("nZCv");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpImmediate, CompareHighestRegisterToImmediateWhichIsSmaller)
+TEST_F(pinkySimBase, cmpImmediate_CompareHighestRegisterToImmediateWhichIsSmaller)
 {
     emitInstruction16("00101nnniiiiiiii", R7, 127);
     setExpectedXPSRflags("nzCv");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpImmediate, CompareRegisterToLargestImmediateWhichIsLarger)
+TEST_F(pinkySimBase, cmpImmediate_CompareRegisterToLargestImmediateWhichIsLarger)
 {
     emitInstruction16("00101nnniiiiiiii", R0, 255);
     setExpectedXPSRflags("Nzcv");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(cmpImmediate, CompareRegisterToImmediateWhichWillGenerateNegativeOverflow)
+TEST_F(pinkySimBase, cmpImmediate_CompareRegisterToImmediateWhichWillGenerateNegativeOverflow)
 {
     emitInstruction16("00101nnniiiiiiii", R3, 1);
     setRegisterValue(R3, 0x80000000);

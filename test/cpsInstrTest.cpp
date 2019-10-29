@@ -13,24 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(cps, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
-
 /* CPS
    Encoding: 1011 0110 011 im:1 (0)(0)(1)(0) */
 
-PINKY_TEST(cps, InterruptEnable)
+TEST_F(pinkySimBase, cps_InterruptEnable)
 {
     emitInstruction16("10110110011i0010", 0);
     PRIMASK |= PRIMASK_PM;
@@ -38,7 +24,7 @@ PINKY_TEST(cps, InterruptEnable)
     EXPECT_FALSE(PRIMASK & PRIMASK_PM);
 }
 
-PINKY_TEST(cps, InterruptDisable)
+TEST_F(pinkySimBase, cps_InterruptDisable)
 {
     emitInstruction16("10110110011i0010", 1);
     PRIMASK &= ~PRIMASK_PM;
