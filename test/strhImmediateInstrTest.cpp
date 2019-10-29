@@ -20,27 +20,27 @@ TEST_F(pinkySimBase, strhImmediate_UseAMixOfRegistersWordAlignedWithSmallestOffs
 {
     emitInstruction16("10000iiiiinnnttt", 0, R7, R0);
     setRegisterValue(R7, INITIAL_PC + 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0xBAAD0000, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0xBAAD0000, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
 TEST_F(pinkySimBase, strhImmediate_AnotherMixOfRegistersNotWordAligned)
 {
     emitInstruction16("10000iiiiinnnttt", 1, R0, R7);
     setRegisterValue(R0, INITIAL_PC + 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0x7777FEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x7777FEED, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
 TEST_F(pinkySimBase, strhImmediate_LargestOffset)
 {
     emitInstruction16("10000iiiiinnnttt", 31, R1, R6);
     setRegisterValue(R1, INITIAL_PC);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 60, 0xBAADFEED, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 60, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0x6666FEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 60));
+    EXPECT_EQ(0x6666FEED, memory_read_32(m_context.pMemory, INITIAL_PC + 60));
 }
 TEST_F(pinkySimBase, strhImmediate_AttemptStoreToInvalidAddress)
 {

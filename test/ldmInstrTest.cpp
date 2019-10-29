@@ -22,7 +22,7 @@ TEST_F(pinkySimBase, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
     setRegisterValue(R7, INITIAL_PC + 16);
     setExpectedRegisterValue(R7, INITIAL_PC + 16 + 1 * 4);
     setExpectedRegisterValue(R0, 0xFFFFFFFF);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
@@ -32,7 +32,7 @@ TEST_F(pinkySimBase, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
     setRegisterValue(R0, INITIAL_PC + 16);
     setExpectedRegisterValue(R0, INITIAL_PC + 16 + 1 * 4);
     setExpectedRegisterValue(R7, 0xFFFFFFFF);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
@@ -49,7 +49,7 @@ TEST_F(pinkySimBase, ldm_PopAllNoWriteback)
     setExpectedRegisterValue(R6, 6);
     setExpectedRegisterValue(R7, 7);
     for (int i = 0 ; i < 8 ; i++)
-        SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16 + 4 * i, i, READ_ONLY);
+		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, i, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
@@ -66,7 +66,7 @@ TEST_F(pinkySimBase, ldm_PopAllButAddressRegister_WritebackNewAddress)
     setExpectedRegisterValue(R6, 6);
     setExpectedRegisterValue(R7, INITIAL_PC + 16 + 7 * 4);
     for (int i = 0 ; i < 7 ; i++)
-        SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 16 + 4 * i, i, READ_ONLY);
+		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, i, READ_ONLY);
     pinkySimStep(&m_context);
 }
 

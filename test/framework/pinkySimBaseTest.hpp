@@ -60,8 +60,8 @@ protected:
 
 
 	using IMemory = void;
-	void SimpleMemory_SetMemory(IMemory* pMem, uint32_t address, uint32_t value, int readOnly);
-	uint32_t IMemory_Read32(IMemory* pThis, uint32_t address);
+	void memory_write_32(IMemory *pMem, uint32_t address, uint32_t value, int readOnly);
+	uint32_t memory_read_32(IMemory *pThis, uint32_t address);
 	void pinkySimStep(PinkySimContext* ctx);
 	void setup();
 	void teardown();
