@@ -21,9 +21,9 @@ TEST_F(pinkySimBase, strRegister_UseAMixOfRegisters)
     emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
     setRegisterValue(R7, 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0x00000000, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x00000000, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
 TEST_F(pinkySimBase, strRegister_UseAnotherMixOfRegisters)
@@ -31,9 +31,9 @@ TEST_F(pinkySimBase, strRegister_UseAnotherMixOfRegisters)
     emitInstruction16("0101000mmmnnnttt", R1, R0, R7);
     setRegisterValue(R0, INITIAL_PC);
     setRegisterValue(R1, 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0x77777777, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x77777777, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
 TEST_F(pinkySimBase, strRegister_YetAnotherMixOfRegisters)
@@ -41,9 +41,9 @@ TEST_F(pinkySimBase, strRegister_YetAnotherMixOfRegisters)
     emitInstruction16("0101000mmmnnnttt", R0, R7, R4);
     setRegisterValue(R7, INITIAL_PC);
     setRegisterValue(R0, 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    EXPECT_EQ(0x44444444, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x44444444, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
 }
 
 TEST_F(pinkySimBase, strRegister_AttemptUnalignedStore)

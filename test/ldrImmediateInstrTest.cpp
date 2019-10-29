@@ -20,7 +20,7 @@ TEST_F(pinkySimBase, ldrImmediate_T1UseAMixOfRegistersWithSmallestOffset)
 {
     emitInstruction16("01101iiiiinnnttt", 0, R7, R0);
     setRegisterValue(R7, INITIAL_PC + 4);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R0, 0xBAADFEED);
     pinkySimStep(&m_context);
 }
@@ -29,7 +29,7 @@ TEST_F(pinkySimBase, ldrImmediate_T1UseAnotherMixOfRegistersWithLargestOffset)
 {
     emitInstruction16("01101iiiiinnnttt", 31, R0, R7);
     setRegisterValue(R0, INITIAL_PC);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 31 * 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 31 * 4, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R7, 0xBAADFEED);
     pinkySimStep(&m_context);
 }
@@ -58,7 +58,7 @@ TEST_F(pinkySimBase, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
 {
     emitInstruction16("10011tttiiiiiiii", R7, 0);
     setRegisterValue(SP, INITIAL_PC + 1024);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R7, 0xBAADFEED);
     pinkySimStep(&m_context);
 }
@@ -67,7 +67,7 @@ TEST_F(pinkySimBase, ldrImmediate_T2UseLowestRegisterWithLargestOffset)
 {
     emitInstruction16("10011tttiiiiiiii", R0, 255);
     setRegisterValue(SP, INITIAL_PC + 1024);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED, READ_ONLY);
+	memory_write_32(m_context.pMemory, INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED, READ_ONLY);
     setExpectedRegisterValue(R0, 0xBAADFEED);
     pinkySimStep(&m_context);
 }
@@ -78,7 +78,7 @@ TEST_SIM_ONLY(ldrImmediate, T2AttemptUnalignedLoad)
     setRegisterValue(SP, INITIAL_PC + 1026);
     setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
+    memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
