@@ -34,7 +34,6 @@
 #define INITIAL_PC 0x00004000
 
 
-
 struct PinkySimContext {
 	void* pMemory;
 };
@@ -42,9 +41,13 @@ struct PinkySimContext {
 class pinkySimBase : public ::testing::Test
 {
 protected:
+	const size_t MEMORY_SIZE = 0x8000;
+	cpu 			_cpu;
+	std::vector<uint8_t>	_memory;
+
 	int             m_expectedStepReturn;
 	uint32_t        m_expectedXPSRflags;
-	uint32_t        m_expectedRegisterValues[13];
+	std::array<uint32_t, 13> m_expectedRegisterValues;
 	uint32_t        m_expectedSPmain;
 	uint32_t        m_expectedLR;
 	uint32_t        m_expectedPC;
@@ -52,9 +55,8 @@ protected:
 	uint32_t        m_emitAddress;
 	uint32_t		PRIMASK;
 	PinkySimContext m_context;
-	cpu 			_cpu;
-	uint8_t*		_host_mem;
-	const size_t mem_size = 0x8000;
+
+
 	using IMemory = void;
 	void SimpleMemory_SetMemory(IMemory* pMem, uint32_t address, uint32_t value, int readOnly);
 	uint32_t IMemory_Read32(IMemory* pThis, uint32_t address);
