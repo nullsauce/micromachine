@@ -52,6 +52,6 @@ TEST_F(CpuTestHarness, ldrLiteral_AttemptToLoadFromInvalidAddress)
 	setExpectedRegisterValue(PC, INITIAL_SP - 128);
 	memory_write_32(INITIAL_SP - 128, 0);
 	emitInstruction16("01001tttiiiiiiii", R0, 255);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

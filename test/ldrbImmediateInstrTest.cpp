@@ -74,6 +74,6 @@ TEST_F(CpuTestHarness, ldrbImmediate_AttemptLoadInvalidAddress)
 {
 	emitInstruction16("01111iiiiinnnttt", 0, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

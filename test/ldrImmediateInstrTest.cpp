@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, ldrImmediate_T1AttemptUnalignedLoad)
 {
 	emitInstruction16("01101iiiiinnnttt", 0, R3, R2);
 	setRegisterValue(R3, INITIAL_PC + 2);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 
@@ -46,7 +46,7 @@ TEST_F(CpuTestHarness, ldrImmediate_T1AttemptLoadFromInvalidAddress)
 {
 	emitInstruction16("01101iiiiinnnttt", 16, R3, R2);
 	setRegisterValue(R3, 0xFFFFFFFC - 16 * 4);
-	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
+	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 
@@ -76,7 +76,7 @@ TEST_SIM_ONLY(ldrImmediate, T2AttemptUnalignedLoad)
 {
     emitInstruction16("10011tttiiiiiiii", R2, 0);
     setRegisterValue(SP, INITIAL_PC + 1026);
-    setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
+    setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     setExpectedRegisterValue(PC, INITIAL_PC);
     memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
     pinkySimStep(&m_context);
@@ -86,7 +86,7 @@ TEST_SIM_ONLY(ldrImmediate, T2AttemptLoadFromInvalidAddress)
 {
     emitInstruction16("10011tttiiiiiiii", R2, 0);
     setRegisterValue(R3, 0xFFFFFFFC);
-    setExpectedExceptionHandled(PINKYSIM_STEP_HARDFAULT);
+    setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     step(&m_context);
 }
 */

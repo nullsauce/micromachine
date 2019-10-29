@@ -19,13 +19,13 @@
 TEST_F(CpuTestHarness, svc_SmallestImmediate)
 {
 	emitInstruction16("11011111iiiiiiii", 0);
-	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
+	setExpectedExceptionTaken(CPU_STEP_SVC);
 	step();
 }
 
 TEST_F(CpuTestHarness, svc_LargestImmediate)
 {
 	emitInstruction16("11011111iiiiiiii", 255);
-	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
+	setExpectedExceptionTaken(CPU_STEP_SVC);
 	step();
 }
