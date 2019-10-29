@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(ldrsbRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* LDRSB - Register
    Encoding: 0101 011 Rm:3 Rn:3 Rt:3 */
-PINKY_TEST(ldrsbRegister, UseAMixOfRegistersWordAligned_NegativeValue)
+TEST_F(pinkySimBase, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 {
     emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
@@ -39,7 +26,7 @@ PINKY_TEST(ldrsbRegister, UseAMixOfRegistersWordAligned_NegativeValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrsbRegister, UseAnotherMixOfRegistersSecondByteInWord_NegativeValue)
+TEST_F(pinkySimBase, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_NegativeValue)
 {
     emitInstruction16("0101011mmmnnnttt", R1, R0, R7);
     setRegisterValue(R0, INITIAL_PC);
@@ -49,7 +36,7 @@ PINKY_TEST(ldrsbRegister, UseAnotherMixOfRegistersSecondByteInWord_NegativeValue
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrsbRegister, YetAnotherMixOfRegistersThirdByteInWord_NegativeValue)
+TEST_F(pinkySimBase, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_NegativeValue)
 {
     emitInstruction16("0101011mmmnnnttt", R0, R7, R4);
     setRegisterValue(R7, INITIAL_PC);
@@ -59,7 +46,7 @@ PINKY_TEST(ldrsbRegister, YetAnotherMixOfRegistersThirdByteInWord_NegativeValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrsbRegister, YetAnotherMixOfRegistersFourthByteInWord_NegativeValue)
+TEST_F(pinkySimBase, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_NegativeValue)
 {
     emitInstruction16("0101011mmmnnnttt", R0, R7, R5);
     setRegisterValue(R7, INITIAL_PC);
@@ -69,7 +56,7 @@ PINKY_TEST(ldrsbRegister, YetAnotherMixOfRegistersFourthByteInWord_NegativeValue
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrsbRegister, LoadAPositiveValue)
+TEST_F(pinkySimBase, ldrsbRegister_LoadAPositiveValue)
 {
     emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
@@ -79,7 +66,7 @@ PINKY_TEST(ldrsbRegister, LoadAPositiveValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrsbRegister, AttemptLoadInvalidAddress)
+TEST_F(pinkySimBase, ldrsbRegister_AttemptLoadInvalidAddress)
 {
     emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, 0xFFFFFFFC);

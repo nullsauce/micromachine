@@ -18,23 +18,9 @@
 #define IMM_32 0
 
 
-TEST_GROUP_BASE(lsrImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
-
 /* LSR - Immediate (Logical Shift Right)
    Encoding: 000 01 imm:5 Rm:3 Rd:3 */
-PINKY_TEST(lsrImmediate, R2by1toR0)
+TEST_F(pinkySimBase, lsrImmediate_R2by1toR0)
 {
     emitInstruction16("00001iiiiimmmddd", IMM_1, R2, R0);
     setExpectedXPSRflags("nzc");
@@ -42,7 +28,7 @@ PINKY_TEST(lsrImmediate, R2by1toR0)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lsrImmediate, R7by32toR0_ZeroResult)
+TEST_F(pinkySimBase, lsrImmediate_R7by32toR0_ZeroResult)
 {
     emitInstruction16("00001iiiiimmmddd", IMM_32, R7, R0);
     setExpectedXPSRflags("nZc");
@@ -50,7 +36,7 @@ PINKY_TEST(lsrImmediate, R7by32toR0_ZeroResult)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lsrImmediate, R1by1toR7_CarryOut)
+TEST_F(pinkySimBase, lsrImmediate_R1by1toR7_CarryOut)
 {
     emitInstruction16("00001iiiiimmmddd", IMM_1, R1, R7);
     setExpectedXPSRflags("nzC");
@@ -58,7 +44,7 @@ PINKY_TEST(lsrImmediate, R1by1toR7_CarryOut)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(lsrImmediate, R0by32_CarryOutAndIsZero)
+TEST_F(pinkySimBase, lsrImmediate_R0by32_CarryOutAndIsZero)
 {
     emitInstruction16("00001iiiiimmmddd", IMM_32, R0, R0);
     setExpectedXPSRflags("nZC");

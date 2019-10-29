@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(ldrhRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* LDRH - Register
    Encoding: 0101 101 Rm:3 Rn:3 Rt:3 */
-PINKY_TEST(ldrhRegister, UseAMixOfRegistersWordAligned)
+TEST_F(pinkySimBase, ldrhRegister_UseAMixOfRegistersWordAligned)
 {
     emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
@@ -39,7 +26,7 @@ PINKY_TEST(ldrhRegister, UseAMixOfRegistersWordAligned)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrhRegister, UseAnotherMixOfRegistersWordAligned)
+TEST_F(pinkySimBase, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
 {
     emitInstruction16("0101101mmmnnnttt", R1, R0, R7);
     setRegisterValue(R0, INITIAL_PC);
@@ -49,7 +36,7 @@ PINKY_TEST(ldrhRegister, UseAnotherMixOfRegistersWordAligned)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrhRegister, YetAnotherMixOfRegistersNotWordAligned)
+TEST_F(pinkySimBase, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
 {
     emitInstruction16("0101101mmmnnnttt", R0, R7, R4);
     setRegisterValue(R7, INITIAL_PC);
@@ -59,7 +46,7 @@ PINKY_TEST(ldrhRegister, YetAnotherMixOfRegistersNotWordAligned)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrhRegister, AttemptUnalignedLoad)
+TEST_F(pinkySimBase, ldrhRegister_AttemptUnalignedLoad)
 {
     emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
@@ -68,7 +55,7 @@ PINKY_TEST(ldrhRegister, AttemptUnalignedLoad)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(ldrhRegister, AttemptLoadFromInvalidAddress)
+TEST_F(pinkySimBase, ldrhRegister_AttemptLoadFromInvalidAddress)
 {
     emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, 0xFFFFFFFC);

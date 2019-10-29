@@ -13,7 +13,6 @@
 
 #include <cstdint>
 
-#include "pinkysim_glue.hpp"
 
 #include "cpu.hpp"
 #include "pinksim.hpp"
@@ -33,6 +32,9 @@
 #define INITIAL_LR 0xFFFFFFFF
 #define INITIAL_PC 0x00004000
 
+
+#define READ_WRITE 0
+#define READ_ONLY  1
 
 struct PinkySimContext {
 	void* pMemory;

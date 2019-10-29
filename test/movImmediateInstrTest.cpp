@@ -14,24 +14,10 @@
 #include "framework/pinkySimBaseTest.hpp"
 
 
-TEST_GROUP_BASE(movImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
-
 /* MOV - Immediate
    Encoding: 001 00 Rd:3 Imm:8 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-PINKY_TEST(movImmediate, MovToR0)
+TEST_F(pinkySimBase, movImmediate_MovToR0)
 {
     emitInstruction16("00100dddiiiiiiii", R0, 127);
     // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -41,7 +27,7 @@ PINKY_TEST(movImmediate, MovToR0)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movImmediate, MovToR7)
+TEST_F(pinkySimBase, movImmediate_MovToR7)
 {
     emitInstruction16("00100dddiiiiiiii", R7, 127);
     setExpectedXPSRflags("nzC");
@@ -50,7 +36,7 @@ PINKY_TEST(movImmediate, MovToR7)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movImmediate, MovSmallestImmediateValueToR3)
+TEST_F(pinkySimBase, movImmediate_MovSmallestImmediateValueToR3)
 {
     emitInstruction16("00100dddiiiiiiii", R3, 0);
     setExpectedXPSRflags("nZ");
@@ -58,7 +44,7 @@ PINKY_TEST(movImmediate, MovSmallestImmediateValueToR3)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(movImmediate, MovLargestImmediateValueToR3)
+TEST_F(pinkySimBase, movImmediate_MovLargestImmediateValueToR3)
 {
     emitInstruction16("00100dddiiiiiiii", R3, 255);
     setExpectedXPSRflags("nz");

@@ -13,19 +13,6 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(sev, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* SEV
    Encoding: 1011 1111 0100 0000 */

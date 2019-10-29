@@ -13,37 +13,24 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(adr, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* ADR (ADDress of label)
    Encoding: 1010 0 Rd:3 Imm:8 */
-PINKY_TEST(adr, LowestRegisterWithLargestOffset)
+TEST_F(pinkySimBase, adr_LowestRegisterWithLargestOffset)
 {
     emitInstruction16("10100dddiiiiiiii", R0, 255);
     setExpectedRegisterValue(R0, INITIAL_PC + 4 + 255 * 4);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(adr, HighesttRegisterWithSmallestOffset)
+TEST_F(pinkySimBase, adr_HighesttRegisterWithSmallestOffset)
 {
     emitInstruction16("10100dddiiiiiiii", R7, 0);
     setExpectedRegisterValue(R7, INITIAL_PC + 4);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(adr, pcWillNeedToBeWordAlignedBeforeAdd)
+TEST_F(pinkySimBase, adr_pcWillNeedToBeWordAlignedBeforeAdd)
 {
     // Emit UNDEFINED 16-bit instruction.
     emitInstruction16("1101111000000000");

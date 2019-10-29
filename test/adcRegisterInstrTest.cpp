@@ -13,23 +13,11 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(adcRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
 
 
 /* ADC - Register (ADd with Carry)
    Encoding: 010000 0101 Rm:3 Rdn:3 */
-PINKY_TEST(adcRegister, UseR1ForAllArgs)
+TEST_F(pinkySimBase, adcRegister_UseR1ForAllArgs)
 {
     emitInstruction16("0100000101mmmddd", R1, R1);
     setExpectedXPSRflags("nzcv");
@@ -39,7 +27,7 @@ PINKY_TEST(adcRegister, UseR1ForAllArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(adcRegister, UseLowestRegisterForAllArgs)
+TEST_F(pinkySimBase, adcRegister_UseLowestRegisterForAllArgs)
 {
     emitInstruction16("0100000101mmmddd", R0, R0);
     setExpectedXPSRflags("nZcv");
@@ -48,7 +36,7 @@ PINKY_TEST(adcRegister, UseLowestRegisterForAllArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(adcRegister, UseHigestRegisterForAllArgsPositiveOverflow)
+TEST_F(pinkySimBase, adcRegister_UseHigestRegisterForAllArgsPositiveOverflow)
 {
     emitInstruction16("0100000101mmmddd", R7, R7);
     setExpectedXPSRflags("NzcV");
@@ -57,7 +45,7 @@ PINKY_TEST(adcRegister, UseHigestRegisterForAllArgsPositiveOverflow)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(adcRegister, UseDifferentRegistersForEachArg)
+TEST_F(pinkySimBase, adcRegister_UseDifferentRegistersForEachArg)
 {
     emitInstruction16("0100000101mmmddd", R1, R2);
     setExpectedXPSRflags("nzcv");
@@ -65,7 +53,7 @@ PINKY_TEST(adcRegister, UseDifferentRegistersForEachArg)
     clearCarry();
     pinkySimStep(&m_context);
 }
-PINKY_TEST(adcRegister, Add0to0WithCarryInSetToGiveAResultOf1)
+TEST_F(pinkySimBase, adcRegister_Add0to0WithCarryInSetToGiveAResultOf1)
 {
     emitInstruction16("0100000101mmmddd", R0, R0);
     setExpectedXPSRflags("nzcv");
@@ -75,7 +63,7 @@ PINKY_TEST(adcRegister, Add0to0WithCarryInSetToGiveAResultOf1)
 }
 
 // Force APSR flags to be set which haven't already been covered above.
-PINKY_TEST(adcRegister, ForceCarryOut)
+TEST_F(pinkySimBase, adcRegister_ForceCarryOut)
 {
     emitInstruction16("0100000101mmmddd", R1, R2);
     setExpectedXPSRflags("nZCv");
@@ -86,7 +74,7 @@ PINKY_TEST(adcRegister, ForceCarryOut)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(adcRegister, ForceCarryOutAndOverflow)
+TEST_F(pinkySimBase, adcRegister_ForceCarryOutAndOverflow)
 {
     emitInstruction16("0100000101mmmddd", R1, R2);
     setExpectedXPSRflags("nzCV");

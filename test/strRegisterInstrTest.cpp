@@ -13,53 +13,40 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(strRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* STR - Register
    Encoding: 0101 000 Rm:3 Rn:3 Rt:3 */
-PINKY_TEST(strRegister, UseAMixOfRegisters)
+TEST_F(pinkySimBase, strRegister_UseAMixOfRegisters)
 {
     emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
     setRegisterValue(R7, 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0x00000000, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x00000000, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-PINKY_TEST(strRegister, UseAnotherMixOfRegisters)
+TEST_F(pinkySimBase, strRegister_UseAnotherMixOfRegisters)
 {
     emitInstruction16("0101000mmmnnnttt", R1, R0, R7);
     setRegisterValue(R0, INITIAL_PC);
     setRegisterValue(R1, 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0x77777777, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x77777777, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-PINKY_TEST(strRegister, YetAnotherMixOfRegisters)
+TEST_F(pinkySimBase, strRegister_YetAnotherMixOfRegisters)
 {
     emitInstruction16("0101000mmmnnnttt", R0, R7, R4);
     setRegisterValue(R7, INITIAL_PC);
     setRegisterValue(R0, 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0x44444444, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x44444444, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-PINKY_TEST(strRegister, AttemptUnalignedStore)
+TEST_F(pinkySimBase, strRegister_AttemptUnalignedStore)
 {
     emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, INITIAL_PC);
@@ -68,7 +55,7 @@ PINKY_TEST(strRegister, AttemptUnalignedStore)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(strRegister, AttemptStoreToInvalidAddress)
+TEST_F(pinkySimBase, strRegister_AttemptStoreToInvalidAddress)
 {
     emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
     setRegisterValue(R3, 0xFFFFFFFC);

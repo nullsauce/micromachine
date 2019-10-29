@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(b, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* B - Encoding T1 (Conditional)
    Encoding: 1101 Cond:4 Imm:8 */
-PINKY_TEST(b, BEQ_NotTaken)
+TEST_F(pinkySimBase, b_BEQ_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_EQ, 0);
     // These tests set the APSR flags to specific value and expect them to be unmodified upon return.
@@ -38,7 +25,7 @@ PINKY_TEST(b, BEQ_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BEQ_Taken)
+TEST_F(pinkySimBase, b_BEQ_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_EQ, 0);
     setExpectedXPSRflags("Z");
@@ -47,7 +34,7 @@ PINKY_TEST(b, BEQ_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BNE_NotTaken)
+TEST_F(pinkySimBase, b_BNE_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_NE, 0);
     setExpectedXPSRflags("Z");
@@ -55,7 +42,7 @@ PINKY_TEST(b, BNE_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BNE_Taken)
+TEST_F(pinkySimBase, b_BNE_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_NE, 0);
     setExpectedXPSRflags("z");
@@ -64,7 +51,7 @@ PINKY_TEST(b, BNE_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BCS_NotTaken)
+TEST_F(pinkySimBase, b_BCS_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_CS, 0);
     setExpectedXPSRflags("c");
@@ -72,7 +59,7 @@ PINKY_TEST(b, BCS_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BCS_Taken)
+TEST_F(pinkySimBase, b_BCS_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_CS, 0);
     setExpectedXPSRflags("C");
@@ -81,7 +68,7 @@ PINKY_TEST(b, BCS_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BCC_NotTaken)
+TEST_F(pinkySimBase, b_BCC_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_CC, 0);
     setExpectedXPSRflags("C");
@@ -89,7 +76,7 @@ PINKY_TEST(b, BCC_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BCC_Taken)
+TEST_F(pinkySimBase, b_BCC_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_CC, 0);
     setExpectedXPSRflags("c");
@@ -98,7 +85,7 @@ PINKY_TEST(b, BCC_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BMI_NotTaken)
+TEST_F(pinkySimBase, b_BMI_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_MI, 0);
     setExpectedXPSRflags("n");
@@ -106,7 +93,7 @@ PINKY_TEST(b, BMI_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BMI_Taken)
+TEST_F(pinkySimBase, b_BMI_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_MI, 0);
     setExpectedXPSRflags("N");
@@ -115,7 +102,7 @@ PINKY_TEST(b, BMI_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BPL_NotTaken)
+TEST_F(pinkySimBase, b_BPL_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_PL, 0);
     setExpectedXPSRflags("N");
@@ -123,7 +110,7 @@ PINKY_TEST(b, BPL_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BPL_Taken)
+TEST_F(pinkySimBase, b_BPL_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_PL, 0);
     setExpectedXPSRflags("n");
@@ -132,7 +119,7 @@ PINKY_TEST(b, BPL_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BVS_NotTaken)
+TEST_F(pinkySimBase, b_BVS_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_VS, 0);
     setExpectedXPSRflags("v");
@@ -140,7 +127,7 @@ PINKY_TEST(b, BVS_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BVS_Taken)
+TEST_F(pinkySimBase, b_BVS_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_VS, 0);
     setExpectedXPSRflags("V");
@@ -149,7 +136,7 @@ PINKY_TEST(b, BVS_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BVC_NotTaken)
+TEST_F(pinkySimBase, b_BVC_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_VC, 0);
     setExpectedXPSRflags("V");
@@ -157,7 +144,7 @@ PINKY_TEST(b, BVC_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BVC_Taken)
+TEST_F(pinkySimBase, b_BVC_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_VC, 0);
     setExpectedXPSRflags("v");
@@ -166,7 +153,7 @@ PINKY_TEST(b, BVC_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BHI_NotTaken)
+TEST_F(pinkySimBase, b_BHI_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_HI, 0);
     setExpectedXPSRflags("cZ");
@@ -174,7 +161,7 @@ PINKY_TEST(b, BHI_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BHI_Taken)
+TEST_F(pinkySimBase, b_BHI_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_HI, 0);
     setExpectedXPSRflags("Cz");
@@ -183,7 +170,7 @@ PINKY_TEST(b, BHI_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLS_NotTaken)
+TEST_F(pinkySimBase, b_BLS_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LS, 0);
     setExpectedXPSRflags("Cz");
@@ -191,7 +178,7 @@ PINKY_TEST(b, BLS_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLS_Taken)
+TEST_F(pinkySimBase, b_BLS_Taken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LS, 0);
     setExpectedXPSRflags("cZ");
@@ -200,7 +187,7 @@ PINKY_TEST(b, BLS_Taken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BGE_NotTaken)
+TEST_F(pinkySimBase, b_BGE_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
     setExpectedXPSRflags("Nv");
@@ -208,7 +195,7 @@ PINKY_TEST(b, BGE_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BGE_Taken1)
+TEST_F(pinkySimBase, b_BGE_Taken1)
 {
     emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
     setExpectedXPSRflags("NV");
@@ -217,7 +204,7 @@ PINKY_TEST(b, BGE_Taken1)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BGE_Taken2)
+TEST_F(pinkySimBase, b_BGE_Taken2)
 {
     emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
     setExpectedXPSRflags("nv");
@@ -226,7 +213,7 @@ PINKY_TEST(b, BGE_Taken2)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLT_NotTaken)
+TEST_F(pinkySimBase, b_BLT_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
     setExpectedXPSRflags("NV");
@@ -234,7 +221,7 @@ PINKY_TEST(b, BLT_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLT_Taken1)
+TEST_F(pinkySimBase, b_BLT_Taken1)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
     setExpectedXPSRflags("Nv");
@@ -243,7 +230,7 @@ PINKY_TEST(b, BLT_Taken1)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLT_Taken2)
+TEST_F(pinkySimBase, b_BLT_Taken2)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
     setExpectedXPSRflags("nV");
@@ -252,7 +239,7 @@ PINKY_TEST(b, BLT_Taken2)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BGT_NotTaken)
+TEST_F(pinkySimBase, b_BGT_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
     setExpectedXPSRflags("ZNV");
@@ -260,7 +247,7 @@ PINKY_TEST(b, BGT_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BGT_Taken1)
+TEST_F(pinkySimBase, b_BGT_Taken1)
 {
     emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
     setExpectedXPSRflags("znv");
@@ -269,7 +256,7 @@ PINKY_TEST(b, BGT_Taken1)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BGT_Taken2)
+TEST_F(pinkySimBase, b_BGT_Taken2)
 {
     emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
     setExpectedXPSRflags("zNV");
@@ -278,7 +265,7 @@ PINKY_TEST(b, BGT_Taken2)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLE_NotTaken)
+TEST_F(pinkySimBase, b_BLE_NotTaken)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
     setExpectedXPSRflags("zNV");
@@ -286,7 +273,7 @@ PINKY_TEST(b, BLE_NotTaken)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLE_Taken1)
+TEST_F(pinkySimBase, b_BLE_Taken1)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
     setExpectedXPSRflags("ZNv");
@@ -295,7 +282,7 @@ PINKY_TEST(b, BLE_Taken1)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BLE_Taken2)
+TEST_F(pinkySimBase, b_BLE_Taken2)
 {
     emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
     setExpectedXPSRflags("ZnV");
@@ -304,7 +291,7 @@ PINKY_TEST(b, BLE_Taken2)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BEQ_TakenWithLargestPositiveOffset)
+TEST_F(pinkySimBase, b_BEQ_TakenWithLargestPositiveOffset)
 {
     emitInstruction16("1101cccciiiiiiii", COND_EQ, 127);
     setExpectedXPSRflags("Z");
@@ -313,7 +300,7 @@ PINKY_TEST(b, BEQ_TakenWithLargestPositiveOffset)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BEQ_TakenWithLargesNegativeOffset)
+TEST_F(pinkySimBase, b_BEQ_TakenWithLargesNegativeOffset)
 {
     emitInstruction16("1101cccciiiiiiii", COND_EQ, -128);
     setExpectedXPSRflags("Z");
@@ -326,21 +313,21 @@ PINKY_TEST(b, BEQ_TakenWithLargesNegativeOffset)
 
 /* B - Encoding T2 (Unconditional)
    Encoding: 11100 Imm:11 */
-PINKY_TEST(b, BAL_ZeroOffset)
+TEST_F(pinkySimBase, b_BAL_ZeroOffset)
 {
     emitInstruction16("11100iiiiiiiiiii", 0);
     setExpectedRegisterValue(PC, INITIAL_PC + 4);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BAL_LargestPositiveOffset)
+TEST_F(pinkySimBase, b_BAL_LargestPositiveOffset)
 {
     emitInstruction16("11100iiiiiiiiiii", 1023);
     setExpectedRegisterValue(PC, INITIAL_PC + 4 + 1023 * 2);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(b, BAL_LargestNegativeOffset)
+TEST_F(pinkySimBase, b_BAL_LargestNegativeOffset)
 {
     emitInstruction16("11100iiiiiiiiiii", -1024);
     setExpectedRegisterValue(PC, INITIAL_PC + 4 - 1024 * 2);

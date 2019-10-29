@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(rsbImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* RSB - Immediate
    Encoding: 010000 1001 Rn:3 Rd:3 */
-PINKY_TEST(rsbImmediate, UseLowestRegisterOnly)
+TEST_F(pinkySimBase, rsbImmediate_UseLowestRegisterOnly)
 {
     emitInstruction16("0100001001nnnddd", R0, R0);
     setExpectedXPSRflags("nZCv");
@@ -37,7 +24,7 @@ PINKY_TEST(rsbImmediate, UseLowestRegisterOnly)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(rsbImmediate, UseHigestRegisterOnly)
+TEST_F(pinkySimBase, rsbImmediate_UseHigestRegisterOnly)
 {
     emitInstruction16("0100001001nnnddd", R7, R7);
     setExpectedXPSRflags("Nzcv");
@@ -45,7 +32,7 @@ PINKY_TEST(rsbImmediate, UseHigestRegisterOnly)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(rsbImmediate, UseDifferentRegistersForEachArg)
+TEST_F(pinkySimBase, rsbImmediate_UseDifferentRegistersForEachArg)
 {
     emitInstruction16("0100001001nnnddd", R2, R0);
     setExpectedXPSRflags("Nzcv");
@@ -53,7 +40,7 @@ PINKY_TEST(rsbImmediate, UseDifferentRegistersForEachArg)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(rsbImmediate, ForceOverflowByNegatingLargestNegativeValue)
+TEST_F(pinkySimBase, rsbImmediate_ForceOverflowByNegatingLargestNegativeValue)
 {
     emitInstruction16("0100001001nnnddd", R0, R7);
     setExpectedXPSRflags("NzcV");
