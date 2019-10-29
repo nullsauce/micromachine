@@ -9,7 +9,7 @@ set(CPU_TESTS_COMMON_FILES
     framework/pinksim.hpp
     framework/pinkysim_glue.hpp
     framework/SimpleMemory_glue.hpp
-    framework/pinkySimBaseTest.h
+    framework/pinkySimBaseTest.hpp
     framework/pinkySimBaseTest.cpp
 )
 
