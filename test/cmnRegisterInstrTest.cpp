@@ -20,21 +20,21 @@ TEST_F(CpuTestHelper, cmnRegister_UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("0100001011mmmnnn", R0, R0);
 	setExpectedXPSRflags("nZcv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmnRegister_UseHigestRegisterForAllArgs)
 {
 	emitInstruction16("0100001011mmmnnn", R7, R7);
 	setExpectedXPSRflags("NzcV");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmnRegister_UseDifferentRegistersForEachArg)
 {
 	emitInstruction16("0100001011mmmnnn", R1, R2);
 	setExpectedXPSRflags("nzcv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 // Force APSR flags to be set which haven't already been covered above.
@@ -44,7 +44,7 @@ TEST_F(CpuTestHelper, cmnRegister_ForceCarryWithNoOverflow)
 	setExpectedXPSRflags("nZCv");
 	setRegisterValue(R1, -1);
 	setRegisterValue(R2, 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmnRegister_ForceCarryAndOverflow)
@@ -53,5 +53,5 @@ TEST_F(CpuTestHelper, cmnRegister_ForceCarryAndOverflow)
 	setExpectedXPSRflags("nzCV");
 	setRegisterValue(R1, -1);
 	setRegisterValue(R2, 0x80000000U);
-	pinkySimStep(&m_context);
+	step();
 }

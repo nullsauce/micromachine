@@ -21,7 +21,7 @@ TEST_F(CpuTestHelper, addRegister_T1UseLowestRegisterForAllArgs)
 	emitInstruction16("0001100mmmnnnddd", R0, R0, R0);
 	setExpectedXPSRflags("nZcv");
 	setExpectedRegisterValue(R0, 0U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T1UseHigestRegisterForAllArgs)
@@ -29,7 +29,7 @@ TEST_F(CpuTestHelper, addRegister_T1UseHigestRegisterForAllArgs)
 	emitInstruction16("0001100mmmnnnddd", R7, R7, R7);
 	setExpectedXPSRflags("NzcV");
 	setExpectedRegisterValue(R7, 0x77777777U + 0x77777777U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T1UseDifferentRegistersForEachArg)
@@ -37,7 +37,7 @@ TEST_F(CpuTestHelper, addRegister_T1UseDifferentRegistersForEachArg)
 	emitInstruction16("0001100mmmnnnddd", R1, R2, R3);
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R3, 0x11111111U + 0x22222222U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 // Force APSR flags to be set which haven't already been covered above.
@@ -48,7 +48,7 @@ TEST_F(CpuTestHelper, addRegister_T1ForceCarryWithNoOverflow)
 	setRegisterValue(R1, -1);
 	setRegisterValue(R2, 1);
 	setExpectedRegisterValue(R0, -1 + 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T1ForceCarryAndOverflow)
@@ -58,7 +58,7 @@ TEST_F(CpuTestHelper, addRegister_T1ForceCarryAndOverflow)
 	setRegisterValue(R1, -1);
 	setRegisterValue(R2, 0x80000000U);
 	setExpectedRegisterValue(R0, 0x7FFFFFFFU);
-	pinkySimStep(&m_context);
+	step();
 }
 
 
@@ -70,28 +70,28 @@ TEST_F(CpuTestHelper, addRegister_T2UseR1ForAllArgs)
 {
 	emitInstruction16("01000100dmmmmddd", R1, R1);
 	setExpectedRegisterValue(R1, 0x11111111U + 0x11111111U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("01000100dmmmmddd", R0, R0);
 	setExpectedRegisterValue(R0, 0U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2UseR12ForAllArgs)
 {
 	emitInstruction16("01000100dmmmmddd", R12, R12);
 	setExpectedRegisterValue(R12, 0xCCCCCCCCU + 0xCCCCCCCCU);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2UseDifferentRegistersForEachArg)
 {
 	emitInstruction16("01000100dmmmmddd", R2, R1);
 	setExpectedRegisterValue(R2, 0x11111111U + 0x22222222U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2WrapAroundTo0)
@@ -100,7 +100,7 @@ TEST_F(CpuTestHelper, addRegister_T2WrapAroundTo0)
 	setRegisterValue(R1, -1);
 	setRegisterValue(R2, 1);
 	setExpectedRegisterValue(R2, -1 + 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2OverflowFromLowestNegativeValue)
@@ -109,7 +109,7 @@ TEST_F(CpuTestHelper, addRegister_T2OverflowFromLowestNegativeValue)
 	setRegisterValue(R10, -1);
 	setRegisterValue(R11, 0x80000000U);
 	setExpectedRegisterValue(R11, 0x7FFFFFFF);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2Add4ToSP)
@@ -118,7 +118,7 @@ TEST_F(CpuTestHelper, addRegister_T2Add4ToSP)
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setRegisterValue(R1, 4);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4 + 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2Subtract4FromSP)
@@ -126,7 +126,7 @@ TEST_F(CpuTestHelper, addRegister_T2Subtract4FromSP)
 	emitInstruction16("01000100dmmmmddd", SP, R1);
 	setRegisterValue(R1, -4);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2Add1ToLR)
@@ -134,7 +134,7 @@ TEST_F(CpuTestHelper, addRegister_T2Add1ToLR)
 	emitInstruction16("01000100dmmmmddd", LR, R1);
 	setRegisterValue(R1, 1);
 	setExpectedRegisterValue(LR, INITIAL_LR + 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2Add1ToPCWhichWillBeOddAndRoundedDown)
@@ -142,7 +142,7 @@ TEST_F(CpuTestHelper, addRegister_T2Add1ToPCWhichWillBeOddAndRoundedDown)
 	emitInstruction16("01000100dmmmmddd", PC, R1);
 	setRegisterValue(R1, 1);
 	setExpectedRegisterValue(PC, (INITIAL_PC + 4 + 1) & 0xFFFFFFFE);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, addRegister_T2Add2ToPC)
@@ -150,7 +150,7 @@ TEST_F(CpuTestHelper, addRegister_T2Add2ToPC)
 	emitInstruction16("01000100dmmmmddd", PC, R1);
 	setRegisterValue(R1, 2);
 	setExpectedRegisterValue(PC, (INITIAL_PC + 4 + 2) & 0xFFFFFFFE);
-	pinkySimStep(&m_context);
+	step();
 }
 /*
 TEST_SIM_ONLY(addRegister, T2ItIsUnpredictableToHaveBothArgsBePC)
@@ -158,6 +158,6 @@ TEST_SIM_ONLY(addRegister, T2ItIsUnpredictableToHaveBothArgsBePC)
     emitInstruction16("01000100dmmmmddd", PC, PC);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

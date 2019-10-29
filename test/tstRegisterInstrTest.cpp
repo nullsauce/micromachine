@@ -23,7 +23,7 @@ TEST_F(CpuTestHelper, tstRegister_UseLowestRegisterForBothArgsAndResultShouldBeZ
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	setExpectedXPSRflags("nZc");
 	clearCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, tstRegister_UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged)
@@ -31,14 +31,14 @@ TEST_F(CpuTestHelper, tstRegister_UseHighestRegisterForBothArgsAndRegisterWillBe
 	emitInstruction16("0100001000mmmnnn", R7, R7);
 	setExpectedXPSRflags("nzC");
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, tstRegister_AndR3andR7)
 {
 	emitInstruction16("0100001000mmmnnn", R3, R7);
 	setExpectedXPSRflags("nz");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, tstRegister_UseAndToJustKeepNegativeSignBit)
@@ -47,5 +47,5 @@ TEST_F(CpuTestHelper, tstRegister_UseAndToJustKeepNegativeSignBit)
 	setRegisterValue(R0, -1);
 	setRegisterValue(R7, 0x80000000);
 	setExpectedXPSRflags("Nz");
-	pinkySimStep(&m_context);
+	step();
 }

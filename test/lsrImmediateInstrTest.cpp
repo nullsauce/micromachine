@@ -25,7 +25,7 @@ TEST_F(CpuTestHelper, lsrImmediate_R2by1toR0)
 	emitInstruction16("00001iiiiimmmddd", IMM_1, R2, R0);
 	setExpectedXPSRflags("nzc");
 	setExpectedRegisterValue(R0, 0x22222222U >> 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrImmediate_R7by32toR0_ZeroResult)
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, lsrImmediate_R7by32toR0_ZeroResult)
 	emitInstruction16("00001iiiiimmmddd", IMM_32, R7, R0);
 	setExpectedXPSRflags("nZc");
 	setExpectedRegisterValue(R0, 0x0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrImmediate_R1by1toR7_CarryOut)
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper, lsrImmediate_R1by1toR7_CarryOut)
 	emitInstruction16("00001iiiiimmmddd", IMM_1, R1, R7);
 	setExpectedXPSRflags("nzC");
 	setExpectedRegisterValue(R7, 0x11111111U >> 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, lsrImmediate_R0by32_CarryOutAndIsZero)
@@ -50,7 +50,7 @@ TEST_F(CpuTestHelper, lsrImmediate_R0by32_CarryOutAndIsZero)
 	setExpectedXPSRflags("nZC");
 	setRegisterValue(R0, 0x80000000U);
 	setExpectedRegisterValue(R0, 0U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 // Can't generate a negative result as smallest shift is 1, meaning at least one 0 is shifted in from left.

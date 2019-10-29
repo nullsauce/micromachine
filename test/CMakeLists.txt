@@ -6,12 +6,10 @@ find_package(Threads)
 set(ALL_TEST_OBJS "")
 
 set(CPU_TESTS_COMMON_FILES
-		framework/pinksim.hpp
-		framework/pinkysim_glue.hpp
-		framework/SimpleMemory_glue.hpp
-		framework/pinkySimBaseTest.hpp
-		framework/pinkySimBaseTest.cpp
-		)
+	framework/pinksim.hpp
+	framework/pinkySimBaseTest.hpp
+	framework/pinkySimBaseTest.cpp
+)
 
 macro(declare_test test_name test_files)
 	add_executable(test_of_${test_name} ${test_files})

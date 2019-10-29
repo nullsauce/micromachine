@@ -20,21 +20,21 @@ TEST_F(CpuTestHelper, cmpRegister_T1UseLowestRegisterForAllArgs)
 {
 	emitInstruction16("0100001010mmmnnn", R0, R0);
 	setExpectedXPSRflags("nZCv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T1UseHigestRegisterForAllArgs)
 {
 	emitInstruction16("0100001010mmmnnn", R7, R7);
 	setExpectedXPSRflags("nZCv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T1RnLargerThanRm)
 {
 	emitInstruction16("0100001010mmmnnn", R1, R2);
 	setExpectedXPSRflags("nzCv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T1RnSmallerThanRm)
@@ -42,7 +42,7 @@ TEST_F(CpuTestHelper, cmpRegister_T1RnSmallerThanRm)
 	emitInstruction16("0100001010mmmnnn", R1, R0);
 	setExpectedXPSRflags("Nzcv");
 	setRegisterValue(R1, 1);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T1ForceNegativeOverflow)
@@ -51,7 +51,7 @@ TEST_F(CpuTestHelper, cmpRegister_T1ForceNegativeOverflow)
 	setExpectedXPSRflags("nzCV");
 	setRegisterValue(R2, 0x80000000U);
 	setRegisterValue(R1, 1U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T1ForcePositiveOverflow)
@@ -60,7 +60,7 @@ TEST_F(CpuTestHelper, cmpRegister_T1ForcePositiveOverflow)
 	setExpectedXPSRflags("NzcV");
 	setRegisterValue(R2, 0x7FFFFFFFU);
 	setRegisterValue(R1, -1U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 
@@ -73,7 +73,7 @@ TEST_F(CpuTestHelper, cmpRegister_T2CompareLowestRegisterToHighestRegister)
 	emitInstruction16("01000101nmmmmnnn", R0, LR);
 	setRegisterValue(LR, 0xEEEEEEEE);
 	setExpectedXPSRflags("nzcv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T2CompareHighestRegisterToLowestRegister)
@@ -81,14 +81,14 @@ TEST_F(CpuTestHelper, cmpRegister_T2CompareHighestRegisterToLowestRegister)
 	emitInstruction16("01000101nmmmmnnn", LR, R0);
 	setRegisterValue(LR, 0xEEEEEEEE);
 	setExpectedXPSRflags("NzCv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T2CompareR8ToItself)
 {
 	emitInstruction16("01000101nmmmmnnn", R8, R8);
 	setExpectedXPSRflags("nZCv");
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T2ForceNegativeOverflow)
@@ -97,7 +97,7 @@ TEST_F(CpuTestHelper, cmpRegister_T2ForceNegativeOverflow)
 	setExpectedXPSRflags("nzCV");
 	setRegisterValue(R11, 0x80000000U);
 	setRegisterValue(R12, 1U);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, cmpRegister_T2ForcePositiveOverflow)
@@ -106,7 +106,7 @@ TEST_F(CpuTestHelper, cmpRegister_T2ForcePositiveOverflow)
 	setExpectedXPSRflags("NzcV");
 	setRegisterValue(R11, 0x7FFFFFFFU);
 	setRegisterValue(R12, -1U);
-	pinkySimStep(&m_context);
+	step();
 }
 /*
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForBothArgsToBeLowRegisters)
@@ -130,6 +130,6 @@ TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRmToBeR15)
     emitInstruction16("01000101nmmmmnnn", R8, PC);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
-    pinkySimStep(&m_context);
+    step(&m_context);
 }
 */

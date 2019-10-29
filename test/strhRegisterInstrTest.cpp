@@ -21,9 +21,9 @@ TEST_F(CpuTestHelper, strhRegister_UseAMixOfRegistersWordAligned)
 	emitInstruction16("0101001mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
-	pinkySimStep(&m_context);
-	EXPECT_EQ(0xBAAD0000, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
+	step();
+	EXPECT_EQ(0xBAAD0000, memory_read_32(INITIAL_PC + 4));
 }
 
 TEST_F(CpuTestHelper, strhRegister_UseAnotherMixOfRegistersWordAligned)
@@ -31,9 +31,9 @@ TEST_F(CpuTestHelper, strhRegister_UseAnotherMixOfRegistersWordAligned)
 	emitInstruction16("0101001mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
 	setRegisterValue(R1, 4);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
-	pinkySimStep(&m_context);
-	EXPECT_EQ(0xBAAD7777, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
+	step();
+	EXPECT_EQ(0xBAAD7777, memory_read_32(INITIAL_PC + 4));
 }
 
 TEST_F(CpuTestHelper, strhRegister_YetAnotherMixOfRegistersNotWordAligned)
@@ -41,9 +41,9 @@ TEST_F(CpuTestHelper, strhRegister_YetAnotherMixOfRegistersNotWordAligned)
 	emitInstruction16("0101001mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 6);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
-	pinkySimStep(&m_context);
-	EXPECT_EQ(0x4444FEED, memory_read_32(m_context.pMemory, INITIAL_PC + 4));
+	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
+	step();
+	EXPECT_EQ(0x4444FEED, memory_read_32(INITIAL_PC + 4));
 }
 
 TEST_F(CpuTestHelper, strhRegister_AttemptUnalignedStore)
@@ -52,8 +52,8 @@ TEST_F(CpuTestHelper, strhRegister_AttemptUnalignedStore)
 	setRegisterValue(R3, INITIAL_PC + 1024);
 	setRegisterValue(R7, 1);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_WRITE);
-	pinkySimStep(&m_context);
+	memory_write_32(INITIAL_PC + 1024, 0xBAADFEED);
+	step();
 }
 
 TEST_F(CpuTestHelper, strhRegister_AttemptStoreToInvalidAddress)
@@ -62,5 +62,5 @@ TEST_F(CpuTestHelper, strhRegister_AttemptStoreToInvalidAddress)
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }

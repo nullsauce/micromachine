@@ -17,26 +17,26 @@ TEST_F(CpuTestHelper, undefined_Undedfined16BitWithAllZeroesForImmedaite)
 {
 	emitInstruction16("11011110iiiiiiii", 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, undefined_Undedfined16BitWithAllOnesForImmedaite)
 {
 	emitInstruction16("11011110iiiiiiii", -1);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, undefined_Undefined32BitWithAllZeroesForImmediate)
 {
 	emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", 0, 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, undefined_Undefined32BitWithAllOnesForImmediate)
 {
 	emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", -1, -1);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-	pinkySimStep(&m_context);
+	step();
 }

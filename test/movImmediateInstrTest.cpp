@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, movImmediate_MovToR0)
 	setExpectedXPSRflags("nzc");
 	clearCarry();
 	setExpectedRegisterValue(R0, 127);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, movImmediate_MovToR7)
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, movImmediate_MovToR7)
 	setExpectedXPSRflags("nzC");
 	setCarry();
 	setExpectedRegisterValue(R7, 127);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, movImmediate_MovSmallestImmediateValueToR3)
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper, movImmediate_MovSmallestImmediateValueToR3)
 	emitInstruction16("00100dddiiiiiiii", R3, 0);
 	setExpectedXPSRflags("nZ");
 	setExpectedRegisterValue(R3, 0);
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, movImmediate_MovLargestImmediateValueToR3)
@@ -49,5 +49,5 @@ TEST_F(CpuTestHelper, movImmediate_MovLargestImmediateValueToR3)
 	emitInstruction16("00100dddiiiiiiii", R3, 255);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R3, 255);
-	pinkySimStep(&m_context);
+	step();
 }

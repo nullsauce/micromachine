@@ -22,7 +22,7 @@ TEST_F(CpuTestHelper, sbcRegister_UseLowestRegisterForAllArgsAndShouldBeZeroWith
 	setExpectedXPSRflags("nZCv");
 	setExpectedRegisterValue(R0, 0);
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, sbcRegister_UseHigestRegisterForAllArgsAndShouldBeZeroWithCarrySetForNoBorrow)
@@ -31,7 +31,7 @@ TEST_F(CpuTestHelper, sbcRegister_UseHigestRegisterForAllArgsAndShouldBeZeroWith
 	setExpectedXPSRflags("nZCv");
 	setExpectedRegisterValue(R7, 0);
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper,
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper,
 	setExpectedXPSRflags("nzCv");
 	setExpectedRegisterValue(R2, 0x22222222U - 0x11111111U);
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, sbcRegister_ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
@@ -51,7 +51,7 @@ TEST_F(CpuTestHelper, sbcRegister_ForceCarryClearToIndicateBorrowAndResultWillBe
 	setRegisterValue(R1, 1);
 	setExpectedRegisterValue(R0, 0U - 1U);
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, sbcRegister_ForceNegativeOverflow)
@@ -62,7 +62,7 @@ TEST_F(CpuTestHelper, sbcRegister_ForceNegativeOverflow)
 	setRegisterValue(R1, 1U);
 	setExpectedRegisterValue(R2, (int32_t) 0x80000000U - 1U);
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, sbcRegister_ForcePositiveOverflow)
@@ -73,7 +73,7 @@ TEST_F(CpuTestHelper, sbcRegister_ForcePositiveOverflow)
 	setRegisterValue(R1, -1U);
 	setExpectedRegisterValue(R2, 0x7FFFFFFF + 1U);
 	setCarry();
-	pinkySimStep(&m_context);
+	step();
 }
 
 TEST_F(CpuTestHelper, sbcRegister_ClearCarryToCauseABorrowToOccur)
@@ -82,5 +82,5 @@ TEST_F(CpuTestHelper, sbcRegister_ClearCarryToCauseABorrowToOccur)
 	setExpectedXPSRflags("nzCv");
 	setExpectedRegisterValue(R2, 0x22222222U - 1U - 0x11111111U);
 	clearCarry(); // Causes borrow.
-	pinkySimStep(&m_context);
+	step();
 }
