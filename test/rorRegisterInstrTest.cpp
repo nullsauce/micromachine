@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* ROR - Register (ROtate Right)
    Encoding: 010000 0111 Rm:3 Rdn:3 */
-TEST_F(CpuTestHelper, rorRegister_Rotate1by1_CarryOutFromLowestBit)
+TEST_F(CpuTestHarness, rorRegister_Rotate1by1_CarryOutFromLowestBit)
 {
 	emitInstruction16("0100000111mmmddd", R0, R7);
 	setExpectedXPSRflags("NzC");
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate1by1_CarryOutFromLowestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
+TEST_F(CpuTestHarness, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
 {
 	emitInstruction16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("nz");
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_Rotate2by1_NoCarry)
+TEST_F(CpuTestHarness, rorRegister_Rotate2by1_NoCarry)
 {
 	emitInstruction16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate2by1_NoCarry)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_Rotate16Bits)
+TEST_F(CpuTestHarness, rorRegister_Rotate16Bits)
 {
 	emitInstruction16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
@@ -56,7 +56,7 @@ TEST_F(CpuTestHelper, rorRegister_Rotate16Bits)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf31)
+TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf31)
 {
 	emitInstruction16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
@@ -66,7 +66,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf31)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_RotateBy32_CarryOutHighestBit)
+TEST_F(CpuTestHarness, rorRegister_RotateBy32_CarryOutHighestBit)
 {
 	emitInstruction16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("NzC");
@@ -76,7 +76,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateBy32_CarryOutHighestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_RotateBy33)
+TEST_F(CpuTestHarness, rorRegister_RotateBy33)
 {
 	emitInstruction16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("NzC");
@@ -86,7 +86,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateBy33)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_RotateWithMaximumShiftOf255)
+TEST_F(CpuTestHarness, rorRegister_RotateWithMaximumShiftOf255)
 {
 	emitInstruction16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
@@ -96,7 +96,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateWithMaximumShiftOf255)
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
+TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
 {
 	emitInstruction16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("Nz");
@@ -106,7 +106,7 @@ TEST_F(CpuTestHelper, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_C
 	step();
 }
 
-TEST_F(CpuTestHelper, rorRegister_Rotate0by16)
+TEST_F(CpuTestHarness, rorRegister_Rotate0by16)
 {
 	emitInstruction16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("nZc");

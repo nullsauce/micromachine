@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* LDRSB - Register
    Encoding: 0101 011 Rm:3 Rn:3 Rt:3 */
-TEST_F(CpuTestHelper, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue)
+TEST_F(CpuTestHarness, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 {
 	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_NegativeValue)
+TEST_F(CpuTestHarness, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_NegativeValue)
 {
 	emitInstruction16("0101011mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_Neg
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_NegativeValue)
+TEST_F(CpuTestHarness, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_NegativeValue)
 {
 	emitInstruction16("0101011mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_Nega
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_NegativeValue)
+TEST_F(CpuTestHarness, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_NegativeValue)
 {
 	emitInstruction16("0101011mmmnnnttt", R0, R7, R5);
 	setRegisterValue(R7, INITIAL_PC);
@@ -56,7 +56,7 @@ TEST_F(CpuTestHelper, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_Neg
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrsbRegister_LoadAPositiveValue)
+TEST_F(CpuTestHarness, ldrsbRegister_LoadAPositiveValue)
 {
 	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -66,7 +66,7 @@ TEST_F(CpuTestHelper, ldrsbRegister_LoadAPositiveValue)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrsbRegister_AttemptLoadInvalidAddress)
+TEST_F(CpuTestHarness, ldrsbRegister_AttemptLoadInvalidAddress)
 {
 	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);

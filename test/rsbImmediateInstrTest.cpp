@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* RSB - Immediate
    Encoding: 010000 1001 Rn:3 Rd:3 */
-TEST_F(CpuTestHelper, rsbImmediate_UseLowestRegisterOnly)
+TEST_F(CpuTestHarness, rsbImmediate_UseLowestRegisterOnly)
 {
 	emitInstruction16("0100001001nnnddd", R0, R0);
 	setExpectedXPSRflags("nZCv");
@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, rsbImmediate_UseLowestRegisterOnly)
 	step();
 }
 
-TEST_F(CpuTestHelper, rsbImmediate_UseHigestRegisterOnly)
+TEST_F(CpuTestHarness, rsbImmediate_UseHigestRegisterOnly)
 {
 	emitInstruction16("0100001001nnnddd", R7, R7);
 	setExpectedXPSRflags("Nzcv");
@@ -32,7 +32,7 @@ TEST_F(CpuTestHelper, rsbImmediate_UseHigestRegisterOnly)
 	step();
 }
 
-TEST_F(CpuTestHelper, rsbImmediate_UseDifferentRegistersForEachArg)
+TEST_F(CpuTestHarness, rsbImmediate_UseDifferentRegistersForEachArg)
 {
 	emitInstruction16("0100001001nnnddd", R2, R0);
 	setExpectedXPSRflags("Nzcv");
@@ -40,7 +40,7 @@ TEST_F(CpuTestHelper, rsbImmediate_UseDifferentRegistersForEachArg)
 	step();
 }
 
-TEST_F(CpuTestHelper, rsbImmediate_ForceOverflowByNegatingLargestNegativeValue)
+TEST_F(CpuTestHarness, rsbImmediate_ForceOverflowByNegatingLargestNegativeValue)
 {
 	emitInstruction16("0100001001nnnddd", R0, R7);
 	setExpectedXPSRflags("NzcV");

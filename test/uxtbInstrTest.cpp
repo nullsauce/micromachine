@@ -11,13 +11,13 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 
 /* UXTB (Unsigned ExTend Byte)
    Encoding: 1011 0010 11 Rm:3 Rd:3 */
-TEST_F(CpuTestHelper, uxtb_ExtendLowestRegisterIntoHighestRegister_PositiveValue)
+TEST_F(CpuTestHarness, uxtb_ExtendLowestRegisterIntoHighestRegister_PositiveValue)
 {
 	emitInstruction16("1011001011mmmddd", R7, R0);
 	setRegisterValue(R7, 0x7F);
@@ -25,7 +25,7 @@ TEST_F(CpuTestHelper, uxtb_ExtendLowestRegisterIntoHighestRegister_PositiveValue
 	step();
 }
 
-TEST_F(CpuTestHelper, uxtb_ExtendHighestRegisterIntoLowestRegister_NegativeValue)
+TEST_F(CpuTestHarness, uxtb_ExtendHighestRegisterIntoLowestRegister_NegativeValue)
 {
 	emitInstruction16("1011001011mmmddd", R0, R7);
 	setRegisterValue(R0, 0x80);
@@ -33,7 +33,7 @@ TEST_F(CpuTestHelper, uxtb_ExtendHighestRegisterIntoLowestRegister_NegativeValue
 	step();
 }
 
-TEST_F(CpuTestHelper, uxtb_OverwriteUpperBits_PositiveValue)
+TEST_F(CpuTestHarness, uxtb_OverwriteUpperBits_PositiveValue)
 {
 	emitInstruction16("1011001011mmmddd", R6, R1);
 	setRegisterValue(R6, 0xBADBAD7F);
@@ -41,7 +41,7 @@ TEST_F(CpuTestHelper, uxtb_OverwriteUpperBits_PositiveValue)
 	step();
 }
 
-TEST_F(CpuTestHelper, uxtb_OverwriteUpperBits_NegativeValue)
+TEST_F(CpuTestHarness, uxtb_OverwriteUpperBits_NegativeValue)
 {
 	emitInstruction16("1011001011mmmddd", R2, R5);
 	setRegisterValue(R2, 0xBADBAD80);

@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* B - Encoding T1 (Conditional)
    Encoding: 1101 Cond:4 Imm:8 */
-TEST_F(CpuTestHelper, b_BEQ_NotTaken)
+TEST_F(CpuTestHarness, b_BEQ_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_EQ, 0);
 	// These tests set the APSR flags to specific value and expect them to be unmodified upon return.
@@ -25,7 +25,7 @@ TEST_F(CpuTestHelper, b_BEQ_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BEQ_Taken)
+TEST_F(CpuTestHarness, b_BEQ_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_EQ, 0);
 	setExpectedXPSRflags("Z");
@@ -34,7 +34,7 @@ TEST_F(CpuTestHelper, b_BEQ_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BNE_NotTaken)
+TEST_F(CpuTestHarness, b_BNE_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_NE, 0);
 	setExpectedXPSRflags("Z");
@@ -42,7 +42,7 @@ TEST_F(CpuTestHelper, b_BNE_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BNE_Taken)
+TEST_F(CpuTestHarness, b_BNE_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_NE, 0);
 	setExpectedXPSRflags("z");
@@ -51,7 +51,7 @@ TEST_F(CpuTestHelper, b_BNE_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BCS_NotTaken)
+TEST_F(CpuTestHarness, b_BCS_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_CS, 0);
 	setExpectedXPSRflags("c");
@@ -59,7 +59,7 @@ TEST_F(CpuTestHelper, b_BCS_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BCS_Taken)
+TEST_F(CpuTestHarness, b_BCS_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_CS, 0);
 	setExpectedXPSRflags("C");
@@ -68,7 +68,7 @@ TEST_F(CpuTestHelper, b_BCS_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BCC_NotTaken)
+TEST_F(CpuTestHarness, b_BCC_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_CC, 0);
 	setExpectedXPSRflags("C");
@@ -76,7 +76,7 @@ TEST_F(CpuTestHelper, b_BCC_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BCC_Taken)
+TEST_F(CpuTestHarness, b_BCC_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_CC, 0);
 	setExpectedXPSRflags("c");
@@ -85,7 +85,7 @@ TEST_F(CpuTestHelper, b_BCC_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BMI_NotTaken)
+TEST_F(CpuTestHarness, b_BMI_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_MI, 0);
 	setExpectedXPSRflags("n");
@@ -93,7 +93,7 @@ TEST_F(CpuTestHelper, b_BMI_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BMI_Taken)
+TEST_F(CpuTestHarness, b_BMI_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_MI, 0);
 	setExpectedXPSRflags("N");
@@ -102,7 +102,7 @@ TEST_F(CpuTestHelper, b_BMI_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BPL_NotTaken)
+TEST_F(CpuTestHarness, b_BPL_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_PL, 0);
 	setExpectedXPSRflags("N");
@@ -110,7 +110,7 @@ TEST_F(CpuTestHelper, b_BPL_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BPL_Taken)
+TEST_F(CpuTestHarness, b_BPL_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_PL, 0);
 	setExpectedXPSRflags("n");
@@ -119,7 +119,7 @@ TEST_F(CpuTestHelper, b_BPL_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BVS_NotTaken)
+TEST_F(CpuTestHarness, b_BVS_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_VS, 0);
 	setExpectedXPSRflags("v");
@@ -127,7 +127,7 @@ TEST_F(CpuTestHelper, b_BVS_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BVS_Taken)
+TEST_F(CpuTestHarness, b_BVS_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_VS, 0);
 	setExpectedXPSRflags("V");
@@ -136,7 +136,7 @@ TEST_F(CpuTestHelper, b_BVS_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BVC_NotTaken)
+TEST_F(CpuTestHarness, b_BVC_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_VC, 0);
 	setExpectedXPSRflags("V");
@@ -144,7 +144,7 @@ TEST_F(CpuTestHelper, b_BVC_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BVC_Taken)
+TEST_F(CpuTestHarness, b_BVC_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_VC, 0);
 	setExpectedXPSRflags("v");
@@ -153,7 +153,7 @@ TEST_F(CpuTestHelper, b_BVC_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BHI_NotTaken)
+TEST_F(CpuTestHarness, b_BHI_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_HI, 0);
 	setExpectedXPSRflags("cZ");
@@ -162,7 +162,7 @@ TEST_F(CpuTestHelper, b_BHI_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BHI_Taken)
+TEST_F(CpuTestHarness, b_BHI_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_HI, 0);
 	setExpectedXPSRflags("Cz");
@@ -172,7 +172,7 @@ TEST_F(CpuTestHelper, b_BHI_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLS_NotTaken)
+TEST_F(CpuTestHarness, b_BLS_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LS, 0);
 	setExpectedXPSRflags("Cz");
@@ -181,7 +181,7 @@ TEST_F(CpuTestHelper, b_BLS_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLS_Taken)
+TEST_F(CpuTestHarness, b_BLS_Taken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LS, 0);
 	setExpectedXPSRflags("cZ");
@@ -191,7 +191,7 @@ TEST_F(CpuTestHelper, b_BLS_Taken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BGE_NotTaken)
+TEST_F(CpuTestHarness, b_BGE_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
 	setExpectedXPSRflags("Nv");
@@ -200,7 +200,7 @@ TEST_F(CpuTestHelper, b_BGE_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BGE_Taken1)
+TEST_F(CpuTestHarness, b_BGE_Taken1)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
 	setExpectedXPSRflags("NV");
@@ -210,7 +210,7 @@ TEST_F(CpuTestHelper, b_BGE_Taken1)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BGE_Taken2)
+TEST_F(CpuTestHarness, b_BGE_Taken2)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
 	setExpectedXPSRflags("nv");
@@ -220,7 +220,7 @@ TEST_F(CpuTestHelper, b_BGE_Taken2)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLT_NotTaken)
+TEST_F(CpuTestHarness, b_BLT_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
 	setExpectedXPSRflags("NV");
@@ -229,7 +229,7 @@ TEST_F(CpuTestHelper, b_BLT_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLT_Taken1)
+TEST_F(CpuTestHarness, b_BLT_Taken1)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
 	setExpectedXPSRflags("Nv");
@@ -239,7 +239,7 @@ TEST_F(CpuTestHelper, b_BLT_Taken1)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLT_Taken2)
+TEST_F(CpuTestHarness, b_BLT_Taken2)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
 	setExpectedXPSRflags("nV");
@@ -249,7 +249,7 @@ TEST_F(CpuTestHelper, b_BLT_Taken2)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BGT_NotTaken)
+TEST_F(CpuTestHarness, b_BGT_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
 	setExpectedXPSRflags("ZNV");
@@ -259,7 +259,7 @@ TEST_F(CpuTestHelper, b_BGT_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BGT_Taken1)
+TEST_F(CpuTestHarness, b_BGT_Taken1)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
 	setExpectedXPSRflags("znv");
@@ -270,7 +270,7 @@ TEST_F(CpuTestHelper, b_BGT_Taken1)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BGT_Taken2)
+TEST_F(CpuTestHarness, b_BGT_Taken2)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
 	setExpectedXPSRflags("zNV");
@@ -281,7 +281,7 @@ TEST_F(CpuTestHelper, b_BGT_Taken2)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLE_NotTaken)
+TEST_F(CpuTestHarness, b_BLE_NotTaken)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
 	setExpectedXPSRflags("zNV");
@@ -291,7 +291,7 @@ TEST_F(CpuTestHelper, b_BLE_NotTaken)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLE_Taken1)
+TEST_F(CpuTestHarness, b_BLE_Taken1)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
 	setExpectedXPSRflags("ZNv");
@@ -302,7 +302,7 @@ TEST_F(CpuTestHelper, b_BLE_Taken1)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BLE_Taken2)
+TEST_F(CpuTestHarness, b_BLE_Taken2)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
 	setExpectedXPSRflags("ZnV");
@@ -313,7 +313,7 @@ TEST_F(CpuTestHelper, b_BLE_Taken2)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BEQ_TakenWithLargestPositiveOffset)
+TEST_F(CpuTestHarness, b_BEQ_TakenWithLargestPositiveOffset)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_EQ, 127);
 	setExpectedXPSRflags("Z");
@@ -322,7 +322,7 @@ TEST_F(CpuTestHelper, b_BEQ_TakenWithLargestPositiveOffset)
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BEQ_TakenWithLargesNegativeOffset)
+TEST_F(CpuTestHarness, b_BEQ_TakenWithLargesNegativeOffset)
 {
 	emitInstruction16("1101cccciiiiiiii", COND_EQ, -128);
 	setExpectedXPSRflags("Z");
@@ -335,21 +335,21 @@ TEST_F(CpuTestHelper, b_BEQ_TakenWithLargesNegativeOffset)
 
 /* B - Encoding T2 (Unconditional)
    Encoding: 11100 Imm:11 */
-TEST_F(CpuTestHelper, b_BAL_ZeroOffset)
+TEST_F(CpuTestHarness, b_BAL_ZeroOffset)
 {
 	emitInstruction16("11100iiiiiiiiiii", 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BAL_LargestPositiveOffset)
+TEST_F(CpuTestHarness, b_BAL_LargestPositiveOffset)
 {
 	emitInstruction16("11100iiiiiiiiiii", 1023);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 + 1023 * 2);
 	step();
 }
 
-TEST_F(CpuTestHelper, b_BAL_LargestNegativeOffset)
+TEST_F(CpuTestHarness, b_BAL_LargestNegativeOffset)
 {
 	emitInstruction16("11100iiiiiiiiiii", -1024);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 - 1024 * 2);

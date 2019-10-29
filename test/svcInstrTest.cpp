@@ -11,19 +11,19 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* SVC
    Encoding: 1101 1111 Imm:8 */
-TEST_F(CpuTestHelper, svc_SmallestImmediate)
+TEST_F(CpuTestHarness, svc_SmallestImmediate)
 {
 	emitInstruction16("11011111iiiiiiii", 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
 	step();
 }
 
-TEST_F(CpuTestHelper, svc_LargestImmediate)
+TEST_F(CpuTestHarness, svc_LargestImmediate)
 {
 	emitInstruction16("11011111iiiiiiii", 255);
 	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);

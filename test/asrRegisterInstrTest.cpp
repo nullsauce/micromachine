@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* ASR - Register (Arithmetic Shift Right)
    Encoding: 010000 0100 Rm:3 Rdn:3 */
-TEST_F(CpuTestHelper, asrRegister_Shift1by1_CarryOutFromLowestBit)
+TEST_F(CpuTestHarness, asrRegister_Shift1by1_CarryOutFromLowestBit)
 {
 	emitInstruction16("0100000100mmmddd", R0, R7);
 	setRegisterValue(R7, 1);
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, asrRegister_Shift1by1_CarryOutFromLowestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
+TEST_F(CpuTestHarness, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
 {
 	emitInstruction16("0100000100mmmddd", R0, R7);
 	setRegisterValue(R7, 1);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_Shift2by1_NoCarryFromLowestBit)
+TEST_F(CpuTestHarness, asrRegister_Shift2by1_NoCarryFromLowestBit)
 {
 	emitInstruction16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, 2);
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, asrRegister_Shift2by1_NoCarryFromLowestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftNegativeNumberby31)
+TEST_F(CpuTestHarness, asrRegister_ShiftNegativeNumberby31)
 {
 	emitInstruction16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, -1);
@@ -56,7 +56,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftNegativeNumberby31)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
+TEST_F(CpuTestHarness, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
 {
 	emitInstruction16("0100000100mmmddd", R7, R0);
 	setRegisterValue(R0, 0x80000000);
@@ -66,7 +66,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHigh
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueby33)
+TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueby33)
 {
 	emitInstruction16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, -1);
@@ -76,7 +76,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueby33)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftPositiveValueby33)
+TEST_F(CpuTestHarness, asrRegister_ShiftPositiveValueby33)
 {
 	emitInstruction16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, 0x7FFFFFFF);
@@ -86,7 +86,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftPositiveValueby33)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
+TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
 {
 	emitInstruction16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, -1);
@@ -96,7 +96,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
+TEST_F(CpuTestHarness, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
 {
 	emitInstruction16("0100000100mmmddd", R7, R0);
 	setRegisterValue(R0, -1);
@@ -106,7 +106,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmod
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftLargestPositiveNumberBy31)
+TEST_F(CpuTestHarness, asrRegister_ShiftLargestPositiveNumberBy31)
 {
 	emitInstruction16("0100000100mmmddd", R2, R3);
 	setRegisterValue(R3, 0x7FFFFFFF);
@@ -116,7 +116,7 @@ TEST_F(CpuTestHelper, asrRegister_ShiftLargestPositiveNumberBy31)
 	step();
 }
 
-TEST_F(CpuTestHelper, asrRegister_ShiftLargestNegativeNumberBy1)
+TEST_F(CpuTestHarness, asrRegister_ShiftLargestNegativeNumberBy1)
 {
 	emitInstruction16("0100000100mmmddd", R2, R3);
 	setRegisterValue(R3, 0x80000000);

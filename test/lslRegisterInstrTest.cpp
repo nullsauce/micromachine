@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* LSL - Register (Logical Shift Left)
    Encoding: 010000 0010 Rm:3 Rdn:3 */
-TEST_F(CpuTestHelper, lslRegister_ShiftR7by0_MinimumShift_CarryShouldBeUnmodified)
+TEST_F(CpuTestHarness, lslRegister_ShiftR7by0_MinimumShift_CarryShouldBeUnmodified)
 {
 	emitInstruction16("0100000010mmmddd", R0, R7);
 	setExpectedXPSRflags("nzC");
@@ -25,7 +25,7 @@ TEST_F(CpuTestHelper, lslRegister_ShiftR7by0_MinimumShift_CarryShouldBeUnmodifie
 	step();
 }
 
-TEST_F(CpuTestHelper, lslRegister_ShiftValue1by31_NegativeResult)
+TEST_F(CpuTestHarness, lslRegister_ShiftValue1by31_NegativeResult)
 {
 	emitInstruction16("0100000010mmmddd", R4, R3);
 	setExpectedXPSRflags("Nzc");
@@ -35,7 +35,7 @@ TEST_F(CpuTestHelper, lslRegister_ShiftValue1by31_NegativeResult)
 	step();
 }
 
-TEST_F(CpuTestHelper, lslRegister_ShiftValue1by32_CarryOutFromLowestBit)
+TEST_F(CpuTestHarness, lslRegister_ShiftValue1by32_CarryOutFromLowestBit)
 {
 	emitInstruction16("0100000010mmmddd", R7, R0);
 	setExpectedXPSRflags("nZC");
@@ -45,7 +45,7 @@ TEST_F(CpuTestHelper, lslRegister_ShiftValue1by32_CarryOutFromLowestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, lslRegister_ShiftNegativeValueBy1_CarryOutFromHighestBit)
+TEST_F(CpuTestHarness, lslRegister_ShiftNegativeValueBy1_CarryOutFromHighestBit)
 {
 	emitInstruction16("0100000010mmmddd", R3, R4);
 	setExpectedXPSRflags("NzC");
@@ -55,7 +55,7 @@ TEST_F(CpuTestHelper, lslRegister_ShiftNegativeValueBy1_CarryOutFromHighestBit)
 	step();
 }
 
-TEST_F(CpuTestHelper, lslRegister_ShiftValue1by33_NoCarry)
+TEST_F(CpuTestHarness, lslRegister_ShiftValue1by33_NoCarry)
 {
 	emitInstruction16("0100000010mmmddd", R7, R0);
 	setExpectedXPSRflags("nZc");
@@ -65,7 +65,7 @@ TEST_F(CpuTestHelper, lslRegister_ShiftValue1by33_NoCarry)
 	step();
 }
 
-TEST_F(CpuTestHelper, lslRegister_ShiftValuee1by255_MaximumShift)
+TEST_F(CpuTestHarness, lslRegister_ShiftValuee1by255_MaximumShift)
 {
 	emitInstruction16("0100000010mmmddd", R7, R0);
 	setExpectedXPSRflags("nZc");
@@ -75,7 +75,7 @@ TEST_F(CpuTestHelper, lslRegister_ShiftValuee1by255_MaximumShift)
 	step();
 }
 
-TEST_F(CpuTestHelper, lslRegister_ShiftValue1by256_ShouldBeTreatedAs0Shift_CarryUnmodified)
+TEST_F(CpuTestHarness, lslRegister_ShiftValue1by256_ShouldBeTreatedAs0Shift_CarryUnmodified)
 {
 	emitInstruction16("0100000010mmmddd", R7, R0);
 	setExpectedXPSRflags("nzc");

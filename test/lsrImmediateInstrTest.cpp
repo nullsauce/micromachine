@@ -11,7 +11,7 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 // Immediate values used for shift amount in tests.
 #define IMM_1  1
@@ -20,7 +20,7 @@
 
 /* LSR - Immediate (Logical Shift Right)
    Encoding: 000 01 imm:5 Rm:3 Rd:3 */
-TEST_F(CpuTestHelper, lsrImmediate_R2by1toR0)
+TEST_F(CpuTestHarness, lsrImmediate_R2by1toR0)
 {
 	emitInstruction16("00001iiiiimmmddd", IMM_1, R2, R0);
 	setExpectedXPSRflags("nzc");
@@ -28,7 +28,7 @@ TEST_F(CpuTestHelper, lsrImmediate_R2by1toR0)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrImmediate_R7by32toR0_ZeroResult)
+TEST_F(CpuTestHarness, lsrImmediate_R7by32toR0_ZeroResult)
 {
 	emitInstruction16("00001iiiiimmmddd", IMM_32, R7, R0);
 	setExpectedXPSRflags("nZc");
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, lsrImmediate_R7by32toR0_ZeroResult)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrImmediate_R1by1toR7_CarryOut)
+TEST_F(CpuTestHarness, lsrImmediate_R1by1toR7_CarryOut)
 {
 	emitInstruction16("00001iiiiimmmddd", IMM_1, R1, R7);
 	setExpectedXPSRflags("nzC");
@@ -44,7 +44,7 @@ TEST_F(CpuTestHelper, lsrImmediate_R1by1toR7_CarryOut)
 	step();
 }
 
-TEST_F(CpuTestHelper, lsrImmediate_R0by32_CarryOutAndIsZero)
+TEST_F(CpuTestHarness, lsrImmediate_R0by32_CarryOutAndIsZero)
 {
 	emitInstruction16("00001iiiiimmmddd", IMM_32, R0, R0);
 	setExpectedXPSRflags("nZC");

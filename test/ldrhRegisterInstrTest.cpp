@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* LDRH - Register
    Encoding: 0101 101 Rm:3 Rn:3 Rt:3 */
-TEST_F(CpuTestHelper, ldrhRegister_UseAMixOfRegistersWordAligned)
+TEST_F(CpuTestHarness, ldrhRegister_UseAMixOfRegistersWordAligned)
 {
 	emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, ldrhRegister_UseAMixOfRegistersWordAligned)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
+TEST_F(CpuTestHarness, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
 {
 	emitInstruction16("0101101mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
+TEST_F(CpuTestHarness, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
 {
 	emitInstruction16("0101101mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrhRegister_AttemptUnalignedLoad)
+TEST_F(CpuTestHarness, ldrhRegister_AttemptUnalignedLoad)
 {
 	emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -55,7 +55,7 @@ TEST_F(CpuTestHelper, ldrhRegister_AttemptUnalignedLoad)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrhRegister_AttemptLoadFromInvalidAddress)
+TEST_F(CpuTestHarness, ldrhRegister_AttemptLoadFromInvalidAddress)
 {
 	emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
