@@ -11,33 +11,33 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* CMP - Immediate
    Encoding: 001 01 Rn:3 Imm:8 */
-TEST_F(CpuTestHelper, cmpImmediate_CompareLowestRegisterToEqualValue)
+TEST_F(CpuTestHarness, cmpImmediate_CompareLowestRegisterToEqualValue)
 {
 	emitInstruction16("00101nnniiiiiiii", R0, 0);
 	setExpectedXPSRflags("nZCv");
 	step();
 }
 
-TEST_F(CpuTestHelper, cmpImmediate_CompareHighestRegisterToImmediateWhichIsSmaller)
+TEST_F(CpuTestHarness, cmpImmediate_CompareHighestRegisterToImmediateWhichIsSmaller)
 {
 	emitInstruction16("00101nnniiiiiiii", R7, 127);
 	setExpectedXPSRflags("nzCv");
 	step();
 }
 
-TEST_F(CpuTestHelper, cmpImmediate_CompareRegisterToLargestImmediateWhichIsLarger)
+TEST_F(CpuTestHarness, cmpImmediate_CompareRegisterToLargestImmediateWhichIsLarger)
 {
 	emitInstruction16("00101nnniiiiiiii", R0, 255);
 	setExpectedXPSRflags("Nzcv");
 	step();
 }
 
-TEST_F(CpuTestHelper, cmpImmediate_CompareRegisterToImmediateWhichWillGenerateNegativeOverflow)
+TEST_F(CpuTestHarness, cmpImmediate_CompareRegisterToImmediateWhichWillGenerateNegativeOverflow)
 {
 	emitInstruction16("00101nnniiiiiiii", R3, 1);
 	setRegisterValue(R3, 0x80000000);

@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* PUSH
    Encoding: 1100 0 Rn:3 RegisterList:8 */
-TEST_F(CpuTestHelper, stm_JustPushR0WithR7AsAddress)
+TEST_F(CpuTestHarness, stm_JustPushR0WithR7AsAddress)
 {
 	emitInstruction16("11000nnnrrrrrrrr", R7, (1 << 0));
 	setRegisterValue(R7, INITIAL_PC + 16);
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, stm_JustPushR0WithR7AsAddress)
 	EXPECT_EQ(0x0, memory_read_32(INITIAL_PC + 16));
 }
 
-TEST_F(CpuTestHelper, stm_JustPushR7WithR0AsAddress)
+TEST_F(CpuTestHarness, stm_JustPushR7WithR0AsAddress)
 {
 	emitInstruction16("11000nnnrrrrrrrr", R0, (1 << 7));
 	setRegisterValue(R0, INITIAL_PC + 16);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, stm_JustPushR7WithR0AsAddress)
 	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_PC + 16));
 }
 
-TEST_F(CpuTestHelper, stm_PushAllWithR0AsAddress)
+TEST_F(CpuTestHarness, stm_PushAllWithR0AsAddress)
 {
 	emitInstruction16("11000nnnrrrrrrrr", R0, 0xFF);
 	setRegisterValue(R0, INITIAL_PC + 16);
@@ -49,7 +49,7 @@ TEST_F(CpuTestHelper, stm_PushAllWithR0AsAddress)
 		EXPECT_EQ(0x11111111U * i, memory_read_32(INITIAL_PC + 16 + 4 * i));
 }
 
-TEST_F(CpuTestHelper, stm_PushAllButR7WithR7AsAddress)
+TEST_F(CpuTestHarness, stm_PushAllButR7WithR7AsAddress)
 {
 	emitInstruction16("11000nnnrrrrrrrr", R7, 0x7F);
 	setRegisterValue(R7, INITIAL_PC + 16);
@@ -61,7 +61,7 @@ TEST_F(CpuTestHelper, stm_PushAllButR7WithR7AsAddress)
 		EXPECT_EQ(0x11111111U * i, memory_read_32(INITIAL_PC + 16 + 4 * i));
 }
 
-TEST_F(CpuTestHelper, stm_HardFaultFromInvalidMemoryWrite)
+TEST_F(CpuTestHarness, stm_HardFaultFromInvalidMemoryWrite)
 {
 	emitInstruction16("11000nnnrrrrrrrr", R0, 1 << 0);
 	setRegisterValue(R0, 0xFFFFFFFC);

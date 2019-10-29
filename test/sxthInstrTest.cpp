@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* SXTH (Sign ExTend Halfword)
    Encoding: 1011 0010 00 Rm:3 Rd:3 */
-TEST_F(CpuTestHelper, sxth_SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
+TEST_F(CpuTestHarness, sxth_SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
 {
 	emitInstruction16("1011001000mmmddd", R7, R0);
 	setRegisterValue(R7, 0x7FFF);
@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, sxth_SignExtendLowestRegisterIntoHighestRegister_PositiveV
 	step();
 }
 
-TEST_F(CpuTestHelper, sxth_SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
+TEST_F(CpuTestHarness, sxth_SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
 {
 	emitInstruction16("1011001000mmmddd", R0, R7);
 	setRegisterValue(R0, 0x8000);
@@ -32,7 +32,7 @@ TEST_F(CpuTestHelper, sxth_SignExtendHighestRegisterIntoLowestRegister_NegativeV
 	step();
 }
 
-TEST_F(CpuTestHelper, sxth_OverwriteUpperBits_PositiveValue)
+TEST_F(CpuTestHarness, sxth_OverwriteUpperBits_PositiveValue)
 {
 	emitInstruction16("1011001000mmmddd", R6, R1);
 	setRegisterValue(R6, 0xF00D7FFF);
@@ -40,7 +40,7 @@ TEST_F(CpuTestHelper, sxth_OverwriteUpperBits_PositiveValue)
 	step();
 }
 
-TEST_F(CpuTestHelper, sxth_OverwriteUpperBits_NegativeValue)
+TEST_F(CpuTestHarness, sxth_OverwriteUpperBits_NegativeValue)
 {
 	emitInstruction16("1011001000mmmddd", R2, R5);
 	setRegisterValue(R2, 0xF00D8000);

@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* STR - Register
    Encoding: 0101 000 Rm:3 Rn:3 Rt:3 */
-TEST_F(CpuTestHelper, strRegister_UseAMixOfRegisters)
+TEST_F(CpuTestHarness, strRegister_UseAMixOfRegisters)
 {
 	emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, strRegister_UseAMixOfRegisters)
 	EXPECT_EQ(0x00000000, memory_read_32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHelper, strRegister_UseAnotherMixOfRegisters)
+TEST_F(CpuTestHarness, strRegister_UseAnotherMixOfRegisters)
 {
 	emitInstruction16("0101000mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, strRegister_UseAnotherMixOfRegisters)
 	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHelper, strRegister_YetAnotherMixOfRegisters)
+TEST_F(CpuTestHarness, strRegister_YetAnotherMixOfRegisters)
 {
 	emitInstruction16("0101000mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, strRegister_YetAnotherMixOfRegisters)
 	EXPECT_EQ(0x44444444, memory_read_32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHelper, strRegister_AttemptUnalignedStore)
+TEST_F(CpuTestHarness, strRegister_AttemptUnalignedStore)
 {
 	emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -55,7 +55,7 @@ TEST_F(CpuTestHelper, strRegister_AttemptUnalignedStore)
 	step();
 }
 
-TEST_F(CpuTestHelper, strRegister_AttemptStoreToInvalidAddress)
+TEST_F(CpuTestHarness, strRegister_AttemptStoreToInvalidAddress)
 {
 	emitInstruction16("0101000mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);

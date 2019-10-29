@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* LDR - Literal
    Encoding: 01001 Rt:3 Imm:8 */
-TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegister)
+TEST_F(CpuTestHarness, ldrLiteral_LoadOffset0IntoHighestRegister)
 {
 	emitInstruction16("01001tttiiiiiiii", R7, 0);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -24,7 +24,7 @@ TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegister)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
+TEST_F(CpuTestHarness, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
 {
 	// Emit UNDEFINED 16-bit instruction.
 	emitInstruction16("1101111000000000");
@@ -37,7 +37,7 @@ TEST_F(CpuTestHelper, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
+TEST_F(CpuTestHarness, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
 {
 	emitInstruction16("01001tttiiiiiiii", R0, 255);
 	memory_write_32(INITIAL_PC + 4 + 255 * 4, 0xBAADFEED);
@@ -45,7 +45,7 @@ TEST_F(CpuTestHelper, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrLiteral_AttemptToLoadFromInvalidAddress)
+TEST_F(CpuTestHarness, ldrLiteral_AttemptToLoadFromInvalidAddress)
 {
 	m_emitAddress = INITIAL_SP - 128;
 	setRegisterValue(PC, INITIAL_SP - 128);

@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* PUSH
    Encoding: 1011 0 10 M:1 RegisterList:8 */
-TEST_F(CpuTestHelper, push_JustPushLR)
+TEST_F(CpuTestHarness, push_JustPushLR)
 {
 	emitInstruction16("1011010Mrrrrrrrr", 1, 0);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4);
@@ -25,7 +25,7 @@ TEST_F(CpuTestHelper, push_JustPushLR)
 	EXPECT_EQ(INITIAL_LR, memory_read_32(INITIAL_SP - 4));
 }
 
-TEST_F(CpuTestHelper, push_JustPushR0)
+TEST_F(CpuTestHarness, push_JustPushR0)
 {
 	emitInstruction16("1011010Mrrrrrrrr", 0, 1);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4);
@@ -34,7 +34,7 @@ TEST_F(CpuTestHelper, push_JustPushR0)
 	EXPECT_EQ(0x0, memory_read_32(INITIAL_SP - 4));
 }
 
-TEST_F(CpuTestHelper, push_JustPushR7)
+TEST_F(CpuTestHarness, push_JustPushR7)
 {
 	emitInstruction16("1011010Mrrrrrrrr", 0, 1 << 7);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4);
@@ -43,7 +43,7 @@ TEST_F(CpuTestHelper, push_JustPushR7)
 	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_SP - 4));
 }
 
-TEST_F(CpuTestHelper, push_PushAll)
+TEST_F(CpuTestHarness, push_PushAll)
 {
 	emitInstruction16("1011010Mrrrrrrrr", 1, 0xFF);
 	setExpectedRegisterValue(SP, INITIAL_SP - 4 * 9);

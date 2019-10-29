@@ -11,12 +11,12 @@
     GNU General Public License for more details.
 */
 
-#include "framework/pinkySimBaseTest.hpp"
+#include "framework/CpuTestHarness.hpp"
 
 
 /* LDRSH - Register
    Encoding: 0101 111 Rm:3 Rn:3 Rt:3 */
-TEST_F(CpuTestHelper, ldrshRegister_UseAMixOfRegistersWordAligned_NegativeValue)
+TEST_F(CpuTestHarness, ldrshRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 {
 	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -26,7 +26,7 @@ TEST_F(CpuTestHelper, ldrshRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrshRegister_UseAnotherMixOfRegistersWordAligned_NegativeValue)
+TEST_F(CpuTestHarness, ldrshRegister_UseAnotherMixOfRegistersWordAligned_NegativeValue)
 {
 	emitInstruction16("0101111mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHelper, ldrshRegister_UseAnotherMixOfRegistersWordAligned_Negative
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrshRegister_YetAnotherMixOfRegistersNotWordAligned_NegativeValue)
+TEST_F(CpuTestHarness, ldrshRegister_YetAnotherMixOfRegistersNotWordAligned_NegativeValue)
 {
 	emitInstruction16("0101111mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -46,7 +46,7 @@ TEST_F(CpuTestHelper, ldrshRegister_YetAnotherMixOfRegistersNotWordAligned_Negat
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrshRegister_LoadPositiveHalfWord)
+TEST_F(CpuTestHarness, ldrshRegister_LoadPositiveHalfWord)
 {
 	emitInstruction16("0101111mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
@@ -56,7 +56,7 @@ TEST_F(CpuTestHelper, ldrshRegister_LoadPositiveHalfWord)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrshRegister_AttemptUnalignedLoad)
+TEST_F(CpuTestHarness, ldrshRegister_AttemptUnalignedLoad)
 {
 	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
@@ -65,7 +65,7 @@ TEST_F(CpuTestHelper, ldrshRegister_AttemptUnalignedLoad)
 	step();
 }
 
-TEST_F(CpuTestHelper, ldrshRegister_AttemptLoadFromInvalidAddress)
+TEST_F(CpuTestHarness, ldrshRegister_AttemptLoadFromInvalidAddress)
 {
 	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
