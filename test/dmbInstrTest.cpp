@@ -19,14 +19,14 @@
              10 (0) 0 (1)(1)(1)(1) 0101 option:4 */
 TEST_F(pinkySimBase, dmb_OptionSetTo15)
 {
-    emitInstruction32("1111001110111111", "100011110101oooo", 15);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001110111111", "100011110101oooo", 15);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, dmb_OptionSetTo0)
 {
-    emitInstruction32("1111001110111111", "100011110101oooo", 0);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001110111111", "100011110101oooo", 0);
+	pinkySimStep(&m_context);
 }
 /*
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_0)

@@ -18,40 +18,40 @@
    Encoding: 010000 1011 Rm:3 Rn:3 */
 TEST_F(pinkySimBase, cmnRegister_UseLowestRegisterForAllArgs)
 {
-    emitInstruction16("0100001011mmmnnn", R0, R0);
-    setExpectedXPSRflags("nZcv");
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001011mmmnnn", R0, R0);
+	setExpectedXPSRflags("nZcv");
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, cmnRegister_UseHigestRegisterForAllArgs)
 {
-    emitInstruction16("0100001011mmmnnn", R7, R7);
-    setExpectedXPSRflags("NzcV");
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001011mmmnnn", R7, R7);
+	setExpectedXPSRflags("NzcV");
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, cmnRegister_UseDifferentRegistersForEachArg)
 {
-    emitInstruction16("0100001011mmmnnn", R1, R2);
-    setExpectedXPSRflags("nzcv");
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001011mmmnnn", R1, R2);
+	setExpectedXPSRflags("nzcv");
+	pinkySimStep(&m_context);
 }
 
 // Force APSR flags to be set which haven't already been covered above.
 TEST_F(pinkySimBase, cmnRegister_ForceCarryWithNoOverflow)
 {
-    emitInstruction16("0100001011mmmnnn", R1, R2);
-    setExpectedXPSRflags("nZCv");
-    setRegisterValue(R1, -1);
-    setRegisterValue(R2, 1);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001011mmmnnn", R1, R2);
+	setExpectedXPSRflags("nZCv");
+	setRegisterValue(R1, -1);
+	setRegisterValue(R2, 1);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, cmnRegister_ForceCarryAndOverflow)
 {
-    emitInstruction16("0100001011mmmnnn", R1, R2);
-    setExpectedXPSRflags("nzCV");
-    setRegisterValue(R1, -1);
-    setRegisterValue(R2, 0x80000000U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100001011mmmnnn", R1, R2);
+	setExpectedXPSRflags("nzCV");
+	setRegisterValue(R1, -1);
+	setRegisterValue(R2, 0x80000000U);
+	pinkySimStep(&m_context);
 }
