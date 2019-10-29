@@ -13,24 +13,11 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(tstRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* TST - Register
    Encoding: 010000 1000 Rm:3 Rn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-PINKY_TEST(tstRegister, UseLowestRegisterForBothArgsAndResultShouldBeZero)
+TEST_F(pinkySimBase, tstRegister_UseLowestRegisterForBothArgsAndResultShouldBeZero)
 {
     emitInstruction16("0100001000mmmnnn", R0, R0);
     // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -39,7 +26,7 @@ PINKY_TEST(tstRegister, UseLowestRegisterForBothArgsAndResultShouldBeZero)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(tstRegister, UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged)
+TEST_F(pinkySimBase, tstRegister_UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged)
 {
     emitInstruction16("0100001000mmmnnn", R7, R7);
     setExpectedXPSRflags("nzC");
@@ -47,14 +34,14 @@ PINKY_TEST(tstRegister, UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(tstRegister, AndR3andR7)
+TEST_F(pinkySimBase, tstRegister_AndR3andR7)
 {
     emitInstruction16("0100001000mmmnnn", R3, R7);
     setExpectedXPSRflags("nz");
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(tstRegister, UseAndToJustKeepNegativeSignBit)
+TEST_F(pinkySimBase, tstRegister_UseAndToJustKeepNegativeSignBit)
 {
     emitInstruction16("0100001000mmmnnn", R7, R0);
     setRegisterValue(R0, -1);

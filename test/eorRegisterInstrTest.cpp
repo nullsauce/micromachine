@@ -13,24 +13,11 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(eorRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* EOR - Register
    Encoding: 010000 0001 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-PINKY_TEST(eorRegister, UseLowestRegisterForBothArgs)
+TEST_F(pinkySimBase, eorRegister_UseLowestRegisterForBothArgs)
 {
     emitInstruction16("0100000001mmmddd", R0, R0);
     // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
@@ -40,7 +27,7 @@ PINKY_TEST(eorRegister, UseLowestRegisterForBothArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(eorRegister, UseHighestRegisterForBothArgs)
+TEST_F(pinkySimBase, eorRegister_UseHighestRegisterForBothArgs)
 {
     emitInstruction16("0100000001mmmddd", R7, R7);
     setExpectedXPSRflags("nZC");
@@ -49,7 +36,7 @@ PINKY_TEST(eorRegister, UseHighestRegisterForBothArgs)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(eorRegister, XorR3andR7)
+TEST_F(pinkySimBase, eorRegister_XorR3andR7)
 {
     emitInstruction16("0100000001mmmddd", R3, R7);
     setExpectedXPSRflags("nzc");
@@ -58,7 +45,7 @@ PINKY_TEST(eorRegister, XorR3andR7)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(eorRegister, UseXorToJustFlipNegativeSignBitOn)
+TEST_F(pinkySimBase, eorRegister_UseXorToJustFlipNegativeSignBitOn)
 {
     emitInstruction16("0100000001mmmddd", R6, R3);
     setRegisterValue(R6, 0x80000000);

@@ -13,28 +13,15 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
+
 // Immediate values used for shift amount in tests.
 #define IMM_1  1
 #define IMM_32 0
 
 
-TEST_GROUP_BASE(asrImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
-
 /* ASR - Immediate (Arithmetic Shift Right)
    Encoding: 000 10 imm:5 Rm:3 Rd:3 */
-PINKY_TEST(asrImmediate, ShiftNegativeNumberBy1_Shift0OutFromLowestBit)
+TEST_F(pinkySimBase, asrImmediate_ShiftNegativeNumberBy1_Shift0OutFromLowestBit)
 {
     emitInstruction16("00010iiiiimmmddd", IMM_1, R0, R7);
     setRegisterValue(R0, 0x80000000U);
@@ -43,7 +30,7 @@ PINKY_TEST(asrImmediate, ShiftNegativeNumberBy1_Shift0OutFromLowestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrImmediate, ShiftPositiveNumberBy1_Shift1OutFromLowestBit)
+TEST_F(pinkySimBase, asrImmediate_ShiftPositiveNumberBy1_Shift1OutFromLowestBit)
 {
     emitInstruction16("00010iiiiimmmddd", IMM_1, R7, R0);
     setRegisterValue(R7, 0x7FFFFFFFU);
@@ -52,7 +39,7 @@ PINKY_TEST(asrImmediate, ShiftPositiveNumberBy1_Shift1OutFromLowestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrImmediate, NegativeNumberBy32_Shift1OutFromHighestBit)
+TEST_F(pinkySimBase, asrImmediate_NegativeNumberBy32_Shift1OutFromHighestBit)
 {
     emitInstruction16("00010iiiiimmmddd", IMM_32, R0, R0);
     setRegisterValue(R0, 0x80000000U);
@@ -61,7 +48,7 @@ PINKY_TEST(asrImmediate, NegativeNumberBy32_Shift1OutFromHighestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrImmediate, PositiveNumberBy32_Shift0FromHighestBit)
+TEST_F(pinkySimBase, asrImmediate_PositiveNumberBy32_Shift0FromHighestBit)
 {
     emitInstruction16("00010iiiiimmmddd", IMM_32, R1, R6);
     setRegisterValue(R1, 0x7FFFFFFFU);
@@ -70,7 +57,7 @@ PINKY_TEST(asrImmediate, PositiveNumberBy32_Shift0FromHighestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrImmediate, R1by1ToR7)
+TEST_F(pinkySimBase, asrImmediate_R1by1ToR7)
 {
     emitInstruction16("00010iiiiimmmddd", IMM_1, R1, R7);
     setExpectedXPSRflags("nzC");
@@ -78,7 +65,7 @@ PINKY_TEST(asrImmediate, R1by1ToR7)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrImmediate, R7by1ToR2)
+TEST_F(pinkySimBase, asrImmediate_R7by1ToR2)
 {
     emitInstruction16("00010iiiiimmmddd", IMM_1, R7, R2);
     setExpectedXPSRflags("nzC");
@@ -86,7 +73,7 @@ PINKY_TEST(asrImmediate, R7by1ToR2)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrImmediate, R0by1)
+TEST_F(pinkySimBase, asrImmediate_R0by1)
 {
     emitInstruction16("00010iiiiimmmddd", IMM_1, R0, R0);
     setExpectedXPSRflags("nZc");

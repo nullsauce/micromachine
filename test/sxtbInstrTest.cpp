@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(sxtb, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* SXTB (Sign ExTend Byte)
    Encoding: 1011 0010 01 Rm:3 Rd:3 */
-PINKY_TEST(sxtb, SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
+TEST_F(pinkySimBase, sxtb_SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
 {
     emitInstruction16("1011001001mmmddd", R7, R0);
     setRegisterValue(R7, 0x7F);
@@ -37,7 +24,7 @@ PINKY_TEST(sxtb, SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(sxtb, SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
+TEST_F(pinkySimBase, sxtb_SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
 {
     emitInstruction16("1011001001mmmddd", R0, R7);
     setRegisterValue(R0, 0x80);
@@ -45,7 +32,7 @@ PINKY_TEST(sxtb, SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(sxtb, OverwriteUpperBits_PositiveValue)
+TEST_F(pinkySimBase, sxtb_OverwriteUpperBits_PositiveValue)
 {
     emitInstruction16("1011001001mmmddd", R6, R1);
     setRegisterValue(R6, 0xBADBAD7F);
@@ -53,7 +40,7 @@ PINKY_TEST(sxtb, OverwriteUpperBits_PositiveValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(sxtb, OverwriteUpperBits_NegativeValue)
+TEST_F(pinkySimBase, sxtb_OverwriteUpperBits_NegativeValue)
 {
     emitInstruction16("1011001001mmmddd", R2, R5);
     setRegisterValue(R2, 0xBADBAD80);

@@ -14,23 +14,9 @@
 #include "framework/pinkySimBaseTest.hpp"
 
 
-TEST_GROUP_BASE(asrRegister, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
-
 /* ASR - Register (Arithmetic Shift Right)
    Encoding: 010000 0100 Rm:3 Rdn:3 */
-PINKY_TEST(asrRegister, Shift1by1_CarryOutFromLowestBit)
+TEST_F(pinkySimBase, asrRegister_Shift1by1_CarryOutFromLowestBit)
 {
     emitInstruction16("0100000100mmmddd", R0, R7);
     setRegisterValue(R7, 1);
@@ -40,7 +26,7 @@ PINKY_TEST(asrRegister, Shift1by1_CarryOutFromLowestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, Shift1by0_MinimumShift_CarryUnmodified)
+TEST_F(pinkySimBase, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
 {
     emitInstruction16("0100000100mmmddd", R0, R7);
     setRegisterValue(R7, 1);
@@ -50,7 +36,7 @@ PINKY_TEST(asrRegister, Shift1by0_MinimumShift_CarryUnmodified)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, Shift2by1_NoCarryFromLowestBit)
+TEST_F(pinkySimBase, asrRegister_Shift2by1_NoCarryFromLowestBit)
 {
     emitInstruction16("0100000100mmmddd", R3, R2);
     setRegisterValue(R2, 2);
@@ -60,7 +46,7 @@ PINKY_TEST(asrRegister, Shift2by1_NoCarryFromLowestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftNegativeNumberby31)
+TEST_F(pinkySimBase, asrRegister_ShiftNegativeNumberby31)
 {
     emitInstruction16("0100000100mmmddd", R3, R2);
     setRegisterValue(R2, -1);
@@ -70,7 +56,7 @@ PINKY_TEST(asrRegister, ShiftNegativeNumberby31)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
+TEST_F(pinkySimBase, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
 {
     emitInstruction16("0100000100mmmddd", R7, R0);
     setRegisterValue(R0, 0x80000000);
@@ -80,7 +66,7 @@ PINKY_TEST(asrRegister, ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftNegativeValueby33)
+TEST_F(pinkySimBase, asrRegister_ShiftNegativeValueby33)
 {
     emitInstruction16("0100000100mmmddd", R3, R2);
     setRegisterValue(R2, -1);
@@ -90,7 +76,7 @@ PINKY_TEST(asrRegister, ShiftNegativeValueby33)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftPositiveValueby33)
+TEST_F(pinkySimBase, asrRegister_ShiftPositiveValueby33)
 {
     emitInstruction16("0100000100mmmddd", R3, R2);
     setRegisterValue(R2, 0x7FFFFFFF);
@@ -100,7 +86,7 @@ PINKY_TEST(asrRegister, ShiftPositiveValueby33)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftNegativeValueByMaximumShiftOf255)
+TEST_F(pinkySimBase, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
 {
     emitInstruction16("0100000100mmmddd", R3, R2);
     setRegisterValue(R2, -1);
@@ -110,7 +96,7 @@ PINKY_TEST(asrRegister, ShiftNegativeValueByMaximumShiftOf255)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
+TEST_F(pinkySimBase, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
 {
     emitInstruction16("0100000100mmmddd", R7, R0);
     setRegisterValue(R0, -1);
@@ -120,7 +106,7 @@ PINKY_TEST(asrRegister, ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftLargestPositiveNumberBy31)
+TEST_F(pinkySimBase, asrRegister_ShiftLargestPositiveNumberBy31)
 {
     emitInstruction16("0100000100mmmddd", R2, R3);
     setRegisterValue(R3, 0x7FFFFFFF);
@@ -130,7 +116,7 @@ PINKY_TEST(asrRegister, ShiftLargestPositiveNumberBy31)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(asrRegister, ShiftLargestNegativeNumberBy1)
+TEST_F(pinkySimBase, asrRegister_ShiftLargestNegativeNumberBy1)
 {
     emitInstruction16("0100000100mmmddd", R2, R3);
     setRegisterValue(R3, 0x80000000);

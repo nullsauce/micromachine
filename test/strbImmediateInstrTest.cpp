@@ -13,68 +13,54 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(strbImmediate, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
-
 /* STRB - Immediate
    Encoding: 011 1 0 Imm:5 Rn:3 Rt:3 */
-PINKY_TEST(strbImmediate, UseAMixOfRegistersWordAlignedWithSmallestOffset)
+TEST_F(pinkySimBase, strbImmediate_UseAMixOfRegistersWordAlignedWithSmallestOffset)
 {
     emitInstruction16("01110iiiiinnnttt", 0, R7, R0);
     setRegisterValue(R7, INITIAL_PC + 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0xBAADFE00, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0xBAADFE00, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-PINKY_TEST(strbImmediate, UseAnotherMixOfRegistersSecondByteInWord)
+TEST_F(pinkySimBase, strbImmediate_UseAnotherMixOfRegistersSecondByteInWord)
 {
     emitInstruction16("01110iiiiinnnttt", 1, R0, R7);
     setRegisterValue(R0, INITIAL_PC + 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0xBAAD77ED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0xBAAD77ED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-PINKY_TEST(strbImmediate, YetAnotherMixOfRegistersThirdByteInWord)
+TEST_F(pinkySimBase, strbImmediate_YetAnotherMixOfRegistersThirdByteInWord)
 {
     emitInstruction16("01110iiiiinnnttt", 2, R3, R4);
     setRegisterValue(R3, INITIAL_PC + 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0xBA44FEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0xBA44FEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-PINKY_TEST(strbImmediate, YetAnotherMixOfRegistersFourthByteInWord)
+TEST_F(pinkySimBase, strbImmediate_YetAnotherMixOfRegistersFourthByteInWord)
 {
     emitInstruction16("01110iiiiinnnttt", 3, R1, R5);
     setRegisterValue(R1, INITIAL_PC + 4);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 4, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0x55ADFEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
+    EXPECT_EQ(0x55ADFEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 4));
 }
 
-PINKY_TEST(strbImmediate, LargestOffset)
+TEST_F(pinkySimBase, strbImmediate_LargestOffset)
 {
     emitInstruction16("01110iiiiinnnttt", 31, R2, R4);
     setRegisterValue(R2, INITIAL_PC);
     SimpleMemory_SetMemory(m_context.pMemory, INITIAL_PC + 28, 0xBAADFEED, READ_WRITE);
     pinkySimStep(&m_context);
-    CHECK_EQUAL(0x44ADFEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 28));
+    EXPECT_EQ(0x44ADFEED, IMemory_Read32(m_context.pMemory, INITIAL_PC + 28));
 }
 
-PINKY_TEST(strbImmediate, AttemptStoreToInvalidAddress)
+TEST_F(pinkySimBase, strbImmediate_AttemptStoreToInvalidAddress)
 {
     emitInstruction16("01110iiiiinnnttt", 0, R3, R0);
     setRegisterValue(R3, 0xFFFFFFFC);

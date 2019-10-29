@@ -13,23 +13,10 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(revsh, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* REVSH
    Encoding: 1011 1010 11 Rm:3 Rd:3 */
-PINKY_TEST(revsh, RevR0toR7)
+TEST_F(pinkySimBase, revsh_RevR0toR7)
 {
     emitInstruction16("1011101011mmmddd", R0, R7);
     setRegisterValue(R0, 0x12345678);
@@ -37,7 +24,7 @@ PINKY_TEST(revsh, RevR0toR7)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(revsh, RevR7toR0)
+TEST_F(pinkySimBase, revsh_RevR7toR0)
 {
     emitInstruction16("1011101011mmmddd", R7, R0);
     setRegisterValue(R7, 0x12345678);
@@ -45,7 +32,7 @@ PINKY_TEST(revsh, RevR7toR0)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(revsh, PositiveValue)
+TEST_F(pinkySimBase, revsh_PositiveValue)
 {
     emitInstruction16("1011101011mmmddd", R7, R0);
     setRegisterValue(R7, 0xFF7F);
@@ -53,7 +40,7 @@ PINKY_TEST(revsh, PositiveValue)
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(revsh, NegativeValue)
+TEST_F(pinkySimBase, revsh_NegativeValue)
 {
     emitInstruction16("1011101011mmmddd", R7, R0);
     setRegisterValue(R7, 0x0080);

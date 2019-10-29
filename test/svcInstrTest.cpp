@@ -13,30 +13,17 @@
 
 #include "framework/pinkySimBaseTest.hpp"
 
-TEST_GROUP_BASE(svc, pinkySimBase)
-{
-    void setup()
-    {
-        pinkySimBase::setup();
-    }
-
-    void teardown()
-    {
-        pinkySimBase::teardown();
-    }
-};
-
 
 /* SVC
    Encoding: 1101 1111 Imm:8 */
-PINKY_TEST(svc, SmallestImmediate)
+TEST_F(pinkySimBase, svc_SmallestImmediate)
 {
     emitInstruction16("11011111iiiiiiii", 0);
 	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
     pinkySimStep(&m_context);
 }
 
-PINKY_TEST(svc, LargestImmediate)
+TEST_F(pinkySimBase, svc_LargestImmediate)
 {
     emitInstruction16("11011111iiiiiiii", 255);
 	setExpectedExceptionTaken(PINKYSIM_STEP_SVC);
