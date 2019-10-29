@@ -16,9 +16,10 @@
 
 /* WFE
    Encoding: 1011 1111 0010 0000 */
-TEST_SIM_ONLY(wfe, BasicTest)
+TEST_SIM_ONLY(wfe, BasicTest
+)
 {
-    emitInstruction16("1011111100100000");
-    setExpectedStepReturn(PINKYSIM_STEP_UNSUPPORTED);
-    pinkySimStep(&m_context);
+emitInstruction16("1011111100100000");
+setExpectedStepReturn(PINKYSIM_STEP_UNSUPPORTED);
+pinkySimStep(&m_context);
 }

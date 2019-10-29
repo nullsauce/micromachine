@@ -18,35 +18,35 @@
    Encoding: 000 11 1 1 Imm:3 Rn:3 Rd:3 */
 TEST_F(pinkySimBase, subImmediate_T1UseLowestRegisterOnly_SmallestImmediate)
 {
-    emitInstruction16("0001111iiinnnddd", 0, R0, R0);
-    setExpectedXPSRflags("nZCv");
-    setExpectedRegisterValue(R0, 0U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0001111iiinnnddd", 0, R0, R0);
+	setExpectedXPSRflags("nZCv");
+	setExpectedRegisterValue(R0, 0U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, subImmediate_T1UseHigestRegisterOnly_LargestImmediate)
 {
-    emitInstruction16("0001111iiinnnddd", 7, R7, R7);
-    setExpectedXPSRflags("nzCv");
-    setExpectedRegisterValue(R7, 0x77777777U - 7U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0001111iiinnnddd", 7, R7, R7);
+	setExpectedXPSRflags("nzCv");
+	setExpectedRegisterValue(R7, 0x77777777U - 7U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, subImmediate_T1UseDifferentRegistersForEachArg)
 {
-    emitInstruction16("0001111iiinnnddd", 3, R0, R2);
-    setExpectedXPSRflags("Nzcv");
-    setExpectedRegisterValue(R2, 0U - 3U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0001111iiinnnddd", 3, R0, R2);
+	setExpectedXPSRflags("Nzcv");
+	setExpectedRegisterValue(R2, 0U - 3U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, subImmediate_T1ForceOverflowPastLargestNegativeInteger)
 {
-    emitInstruction16("0001111iiinnnddd", 1, R1, R6);
-    setExpectedXPSRflags("nzCV");
-    setRegisterValue(R1, 0x80000000);
-    setExpectedRegisterValue(R6, 0x80000000U - 1U);
-    pinkySimStep(&m_context);
+	emitInstruction16("0001111iiinnnddd", 1, R1, R6);
+	setExpectedXPSRflags("nzCV");
+	setRegisterValue(R1, 0x80000000);
+	setExpectedRegisterValue(R6, 0x80000000U - 1U);
+	pinkySimStep(&m_context);
 }
 
 
@@ -55,33 +55,33 @@ TEST_F(pinkySimBase, subImmediate_T1ForceOverflowPastLargestNegativeInteger)
    Encoding: 001 11 Rdn:3 Imm:8 */
 TEST_F(pinkySimBase, subImmediate_T2LowestRegister_SmallestImmediate)
 {
-    emitInstruction16("00111dddiiiiiiii", R0, 0);
-    setExpectedXPSRflags("nZCv");
-    setExpectedRegisterValue(R0, 0U);
-    pinkySimStep(&m_context);
+	emitInstruction16("00111dddiiiiiiii", R0, 0);
+	setExpectedXPSRflags("nZCv");
+	setExpectedRegisterValue(R0, 0U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, subImmediate_T2HigestRegister_LargestImmediate)
 {
-    emitInstruction16("00111dddiiiiiiii", R7, 255);
-    setExpectedXPSRflags("nzCv");
-    setExpectedRegisterValue(R7, 0x77777777U - 255U);
-    pinkySimStep(&m_context);
+	emitInstruction16("00111dddiiiiiiii", R7, 255);
+	setExpectedXPSRflags("nzCv");
+	setExpectedRegisterValue(R7, 0x77777777U - 255U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, subImmediate_T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult)
 {
-    emitInstruction16("00111dddiiiiiiii", R0, 127);
-    setExpectedXPSRflags("Nzcv");
-    setExpectedRegisterValue(R0, 0U - 127U);
-    pinkySimStep(&m_context);
+	emitInstruction16("00111dddiiiiiiii", R0, 127);
+	setExpectedXPSRflags("Nzcv");
+	setExpectedRegisterValue(R0, 0U - 127U);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, subImmediate_T2ForceOverflowPastLargestNegativeInteger)
 {
-    emitInstruction16("00111dddiiiiiiii", R3, 1);
-    setExpectedXPSRflags("nzCV");
-    setRegisterValue(R3, 0x80000000);
-    setExpectedRegisterValue(R3, 0x80000000U - 1U);
-    pinkySimStep(&m_context);
+	emitInstruction16("00111dddiiiiiiii", R3, 1);
+	setExpectedXPSRflags("nzCV");
+	setRegisterValue(R3, 0x80000000);
+	setExpectedRegisterValue(R3, 0x80000000U - 1U);
+	pinkySimStep(&m_context);
 }

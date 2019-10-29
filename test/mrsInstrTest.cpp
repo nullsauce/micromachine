@@ -16,9 +16,9 @@
 
 // IPSR value can't be changed from within a debug monitor.
 #ifdef THUNK2REAL
-    #define IPSR_VAL 0x0
+#define IPSR_VAL 0x0
 #else
-    #define IPSR_VAL 0x20
+#define IPSR_VAL 0x20
 #endif
 
 
@@ -27,128 +27,149 @@
              10 (0) 0 Rd:4 SYSm:8 */
 TEST_F(pinkySimBase, mrs_FromAPSR)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_APSR);
-    setExpectedXPSRflags("NzCv");
-    setNegative(); clearZero(); setCarry(); clearOverflow();
-    setIPSR(IPSR_VAL);
-    setExpectedIPSR(IPSR_VAL);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, APSR_N | APSR_C);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_APSR);
+	setExpectedXPSRflags("NzCv");
+	setNegative();
+	clearZero();
+	setCarry();
+	clearOverflow();
+	setIPSR(IPSR_VAL);
+	setExpectedIPSR(IPSR_VAL);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, APSR_N | APSR_C);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromIAPSR)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R0, SYS_IAPSR);
-    setExpectedXPSRflags("NzCv");
-    setNegative(); clearZero(); setCarry(); clearOverflow();
-    setIPSR(IPSR_VAL);
-    setExpectedIPSR(IPSR_VAL);
-    setRegisterValue(R0, 0xFFFFFFFF);
-    setExpectedRegisterValue(R0, APSR_N | APSR_C | IPSR_VAL);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R0, SYS_IAPSR);
+	setExpectedXPSRflags("NzCv");
+	setNegative();
+	clearZero();
+	setCarry();
+	clearOverflow();
+	setIPSR(IPSR_VAL);
+	setExpectedIPSR(IPSR_VAL);
+	setRegisterValue(R0, 0xFFFFFFFF);
+	setExpectedRegisterValue(R0, APSR_N | APSR_C | IPSR_VAL);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromEAPSR)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EAPSR);
-    setExpectedXPSRflags("NzCv");
-    setNegative(); clearZero(); setCarry(); clearOverflow();
-    setIPSR(IPSR_VAL);
-    setExpectedIPSR(IPSR_VAL);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, APSR_N | APSR_C);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EAPSR);
+	setExpectedXPSRflags("NzCv");
+	setNegative();
+	clearZero();
+	setCarry();
+	clearOverflow();
+	setIPSR(IPSR_VAL);
+	setExpectedIPSR(IPSR_VAL);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, APSR_N | APSR_C);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromXPSR)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_XPSR);
-    setExpectedXPSRflags("NzCv");
-    setNegative(); clearZero(); setCarry(); clearOverflow();
-    setIPSR(IPSR_VAL);
-    setExpectedIPSR(IPSR_VAL);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, APSR_N | APSR_C | IPSR_VAL);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_XPSR);
+	setExpectedXPSRflags("NzCv");
+	setNegative();
+	clearZero();
+	setCarry();
+	clearOverflow();
+	setIPSR(IPSR_VAL);
+	setExpectedIPSR(IPSR_VAL);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, APSR_N | APSR_C | IPSR_VAL);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromIPSR)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IPSR);
-    setExpectedXPSRflags("NzCv");
-    setNegative(); clearZero(); setCarry(); clearOverflow();
-    setIPSR(IPSR_VAL);
-    setExpectedIPSR(IPSR_VAL);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, IPSR_VAL);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IPSR);
+	setExpectedXPSRflags("NzCv");
+	setNegative();
+	clearZero();
+	setCarry();
+	clearOverflow();
+	setIPSR(IPSR_VAL);
+	setExpectedIPSR(IPSR_VAL);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, IPSR_VAL);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromEPSR)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EPSR);
-    setExpectedXPSRflags("NzCv");
-    setNegative(); clearZero(); setCarry(); clearOverflow();
-    setIPSR(IPSR_VAL);
-    setExpectedIPSR(IPSR_VAL);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, 0);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EPSR);
+	setExpectedXPSRflags("NzCv");
+	setNegative();
+	clearZero();
+	setCarry();
+	clearOverflow();
+	setIPSR(IPSR_VAL);
+	setExpectedIPSR(IPSR_VAL);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, 0);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromIEPSR)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IEPSR);
-    setExpectedXPSRflags("NzCv");
-    setNegative(); clearZero(); setCarry(); clearOverflow();
-    setIPSR(IPSR_VAL);
-    setExpectedIPSR(IPSR_VAL);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, IPSR_VAL);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IEPSR);
+	setExpectedXPSRflags("NzCv");
+	setNegative();
+	clearZero();
+	setCarry();
+	clearOverflow();
+	setIPSR(IPSR_VAL);
+	setExpectedIPSR(IPSR_VAL);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, IPSR_VAL);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromMSP)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_MSP);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, INITIAL_SP);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_MSP);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, INITIAL_SP);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromPSP)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PSP);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, 0x0);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PSP);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, 0x0);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_FromPRIMASKsetTo1)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    PRIMASK = 1;
-    setExpectedRegisterValue(R12, 1);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	PRIMASK = 1;
+	setExpectedRegisterValue(R12, 1);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_PRIMASKto0)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    PRIMASK = 0;
-    setExpectedRegisterValue(R12, 0);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	PRIMASK = 0;
+	setExpectedRegisterValue(R12, 0);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, mrs_CONTROLIgnored)
 {
-    emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_CONTROL);
-    setRegisterValue(R12, 0xFFFFFFFF);
-    setExpectedRegisterValue(R12, 0);
-    pinkySimStep(&m_context);
+	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_CONTROL);
+	setRegisterValue(R12, 0xFFFFFFFF);
+	setExpectedRegisterValue(R12, 0);
+	pinkySimStep(&m_context);
 }
 /*
 TEST_F(pinkySimBase, mrs_R13IsUnpredictable)
