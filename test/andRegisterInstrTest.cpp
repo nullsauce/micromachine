@@ -19,46 +19,46 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(pinkySimBase, andRegister_UseLowestRegisterForBothArgs)
 {
-    emitInstruction16("0100000000mmmddd", R0, R0);
-    setExpectedXPSRflags("nZc");
-    // Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-    clearCarry();
-    setExpectedRegisterValue(R0, 0);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000000mmmddd", R0, R0);
+	setExpectedXPSRflags("nZc");
+	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
+	clearCarry();
+	setExpectedRegisterValue(R0, 0);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, andRegister_UseHighestRegisterForBothArgs)
 {
-    emitInstruction16("0100000000mmmddd", R7, R7);
-    setExpectedXPSRflags("nzC");
-    setCarry();
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000000mmmddd", R7, R7);
+	setExpectedXPSRflags("nzC");
+	setCarry();
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, andRegister_AndR3andR7)
 {
-    emitInstruction16("0100000000mmmddd", R3, R7);
-    setExpectedXPSRflags("nz");
-    setExpectedRegisterValue(R7, 0x33333333);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000000mmmddd", R3, R7);
+	setExpectedXPSRflags("nz");
+	setExpectedRegisterValue(R7, 0x33333333);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, andRegister_UseAndToJustKeepNegativeSignBit)
 {
-    emitInstruction16("0100000000mmmddd", R6, R1);
-    setRegisterValue(R1, -1);
-    setRegisterValue(R6, 0x80000000);
-    setExpectedXPSRflags("Nz");
-    setExpectedRegisterValue(R1, 0x80000000);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000000mmmddd", R6, R1);
+	setRegisterValue(R1, -1);
+	setRegisterValue(R6, 0x80000000);
+	setExpectedXPSRflags("Nz");
+	setExpectedRegisterValue(R1, 0x80000000);
+	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, andRegister_HaveAndResultNotBeSameAsEitherSource)
 {
-    emitInstruction16("0100000000mmmddd", R5, R2);
-    setRegisterValue(R2, 0x12345678);
-    setRegisterValue(R5, 0xF0F0F0F0);
-    setExpectedXPSRflags("nz");
-    setExpectedRegisterValue(R2, 0x10305070);
-    pinkySimStep(&m_context);
+	emitInstruction16("0100000000mmmddd", R5, R2);
+	setRegisterValue(R2, 0x12345678);
+	setRegisterValue(R5, 0xF0F0F0F0);
+	setExpectedXPSRflags("nz");
+	setExpectedRegisterValue(R2, 0x10305070);
+	pinkySimStep(&m_context);
 }

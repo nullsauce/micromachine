@@ -18,55 +18,55 @@
    Encoding: 1100 0 Rn:3 RegisterList:8 */
 TEST_F(pinkySimBase, stm_JustPushR0WithR7AsAddress)
 {
-    emitInstruction16("11000nnnrrrrrrrr", R7, (1 << 0));
-    setRegisterValue(R7, INITIAL_PC + 16);
-    setExpectedRegisterValue(R7, INITIAL_PC + 16 + 1 * 4);
+	emitInstruction16("11000nnnrrrrrrrr", R7, (1 << 0));
+	setRegisterValue(R7, INITIAL_PC + 16);
+	setExpectedRegisterValue(R7, INITIAL_PC + 16 + 1 * 4);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_WRITE);
-    pinkySimStep(&m_context);
-    EXPECT_EQ(0x0, memory_read_32(m_context.pMemory, INITIAL_PC + 16));
+	pinkySimStep(&m_context);
+	EXPECT_EQ(0x0, memory_read_32(m_context.pMemory, INITIAL_PC + 16));
 }
 
 TEST_F(pinkySimBase, stm_JustPushR7WithR0AsAddress)
 {
-    emitInstruction16("11000nnnrrrrrrrr", R0, (1 << 7));
-    setRegisterValue(R0, INITIAL_PC + 16);
-    setExpectedRegisterValue(R0, INITIAL_PC + 16 + 1 * 4);
+	emitInstruction16("11000nnnrrrrrrrr", R0, (1 << 7));
+	setRegisterValue(R0, INITIAL_PC + 16);
+	setExpectedRegisterValue(R0, INITIAL_PC + 16 + 1 * 4);
 	memory_write_32(m_context.pMemory, INITIAL_PC + 16, 0xFFFFFFFF, READ_WRITE);
-    pinkySimStep(&m_context);
-    EXPECT_EQ(0x77777777, memory_read_32(m_context.pMemory, INITIAL_PC + 16));
+	pinkySimStep(&m_context);
+	EXPECT_EQ(0x77777777, memory_read_32(m_context.pMemory, INITIAL_PC + 16));
 }
 
 TEST_F(pinkySimBase, stm_PushAllWithR0AsAddress)
 {
-    emitInstruction16("11000nnnrrrrrrrr", R0, 0xFF);
-    setRegisterValue(R0, INITIAL_PC + 16);
-    setExpectedRegisterValue(R0, INITIAL_PC + 16 + 8 * 4);
-    for (int i = 0 ; i < 8 ; i++)
+	emitInstruction16("11000nnnrrrrrrrr", R0, 0xFF);
+	setRegisterValue(R0, INITIAL_PC + 16);
+	setExpectedRegisterValue(R0, INITIAL_PC + 16 + 8 * 4);
+	for (int i = 0; i < 8; i++)
 		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, 0xFFFFFFFF, READ_WRITE);
-    pinkySimStep(&m_context);
-    EXPECT_EQ(INITIAL_PC + 16, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * 0));
-    for (int i = 1 ; i < 8 ; i++)
-        EXPECT_EQ(0x11111111U * i, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
+	pinkySimStep(&m_context);
+	EXPECT_EQ(INITIAL_PC + 16, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * 0));
+	for (int i = 1; i < 8; i++)
+		EXPECT_EQ(0x11111111U * i, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
 }
 
 TEST_F(pinkySimBase, stm_PushAllButR7WithR7AsAddress)
 {
-    emitInstruction16("11000nnnrrrrrrrr", R7, 0x7F);
-    setRegisterValue(R7, INITIAL_PC + 16);
-    setExpectedRegisterValue(R7, INITIAL_PC + 16 + 7 * 4);
-    for (int i = 0 ; i < 7 ; i++)
+	emitInstruction16("11000nnnrrrrrrrr", R7, 0x7F);
+	setRegisterValue(R7, INITIAL_PC + 16);
+	setExpectedRegisterValue(R7, INITIAL_PC + 16 + 7 * 4);
+	for (int i = 0; i < 7; i++)
 		memory_write_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i, 0xFFFFFFFF, READ_WRITE);
-    pinkySimStep(&m_context);
-    for (int i = 0 ; i < 7 ; i++)
-        EXPECT_EQ(0x11111111U * i, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
+	pinkySimStep(&m_context);
+	for (int i = 0; i < 7; i++)
+		EXPECT_EQ(0x11111111U * i, memory_read_32(m_context.pMemory, INITIAL_PC + 16 + 4 * i));
 }
 
 TEST_F(pinkySimBase, stm_HardFaultFromInvalidMemoryWrite)
 {
-    emitInstruction16("11000nnnrrrrrrrr", R0, 1 << 0);
-    setRegisterValue(R0, 0xFFFFFFFC);
+	emitInstruction16("11000nnnrrrrrrrr", R0, 1 << 0);
+	setRegisterValue(R0, 0xFFFFFFFC);
 	setExpectedExceptionTaken(PINKYSIM_STEP_HARDFAULT);
-    pinkySimStep(&m_context);
+	pinkySimStep(&m_context);
 }
 /*
 TEST_SIM_ONLY(stm, UnpredictableToPushNoRegisters)

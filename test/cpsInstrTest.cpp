@@ -18,18 +18,18 @@
 
 TEST_F(pinkySimBase, cps_InterruptEnable)
 {
-    emitInstruction16("10110110011i0010", 0);
-    PRIMASK |= PRIMASK_PM;
-    pinkySimStep(&m_context);
-    EXPECT_FALSE(PRIMASK & PRIMASK_PM);
+	emitInstruction16("10110110011i0010", 0);
+	PRIMASK |= PRIMASK_PM;
+	pinkySimStep(&m_context);
+	EXPECT_FALSE(PRIMASK & PRIMASK_PM);
 }
 
 TEST_F(pinkySimBase, cps_InterruptDisable)
 {
-    emitInstruction16("10110110011i0010", 1);
-    PRIMASK &= ~PRIMASK_PM;
-    pinkySimStep(&m_context);
-    EXPECT_TRUE(PRIMASK & PRIMASK_PM);
+	emitInstruction16("10110110011i0010", 1);
+	PRIMASK &= ~PRIMASK_PM;
+	pinkySimStep(&m_context);
+	EXPECT_TRUE(PRIMASK & PRIMASK_PM);
 }
 
 /*

@@ -16,9 +16,10 @@
 
 /* SEV
    Encoding: 1011 1111 0100 0000 */
-TEST_SIM_ONLY(sev, BasicTest)
+TEST_SIM_ONLY(sev, BasicTest
+)
 {
-    emitInstruction16("1011111101000000");
-    setExpectedStepReturn(PINKYSIM_STEP_UNSUPPORTED);
-    pinkySimStep(&m_context);
+emitInstruction16("1011111101000000");
+setExpectedStepReturn(PINKYSIM_STEP_UNSUPPORTED);
+pinkySimStep(&m_context);
 }
