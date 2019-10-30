@@ -133,8 +133,6 @@ protected:
 	void memory_write_32(uint32_t address, uint32_t value);
 	uint32_t memory_read_32(uint32_t address);
 	void step();
-	void setup();
-	void teardown();
 	virtual void SetUp();
 	void initContext();
 	virtual void TearDown();
