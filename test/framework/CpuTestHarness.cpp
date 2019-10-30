@@ -34,20 +34,6 @@ void CpuTestHarness::step()
 	pinkySimStep();
 }
 
-void CpuTestHarness::setup()
-{
-	// unused method.
-	// here to satisfy pinkysim test files
-	assert(false);
-}
-
-void CpuTestHarness::teardown()
-{
-	// unused method.
-	// here to satisfy pinkysim test files
-	assert(false);
-}
-
 void CpuTestHarness::SetUp()
 {
 
