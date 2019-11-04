@@ -114,6 +114,7 @@ declare_test(binary_helpers_tests binary_helpers_tests.cpp)
 declare_test(exception_prioritization exception_prioritization.cpp)
 declare_test(systick systick.cpp)
 declare_test(nvic nvic.cpp)
+declare_test(disasm disasm.cpp)
 
 add_executable(all_tests "${ALL_TESTS_SRC}")
 target_include_directories(all_tests PUBLIC "${CMAKE_SOURCE_DIR}/lib")
@@ -121,3 +122,4 @@ target_include_directories(all_tests PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include
 target_include_directories(all_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/framework)
 target_link_libraries(all_tests libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
 add_test(all_tests all_tests)
+
