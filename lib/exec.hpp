@@ -127,8 +127,8 @@ static void exec(const mov_imm instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const movs instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t val = regs.get(instruction.rm);
-	regs.set(instruction.rd, val);
+	uint32_t val = regs.get(instruction.rm());
+	regs.set(instruction.rd(), val);
 	status_reg.apply_zero(val);
 	status_reg.apply_neg(val);
 }
@@ -309,14 +309,14 @@ static void exec(const tst_reg instruction, const registers& regs, apsr_reg& sta
 }
 
 static void exec(const rsb_imm instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rn 	= regs.get(instruction.rn);
+	uint32_t rn 	= regs.get(instruction.rn());
 	uint32_t imm32	= 0; // ARMv6-M only supports a value of 0.
 
 	bool carry = false;
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(~rn, imm32, true, carry, overflow);
 
-	regs.set(instruction.rd, result);
+	regs.set(instruction.rd(), result);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -398,12 +398,12 @@ static void exec(const bic_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const mvn instruction, registers& regs, apsr_reg& status_reg) {
 
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	uint32_t result = ~rm;
 
-	regs.set(instruction.rd, result);
+	regs.set(instruction.rd(), result);
 
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
@@ -486,18 +486,18 @@ static void exec(const mov_highreg instruction, registers& regs) {
 }
 
 static void exec(const bx instruction, registers& regs) {
-	if(registers::PC == instruction.rm) {
+	if(registers::PC == (reg_idx)instruction.rm()) {
 		unpredictable();
 	}
-	regs.branch_interworking(regs.get(instruction.rm));
+	regs.branch_interworking(regs.get(instruction.rm()));
 }
 
 static void exec(const blx instruction, registers& regs) {
-	if(registers::PC == instruction.rm) {
+	if(registers::PC == (reg_idx)instruction.rm()) {
 		unpredictable();
 	}
 
-	uint32_t jump_addr = regs.get(instruction.rm);
+	uint32_t jump_addr = regs.get(instruction.rm());
 	// pc - 2
 	uint32_t next_instr_addr = regs.get_pc() - 2; // PC is two instruction ahead because of prefetch
 	bits<0>::of(next_instr_addr) = true; // force thumb bit for lr
@@ -713,30 +713,30 @@ static void exec(const sub_sp_imm instruction, registers& regs) {
 
 static void exec(const sxth instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm());
 	uint32_t extended = binops::sign(rm, 16); // sign-extend 16 bit to 32
-	regs.set(instruction.rd, extended);
+	regs.set(instruction.rd(), extended);
 }
 
 static void exec(const sxtb instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm());
 	uint32_t extended = binops::sign(rm, 8); // sign-extend 8 bit to 32
-	regs.set(instruction.rd, extended);
+	regs.set(instruction.rd(), extended);
 }
 
 static void exec(const uxth instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	uint16_t rm = bits<0,16>::of(regs.get(instruction.rm));
+	uint16_t rm = bits<0,16>::of(regs.get(instruction.rm()));
 	uint32_t extended(rm); // zero-extend 16 bit to 32
-	regs.set(instruction.rd, extended);
+	regs.set(instruction.rd(), extended);
 }
 
 static void exec(const uxtb instruction, registers& regs) {
 	// Note: ROR(0) is omitted here
-	uint8_t rm = bits<0,8>::of(regs.get(instruction.rm));
+	uint8_t rm = bits<0,8>::of(regs.get(instruction.rm()));
 	uint32_t extended(rm); // zero-extend 8 bit to 32
-	regs.set(instruction.rd, extended);
+	regs.set(instruction.rd(), extended);
 }
 
 static void exec(const push instruction, registers& regs, memory& mem) {
@@ -810,29 +810,29 @@ static void exec(const bkpt instruction, bool& break_signal) {
 }
 
 static void exec(const rev_word instruction, registers& regs) {
-	regs.set(instruction.rd, binops::swap(regs.get(instruction.rm)));
+	regs.set(instruction.rd(), binops::swap(regs.get(instruction.rm())));
 }
 
 static void exec(const rev16 instruction, registers& regs) {
 
-	const uint32_t rm = regs.get(instruction.rm);
+	const uint32_t rm = regs.get(instruction.rm());
 
 	uint32_t res =  bits<16,8>::of((rm)) << 24 |
 				bits<24,8>::of((rm)) << 16 |
 				bits<0,8>::of((rm)) << 8   |
 				bits<8,8>::of((rm)) << 0;
 
-	regs.set(instruction.rd, res);
+	regs.set(instruction.rd(), res);
 }
 
 static void exec(const revsh instruction, registers& regs) {
 
-	const uint32_t rm = regs.get(instruction.rm);
+	const uint32_t rm = regs.get(instruction.rm());
 
 	uint32_t swapped_low16 = (bits<0,8>::of(rm) << 8) | bits<8,8>::of(rm);
 	uint32_t res = binops::sign(swapped_low16, 16);
 
-	regs.set(instruction.rd, res);
+	regs.set(instruction.rd(), res);
 }
 
 static void exec(const branch instruction, registers& regs, apsr_reg& flags) {
