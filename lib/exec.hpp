@@ -19,32 +19,34 @@ static void unpredictable() {
 
 
 static void exec(const lsl_imm instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm());
 	const bool carry = alu::lsl_c(rm, instruction.shift_offset(), status_reg.carry_flag());
 	status_reg.apply_neg(rm);
 	status_reg.apply_zero(rm);
 	status_reg.write_carry_flag(carry);
-	regs.set(instruction.rd, rm);
+	regs.set(instruction.rd(), rm);
 }
 
 static void exec(const lsr_imm instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm());
 	uint32_t applied_offset = instruction.shift_offset();
+	if(applied_offset == 0) applied_offset = 32;
 	const bool carry = alu::lsr_c(rm, applied_offset, status_reg.carry_flag());
 	status_reg.apply_neg(rm);
 	status_reg.apply_zero(rm);
 	status_reg.write_carry_flag(carry);
-	regs.set(instruction.rd, rm);
+	regs.set(instruction.rd(), rm);
 }
 
 static void exec(const asr_imm instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rm = regs.get(instruction.rm());
 	uint32_t applied_offset = instruction.shift_offset();
+	if(applied_offset == 0) applied_offset = 32;
 	const bool carry = alu::asr_c(rm, applied_offset, status_reg.carry_flag());
 	status_reg.apply_neg(rm);
 	status_reg.apply_zero(rm);
 	status_reg.write_carry_flag(carry);
-	regs.set(instruction.rd, rm);
+	regs.set(instruction.rd(), rm);
 
 }
 

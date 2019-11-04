@@ -165,13 +165,13 @@ private:
 		write("sev");
 	}
 	void dispatch(const lsl_imm instruction) override {
-		format("lsls %s, %s, " + IMM(), R(instruction.rd), R(instruction.rm), instruction.imm5);
+		format("lsls %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5());
 	}
 	void dispatch(const lsr_imm instruction) override {
-		format("lsrs %s, %s, " + IMM(), R(instruction.rd), R(instruction.rm), instruction.imm5);
+		format("lsrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5());
 	}
 	void dispatch(const asr_imm instruction) override {
-		format("asrs %s, %s, " + IMM(), R(instruction.rd), R(instruction.rm), instruction.imm5);
+		format("asrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5());
 	}
 	void dispatch(const add_reg instruction) override {
 		format("adds %s, %s, %s", R(instruction.rd), R(instruction.rn), R(instruction.rm));

@@ -14,15 +14,37 @@
 
 struct standard_rd_rm_imm5 {
 
-	standard_rd_rm_imm5(uint16_t field)
-			: rd  (binops::read_uint(field, 0, 3))
-			, rm  (binops::read_uint(field, 3, 3))
-			, imm5(binops::read_uint(field, 6, 5))
-	{}
+	standard_rd_rm_imm5(uint16_t field) : _d(field) {}
 
-	const reg_idx rd;
-	const reg_idx rm;
-	const imm5_t  imm5;
+	uint16_t _d;
+
+	using rd_bits = bits<0, 3>;
+	using rm_bits = bits<3, 3>;
+	using imm5_bits = bits<6, 5>;
+
+	rd_bits::integer_slice<uint16_t> rd() {
+		return rd_bits::of(_d);
+	}
+
+	rm_bits::integer_slice<uint16_t> rm() {
+		return rm_bits::of(_d);
+	}
+
+	imm5_bits::integer_slice<uint16_t> imm5() {
+		return imm5_bits::of(_d);
+	}
+
+	rd_bits::const_integer_slice<uint16_t> rd() const {
+		return rd_bits::of(_d);
+	}
+
+	rm_bits::const_integer_slice<uint16_t> rm() const {
+		return rm_bits::of(_d);
+	}
+
+	imm5_bits::const_integer_slice<uint16_t> imm5() const {
+		return imm5_bits::of(_d);
+	}
 };
 
 struct standard_rd_rn_rm {
@@ -424,10 +446,10 @@ struct and_reg : public standard_rdn_rm {
 
 struct asr_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
-	imm5_t shift_offset() const {
-		if(0 == imm5) return 32;
-		return imm5;
+	imm5_bits::const_integer_slice<uint16_t> shift_offset() const {
+		return imm5();
 	}
+
 };
 
 struct asr_reg : public standard_rdn_rm {
@@ -572,18 +594,18 @@ struct ldr_reg : public standard_rt_rn_rm {
 
 struct lsl_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
-	imm5_t shift_offset() const {
-		return imm5;
+	imm5_bits::const_integer_slice<uint16_t> shift_offset() const {
+		return imm5();
 	}
 };
 
 struct lsr_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
-	imm5_t shift_offset() const {
-		if(0 == imm5) return 32;
-		return imm5;
+	imm5_bits::const_integer_slice<uint16_t> shift_offset() const {
+		return imm5();
 	}
 };
+
 struct subs_reg : public standard_rd_rn_rm {
 	using standard_rd_rn_rm::standard_rd_rn_rm;
 };
