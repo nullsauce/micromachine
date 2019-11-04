@@ -67,7 +67,7 @@ protected:
 	const shpr2_reg& _reg;
 
 public:
-	Pri11InterruptState(const shpr2_reg& reg)
+	Shpr2BasedInterruptState(const shpr2_reg& reg)
 		: _reg(reg)
 	{}
 };
@@ -77,29 +77,32 @@ protected:
 	const shpr3_reg& _reg;
 
 public:
-	Pri11InterruptState(const shpr3_reg& reg)
+	Shpr3BasedInterruptState(const shpr3_reg& reg)
 		: _reg(reg)
 	{}
 };
 
 class Pri11InterruptState : public Shpr2BasedInterruptState {
 public:
+	using Shpr2BasedInterruptState::Shpr2BasedInterruptState;
 	priority_t priority() const override {
 		return _reg.pri11();
 	}
 };
 
-class Pri12InterruptState : public Shpr3BasedInterruptState {
+class Pri14InterruptState : public Shpr3BasedInterruptState {
 public:
+using Shpr3BasedInterruptState::Shpr3BasedInterruptState;
 	priority_t priority() const override {
-		return _reg.pri12();
+		return _reg.pri14();
 	}
 };
 
-class Pri13InterruptState : public Shpr3BasedInterruptState {
+class Pri15InterruptState : public Shpr3BasedInterruptState {
 public:
+	using Shpr3BasedInterruptState::Shpr3BasedInterruptState;
 	priority_t priority() const override {
-		return _reg.pri13();
+		return _reg.pri15();
 	}
 };
 
@@ -124,6 +127,30 @@ class NonImplementedInterruptState : public FixedPriorityInterruptState<4> {
 
 struct InterruptVector {
 
+	InterruptVector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
+		: svc(sph2)
+		, pend_sv(sph3)
+		, sys_tick(sph3)
+		, ext_interrupt_0(nvic)
+		, ext_interrupt_1(nvic)
+		, ext_interrupt_2(nvic)
+		, ext_interrupt_3(nvic)
+		, ext_interrupt_4(nvic)
+		, ext_interrupt_5(nvic)
+		, ext_interrupt_6(nvic)
+		, ext_interrupt_7(nvic)
+		, ext_interrupt_8(nvic)
+		, ext_interrupt_9(nvic)
+		, ext_interrupt_10(nvic)
+		, ext_interrupt_11(nvic)
+		, ext_interrupt_12(nvic)
+		, ext_interrupt_13(nvic)
+		, ext_interrupt_14(nvic)
+		, ext_interrupt_15(nvic)
+	{
+
+	}
+
 	FixedPriorityInterruptState<-3> reset;
 	FixedPriorityInterruptState<-2> nmi;
 	FixedPriorityInterruptState<-1> hard_fault;
@@ -137,8 +164,8 @@ struct InterruptVector {
 	Pri11InterruptState svc;
 	NonImplementedInterruptState _reserved_7;
 	NonImplementedInterruptState _reserved_8;
-	Pri12InterruptState pend_sv;
-	Pri13InterruptState sys_tick;
+	Pri14InterruptState pend_sv;
+	Pri15InterruptState sys_tick;
 	NvicBasedInterruptState<0> ext_interrupt_0;
 	NvicBasedInterruptState<1> ext_interrupt_1;
 	NvicBasedInterruptState<2> ext_interrupt_2;
@@ -168,6 +195,9 @@ struct InterruptVector {
 		_reserved_5,
 		_reserved_6,
 		svc,
+		_reserved_7,
+		_reserved_8,
+		pend_sv,
 		sys_tick,
 		ext_interrupt_0,
 		ext_interrupt_1,
@@ -189,12 +219,15 @@ struct InterruptVector {
 };
 
 
-class InterruptManager
+class interrupt_manager
 {
 
 private:
 
 	static constexpr InterruptState::priority_t DEFAULT_PRIORITY = 4;
+
+	// Reference to memory to access interrupt vector table
+	memory& _mem;
 
 	InterruptVector _interrupt_vector;
 
@@ -204,20 +237,9 @@ private:
 	// NVIC (external interrupt handler)
 	nvic _nvic;
 
-	// Reference to memory to access interrupt vector table
-	memory& _mem;
-
-	uint32_t interrupt_handler(Type exception_number) const {
-		uint32_t interrupt_vector_table_offset = sizeof(uint32_t) * exception_number;
-		return _mem.read32(vector_table_offset);
-	}
 
 
 public:
-
-	InterruptManager() {
-
-	}
 
 	enum Type : uint32_t
 	{
@@ -245,14 +267,25 @@ public:
 		SYSTICK = 15,
 	};
 
+	interrupt_manager(memory& mem, nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
+		: _mem(mem)
+		, _interrupt_vector(nvic, sph2, sph3) {
+	}
+
+
+	uint32_t interrupt_handler(Type exception_number) const {
+		uint32_t interrupt_vector_table_offset = sizeof(uint32_t) * exception_number;
+		return _mem.read32(interrupt_vector_table_offset);
+	}
+
 	InterruptState &interrupt_state(Type t)
 	{
-		return _interrupt_state.indexed[t];
+		return _interrupt_vector.indexed[t];
 	}
 
 	const InterruptState &interrupt_state(Type t) const
 	{
-		return _interrupt_state.indexed[t];
+		return _interrupt_vector.indexed[t];
 	}
 
 	void service_pending_interrupt()

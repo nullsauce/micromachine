@@ -55,9 +55,9 @@ cpu::cpu()
 	, _break_signal(false)
 	, _exec_dispatcher(_regs, _mem, _exception_vector, _break_signal)
 	, _exception_manager(_regs, _mem, _exception_vector)
+	, _interrupt_manager(_mem, _nvic, _sphr2_reg, _sphr3_reg)
 	, _initial_pc(0)
 	, _debug_instruction_counter(0)
-
 {
 #ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
 	fprintf(stderr, "Warning: The CPU is compiled with addtional safety checks that might slow its performance.\n");
@@ -217,9 +217,21 @@ cpu::State cpu::step() {
 		hard_fault = pending_exception->number() == exception_number(exception_number::ex_name::HARDFAULT);
 		_exception_manager.process_pending_exception(current_addr, instr, next_instruction_address);
 	} else {
-		// Otherwise the PC is set here
+		// Otherwise the PC is restored here
 		_regs.set_pc(next_instruction_address);
 	}
+
+	// if exception to be serviced
+		// context switch
+	// else
+		// fetch instruction[pc]
+		// mimic PC
+		// execute
+		// if pc didnt change
+			// restore pc
+			// increment pc
+
+
 
 	return hard_fault ? cpu::State::FAULT : cpu::State::RUN;
 }
