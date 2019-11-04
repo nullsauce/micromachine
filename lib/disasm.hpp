@@ -225,16 +225,16 @@ private:
 		format("rors %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const tst_reg instruction) override {
-		format("tst %s, %s", R(instruction.rn), R(instruction.rm));
+		format("tst %s, %s", R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const rsb_imm instruction) override {
 		format("rsbs %s, %s, #0", R(instruction.rd), R(instruction.rn));
 	}
 	void dispatch(const cmp_reg instruction) override {
-		format("cmp %s, %s", R(instruction.rn), R(instruction.rm));
+		format("cmp %s, %s", R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const cmn_reg instruction) override {
-		format("cmn %s, %s", R(instruction.rn), R(instruction.rm));
+		format("cmn %s, %s", R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const orr_reg instruction) override {
 		format("orrs %s, %s", R(instruction.rdn()), R(instruction.rm()));
