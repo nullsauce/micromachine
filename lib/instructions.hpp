@@ -12,52 +12,77 @@
 #include "registers/registers.hpp"
 #include "string_format.hpp"
 
-struct standard_rd_rm_imm5 {
+class instruction_16 {
+public:
+	instruction_16(uint16_t word)
+		: _word(word)
+	{}
+protected:
+	uint16_t _word;
+};
 
-	standard_rd_rm_imm5(uint16_t field) : _d(field) {}
-
-	uint16_t _d;
+struct standard_rd_rm_imm5 : public instruction_16 {
+	using instruction_16::instruction_16;
 
 	using rd_bits = bits<0, 3>;
 	using rm_bits = bits<3, 3>;
 	using imm5_bits = bits<6, 5>;
 
 	rd_bits::integer_slice<uint16_t> rd() {
-		return rd_bits::of(_d);
+		return rd_bits::of(_word);
 	}
 
 	rm_bits::integer_slice<uint16_t> rm() {
-		return rm_bits::of(_d);
+		return rm_bits::of(_word);
 	}
 
 	imm5_bits::integer_slice<uint16_t> imm5() {
-		return imm5_bits::of(_d);
+		return imm5_bits::of(_word);
 	}
 
 	rd_bits::const_integer_slice<uint16_t> rd() const {
-		return rd_bits::of(_d);
+		return rd_bits::of(_word);
 	}
 
 	rm_bits::const_integer_slice<uint16_t> rm() const {
-		return rm_bits::of(_d);
+		return rm_bits::of(_word);
 	}
 
 	imm5_bits::const_integer_slice<uint16_t> imm5() const {
-		return imm5_bits::of(_d);
+		return imm5_bits::of(_word);
 	}
 };
 
-struct standard_rd_rn_rm {
+struct standard_rd_rn_rm : public instruction_16 {
+	using instruction_16::instruction_16;
 
-	standard_rd_rn_rm(uint16_t field)
-			: rd(binops::read_uint(field, 0, 3))
-			, rn(binops::read_uint(field, 3, 3))
-			, rm(binops::read_uint(field, 6, 3))
-	{}
+	using rd_bits = bits<0, 3>;
+	using rn_bits = bits<3, 3>;
+	using rm_bits = bits<6, 3>;
 
-	const reg_idx rd;
-	const reg_idx rn;
-	const reg_idx rm;
+	rd_bits::integer_slice<uint16_t> rd() {
+		return rd_bits::of(_word);
+	}
+
+	rn_bits::integer_slice<uint16_t> rn() {
+		return rn_bits::of(_word);
+	}
+
+	rm_bits::integer_slice<uint16_t> rm() {
+		return rm_bits::of(_word);
+	}
+
+	rd_bits::const_integer_slice<uint16_t> rd() const {
+		return rd_bits::of(_word);
+	}
+
+	rn_bits::const_integer_slice<uint16_t> rn() const {
+		return rn_bits::of(_word);
+	}
+
+	rm_bits::const_integer_slice<uint16_t> rm() const {
+		return rm_bits::of(_word);
+	}
 };
 
 

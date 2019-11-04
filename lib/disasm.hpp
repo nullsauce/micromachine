@@ -174,10 +174,10 @@ private:
 		format("asrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5());
 	}
 	void dispatch(const add_reg instruction) override {
-		format("adds %s, %s, %s", R(instruction.rd), R(instruction.rn), R(instruction.rm));
+		format("adds %s, %s, %s", R(instruction.rd()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const subs_reg instruction) override {
-		format("subs %s, %s, %s", R(instruction.rd), R(instruction.rn), R(instruction.rm));
+		format("subs %s, %s, %s", R(instruction.rd()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const add_imm instruction) override {
 		format("adds %s, %s, " + IMM(), R(instruction.rd), R(instruction.rn), instruction.imm3);
