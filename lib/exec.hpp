@@ -120,8 +120,8 @@ static void exec(const subs_imm instruction, registers& regs, apsr_reg& status_r
 }
 
 static void exec(const mov_imm instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t imm32 	= instruction.imm8;
-	regs.set(instruction.rd, instruction.imm8);
+	uint32_t imm32 	= instruction.imm8();
+	regs.set(instruction.rd(), instruction.imm8());
 	status_reg.apply_zero(imm32);
 	status_reg.apply_neg(imm32);
 }
@@ -683,7 +683,7 @@ static void exec(const adr instruction, registers& regs) {
 	uint32_t offset = instruction.imm32();
 	uint32_t base 	= binops::aligned(regs.get_pc(), 4); // PC
 	uint32_t address = base + offset;
-	regs.set(instruction.rd, address);
+	regs.set(instruction.rd(), address);
 }
 
 
@@ -692,7 +692,7 @@ static void exec(const add_sp_imm instruction, registers& regs) {
 	uint32_t imm32 = instruction.imm32();
 	uint32_t sp = regs.get_sp();
 	uint32_t result = alu::add_with_carry(sp, imm32, false);
-	regs.set(instruction.rd, result);
+	regs.set(instruction.rd(), result);
 }
 
 static void exec(const add_sp_imm_t2 instruction, registers& regs) {
