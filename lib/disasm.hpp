@@ -277,28 +277,28 @@ private:
 		format("ldr %s, [pc, " + IMM() + "]", R(instruction.rt), instruction.imm32());
 	}
 	void dispatch(const str_reg instruction) override {
-		format("str %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("str %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const strh_reg instruction) override {
-		format("strh %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("strh %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const strb_reg instruction) override {
-		format("strb %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("strb %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const ldrsb_reg instruction) override {
-		format("ldrsb %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("ldrsb %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const ldr_reg instruction) override {
-		format("ldr %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("ldr %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const ldrh_reg instruction) override {
-		format("ldrh %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("ldrh %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const ldrb_reg instruction) override {
-		format("ldrb %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("ldrb %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const ldrsh_reg instruction) override {
-		format("ldrsh %s, [%s, %s]", R(instruction.rt), R(instruction.rn), R(instruction.rm));
+		format("ldrsh %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const str_imm instruction) override {
 		format("str %s, [%s, " + IMM() + "]", R(instruction.rt), R(instruction.rn), instruction.imm32());
