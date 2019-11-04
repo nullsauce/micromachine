@@ -10,6 +10,8 @@ set(CPU_TESTS_COMMON_FILES
 		framework/CpuTestHarness.cpp
 )
 
+add_definitions(-DTEST_SRC_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+
 macro(declare_test test_name test_files)
 	add_executable(test_of_${test_name} ${test_files})
 	target_include_directories(test_of_${test_name} PUBLIC "${CMAKE_SOURCE_DIR}/lib")
@@ -114,7 +116,7 @@ declare_test(binary_helpers_tests binary_helpers_tests.cpp)
 declare_test(exception_prioritization exception_prioritization.cpp)
 declare_test(systick systick.cpp)
 declare_test(nvic nvic.cpp)
-declare_test(disasm disasm.cpp)
+#declare_test(disasm disasm/disasm.cpp)
 
 add_executable(all_tests "${ALL_TESTS_SRC}")
 target_include_directories(all_tests PUBLIC "${CMAKE_SOURCE_DIR}/lib")
