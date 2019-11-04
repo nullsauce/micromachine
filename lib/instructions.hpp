@@ -311,63 +311,114 @@ struct standard_rdn_rm_dm : public standard_03_34_71 {
 };
 
 // rd can be a high register if dm is set
-struct standard_rn_rm_dm {
+struct standard_rn_rm_dm : public standard_03_34_71 {
+	using standard_03_34_71::standard_03_34_71;
 
-	standard_rn_rm_dm(uint16_t field)
-			: rn(binops::read_uint(field, 0, 3))
-			, rm(binops::read_uint(field, 3, 4))
-			, dm(binops::get_bit(field, 7))
-	{}
+	using rn_bits = field0_bits;
+	using rm_bits = field1_bits;
+	using dm_bits = field2_bits;
+
+	slice_of<rn_bits> rn() {
+		return field0();
+	}
+
+	slice_of<rm_bits> rm() {
+		return field1();
+	}
+
+	slice_of<dm_bits> dm() {
+		return field2();
+	}
+
+	const_slice_of<rn_bits> rn() const {
+		return field0();
+	}
+
+	const_slice_of<rm_bits> rm() const {
+		return field1();
+	}
+
+	const_slice_of<dm_bits> dm() const {
+		return field2();
+	}
 
 	// returns the possibly high register index
 	reg_idx high_rn() const {
-		return (dm * 8) + rn;
+		return ((bool)dm() * 8) + (reg_idx)rn();
 	}
 
 	// returns the possibly high register index
 	reg_idx high_rm() const {
-		return rm;
+		return rm();
 	}
-
-	const reg_idx rn;
-	const reg_idx rm;
-	const bool dm;
 };
 
 
 // rd can be a high register if dm is set
-struct standard_rd_rm_d {
+struct standard_rd_rm_d : public standard_03_34_71 {
+	using standard_03_34_71::standard_03_34_71;
 
-	standard_rd_rm_d(uint16_t field)
-		: rd(binops::read_uint(field, 0, 3))
-		, rm(binops::read_uint(field, 3, 4))
-		, d (binops::get_bit(field, 7))
-	{}
+	using rd_bits = field0_bits;
+	using rm_bits = field1_bits;
+	using d_bits = field2_bits;
+
+	slice_of<rd_bits> rd() {
+		return field0();
+	}
+
+	slice_of<rm_bits> rm() {
+		return field1();
+	}
+
+	slice_of<d_bits> d() {
+		return field2();
+	}
+
+	const_slice_of<rd_bits> rd() const {
+		return field0();
+	}
+
+	const_slice_of<rm_bits> rm() const {
+		return field1();
+	}
+
+	const_slice_of<d_bits> d() const {
+		return field2();
+	}
 
 	// returns the possibly high register index
 	reg_idx high_rd() const {
-		return (d * 8) + rd;
+		return ((bool)d() * 8) + (reg_idx)rd();
 	}
 
 	// returns the possibly high register index
 	reg_idx high_rm() const {
-		return rm;
+		return rm();
 	}
 
-	const reg_idx rd;
-	const reg_idx rm;
-	const bool d;
 };
 
-struct standard_rn_rm {
+struct standard_rn_rm : public standard_03_33 {
+	using standard_03_33::standard_03_33;
 
-	standard_rn_rm(uint16_t field)
-			: rn(binops::read_uint(field, 0, 3))
-			, rm(binops::read_uint(field, 3, 3))
-	{}
+	using rn_bits = field0_bits;
+	using rm_bits = field1_bits;
 
-	const reg_idx rn;
-	const reg_idx rm;
+	slice_of<rn_bits> rn() {
+		return field0();
+	}
+
+	slice_of<rm_bits> rm() {
+		return field1();
+	}
+
+	const_slice_of<rn_bits> rn() const {
+		return field0();
+	}
+
+	const_slice_of<rm_bits> rm() const {
+		return field1();
+	}
 };
 
 struct standard_rd_rn {

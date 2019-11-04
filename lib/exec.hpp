@@ -298,8 +298,8 @@ static void exec(const ror_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const tst_reg instruction, const registers& regs, apsr_reg& status_reg) {
-	uint32_t rn = regs.get(instruction.rn);
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rn = regs.get(instruction.rn());
+	uint32_t rm = regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	uint32_t result = rn & rm;
@@ -325,8 +325,8 @@ static void exec(const rsb_imm instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const cmp_reg instruction, const registers& regs, apsr_reg& status_reg) {
-	uint32_t rn 	= regs.get(instruction.rn);
-	uint32_t rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rn());
+	uint32_t rm 	= regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	bool carry = false;
@@ -341,8 +341,8 @@ static void exec(const cmp_reg instruction, const registers& regs, apsr_reg& sta
 
 
 static void exec(const cmn_reg instruction, const registers& regs, apsr_reg& status_reg) {
-	uint32_t rn 	= regs.get(instruction.rn);
-	uint32_t rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rn());
+	uint32_t rm 	= regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	bool carry = false;
