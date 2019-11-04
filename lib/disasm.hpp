@@ -240,7 +240,7 @@ private:
 		format("orrs %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const mul_reg instruction) override {
-		format("muls %s, %s", R(instruction.rdm), R(instruction.rn));
+		format("muls %s, %s", R(instruction.rdm()), R(instruction.rn()));
 	}
 	void dispatch(const bic_reg instruction) override {
 		format("bics %s, %s", R(instruction.rdn()), R(instruction.rm()));
@@ -250,8 +250,8 @@ private:
 	}
 	void dispatch(const add_highreg instruction) override {
 		// variants of add SP plus register
-		if(instruction.dm && (instruction.high_rm() == 13)) {
-			format("add %s, sp, %s", R(instruction.rdn));
+		if(instruction.dm() && (instruction.high_rm() == 13)) {
+			format("add %s, sp, %s", R(instruction.rdn()));
 		} else if(instruction.high_rd() == 13) {
 			format("add sp, %s", R(instruction.high_rm()));
 		} else {

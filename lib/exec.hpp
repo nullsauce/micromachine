@@ -370,13 +370,13 @@ static void exec(const orr_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const mul_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	uint32_t rm = regs.get(instruction.rdm);
-	uint32_t rn = regs.get(instruction.rn);
+	uint32_t rm = regs.get(instruction.rdm());
+	uint32_t rn = regs.get(instruction.rn());
 
 	// left shift of zero is omitted here
 	uint32_t result = rm * rn;
 
-	regs.set(instruction.rdm, result);
+	regs.set(instruction.rdm(), result);
 
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
