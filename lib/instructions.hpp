@@ -250,17 +250,12 @@ struct standard_imm8_rdn : public standard_08_83 {
 	define_instruction_field(rdn, 1);
 };
 
-struct standard_rt_rn_rm {
+struct standard_rt_rn_rm : public standard_03_33_63 {
+	using standard_03_33_63::standard_03_33_63;
 
-	standard_rt_rn_rm(uint16_t field)
-		: rt(binops::read_uint(field, 0, 3))
-		, rn(binops::read_uint(field, 3, 3))
-		, rm(binops::read_uint(field, 6, 3))
-	{}
-
-	const reg_idx rt;
-	const reg_idx rn;
-	const reg_idx rm;
+	define_instruction_field(rt, 0);
+	define_instruction_field(rn, 1);
+	define_instruction_field(rm, 2);
 };
 
 struct standard_rt_rn_imm5 {
