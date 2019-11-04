@@ -70,6 +70,16 @@ struct standard_3_fields : public standard_2_fields<f0, f1, f2, f3> {
 	}
 };
 
+
+#define define_instruction_field(name, field_no) \
+	using name##_bits = field##field_no##_bits; \
+	slice_of< name##_bits > name() { \
+		return field##field_no(); \
+	} \
+	const_slice_of< name##_bits > name() const { \
+		return field##field_no(); \
+	} \
+
 using standard_03_33_63 = standard_3_fields<0, 3, 3, 3, 6, 3>;
 using standard_08_83 = standard_2_fields<0, 8, 8, 3>;
 using standard_03_33 = standard_2_fields<0, 3, 3, 3>;
@@ -78,225 +88,63 @@ using standard_34 = standard_1_fields<3, 4>;
 
 struct standard_rd_rm_imm5 : public standard_3_fields<0, 3, 3, 3, 6, 5> {
 	using standard_3_fields::standard_3_fields;
-	using rd_bits = field0_bits;
-	using rm_bits = field1_bits;
-	using imm5_bits = field2_bits;
 
-
-	slice_of<rd_bits> rd() {
-		return rd_bits::of(_word);
-	}
-
-	slice_of<rm_bits> rm() {
-		return rm_bits::of(_word);
-	}
-
-	slice_of<imm5_bits> imm5() {
-		return imm5_bits::of(_word);
-	}
-
-	const_slice_of<rd_bits> rd() const {
-		return rd_bits::of(_word);
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return rm_bits::of(_word);
-	}
-
-	const_slice_of<imm5_bits> imm5() const {
-		return imm5_bits::of(_word);
-	}
+	define_instruction_field(rd, 0);
+	define_instruction_field(rm, 1);
+	define_instruction_field(imm5, 2);
 };
 
 struct standard_rd_rn_rm : public standard_03_33_63 {
 	using standard_03_33_63::standard_03_33_63;
 
-	using rd_bits = field0_bits;
-	using rn_bits = field1_bits;
-	using rm_bits = field2_bits;
-
-	slice_of<rd_bits> rd() {
-		return field0();
-	}
-
-	slice_of<rn_bits> rn() {
-		return field1();
-	}
-
-	slice_of<rm_bits> rm() {
-		return field2();
-	}
-
-	const_slice_of<rd_bits> rd() const {
-		return field0();
-	}
-
-	const_slice_of<rn_bits> rn() const {
-		return field1();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field2();
-	}
+	define_instruction_field(rd, 0);
+	define_instruction_field(rn, 1);
+	define_instruction_field(rm, 2);
 };
 
 struct standard_rd_rn_imm3 : public standard_03_33_63 {
 	using standard_03_33_63::standard_03_33_63;
 
-	using rd_bits = field0_bits;
-	using rn_bits = field1_bits;
-	using imm3_bits = field2_bits;
-
-	slice_of<rd_bits> rd() {
-		return field0();
-	}
-
-	slice_of<rn_bits> rn() {
-		return field1();
-	}
-
-	slice_of<imm3_bits> imm3() {
-		return field2();
-	}
-
-	const_slice_of<rd_bits> rd() const {
-		return field0();
-	}
-
-	const_slice_of<rn_bits> rn() const {
-		return field1();
-	}
-
-	const_slice_of<imm3_bits> imm3() const {
-		return field2();
-	}
+	define_instruction_field(rd, 0);
+	define_instruction_field(rn, 1);
+	define_instruction_field(imm3, 2);
 };
 
 struct standard_imm8_rd : public standard_08_83 {
 	using standard_08_83::standard_08_83;
 
-	using imm8_bits = field0_bits;
-	using rd_bits = field1_bits;
-
-	slice_of<imm8_bits> imm8() {
-		return field0();
-	}
-
-	slice_of<rd_bits> rd() {
-		return field1();
-	}
-
-	const_slice_of<imm8_bits> imm8() const {
-		return field0();
-	}
-
-	const_slice_of<rd_bits> rd() const {
-		return field1();
-	}
+	define_instruction_field(imm8, 0);
+	define_instruction_field(rd, 1);
 };
 
 struct standard_imm8_rn : public standard_08_83 {
 	using standard_08_83::standard_08_83;
 
-	using imm8_bits = field0_bits;
-	using rn_bits = field1_bits;
-
-	slice_of<imm8_bits> imm8() {
-		return field0();
-	}
-
-	slice_of<rn_bits> rn() {
-		return field1();
-	}
-
-	const_slice_of<imm8_bits> imm8() const {
-		return field0();
-	}
-
-	const_slice_of<rn_bits> rn() const {
-		return field1();
-	}
+	define_instruction_field(imm8, 0);
+	define_instruction_field(rn, 1);
 };
 
 struct standard_rdn_rm : public standard_03_33 {
 	using standard_03_33::standard_03_33;
 
-	using rdn_bits = field0_bits;
-	using rm_bits = field1_bits;
-
-	slice_of<rdn_bits> rdn() {
-		return field0();
-	}
-
-	slice_of<rm_bits> rm() {
-		return field1();
-	}
-
-	const_slice_of<rdn_bits> rdn() const {
-		return field0();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field1();
-	}
-
+	define_instruction_field(rdn, 0);
+	define_instruction_field(rm, 1);
 };
 
 struct standard_rdm_rn : public standard_03_33 {
-
 	using standard_03_33::standard_03_33;
 
-	using rdm_bits = field0_bits;
-	using rn_bits = field1_bits;
-
-	slice_of<rdm_bits> rdm() {
-		return field0();
-	}
-
-	slice_of<rn_bits> rn() {
-		return field1();
-	}
-
-	const_slice_of<rdm_bits> rdm() const {
-		return field0();
-	}
-
-	const_slice_of<rn_bits> rn() const {
-		return field1();
-	}
+	define_instruction_field(rdm, 0);
+	define_instruction_field(rn, 1);
 };
 
 // rdn can be a high register if dm is set
 struct standard_rdn_rm_dm : public standard_03_34_71 {
 	using standard_03_34_71::standard_03_34_71;
 
-	using rdn_bits = field0_bits;
-	using rm_bits = field1_bits;
-	using dm_bits = field2_bits;
-
-	slice_of<rdn_bits> rdn() {
-		return field0();
-	}
-
-	slice_of<rm_bits> rm() {
-		return field1();
-	}
-
-	slice_of<dm_bits> dm() {
-		return field2();
-	}
-
-	const_slice_of<rdn_bits> rdn() const {
-		return field0();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field1();
-	}
-
-	const_slice_of<dm_bits> dm() const {
-		return field2();
-	}
+	define_instruction_field(rdn, 0);
+	define_instruction_field(rm, 1);
+	define_instruction_field(dm, 2);
 
 	// returns the possibly high register index
 	reg_idx high_rd() const {
@@ -314,33 +162,9 @@ struct standard_rdn_rm_dm : public standard_03_34_71 {
 struct standard_rn_rm_dm : public standard_03_34_71 {
 	using standard_03_34_71::standard_03_34_71;
 
-	using rn_bits = field0_bits;
-	using rm_bits = field1_bits;
-	using dm_bits = field2_bits;
-
-	slice_of<rn_bits> rn() {
-		return field0();
-	}
-
-	slice_of<rm_bits> rm() {
-		return field1();
-	}
-
-	slice_of<dm_bits> dm() {
-		return field2();
-	}
-
-	const_slice_of<rn_bits> rn() const {
-		return field0();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field1();
-	}
-
-	const_slice_of<dm_bits> dm() const {
-		return field2();
-	}
+	define_instruction_field(rn, 0);
+	define_instruction_field(rm, 1);
+	define_instruction_field(dm, 2);
 
 	// returns the possibly high register index
 	reg_idx high_rn() const {
@@ -357,33 +181,9 @@ struct standard_rn_rm_dm : public standard_03_34_71 {
 struct standard_rd_rm_d : public standard_03_34_71 {
 	using standard_03_34_71::standard_03_34_71;
 
-	using rd_bits = field0_bits;
-	using rm_bits = field1_bits;
-	using d_bits = field2_bits;
-
-	slice_of<rd_bits> rd() {
-		return field0();
-	}
-
-	slice_of<rm_bits> rm() {
-		return field1();
-	}
-
-	slice_of<d_bits> d() {
-		return field2();
-	}
-
-	const_slice_of<rd_bits> rd() const {
-		return field0();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field1();
-	}
-
-	const_slice_of<d_bits> d() const {
-		return field2();
-	}
+	define_instruction_field(rd, 0);
+	define_instruction_field(rm, 1);
+	define_instruction_field(d, 2);
 
 	// returns the possibly high register index
 	reg_idx high_rd() const {
@@ -399,85 +199,29 @@ struct standard_rd_rm_d : public standard_03_34_71 {
 struct standard_rn_rm : public standard_03_33 {
 	using standard_03_33::standard_03_33;
 
-	using rn_bits = field0_bits;
-	using rm_bits = field1_bits;
-
-	slice_of<rn_bits> rn() {
-		return field0();
-	}
-
-	slice_of<rm_bits> rm() {
-		return field1();
-	}
-
-	const_slice_of<rn_bits> rn() const {
-		return field0();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field1();
-	}
+	define_instruction_field(rn, 0);
+	define_instruction_field(rm, 1);
 };
+
 
 struct standard_rd_rn : public standard_03_33 {
 	using standard_03_33::standard_03_33;
 
-	using rd_bits = field0_bits;
-	using rn_bits = field1_bits;
-
-	slice_of<rd_bits> rd() {
-		return field0();
-	}
-
-	slice_of<rn_bits> rn() {
-		return field1();
-	}
-
-	const_slice_of<rd_bits> rd() const {
-		return field0();
-	}
-
-	const_slice_of<rn_bits> rn() const {
-		return field1();
-	}
+	define_instruction_field(rd, 0);
+	define_instruction_field(rn, 1);
 };
 
 struct standard_rm : public standard_34 {
 	using standard_34::standard_34;
 
-	using rm_bits = field0_bits;
-
-	slice_of<rm_bits> rn() {
-		return field0();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field0();
-	}
+	define_instruction_field(rm, 0);
 };
 
 struct standard_rd_rm : public standard_03_33 {
 	using standard_03_33::standard_03_33;
 
-	using rd_bits = field0_bits;
-	using rm_bits = field1_bits;
-
-	slice_of<rd_bits> rd() {
-		return field0();
-	}
-
-	slice_of<rm_bits> rm() {
-		return field1();
-	}
-
-	const_slice_of<rd_bits> rd() const {
-		return field0();
-	}
-
-	const_slice_of<rm_bits> rm() const {
-		return field1();
-	}
-
+	define_instruction_field(rd, 0);
+	define_instruction_field(rm, 1);
 };
 
 struct standard_imm8_rdn {
