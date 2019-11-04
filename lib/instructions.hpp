@@ -27,12 +27,56 @@ protected:
 	uint16_t _word;
 };
 
-struct standard_rd_rm_imm5 : public instruction_16 {
+template<size_t f0, size_t f1>
+struct standard_1_fields : public instruction_16 {
 	using instruction_16::instruction_16;
+	using field0_bits = bits<f0, f1>;
+	using instruction_16::_word;
 
-	using rd_bits = bits<0, 3>;
-	using rm_bits = bits<3, 3>;
-	using imm5_bits = bits<6, 5>;
+	slice_of<field0_bits> field0() {
+		return field0_bits::of(_word);
+	}
+
+	const_slice_of<field0_bits> field0() const {
+		return field0_bits::of(_word);
+	}
+};
+
+template<size_t f0, size_t f1, size_t f2, size_t f3>
+struct standard_2_fields : public standard_1_fields<f0, f1> {
+	using standard_1_fields<f0, f1>::standard_1_fields;
+	using field1_bits = bits<f2, f3>;
+
+	instruction_16::slice_of<field1_bits> field1() {
+		return field1_bits::of(instruction_16::_word);
+	}
+
+	instruction_16::const_slice_of<field1_bits> field1() const {
+		return field1_bits::of(instruction_16::_word);
+	}
+};
+
+template<size_t f0, size_t f1, size_t f2, size_t f3, size_t f4, size_t f5>
+struct standard_3_fields : public standard_2_fields<f0, f1, f2, f3> {
+	using standard_2_fields<f0, f1, f2, f3>::standard_2_fields;
+	using field2_bits = bits<f4, f5>;
+
+	instruction_16::slice_of<field2_bits> field2() {
+		return field2_bits::of(instruction_16::_word);
+	}
+
+	instruction_16::const_slice_of<field2_bits> field2() const {
+		return field2_bits::of(instruction_16::_word);
+	}
+};
+
+
+struct standard_rd_rm_imm5 : public standard_3_fields<0, 3, 3, 3, 6, 5> {
+	using standard_3_fields::standard_3_fields;
+	using rd_bits = field0_bits;
+	using rm_bits = field1_bits;
+	using imm5_bits = field2_bits;
+
 
 	slice_of<rd_bits> rd() {
 		return rd_bits::of(_word);
@@ -59,92 +103,95 @@ struct standard_rd_rm_imm5 : public instruction_16 {
 	}
 };
 
-struct standard_rd_rn_rm : public instruction_16 {
-	using instruction_16::instruction_16;
+using standard_03_33_63 = standard_3_fields<0, 3, 3, 3, 6, 3>;
 
-	using rd_bits = bits<0, 3>;
-	using rn_bits = bits<3, 3>;
-	using rm_bits = bits<6, 3>;
+struct standard_rd_rn_rm : public standard_03_33_63 {
+	using standard_03_33_63::standard_03_33_63;
+
+	using rd_bits = field0_bits;
+	using rn_bits = field1_bits;
+	using rm_bits = field2_bits;
 
 	slice_of<rd_bits> rd() {
-		return rd_bits::of(_word);
+		return field0();
 	}
 
 	slice_of<rn_bits> rn() {
-		return rn_bits::of(_word);
+		return field1();
 	}
 
 	slice_of<rm_bits> rm() {
-		return rm_bits::of(_word);
+		return field2();
 	}
 
 	const_slice_of<rd_bits> rd() const {
-		return rd_bits::of(_word);
+		return field0();
 	}
 
 	const_slice_of<rn_bits> rn() const {
-		return rn_bits::of(_word);
+		return field1();
 	}
 
 	const_slice_of<rm_bits> rm() const {
-		return rm_bits::of(_word);
+		return field2();
 	}
 };
 
 
-struct standard_rd_rn_imm3 : public instruction_16 {
-	using instruction_16::instruction_16;
+struct standard_rd_rn_imm3 : public standard_03_33_63 {
+	using standard_03_33_63::standard_03_33_63;
 
-	using rd_bits = bits<0, 3>;
-	using rn_bits = bits<3, 3>;
-	using imm3_bits = bits<6, 3>;
+	using rd_bits = field0_bits;
+	using rn_bits = field1_bits;
+	using imm3_bits = field2_bits;
 
 	slice_of<rd_bits> rd() {
-		return rd_bits::of(_word);
+		return field0();
 	}
 
 	slice_of<rn_bits> rn() {
-		return rn_bits::of(_word);
+		return field1();
 	}
 
 	slice_of<imm3_bits> imm3() {
-		return imm3_bits::of(_word);
+		return field2();
 	}
 
 	const_slice_of<rd_bits> rd() const {
-		return rd_bits::of(_word);
+		return field0();
 	}
 
 	const_slice_of<rn_bits> rn() const {
-		return rn_bits::of(_word);
+		return field1();
 	}
 
 	const_slice_of<imm3_bits> imm3() const {
-		return imm3_bits::of(_word);
+		return field2();
 	}
 };
 
+using standard_08_83 = standard_2_fields<0, 8, 8, 3>;
 
-struct standard_imm8_rd : public instruction_16 {
-	using instruction_16::instruction_16;
+struct standard_imm8_rd : public standard_08_83 {
+	using standard_08_83::standard_08_83;
 
-	using imm8_bits = bits<0, 8>;
-	using rd_bits = bits<8, 3>;
+	using imm8_bits = field0_bits;
+	using rd_bits = field1_bits;
 
 	slice_of<imm8_bits> imm8() {
-		return imm8_bits::of(_word);
+		return field0();
 	}
 
 	slice_of<rd_bits> rd() {
-		return rd_bits::of(_word);
+		return field1();
 	}
 
 	const_slice_of<imm8_bits> imm8() const {
-		return imm8_bits::of(_word);
+		return field0();
 	}
 
 	const_slice_of<rd_bits> rd() const {
-		return rd_bits::of(_word);
+		return field1();
 	}
 };
 
@@ -158,6 +205,29 @@ struct standard_imm8_rn {
 	const imm8_t  imm8;
 	const reg_idx rn;
 };
+
+
+struct standard_03_33 : public standard_2_fields<0, 3, 3, 3> {
+
+	slice_of<field0_bits> field0() {
+		return field0_bits::of(_word);
+	}
+
+	slice_of<field1_bits> field1() {
+		return field1_bits::of(_word);
+	}
+
+	const_slice_of<field0_bits> field0() const {
+		return field0_bits::of(_word);
+	}
+
+	const_slice_of<field1_bits> field1() const {
+		return field1_bits::of(_word);
+	}
+
+};
+
+
 
 struct standard_rdn_rm {
 
