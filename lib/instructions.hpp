@@ -14,6 +14,12 @@
 
 class instruction_16 {
 public:
+	template<typename T>
+	using slice_of = typename T::template integer_slice<uint16_t>;
+
+	template<typename T>
+	using const_slice_of = typename T::template const_integer_slice<uint16_t>;
+
 	instruction_16(uint16_t word)
 		: _word(word)
 	{}
@@ -28,27 +34,27 @@ struct standard_rd_rm_imm5 : public instruction_16 {
 	using rm_bits = bits<3, 3>;
 	using imm5_bits = bits<6, 5>;
 
-	rd_bits::integer_slice<uint16_t> rd() {
+	slice_of<rd_bits> rd() {
 		return rd_bits::of(_word);
 	}
 
-	rm_bits::integer_slice<uint16_t> rm() {
+	slice_of<rm_bits> rm() {
 		return rm_bits::of(_word);
 	}
 
-	imm5_bits::integer_slice<uint16_t> imm5() {
+	slice_of<imm5_bits> imm5() {
 		return imm5_bits::of(_word);
 	}
 
-	rd_bits::const_integer_slice<uint16_t> rd() const {
+	const_slice_of<rd_bits> rd() const {
 		return rd_bits::of(_word);
 	}
 
-	rm_bits::const_integer_slice<uint16_t> rm() const {
+	const_slice_of<rm_bits> rm() const {
 		return rm_bits::of(_word);
 	}
 
-	imm5_bits::const_integer_slice<uint16_t> imm5() const {
+	const_slice_of<imm5_bits> imm5() const {
 		return imm5_bits::of(_word);
 	}
 };
@@ -60,27 +66,27 @@ struct standard_rd_rn_rm : public instruction_16 {
 	using rn_bits = bits<3, 3>;
 	using rm_bits = bits<6, 3>;
 
-	rd_bits::integer_slice<uint16_t> rd() {
+	slice_of<rd_bits> rd() {
 		return rd_bits::of(_word);
 	}
 
-	rn_bits::integer_slice<uint16_t> rn() {
+	slice_of<rn_bits> rn() {
 		return rn_bits::of(_word);
 	}
 
-	rm_bits::integer_slice<uint16_t> rm() {
+	slice_of<rm_bits> rm() {
 		return rm_bits::of(_word);
 	}
 
-	rd_bits::const_integer_slice<uint16_t> rd() const {
+	const_slice_of<rd_bits> rd() const {
 		return rd_bits::of(_word);
 	}
 
-	rn_bits::const_integer_slice<uint16_t> rn() const {
+	const_slice_of<rn_bits> rn() const {
 		return rn_bits::of(_word);
 	}
 
-	rm_bits::const_integer_slice<uint16_t> rm() const {
+	const_slice_of<rm_bits> rm() const {
 		return rm_bits::of(_word);
 	}
 };
@@ -93,41 +99,53 @@ struct standard_rd_rn_imm3 : public instruction_16 {
 	using rn_bits = bits<3, 3>;
 	using imm3_bits = bits<6, 3>;
 
-	rd_bits::integer_slice<uint16_t> rd() {
+	slice_of<rd_bits> rd() {
 		return rd_bits::of(_word);
 	}
 
-	rn_bits::integer_slice<uint16_t> rn() {
+	slice_of<rn_bits> rn() {
 		return rn_bits::of(_word);
 	}
 
-	imm3_bits::integer_slice<uint16_t> imm3() {
+	slice_of<imm3_bits> imm3() {
 		return imm3_bits::of(_word);
 	}
 
-	rd_bits::const_integer_slice<uint16_t> rd() const {
+	const_slice_of<rd_bits> rd() const {
 		return rd_bits::of(_word);
 	}
 
-	rn_bits::const_integer_slice<uint16_t> rn() const {
+	const_slice_of<rn_bits> rn() const {
 		return rn_bits::of(_word);
 	}
 
-	imm3_bits::const_integer_slice<uint16_t> imm3() const {
+	const_slice_of<imm3_bits> imm3() const {
 		return imm3_bits::of(_word);
 	}
 };
 
 
-struct standard_imm8_rd {
+struct standard_imm8_rd : public instruction_16 {
+	using instruction_16::instruction_16;
 
-	standard_imm8_rd(uint16_t field)
-		: imm8(binops::read_uint(field, 0, 8))
-		, rd  (binops::read_uint(field, 8, 3))
-	{}
+	using imm8_bits = bits<0, 8>;
+	using rd_bits = bits<8, 3>;
 
-	const imm8_t  imm8;
-	const reg_idx rd;
+	slice_of<imm8_bits> imm8() {
+		return imm8_bits::of(_word);
+	}
+
+	slice_of<rd_bits> rd() {
+		return rd_bits::of(_word);
+	}
+
+	const_slice_of<imm8_bits> imm8() const {
+		return imm8_bits::of(_word);
+	}
+
+	const_slice_of<rd_bits> rd() const {
+		return rd_bits::of(_word);
+	}
 };
 
 struct standard_imm8_rn {
@@ -463,7 +481,7 @@ struct add_sp_imm : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 
 	uint32_t imm32() const {
-		return imm8 << 2;
+		return imm8() << 2;
 	}
 };
 
@@ -480,7 +498,7 @@ struct adr : public standard_imm8_rd {
 	using standard_imm8_rd::standard_imm8_rd;
 
 	uint32_t imm32() const {
-		return imm8 << 2;
+		return imm8() << 2;
 	}
 };
 
@@ -490,10 +508,10 @@ struct and_reg : public standard_rdn_rm {
 
 struct asr_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
+
 	imm5_bits::const_integer_slice<uint16_t> shift_offset() const {
 		return imm5();
 	}
-
 };
 
 struct asr_reg : public standard_rdn_rm {
