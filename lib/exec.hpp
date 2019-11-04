@@ -51,15 +51,15 @@ static void exec(const asr_imm instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const add_reg instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rm = regs.get(instruction.rm);
-	uint32_t rn = regs.get(instruction.rn);
+	uint32_t rm = regs.get(instruction.rm());
+	uint32_t rn = regs.get(instruction.rn());
 	// left shift of zero is omitted here
 
 	bool carry = false;
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, rm, false, carry, overflow);
 
-	regs.set(instruction.rd, result);
+	regs.set(instruction.rd(), result);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -68,15 +68,15 @@ static void exec(const add_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const subs_reg instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rm = regs.get(instruction.rm);
-	uint32_t rn = regs.get(instruction.rn);
+	uint32_t rm = regs.get(instruction.rm());
+	uint32_t rn = regs.get(instruction.rn());
 	// left shift of zero is omitted here
 
 	bool carry = false;
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
 
-	regs.set(instruction.rd, result);
+	regs.set(instruction.rd(), result);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
