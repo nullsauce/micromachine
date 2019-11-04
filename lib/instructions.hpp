@@ -27,6 +27,9 @@ protected:
 	uint16_t _word;
 };
 
+/// Standard 1-field instruction layout
+/// \tparam f0 offset (in bits) of the first field
+/// \tparam f1 size (in bits) of the first field
 template<size_t f0, size_t f1>
 struct standard_1_fields : public instruction_16 {
 	using instruction_16::instruction_16;
@@ -42,6 +45,11 @@ struct standard_1_fields : public instruction_16 {
 	}
 };
 
+/// Standard 2-fields instruction layout
+/// \tparam f0 offset (in bits) of the first field
+/// \tparam f1 size (in bits) of the first field
+/// \tparam f2 offset (in bits) of the second field
+/// \tparam f3 size (in bits) of the second field
 template<size_t f0, size_t f1, size_t f2, size_t f3>
 struct standard_2_fields : public standard_1_fields<f0, f1> {
 	using standard_1_fields<f0, f1>::standard_1_fields;
@@ -56,6 +64,13 @@ struct standard_2_fields : public standard_1_fields<f0, f1> {
 	}
 };
 
+/// Standard 3-fields instruction layout
+/// \tparam f0 offset (in bits) of the first field
+/// \tparam f1 size (in bits) of the first field
+/// \tparam f2 offset (in bits) of the second field
+/// \tparam f3 size (in bits) of the second field
+/// \tparam f4 offset (in bits) of the third field
+/// \tparam f5 size (in bits) of the third field
 template<size_t f0, size_t f1, size_t f2, size_t f3, size_t f4, size_t f5>
 struct standard_3_fields : public standard_2_fields<f0, f1, f2, f3> {
 	using standard_2_fields<f0, f1, f2, f3>::standard_2_fields;
@@ -70,7 +85,9 @@ struct standard_3_fields : public standard_2_fields<f0, f1, f2, f3> {
 	}
 };
 
-
+/// Helper macro to declare mutable and const accessor to a standard field
+/// \param name the name of the field
+/// \param field_no the number of the field (zero-based)
 #define define_instruction_field(name, field_no) \
 	using name##_bits = field##field_no##_bits; \
 	slice_of< name##_bits > name() { \
@@ -80,14 +97,16 @@ struct standard_3_fields : public standard_2_fields<f0, f1, f2, f3> {
 		return field##field_no(); \
 	} \
 
-using standard_03_33_63 = standard_3_fields<0, 3, 3, 3, 6, 3>;
-using standard_08_83 = standard_2_fields<0, 8, 8, 3>;
-using standard_03_33 = standard_2_fields<0, 3, 3, 3>;
-using standard_03_34_71 = standard_3_fields<0,3,3,4,7,1>;
-using standard_34 = standard_1_fields<3, 4>;
+// standard instruction binary layouts re-used across instructions
+using standard_03_33_65         = standard_3_fields<0, 3, 3, 3, 6, 5>;
+using standard_03_33_63         = standard_3_fields<0, 3, 3, 3, 6, 3>;
+using standard_08_83            = standard_2_fields<0, 8, 8, 3>;
+using standard_03_33            = standard_2_fields<0, 3, 3, 3>;
+using standard_03_34_71         = standard_3_fields<0, 3, 3, 4, 7, 1>;
+using standard_34               = standard_1_fields<3, 4>;
 
-struct standard_rd_rm_imm5 : public standard_3_fields<0, 3, 3, 3, 6, 5> {
-	using standard_3_fields::standard_3_fields;
+struct standard_rd_rm_imm5 : public standard_03_33_65 {
+	using standard_03_33_65::standard_03_33_65;
 
 	define_instruction_field(rd, 0);
 	define_instruction_field(rm, 1);
@@ -138,7 +157,6 @@ struct standard_rdm_rn : public standard_03_33 {
 	define_instruction_field(rn, 1);
 };
 
-// rdn can be a high register if dm is set
 struct standard_rdn_rm_dm : public standard_03_34_71 {
 	using standard_03_34_71::standard_03_34_71;
 
@@ -148,6 +166,7 @@ struct standard_rdn_rm_dm : public standard_03_34_71 {
 
 	// returns the possibly high register index
 	reg_idx high_rd() const {
+		// rdn can be a high register if dm is set
 		return ((bool)dm() * 8U) + (reg_idx)rdn();
 	}
 
@@ -158,7 +177,6 @@ struct standard_rdn_rm_dm : public standard_03_34_71 {
 
 };
 
-// rd can be a high register if dm is set
 struct standard_rn_rm_dm : public standard_03_34_71 {
 	using standard_03_34_71::standard_03_34_71;
 
@@ -168,6 +186,7 @@ struct standard_rn_rm_dm : public standard_03_34_71 {
 
 	// returns the possibly high register index
 	reg_idx high_rn() const {
+		// rd can be a high register if dm is set
 		return ((bool)dm() * 8) + (reg_idx)rn();
 	}
 
@@ -177,7 +196,6 @@ struct standard_rn_rm_dm : public standard_03_34_71 {
 	}
 };
 
-// rd can be a high register if dm is set
 struct standard_rd_rm_d : public standard_03_34_71 {
 	using standard_03_34_71::standard_03_34_71;
 
@@ -187,6 +205,7 @@ struct standard_rd_rm_d : public standard_03_34_71 {
 
 	// returns the possibly high register index
 	reg_idx high_rd() const {
+		// rd can be a high register if dm is set
 		return ((bool)d() * 8) + (reg_idx)rd();
 	}
 
