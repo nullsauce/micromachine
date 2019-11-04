@@ -180,10 +180,10 @@ private:
 		format("subs %s, %s, %s", R(instruction.rd()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const add_imm instruction) override {
-		format("adds %s, %s, " + IMM(), R(instruction.rd), R(instruction.rn), instruction.imm3);
+		format("adds %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3());
 	}
 	void dispatch(const subs_imm instruction) override {
-		format("subs %s, %s, " + IMM(), R(instruction.rd), R(instruction.rn), instruction.imm3);
+		format("subs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3());
 	}
 	void dispatch(const mov_imm instruction) override {
 		format("movs %s, " + IMM(), R(instruction.rd), instruction.imm8);
