@@ -126,7 +126,7 @@ public:
 		return _priority_regs.at(index);
 	}
 
-	uint8_t external_interrupt_priority(size_t external_interrupt_number) {
+	uint8_t external_interrupt_priority(size_t external_interrupt_number) const {
 		return _priority_regs.at(external_interrupt_number / 4)
 			.get_priority_n(external_interrupt_number % 4);
 	}
