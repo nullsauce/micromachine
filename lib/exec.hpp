@@ -517,90 +517,90 @@ static void exec(const ldr_literal instruction, registers& regs, const memory& m
 static void exec(const str_reg instruction, const registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	uint32_t value 	=  regs.get(instruction.rt);
+	uint32_t value 	=  regs.get(instruction.rt());
 	mem.write32(address, value);
 }
 
 static void exec(const strh_reg instruction, const registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	uint32_t value 	=  regs.get(instruction.rt);
+	uint32_t value 	=  regs.get(instruction.rt());
 	mem.write16(address, bits<0,16>::of((uint16_t)value));
 }
 
 static void exec(const strb_reg instruction, const registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	uint32_t value 	= regs.get(instruction.rt);
+	uint32_t value 	= regs.get(instruction.rt());
 	mem.write8(address, bits<0,8>::of((uint8_t)value));
 }
 
 static void exec(const ldrsb_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	int8_t value = mem.read8(address, ok);
 	if(ok) {
-		regs.set(instruction.rt, value);
+		regs.set(instruction.rt(), value);
 	}
 }
 
 static void exec(const ldr_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	uint32_t value = mem.read32(address, ok);
 	if(ok) {
-		regs.set(instruction.rt, value);
+		regs.set(instruction.rt(), value);
 	}
 }
 
 static void exec(const ldrh_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base = regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	uint16_t value = mem.read16(address, ok);
 	if(ok) {
-		regs.set(instruction.rt, (uint32_t) value);
+		regs.set(instruction.rt(), (uint32_t) value);
 	}
 }
 
 static void exec(const ldrb_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base = regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	uint8_t value = mem.read8(address, ok);
 	if(ok) {
-		regs.set(instruction.rt, (uint32_t) value);
+		regs.set(instruction.rt(), (uint32_t) value);
 	}
 }
 
 static void exec(const ldrsh_reg instruction, registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
-	uint32_t offset = regs.get(instruction.rm);
-	uint32_t base = regs.get(instruction.rn);
+	uint32_t offset = regs.get(instruction.rm());
+	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	int16_t value = mem.read16(address, ok);
 	if(ok) {
-		regs.set(instruction.rt, value);
+		regs.set(instruction.rt(), value);
 	}
 }
 
