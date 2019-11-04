@@ -195,10 +195,10 @@ private:
 		format("cmp %s, " + IMM(), R(instruction.rn()), instruction.imm8());
 	}
 	void dispatch(const add_imm_t2 instruction) override {
-		format("adds %s, " + IMM(), R(instruction.rdn), instruction.imm8);
+		format("adds %s, " + IMM(), R(instruction.rdn()), instruction.imm8());
 	}
 	void dispatch(const subs_imm8 instruction) override {
-		format("subs %s, " + IMM(), R(instruction.rdn), instruction.imm8);
+		format("subs %s, " + IMM(), R(instruction.rdn()), instruction.imm8());
 	}
 	void dispatch(const and_reg instruction) override {
 		format("ands %s, %s", R(instruction.rdn()), R(instruction.rm()));
