@@ -183,7 +183,7 @@ struct InterruptVector {
 	NvicBasedInterruptState<14> ext_interrupt_14;
 	NvicBasedInterruptState<15> ext_interrupt_15;
 
-	std::array<std::reference_wrapper<InterruptState>, 31> indexed = {
+	std::array<std::reference_wrapper<InterruptState>, 31> indexed = {{
 		reset,
 		nmi,
 		hard_fault,
@@ -215,7 +215,7 @@ struct InterruptVector {
 		ext_interrupt_13,
 		ext_interrupt_14,
 		ext_interrupt_15
-	};
+	}};
 };
 
 
