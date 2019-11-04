@@ -135,8 +135,8 @@ static void exec(const movs instruction, registers& regs, apsr_reg& status_reg) 
 
 static void exec(const cmp_imm instruction, const registers& regs, apsr_reg& status_reg) {
 	// like subtraction, but discard the result
-	uint32_t imm32 	= instruction.imm8;
-	uint32_t rn 	= regs.get(instruction.rn);
+	uint32_t imm32 	= instruction.imm8();
+	uint32_t rn 	= regs.get(instruction.rn());
 	bool carry = false;
 	bool overflow = false;
 
@@ -185,13 +185,13 @@ static void exec(const subs_imm8 instruction, registers& regs, apsr_reg& status_
 
 static void exec(const and_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	uint32_t rd = regs.get(instruction.rdn);
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rd = regs.get(instruction.rdn());
+	uint32_t rm = regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	uint32_t result = rd & rm;
 
-	regs.set(instruction.rdn, result);
+	regs.set(instruction.rdn(), result);
 
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
@@ -199,25 +199,25 @@ static void exec(const and_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const eor_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	uint32_t rd = regs.get(instruction.rdn);
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rd = regs.get(instruction.rdn());
+	uint32_t rm = regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	uint32_t result = rd ^ rm;
 
-	regs.set(instruction.rdn, result);
+	regs.set(instruction.rdn(), result);
 
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
 
 static void exec(const lsl_reg instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t value 			= regs.get(instruction.rdn);
-	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
+	uint32_t value 			= regs.get(instruction.rdn());
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm()));
 
 	bool carry = alu::lsl_c(value, shift_offset, status_reg.carry_flag());
 
-	regs.set(instruction.rdn, value);
+	regs.set(instruction.rdn(), value);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.apply_neg(value);
@@ -225,12 +225,12 @@ static void exec(const lsl_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const lsr_reg instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t value 			= regs.get(instruction.rdn);
-	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
+	uint32_t value 			= regs.get(instruction.rdn());
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm()));
 
 	bool carry = alu::lsr_c(value, shift_offset, status_reg.carry_flag());
 
-	regs.set(instruction.rdn, value);
+	regs.set(instruction.rdn(), value);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.apply_neg(value);
@@ -238,12 +238,12 @@ static void exec(const lsr_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const asr_reg instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t value 			= regs.get(instruction.rdn);
-	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm)); // max 255
+	uint32_t value 			= regs.get(instruction.rdn());
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm())); // max 255
 
 	bool carry = alu::asr_c(value, shift_offset, status_reg.carry_flag());
 
-	regs.set(instruction.rdn, value);
+	regs.set(instruction.rdn(), value);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.apply_neg(value);
@@ -251,15 +251,15 @@ static void exec(const asr_reg instruction, registers& regs, apsr_reg& status_re
 }
 
 static void exec(const adc instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rn 	= regs.get(instruction.rdn);
-	uint32_t rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rdn());
+	uint32_t rm 	= regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, rm, status_reg.carry_flag(), carry, overflow);
 
-	regs.set(instruction.rdn, result);
+	regs.set(instruction.rdn(), result);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -268,15 +268,15 @@ static void exec(const adc instruction, registers& regs, apsr_reg& status_reg) {
 }
 
 static void exec(const sbc instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rn 	= regs.get(instruction.rdn);
-	uint32_t rm 	= regs.get(instruction.rm);
+	uint32_t rn 	= regs.get(instruction.rdn());
+	uint32_t rm 	= regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, ~rm, status_reg.carry_flag(), carry, overflow);
 
-	regs.set(instruction.rdn, result);
+	regs.set(instruction.rdn(), result);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.write_overflow_flag(overflow);
@@ -285,12 +285,12 @@ static void exec(const sbc instruction, registers& regs, apsr_reg& status_reg) {
 }
 
 static void exec(const ror_reg instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t value 			= regs.get(instruction.rdn);
-	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm));
+	uint32_t value 			= regs.get(instruction.rdn());
+	uint32_t shift_offset 	= bits<0,8>::of(regs.get(instruction.rm()));
 
 	bool carry = alu::ror_c(value, shift_offset, status_reg.carry_flag());
 
-	regs.set(instruction.rdn, value);
+	regs.set(instruction.rdn(), value);
 
 	status_reg.write_carry_flag(carry);
 	status_reg.apply_neg(value);
@@ -356,13 +356,13 @@ static void exec(const cmn_reg instruction, const registers& regs, apsr_reg& sta
 }
 
 static void exec(const orr_reg instruction, registers& regs, apsr_reg& status_reg) {
-	uint32_t rd = regs.get(instruction.rdn);
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rd = regs.get(instruction.rdn());
+	uint32_t rm = regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	uint32_t result = rd | rm;
 
-	regs.set(instruction.rdn, result);
+	regs.set(instruction.rdn(), result);
 
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
@@ -384,13 +384,13 @@ static void exec(const mul_reg instruction, registers& regs, apsr_reg& status_re
 
 static void exec(const bic_reg instruction, registers& regs, apsr_reg& status_reg) {
 
-	uint32_t rn = regs.get(instruction.rdn);
-	uint32_t rm = regs.get(instruction.rm);
+	uint32_t rn = regs.get(instruction.rdn());
+	uint32_t rm = regs.get(instruction.rm());
 
 	// left shift of zero is omitted here
 	uint32_t result = rn & ~rm;
 
-	regs.set(instruction.rdn, result);
+	regs.set(instruction.rdn(), result);
 
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);

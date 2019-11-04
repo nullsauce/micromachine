@@ -195,49 +195,55 @@ struct standard_imm8_rd : public standard_08_83 {
 	}
 };
 
-struct standard_imm8_rn {
+struct standard_imm8_rn : public standard_08_83 {
+	using standard_08_83::standard_08_83;
 
-	standard_imm8_rn(uint16_t field)
-			: imm8(binops::read_uint(field, 0, 8))
-			, rn  (binops::read_uint(field, 8, 3))
-	{}
+	using imm8_bits = field0_bits;
+	using rn_bits = field1_bits;
 
-	const imm8_t  imm8;
-	const reg_idx rn;
+	slice_of<imm8_bits> imm8() {
+		return field0();
+	}
+
+	slice_of<rn_bits> rn() {
+		return field1();
+	}
+
+	const_slice_of<imm8_bits> imm8() const {
+		return field0();
+	}
+
+	const_slice_of<rn_bits> rn() const {
+		return field1();
+	}
 };
 
 
-struct standard_03_33 : public standard_2_fields<0, 3, 3, 3> {
+using standard_03_33 = standard_2_fields<0, 3, 3, 3>;
 
-	slice_of<field0_bits> field0() {
-		return field0_bits::of(_word);
+
+struct standard_rdn_rm : public standard_03_33 {
+	using standard_03_33::standard_03_33;
+
+	using rdn_bits = field0_bits;
+	using rm_bits = field1_bits;
+
+	slice_of<rdn_bits> rdn() {
+		return field0();
 	}
 
-	slice_of<field1_bits> field1() {
-		return field1_bits::of(_word);
+	slice_of<rm_bits> rm() {
+		return field1();
 	}
 
-	const_slice_of<field0_bits> field0() const {
-		return field0_bits::of(_word);
+	const_slice_of<rdn_bits> rdn() const {
+		return field0();
 	}
 
-	const_slice_of<field1_bits> field1() const {
-		return field1_bits::of(_word);
+	const_slice_of<rm_bits> rm() const {
+		return field1();
 	}
 
-};
-
-
-
-struct standard_rdn_rm {
-
-	standard_rdn_rm(uint16_t field)
-		: rdn(binops::read_uint(field, 0, 3))
-		, rm (binops::read_uint(field, 3, 3))
-	{}
-
-	const reg_idx rdn;
-	const reg_idx rm;
 };
 
 struct standard_rdm_rn {
