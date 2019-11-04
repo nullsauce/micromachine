@@ -116,7 +116,7 @@ struct slice {
 		write_val(other);
 		return *this;
 	}*/
-
+	/*
 	// Allow conversion to uint8 if length is smaller or equal to 8
 	template<size_t num_bits = len>
 	operator typename std::enable_if<num_bits <= 8, uint8_t>::type() const {
@@ -140,14 +140,17 @@ struct slice {
 	operator typename std::enable_if<num_bits <= 64, uint64_t>::type() const {
 		return extract();
 	}
+	*/
 
 	// conversion to an largest uint is always allowed
 	operator smallest_std_integer() const {
-		return extract();
+		typename std::decay<smallest_std_integer>::type k = 0;
+		auto val = extract();
+		return val;
 	}
 
 	smallest_std_integer extract() const {
-		return (_val.get() >> offset) & binops::make_mask<integer_type>(len);
+		return static_cast<smallest_std_integer>((_val.get() >> offset) & binops::make_mask<integer_type>(len));
 	}
 
 	template<typename int_type, size_t num_bits = len>
