@@ -189,7 +189,7 @@ private:
 		format("movs %s, " + IMM(), R(instruction.rd()), instruction.imm8());
 	}
 	void dispatch(const movs instruction) override {
-		format("movs %s, %s", R(instruction.rd), R(instruction.rm));
+		format("movs %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const cmp_imm instruction) override {
 		format("cmp %s, " + IMM(), R(instruction.rn()), instruction.imm8());
@@ -228,7 +228,7 @@ private:
 		format("tst %s, %s", R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const rsb_imm instruction) override {
-		format("rsbs %s, %s, #0", R(instruction.rd), R(instruction.rn));
+		format("rsbs %s, %s, #0", R(instruction.rd()), R(instruction.rn()));
 	}
 	void dispatch(const cmp_reg instruction) override {
 		format("cmp %s, %s", R(instruction.rn()), R(instruction.rm()));
@@ -246,7 +246,7 @@ private:
 		format("bics %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const mvn instruction) override {
-		format("mvns %s, %s", R(instruction.rd), R(instruction.rm));
+		format("mvns %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const add_highreg instruction) override {
 		// variants of add SP plus register
@@ -265,10 +265,10 @@ private:
 		format("mov %s, %s", R(instruction.high_rd()), R(instruction.high_rm()));
 	}
 	void dispatch(const bx instruction) override {
-		format("bx %s", R(instruction.rm));
+		format("bx %s", R(instruction.rm()));
 	}
 	void dispatch(const blx instruction) override {
-		format("blx %s", R(instruction.rm));
+		format("blx %s", R(instruction.rm()));
 	}
 	void dispatch(const ldr_literal instruction) override {
 		// normal syntax
@@ -343,16 +343,16 @@ private:
 		format("sub sp, sp, " + IMM(), instruction.imm32());
 	}
 	void dispatch(const sxth instruction) override {
-		format("sxth %s, %s", R(instruction.rd), R(instruction.rm));
+		format("sxth %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const sxtb instruction) override {
-		format("sxtb %s, %s", R(instruction.rd), R(instruction.rm));
+		format("sxtb %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const uxth instruction) override {
-		format("uxth %s, %s", R(instruction.rd), R(instruction.rm));
+		format("uxth %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const uxtb instruction) override {
-		format("uxtb %s, %s", R(instruction.rd), R(instruction.rm));
+		format("uxtb %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const push instruction) override {
 		format("push {%s}", reg_list_str(instruction.register_list).c_str());
@@ -367,13 +367,13 @@ private:
 		format("bkpt " + IMM(), instruction.imm8);
 	}
 	void dispatch(const rev_word instruction) override {
-		format("rev %s, %s", R(instruction.rd), R(instruction.rm));
+		format("rev %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const rev16 instruction) override {
-		format("rev16 %s, %s", R(instruction.rd), R(instruction.rm));
+		format("rev16 %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const revsh instruction) override {
-		format("revsh %s, %s", R(instruction.rd), R(instruction.rm));
+		format("revsh %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const branch instruction) override {
 		int32_t offset = instruction.offset();
