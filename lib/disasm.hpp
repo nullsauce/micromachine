@@ -192,7 +192,7 @@ private:
 		format("movs %s, %s", R(instruction.rd), R(instruction.rm));
 	}
 	void dispatch(const cmp_imm instruction) override {
-		format("cmp %s, " + IMM(), R(instruction.rn), instruction.imm8);
+		format("cmp %s, " + IMM(), R(instruction.rn()), instruction.imm8());
 	}
 	void dispatch(const add_imm_t2 instruction) override {
 		format("adds %s, " + IMM(), R(instruction.rdn), instruction.imm8);
@@ -201,28 +201,28 @@ private:
 		format("subs %s, " + IMM(), R(instruction.rdn), instruction.imm8);
 	}
 	void dispatch(const and_reg instruction) override {
-		format("ands %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("ands %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const eor_reg instruction) override {
-		format("eors %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("eors %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const lsl_reg instruction) override {
-		format("lsls %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("lsls %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const lsr_reg instruction) override {
-		format("lsrs %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("lsrs %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const asr_reg instruction) override {
-		format("asrs %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("asrs %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const adc instruction) override {
-		format("adcs %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("adcs %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const sbc instruction) override {
-		format("sbcs %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("sbcs %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const ror_reg instruction) override {
-		format("rors %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("rors %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const tst_reg instruction) override {
 		format("tst %s, %s", R(instruction.rn), R(instruction.rm));
@@ -237,13 +237,13 @@ private:
 		format("cmn %s, %s", R(instruction.rn), R(instruction.rm));
 	}
 	void dispatch(const orr_reg instruction) override {
-		format("orrs %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("orrs %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const mul_reg instruction) override {
 		format("muls %s, %s", R(instruction.rdm), R(instruction.rn));
 	}
 	void dispatch(const bic_reg instruction) override {
-		format("bics %s, %s", R(instruction.rdn), R(instruction.rm));
+		format("bics %s, %s", R(instruction.rdn()), R(instruction.rm()));
 	}
 	void dispatch(const mvn instruction) override {
 		format("mvns %s, %s", R(instruction.rd), R(instruction.rm));
