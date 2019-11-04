@@ -186,7 +186,7 @@ private:
 		format("subs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3());
 	}
 	void dispatch(const mov_imm instruction) override {
-		format("movs %s, " + IMM(), R(instruction.rd), instruction.imm8);
+		format("movs %s, " + IMM(), R(instruction.rd()), instruction.imm8());
 	}
 	void dispatch(const movs instruction) override {
 		format("movs %s, %s", R(instruction.rd), R(instruction.rm));
@@ -327,14 +327,14 @@ private:
 	void dispatch(const adr instruction) override {
 		if(format_use_alternate_adr()) {
 			// alternate syntax
-			format("add %s, pc, " + IMM(), R(instruction.rd), instruction.imm32());
+			format("add %s, pc, " + IMM(), R(instruction.rd()), instruction.imm32());
 		} else {
 			// normal syntax
-			format("adr %s, " + IMM(), R(instruction.rd), instruction.imm32());
+			format("adr %s, " + IMM(), R(instruction.rd()), instruction.imm32());
 		}
 	}
 	void dispatch(const add_sp_imm instruction) override {
-		format("add %s, sp, " + IMM(), R(instruction.rd), instruction.imm32());
+		format("add %s, sp, " + IMM(), R(instruction.rd()), instruction.imm32());
 	}
 	void dispatch(const add_sp_imm_t2 instruction) override {
 		format("add sp, " + IMM(), instruction.imm32());
