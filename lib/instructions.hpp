@@ -86,17 +86,36 @@ struct standard_rd_rn_rm : public instruction_16 {
 };
 
 
-struct standard_rd_rn_imm3 {
+struct standard_rd_rn_imm3 : public instruction_16 {
+	using instruction_16::instruction_16;
 
-	standard_rd_rn_imm3(uint16_t field)
-			: rd  (binops::read_uint(field, 0, 3))
-			, rn  (binops::read_uint(field, 3, 3))
-			, imm3(binops::read_uint(field, 6, 3))
-	{}
+	using rd_bits = bits<0, 3>;
+	using rn_bits = bits<3, 3>;
+	using imm3_bits = bits<6, 3>;
 
-	const reg_idx rd;
-	const reg_idx rn;
-	const imm3_t  imm3;
+	rd_bits::integer_slice<uint16_t> rd() {
+		return rd_bits::of(_word);
+	}
+
+	rn_bits::integer_slice<uint16_t> rn() {
+		return rn_bits::of(_word);
+	}
+
+	imm3_bits::integer_slice<uint16_t> imm3() {
+		return imm3_bits::of(_word);
+	}
+
+	rd_bits::const_integer_slice<uint16_t> rd() const {
+		return rd_bits::of(_word);
+	}
+
+	rn_bits::const_integer_slice<uint16_t> rn() const {
+		return rn_bits::of(_word);
+	}
+
+	imm3_bits::const_integer_slice<uint16_t> imm3() const {
+		return imm3_bits::of(_word);
+	}
 };
 
 
