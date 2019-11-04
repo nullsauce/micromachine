@@ -113,16 +113,16 @@ private:
 	void dispatch(const lsr_imm instruction) override {
 		//format("lsrs %s, %s, " + IMM(), R(instruction.rd), R(instruction.rm), instruction.imm5);
 		emit_name("lsrs");
-		emit_reg(instruction.rd);
-		emit_reg(instruction.rm);
-		emit_immediate(instruction.imm5);
+		emit_reg(instruction.rd());
+		emit_reg(instruction.rm());
+		emit_immediate(instruction.imm5());
 	}
 	void dispatch(const asr_imm instruction) override {
 		//format("asrs %s, %s, " + IMM(), R(instruction.rd), R(instruction.rm), instruction.imm5);
 		emit_name("asrs");
-		emit_reg(instruction.rd);
-		emit_reg(instruction.rm);
-		emit_immediate(instruction.imm5);
+		emit_reg(instruction.rd());
+		emit_reg(instruction.rm());
+		emit_immediate(instruction.imm5());
 	}
 	void dispatch(const add_reg instruction) override {
 		//format("adds %s, %s, %s", R(instruction.rd), R(instruction.rn), R(instruction.rm));
