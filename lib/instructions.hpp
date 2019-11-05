@@ -23,6 +23,11 @@ public:
 	instruction_16(uint16_t word)
 		: _word(word)
 	{}
+
+	uint16_t value() const {
+		return _word;
+	}
+
 protected:
 	uint16_t _word;
 };
@@ -104,6 +109,9 @@ using standard_08_83            = standard_2_fields<0, 8, 8, 3>;
 using standard_03_33            = standard_2_fields<0, 3, 3, 3>;
 using standard_03_34_71         = standard_3_fields<0, 3, 3, 4, 7, 1>;
 using standard_34               = standard_1_fields<3, 4>;
+using standard_07               = standard_1_fields<0, 7>;
+using standard_08               = standard_1_fields<0, 8>;
+using standard_011               = standard_1_fields<0, 11>;
 
 struct standard_rd_rm_imm5 : public standard_03_33_65 {
 	using standard_03_33_65::standard_03_33_65;
@@ -258,76 +266,56 @@ struct standard_rt_rn_rm : public standard_03_33_63 {
 	define_instruction_field(rm, 2);
 };
 
-struct standard_rt_rn_imm5 {
+struct standard_rt_rn_imm5 : public standard_03_33_65 {
+	using standard_03_33_65::standard_03_33_65;
 
-	standard_rt_rn_imm5(uint16_t field)
-		: rt  (binops::read_uint(field, 0, 3))
-		, rn  (binops::read_uint(field, 3, 3))
-		, imm5(binops::read_uint(field, 6, 5))
-	{}
-
-	const reg_idx rt;
-	const reg_idx rn;
-	const imm5_t  imm5;
+	define_instruction_field(rt, 0);
+	define_instruction_field(rn, 1);
+	define_instruction_field(imm5, 2);
 };
 
-struct standard_imm8_rt {
+struct standard_imm8_rt : public standard_08_83 {
+	using standard_08_83::standard_08_83;
 
-	standard_imm8_rt(uint16_t field)
-		: imm8(binops::read_uint(field, 0, 8))
-		, rt  (binops::read_uint(field, 8, 3))
-	{}
-
-	const imm8_t  imm8;
-	const reg_idx rt;
+	define_instruction_field(imm8, 0);
+	define_instruction_field(rt, 1);
 };
 
-struct standard_imm7 {
+struct standard_imm7 : public standard_07 {
+	using standard_07::standard_07;
 
-	standard_imm7(uint16_t field)
-		: imm7(binops::read_uint(field, 0, 7))
-	{}
-
-	const imm7_t  imm7;
+	define_instruction_field(imm7, 0);
 };
 
-struct standard_imm8 {
+struct standard_imm8 : public standard_08 {
+	using standard_08::standard_08;
 
-	standard_imm8(uint16_t field)
-		: imm8(binops::read_uint(field, 0, 8))
-	{}
-
-	const imm8_t imm8;
+	define_instruction_field(imm8, 0);
 };
 
-struct standard_imm11 {
+struct standard_imm11 : public standard_011 {
+	using standard_011::standard_011;
 
-	standard_imm11(uint16_t field)
-		: imm11(binops::read_uint(field, 0, 11))
-	{}
-
-	const imm11_t imm11;
+	define_instruction_field(imm11, 0);
 };
 
-struct standard_push_register_list {
+struct standard_push_register_list : public instruction_16 {
 
 	standard_push_register_list(uint16_t field)
-		: register_list(
+		: instruction_16(
 			(binops::read_uint(field, 0, 8)) |
 			(binops::get_bit(field, 8) << 14)
 		)
 	{}
 
 	bool is_set(reg_idx reg) const {
-		return binops::get_bit(register_list, reg);
+		return binops::get_bit(_word, reg);
 	}
 
     // TODO: rename to push_count
 	uint32_t pop_count() const {
-		return __builtin_popcount(register_list);
+		return __builtin_popcount(_word);
 	}
-
-	const register_list_t register_list;
 };
 
 
@@ -425,7 +413,7 @@ struct add_sp_imm_t2 : public standard_imm7 {
 	using standard_imm7::standard_imm7;
 	// encoding t2
 	uint32_t imm32() const {
-		return imm7 << 2;
+		return imm7() << 2;
 	}
 
 };
@@ -477,7 +465,7 @@ struct unconditional_branch : public standard_imm11 {
 	using standard_imm11::standard_imm11;
 	// t2 encoding of B
 	uint32_t imm32() const {
-		return imm11 << 1;
+		return imm11() << 1;
 	}
 
 	int32_t offset() const {
@@ -564,7 +552,7 @@ struct ldr_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 
 	uint32_t imm32() const {
-		return imm5 << 2;
+		return imm5() << 2;
 	}
 };
 
@@ -573,7 +561,7 @@ struct ldr_sp_imm : public standard_imm8_rt {
 	using standard_imm8_rt::standard_imm8_rt;
 	// encoding t2 of ldr (imm)
 	uint32_t imm32() const {
-		return imm8 << 2;
+		return imm8() << 2;
 	}
 };
 
@@ -581,7 +569,7 @@ struct ldr_literal : public standard_imm8_rt {
 	using standard_imm8_rt::standard_imm8_rt;
 
 	uint32_t imm32() const {
-		return imm8 << 2;
+		return imm8() << 2;
 	}
 };
 
@@ -705,7 +693,7 @@ struct str_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 	// encoding t1
 	uint32_t imm32() const {
-		return imm5 << 2;
+		return imm5() << 2;
 	}
 };
 
@@ -720,14 +708,14 @@ struct ldrb_imm : public standard_rt_rn_imm5 {
 struct strh_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 	uint32_t imm32() const {
-		return imm5 << 1;
+		return imm5() << 1;
 	}
 };
 
 struct ldrh_imm : public standard_rt_rn_imm5 {
 	using standard_rt_rn_imm5::standard_rt_rn_imm5;
 	uint32_t imm32() const {
-		return imm5 << 1;
+		return imm5() << 1;
 	}
 };
 
@@ -736,7 +724,7 @@ struct str_sp_imm : public standard_imm8_rt {
 	using standard_imm8_rt::standard_imm8_rt;
 
 	uint32_t imm32() const {
-		return imm8 << 2;
+		return imm8() << 2;
 	}
 };
 
@@ -744,7 +732,7 @@ struct sub_sp_imm : public standard_imm7 {
 	using standard_imm7::standard_imm7;
 
 	uint32_t imm32() const {
-		return imm7 << 2;
+		return imm7() << 2;
 	}
 };
 

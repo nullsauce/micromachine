@@ -274,7 +274,7 @@ private:
 		// normal syntax
 		//format("ldr %s, %x", R(instruction.rt), instruction.imm32()+_addr);
 		// alternative syntax
-		format("ldr %s, [pc, " + IMM() + "]", R(instruction.rt), instruction.imm32());
+		format("ldr %s, [pc, " + IMM() + "]", R(instruction.rt()), instruction.imm32());
 	}
 	void dispatch(const str_reg instruction) override {
 		format("str %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
@@ -301,28 +301,28 @@ private:
 		format("ldrsh %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const str_imm instruction) override {
-		format("str %s, [%s, " + IMM() + "]", R(instruction.rt), R(instruction.rn), instruction.imm32());
+		format("str %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
 	}
 	void dispatch(const ldr_imm instruction) override {
-		format("ldr %s, [%s, " + IMM() + "]", R(instruction.rt), R(instruction.rn), instruction.imm32());
+		format("ldr %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
 	}
 	void dispatch(const strb_imm instruction) override {
-		format("strb %s, [%s, " + IMM() + "]", R(instruction.rt), R(instruction.rn), instruction.imm5);
+		format("strb %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm5().extract());
 	}
 	void dispatch(const ldrb_imm instruction) override {
-		format("ldrb %s, [%s, " + IMM() + "]", R(instruction.rt), R(instruction.rn), instruction.imm5);
+		format("ldrb %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm5().extract());
 	}
 	void dispatch(const strh_imm instruction) override {
-		format("strh %s, [%s, " + IMM() + "]", R(instruction.rt), R(instruction.rn), instruction.imm32());
+		format("strh %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
 	}
 	void dispatch(const ldrh_imm instruction) override {
-		format("ldrh %s, [%s, " + IMM() + "]", R(instruction.rt), R(instruction.rn), instruction.imm32());
+		format("ldrh %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
 	}
 	void dispatch(const str_sp_imm instruction) override {
-		format("str %s, [sp, " + IMM() + "]", R(instruction.rt), instruction.imm32());
+		format("str %s, [sp, " + IMM() + "]", R(instruction.rt()), instruction.imm32());
 	}
 	void dispatch(const ldr_sp_imm instruction) override {
-		format("ldr %s, [sp, " + IMM() + "]", R(instruction.rt), instruction.imm32());
+		format("ldr %s, [sp, " + IMM() + "]", R(instruction.rt()), instruction.imm32());
 	}
 	void dispatch(const adr instruction) override {
 		if(format_use_alternate_adr()) {
@@ -355,7 +355,7 @@ private:
 		format("uxtb %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const push instruction) override {
-		format("push {%s}", reg_list_str(instruction.register_list).c_str());
+		format("push {%s}", reg_list_str(instruction.value()).c_str());
 	}
 	void dispatch(const cps instruction) override {
 		format("cps%s i", instruction.im ? "id" : "ie");
@@ -364,7 +364,7 @@ private:
 		format("pop {%s}", reg_list_str(instruction.register_list).c_str());
 	}
 	void dispatch(const bkpt instruction) override {
-		format("bkpt " + IMM(), instruction.imm8);
+		format("bkpt " + IMM(), instruction.imm8().extract());
 	}
 	void dispatch(const rev_word instruction) override {
 		format("rev %s, %s", R(instruction.rd()), R(instruction.rm()));
@@ -412,7 +412,7 @@ private:
 		format("bl 0x%x", label);
 	}
 	void dispatch(const svc instruction) override {
-		format("svc %d", instruction.imm8);
+		format("svc %d", instruction.imm8().extract());
 	}
 	void dispatch(const udf instr) override {
 		format("udf " + IMM(), instr.imm32);
