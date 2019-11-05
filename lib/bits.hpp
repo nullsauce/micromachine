@@ -142,15 +142,13 @@ struct slice {
 	}
 	*/
 
-	// conversion to an largest uint is always allowed
+	// conversion always coalesced to smallest integer type
 	operator smallest_std_integer() const {
-		typename std::decay<smallest_std_integer>::type k = 0;
-		auto val = extract();
-		return val;
+		return extract();
 	}
 
 	smallest_std_integer extract() const {
-		return static_cast<smallest_std_integer>((_val.get() >> offset) & binops::make_mask<integer_type>(len));
+		return (_val.get() >> offset) & binops::make_mask<integer_type>(len);
 	}
 
 	template<typename int_type, size_t num_bits = len>
