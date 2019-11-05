@@ -449,6 +449,7 @@ public slots:
 		} else {
 			return false;
 		}
+		return false;
 	}
 
 	bool prevInstructionAddress(uint32_t address, uint32_t& previous_address) const {
