@@ -13,7 +13,7 @@ int main(int argc, const char** argv) {
 
 	cpu c;
 	if(!c.load_elf(argv[1])) {
-		fprintf(stderr, "Error: invalid ELF file given\n", argv[0]);
+		fprintf(stderr, "Error: invalid ELF file given %s\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
