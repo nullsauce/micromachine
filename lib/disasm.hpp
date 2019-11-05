@@ -361,7 +361,7 @@ private:
 		format("cps%s i", instruction.im ? "id" : "ie");
 	}
 	void dispatch(const pop instruction) override {
-		format("pop {%s}", reg_list_str(instruction.register_list).c_str());
+		format("pop {%s}", reg_list_str(instruction.value()).c_str());
 	}
 	void dispatch(const bkpt instruction) override {
 		format("bkpt " + IMM(), instruction.imm8().extract());
@@ -388,16 +388,16 @@ private:
 	}
 	void dispatch(const stm instruction) override {
 		format("stmia %s!, {%s}"
-			, R(instruction.rn)
-			, reg_list_str(instruction.register_list).c_str()
+			, R(instruction.rn())
+			, reg_list_str(instruction.register_list()).c_str()
 		);
 	}
 	void dispatch(const ldm instruction) override {
-		bool list_contains_rn = binops::get_bit(instruction.register_list, instruction.rn);
+		bool list_contains_rn = binops::get_bit(instruction.register_list(), instruction.rn());
 		format("ldmia %s%s, {%s}"
-			, R(instruction.rn)
+			, R(instruction.rn())
 			, list_contains_rn ? "" : "!"
-			, reg_list_str(instruction.register_list).c_str()
+			, reg_list_str(instruction.register_list()).c_str()
 		);
 	}
 	void dispatch(const mrs instruction) override {
