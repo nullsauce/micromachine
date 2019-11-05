@@ -845,13 +845,13 @@ static void exec(const branch instruction, registers& regs, apsr_reg& flags) {
 	int32_t delta = instruction.offset();
 	uint32_t pc = regs.get_pc();
 	regs.set_pc(pc + delta);
-};
+}
 
-static void exec(const unconditional_branch instruction, registers& regs, apsr_reg& flags) {
+static void exec(const unconditional_branch instruction, registers& regs) {
 	int32_t delta = instruction.offset();
 	uint32_t pc = regs.get_pc();
 	regs.set_pc(pc + delta);
-};
+}
 
 static void exec(const stm instruction, registers& regs, memory& mem) {
 	uint32_t address = regs.get(instruction.rn);
@@ -893,7 +893,7 @@ static void exec(const ldm instruction, registers& regs, memory& mem) {
 }
 
 
-static void exec(const mrs instruction, registers& regs, apsr_reg& apsr) {
+static void exec(const mrs instruction, registers& regs) {
 	// do not keep the value initially present in the register
 	uint32_t val = 0;
 	uint8_t instr_sysn = instruction.sysn;

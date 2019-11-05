@@ -40,13 +40,13 @@ private:
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
-	void dispatch(const nop instruction) override {
+	void dispatch(const nop) override {
 		// do literally nothing
 	}
-	void dispatch(const yield instruction) override {
+	void dispatch(const yield) override {
 		// for os and threading
 	}
-	void dispatch(const wfe instruction) override {
+	void dispatch(const wfe) override {
 		// wait for event in event register
 		/* TODO: Implement WFE event sources as specified below
 		The following events are WFE wake-up events:
@@ -56,10 +56,10 @@ private:
 		- a debug event with debug enabled.
 		*/
 	}
-	void dispatch(const wfi instruction) override {
+	void dispatch(const wfi) override {
 		// wait for interrupt
 	}
-	void dispatch(const sev instruction) override {
+	void dispatch(const sev) override {
 		// causes an event to be signaled to all processors in a
 		// multiprocessor system
 	}
@@ -262,7 +262,7 @@ private:
 		exec(instruction, _regs, _regs.app_status_register());
 	}
 	void dispatch(const unconditional_branch instruction) override {
-		exec(instruction, _regs, _regs.app_status_register());
+		exec(instruction, _regs);
 	}
 	void dispatch(const stm instruction) override {
 		exec(instruction, _regs, _mem);
@@ -271,7 +271,7 @@ private:
 		exec(instruction, _regs, _mem);
 	}
 	void dispatch(const mrs instruction) override {
-		exec(instruction, _regs, _regs.app_status_register());
+		exec(instruction, _regs);
 	}
 	void dispatch(const msr instruction) override {
 		exec(instruction, _regs, _regs.app_status_register());
@@ -279,7 +279,7 @@ private:
 	void dispatch(const bl_imm instruction) override {
 		exec(instruction, _regs);
 	}
-	void dispatch(const svc instruction) override {
+	void dispatch(const svc) override {
 		_exception_vector.raise(exception_number::ex_name::SVCALL);
 	}
 	void dispatch(const udf instr) override {
@@ -287,7 +287,7 @@ private:
 		// undefined instruction
 		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	}
-	void dispatch(const udfw instr) override {
+	void dispatch(const udfw) override {
 		// undefined instruction
 		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
 	}
