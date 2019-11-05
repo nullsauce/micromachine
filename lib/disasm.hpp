@@ -165,13 +165,13 @@ private:
 		write("sev");
 	}
 	void dispatch(const lsl_imm instruction) override {
-		format("lsls %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5());
+		format("lsls %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5().extract());
 	}
 	void dispatch(const lsr_imm instruction) override {
-		format("lsrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5());
+		format("lsrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5().extract());
 	}
 	void dispatch(const asr_imm instruction) override {
-		format("asrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5());
+		format("asrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5().extract());
 	}
 	void dispatch(const add_reg instruction) override {
 		format("adds %s, %s, %s", R(instruction.rd()), R(instruction.rn()), R(instruction.rm()));
@@ -180,25 +180,25 @@ private:
 		format("subs %s, %s, %s", R(instruction.rd()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const add_imm instruction) override {
-		format("adds %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3());
+		format("adds %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3().extract());
 	}
 	void dispatch(const subs_imm instruction) override {
-		format("subs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3());
+		format("subs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3().extract());
 	}
 	void dispatch(const mov_imm instruction) override {
-		format("movs %s, " + IMM(), R(instruction.rd()), instruction.imm8());
+		format("movs %s, " + IMM(), R(instruction.rd()), instruction.imm8().extract());
 	}
 	void dispatch(const movs instruction) override {
 		format("movs %s, %s", R(instruction.rd()), R(instruction.rm()));
 	}
 	void dispatch(const cmp_imm instruction) override {
-		format("cmp %s, " + IMM(), R(instruction.rn()), instruction.imm8());
+		format("cmp %s, " + IMM(), R(instruction.rn()), instruction.imm8().extract());
 	}
 	void dispatch(const add_imm_t2 instruction) override {
-		format("adds %s, " + IMM(), R(instruction.rdn()), instruction.imm8());
+		format("adds %s, " + IMM(), R(instruction.rdn()), instruction.imm8().extract());
 	}
 	void dispatch(const subs_imm8 instruction) override {
-		format("subs %s, " + IMM(), R(instruction.rdn()), instruction.imm8());
+		format("subs %s, " + IMM(), R(instruction.rdn()), instruction.imm8().extract());
 	}
 	void dispatch(const and_reg instruction) override {
 		format("ands %s, %s", R(instruction.rdn()), R(instruction.rm()));
