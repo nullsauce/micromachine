@@ -620,28 +620,29 @@ public:
 				if(is_32bit_thumb_msr(instruction_pair)) {
 					dispatch(msr(instruction_pair));
 				} else if(is_32bit_thumb_misc_ctl(instruction_pair)) {
-					fprintf(stderr, "unimplemented 32 bit misc ctl intructions\n");
+					//fprintf(stderr, "unimplemented 32 bit misc ctl intructions\n");
 				} else if(is_32bit_thumb_mrs(instruction_pair)) {
 					dispatch(mrs(instruction_pair));
 				} else if(is_32bit_thumb_bl(instruction_pair)) {
 					dispatch(bl_imm(instruction_pair));
 				} else {
-					fprintf(stderr, "unimplemented 32bit misc br and ctrl instruction\n");
+					//fprintf(stderr, "unimplemented 32bit misc br and ctrl instruction\n");
 					invalid_instruction(instruction_pair);
 				}
 			} else {
+				/*
 				fprintf(stderr, "undefined 32bit instruction %04x %04x\n",
 					(uint16_t)instruction_pair.first(),
 					(uint16_t)instruction_pair.second()
-				);
+				);*/
 				invalid_instruction(instruction_pair);
 			}
 
 		} else if(is_undefined(instr)) {
 			dispatch(udf(instr));
 		} else {
-			fprintf(stderr, "unhandled instruction %04X\n", (uint32_t)instr);
-			fprintf(stderr, "unimplemented\n");
+			//fprintf(stderr, "unhandled instruction %04X\n", (uint32_t)instr);
+			//fprintf(stderr, "unimplemented\n");
 			invalid_instruction(instr);
 		}
 	}
