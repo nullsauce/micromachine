@@ -149,19 +149,19 @@ private:
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
-	void dispatch(const nop instruction) override {
+	void dispatch(const nop) override {
 		write("nop");
 	}
-	void dispatch(const yield instruction) override {
+	void dispatch(const yield) override {
 		write("yield");
 	}
-	void dispatch(const wfe instruction) override {
+	void dispatch(const wfe) override {
 		write("wfe");
 	}
-	void dispatch(const wfi instruction) override {
+	void dispatch(const wfi) override {
 		write("wfi");
 	}
-	void dispatch(const sev instruction) override {
+	void dispatch(const sev) override {
 		write("sev");
 	}
 	void dispatch(const lsl_imm instruction) override {

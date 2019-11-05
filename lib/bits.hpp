@@ -172,7 +172,7 @@ struct slice {
 	template<size_t sub_offset, size_t new_len>
 	slice<offset + sub_offset, new_len, integer_type> bits() {
 		return slice<offset + sub_offset, new_len, integer_type>(_val);
-	};
+	}
 
 	template<typename T>
 	bool operator==(const T& other) const {

@@ -23,7 +23,7 @@ constexpr size_t binsize<bool>() {
 }
 
 template<typename T>
-static constexpr size_t binsize(T val) {
+static constexpr size_t binsize(T) {
 	return binsize<T>();
 }
 
@@ -34,7 +34,7 @@ static u_type make_mask(const size_t num_bits) {
 }
 
 template<typename T>
-static constexpr size_t get_sign_bit_index(T val) {
+static constexpr size_t get_sign_bit_index(T) {
 	return binops::binsize<T>()-1;
 }
 
@@ -207,7 +207,7 @@ std::string to_string(const u_type& value) {
 	return str;
 }
 
-};
+}
 
 
 
