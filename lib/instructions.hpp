@@ -319,42 +319,37 @@ struct standard_push_register_list : public instruction_16 {
 };
 
 
-struct standard_pop_register_list {
+struct standard_pop_register_list : public instruction_16 {
 
 	standard_pop_register_list(uint16_t field)
-			: register_list(
+			: instruction_16(
 			(binops::read_uint(field, 0, 8)) |
 			(binops::get_bit(field, 8) << 15)
 	)
 	{}
 
 	bool is_set(reg_idx reg) const {
-		return binops::get_bit(register_list, reg);
+		return binops::get_bit(_word, reg);
 	}
 
 	uint32_t pop_count() const {
-		return __builtin_popcount(register_list);
+		return __builtin_popcount(_word);
 	}
-
-	const register_list_t register_list;
 };
 
-struct standard_register_list_rn {
-	standard_register_list_rn(uint16_t field)
-			: register_list(binops::read_uint(field, 0, 8))
-			, rn(binops::read_uint(field, 8, 3))
-	{}
+struct standard_register_list_rn : public standard_08_83 {
+	using standard_08_83::standard_08_83;
+
+	define_instruction_field(register_list, 0);
+	define_instruction_field(rn, 1);
 
 	bool is_set(reg_idx reg) const {
-		return binops::get_bit(register_list, reg);
+		return binops::get_bit(register_list(), reg);
 	}
 
 	size_t pop_count() const {
-		return __builtin_popcount(register_list);
+		return __builtin_popcount(register_list());
 	}
-
-	const register_list_t register_list;
-	const reg_idx rn;
 };
 
 struct standard_imm8_cond {

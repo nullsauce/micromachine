@@ -854,7 +854,7 @@ static void exec(const unconditional_branch instruction, registers& regs) {
 }
 
 static void exec(const stm instruction, registers& regs, memory& mem) {
-	uint32_t address = regs.get(instruction.rn);
+	uint32_t address = regs.get(instruction.rn());
 
 	for (reg_idx rid = 0; rid < registers::NUM_REGS-1; rid++) {
 		if(instruction.is_set(rid)) {
@@ -867,12 +867,12 @@ static void exec(const stm instruction, registers& regs, memory& mem) {
 	}
 
 	// write back
-	regs.set(instruction.rn, address);
+	regs.set(instruction.rn(), address);
 }
 
 
 static void exec(const ldm instruction, registers& regs, memory& mem) {
-	uint32_t address = regs.get(instruction.rn);
+	uint32_t address = regs.get(instruction.rn());
 
 	for (reg_idx rid = 0; rid < 8; rid++) {
 		if(instruction.is_set(rid)) {
@@ -887,8 +887,8 @@ static void exec(const ldm instruction, registers& regs, memory& mem) {
 	}
 
 	// write back unless register was in list
-	if(!instruction.is_set(instruction.rn)) {
-		regs.set(instruction.rn, address);
+	if(!instruction.is_set(instruction.rn())) {
+		regs.set(instruction.rn(), address);
 	}
 }
 
@@ -921,6 +921,7 @@ static void exec(const mrs instruction, registers& regs) {
 				} break;
 				case 0b001: {
 					val = regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
+					fprintf(stderr, "%08x\n", val);
 				} break;
 			}
 		} break;
