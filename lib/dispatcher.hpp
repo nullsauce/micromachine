@@ -562,10 +562,10 @@ public:
 			dispatch(bkpt(instr));
 		} else if(is_hints(instr)) {
 			hint instruction(instr);
-			if(0b0000 != instruction.opb) {
+			if(0b0000 != instruction.opb()) {
 				// undefined
 			} else {
-				switch(instruction.opa) {
+				switch((uint8_t)instruction.opa()) {
 					case 0b0000: {
 						dispatch(nop());
 						break;
