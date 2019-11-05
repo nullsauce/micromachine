@@ -41,6 +41,7 @@ struct registers {
 			set(i, 0);
 		}
 		_execution_status_register.set_thumb_bit(1);
+		_control_register.reset();
 	}
 
 	uint32_t get(reg_idx i) const {
