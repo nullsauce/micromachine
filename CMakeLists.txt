@@ -8,7 +8,7 @@ enable_testing()
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Winit-self -Wextra -Wno-ignored-qualifiers -Wno-unused-variable -Wno-unused-function -Wno-maybe-uninitialized")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Winit-self -Wextra -Wno-ignored-qualifiers  -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-maybe-uninitialized")
 
 find_package(Threads)
 
