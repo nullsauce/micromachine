@@ -10,7 +10,7 @@
 
 
 
-TEST(Disasm, DisasmGenerate)
+TEST(Disasm, DisamRegressionOf16bitInstructions)
 {
 	std::ifstream truth(TEST_SRC_DIR "/disasm/disasm-16.txt");
 	std::string line;

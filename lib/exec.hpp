@@ -511,7 +511,7 @@ static void exec(const ldr_literal instruction, registers& regs, const memory& m
 	uint32_t base 	= binops::aligned(regs.get_pc(), 4);
 	uint32_t address = base + offset;
 	uint32_t value = mem.read32(address);
-	regs.set(instruction.rt, value);
+	regs.set(instruction.rt(), value);
 }
 
 static void exec(const str_reg instruction, const registers& regs, memory& mem) {
@@ -606,60 +606,60 @@ static void exec(const ldrsh_reg instruction, registers& regs, const memory& mem
 
 
 static void exec(const str_imm instruction, const registers& regs, memory& mem) {
-	uint32_t offset = instruction.imm5 << 2;
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = instruction.imm5() << 2;
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	uint32_t value 	=  regs.get(instruction.rt);
+	uint32_t value 	=  regs.get(instruction.rt());
 	mem.write32(address, value);
 }
 
 static void exec(const ldr_imm instruction, registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm32();
-	uint32_t base = regs.get(instruction.rn);
+	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	uint32_t value = mem.read32(address, ok);
 	if (ok) {
-		regs.set(instruction.rt, value);
+		regs.set(instruction.rt(), value);
 	}
 }
 
 static void exec(const strb_imm instruction, const registers& regs, memory& mem) {
-	uint32_t offset = instruction.imm5;
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = instruction.imm5();
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	uint32_t value 	=  regs.get(instruction.rt);
+	uint32_t value 	=  regs.get(instruction.rt());
 	mem.write8(address, bits<0,8>::of((uint8_t)value));
 }
 
 static void exec(const ldrb_imm instruction, registers& regs, const memory& mem) {
-	uint32_t offset = instruction.imm5;
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = instruction.imm5();
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	uint32_t value = mem.read8(address, ok);
 
 	if(ok) {
-		regs.set(instruction.rt, value);
+		regs.set(instruction.rt(), value);
 	}
 }
 
 static void exec(const strh_imm instruction, const registers& regs, memory& mem) {
-	uint32_t offset = instruction.imm5 << 1;
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = instruction.imm5() << 1;
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	uint32_t value 	=  regs.get(instruction.rt);
+	uint32_t value 	=  regs.get(instruction.rt());
 	mem.write16(address, bits<0,16>::of((uint16_t)value));
 }
 
 static void exec(const ldrh_imm instruction, registers& regs, const memory& mem) {
-	uint32_t offset = instruction.imm5 << 1;
-	uint32_t base 	= regs.get(instruction.rn);
+	uint32_t offset = instruction.imm5() << 1;
+	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
 	uint32_t value = mem.read16(address, ok);
 	if(ok) {
-		regs.set(instruction.rt, value);
+		regs.set(instruction.rt(), value);
 	}
 }
 
@@ -667,16 +667,16 @@ static void exec(const str_sp_imm instruction, const registers& regs, memory& me
 	uint32_t offset = instruction.imm32();
 	uint32_t base 	= regs.get_sp(); // SP
 	uint32_t address = base + offset;
-	uint32_t value 	=  regs.get(instruction.rt);
+	uint32_t value 	=  regs.get(instruction.rt());
 	mem.write32(address, value);
 }
 
 static void exec(const ldr_sp_imm instruction, registers& regs, const memory& mem) {
-	uint32_t offset = instruction.imm8 << 2;
+	uint32_t offset = instruction.imm8() << 2;
 	uint32_t base 	= regs.get_sp(); // SP
 	uint32_t address = base + offset;
 	uint32_t value = mem.read32(address);
-	regs.set(instruction.rt, value);
+	regs.set(instruction.rt(), value);
 }
 
 static void exec(const adr instruction, registers& regs) {
@@ -806,7 +806,7 @@ static void exec(const pop instruction, registers& regs, memory& mem) {
 
 static void exec(const bkpt instruction, bool& break_signal) {
 	break_signal = true;
-	fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8);
+	fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8().extract());
 }
 
 static void exec(const rev_word instruction, registers& regs) {
