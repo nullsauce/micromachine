@@ -95,7 +95,7 @@ public:
 	}
 
 private:
-	void set(uint32_t word) override {
+	void set(uint32_t) override {
 		// Writing to SYST_CVR clears both the register and the COUNTFLAG status bit to zero
 		bits<0,24>::of(_word).clear();
 		_control_reg.set_count_flag(false);
