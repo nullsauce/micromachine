@@ -379,7 +379,7 @@ private:
 		int32_t offset = instruction.offset();
 		uint32_t label = (_addr + 4) + offset;
 		std::string narrow_suffix = format_use_narrow_branch() ? ".n" : "";
-		format("b%2.2s"+narrow_suffix+" "+IMM(), condition_string(instruction.cond), label);
+		format("b%2.2s"+narrow_suffix+" "+IMM(), condition_string(instruction.cond()), label);
 	}
 	void dispatch(const unconditional_branch instruction) override {
 		int32_t offset = instruction.offset();
