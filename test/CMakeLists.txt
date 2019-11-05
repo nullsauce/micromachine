@@ -98,9 +98,10 @@ declare_pinksim_test(instructions/tstRegisterInstrTest.cpp)
 declare_pinksim_test(instructions/undInstrTest.cpp)
 declare_pinksim_test(instructions/uxtbInstrTest.cpp)
 declare_pinksim_test(instructions/uxthInstrTest.cpp)
-# these tests have yet to be integrated
 declare_pinksim_test(instructions/mrsInstrTest.cpp)
 declare_pinksim_test(instructions/msrInstrTest.cpp)
+
+# these tests have yet to be integrated
 #declare_pinksim_test(instructions/isbInstrTest.cpp)
 #declare_pinksim_test(instructions/dmbInstrTest.cpp)
 #declare_pinksim_test(instructions/dsbInstrTest.cpp)
