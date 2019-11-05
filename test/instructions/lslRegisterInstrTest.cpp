@@ -51,7 +51,7 @@ TEST_F(CpuTestHarness, lslRegister_ShiftNegativeValueBy1_CarryOutFromHighestBit)
 	setExpectedXPSRflags("NzC");
 	setRegisterValue(R4, -1);
 	setRegisterValue(R3, 1);
-	setExpectedRegisterValue(R4, -1 << 1);
+	setExpectedRegisterValue(R4, 0xffffffff << 1);
 	step();
 }
 
