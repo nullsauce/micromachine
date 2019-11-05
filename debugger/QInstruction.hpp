@@ -47,11 +47,11 @@ public:
     void setData(uint32_t data) {
         _data.clear();
         uint8_t* bytes = (uint8_t*)&data;
-        for(int i = 0; i < size(); i++) {
+        for(size_t i = 0; i < size(); i++) {
             _data += QString("%1").arg(bytes[i], 2, 16, QChar('0'));
         }
         _data += " ";
-        for(int i = 0; i < size(); i++) {
+        for(size_t i = 0; i < size(); i++) {
             _data += QString("%1").arg(bytes[i], 8, 2, QChar('0')) + " ";
         }
     }
