@@ -51,7 +51,7 @@ private:
 	registers& 			_regs;
 	memory& _mem;
 	exception_vector&	_exception_vector;
-;
+
 };
 
 #endif //MICROMACHINE_EMU_EXCEPTION_MANAGER_HPP
