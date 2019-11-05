@@ -156,7 +156,6 @@ TEST(BitsTest, SubSliceReadConsistency)
 
 TEST(BitsTest, SubSliceWriteConsistency)
 {
-	using a_slice = bits<4, 8>;
 	uint16_t a = 0b1111001011110000;
 	bits<4, 8>::of(bits<4, 12>::of(a)) = (uint8_t) 0;
 	EXPECT_EQ(0b0000000011110000, a);
