@@ -178,3 +178,12 @@ TEST(BitsTest, ByteSwapWithTemporary)
 	bits<8, 8>::of(a) = tmp;
 	EXPECT_EQ(0xafde, a);
 }
+
+TEST(BitSliceRegressionTest, PrintFPrintsWrongData)
+{
+	char buf[64] = {0};
+	uint16_t a = 0xdeaf;
+	sprintf(buf, "%x", bits<0, 8>::of(a).extract());
+	EXPECT_STREQ(buf, "af");
+}
+
