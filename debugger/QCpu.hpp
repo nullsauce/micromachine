@@ -127,6 +127,7 @@ public slots:
 		emit regsChanged();
 		emit nameChanged();
 		reset();
+		return true;
 	}
 
 	bool step(int steps) {
