@@ -143,14 +143,16 @@ struct standard_5_fields : public standard_4_fields<uint_type, f0, f1, f2, f3, f
 // standard instruction binary layouts re-used across instructions
 using layout_16_03_33_65         = standard_3_fields<uint16_t, 0, 3, 3, 3, 6, 5>;
 using layout_16_03_33_63         = standard_3_fields<uint16_t, 0, 3, 3, 3, 6, 3>;
+using layout_16_03_34_71         = standard_3_fields<uint16_t, 0, 3, 3, 4, 7, 1>;
 using layout_16_08_83            = standard_2_fields<uint16_t, 0, 8, 8, 3>;
 using layout_16_08_84            = standard_2_fields<uint16_t, 0, 8, 8, 4>;
 using layout_16_03_33            = standard_2_fields<uint16_t, 0, 3, 3, 3>;
-using layout_16_03_34_71         = standard_3_fields<uint16_t, 0, 3, 3, 4, 7, 1>;
+using layout_16_04_44            = standard_2_fields<uint16_t, 0, 4, 4, 4>;
 using layout_16_34               = standard_1_fields<uint16_t, 3, 4>;
 using layout_16_07               = standard_1_fields<uint16_t, 0, 7>;
 using layout_16_08               = standard_1_fields<uint16_t, 0, 8>;
 using layout_16_011              = standard_1_fields<uint16_t, 0, 11>;
+
 
 struct standard_rd_rm_imm5 : public layout_16_03_33_65 {
 	using layout_16_03_33_65::layout_16_03_33_65;
@@ -873,13 +875,10 @@ struct bkpt : standard_imm8 {
 	using standard_imm8::standard_imm8;
 };
 
-struct hint  {
-	hint(uint16_t instruction)
-	: opa(bits<4,4>::of(instruction))
-	, opb(bits<0,4>::of(instruction)) {
-	}
+struct hint : public layout_16_04_44 {
+	using layout_16_04_44::layout_16_04_44;
 
-	const imm8_t opa;
-	const imm8_t opb;
+	define_instruction_field(opa, 0);
+	define_instruction_field(opb, 1);
 };
 #endif //THUMBEMU_INSTRUCTIONS_HPP
