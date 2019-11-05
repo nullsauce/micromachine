@@ -9,8 +9,10 @@ class sp_reg : public ireg {
 public:
 
 	sp_reg(const exec_mode_reg& exec_mode_reg, const control_reg& control_reg)
-		: _exec_mode_reg(exec_mode_reg)
-		, _ctl_reg(control_reg) {
+		: _sps{0, 0}
+		, _exec_mode_reg(exec_mode_reg)
+		, _ctl_reg(control_reg)
+	{
 
 	}
 
