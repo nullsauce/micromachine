@@ -838,7 +838,7 @@ static void exec(const revsh instruction, registers& regs) {
 static void exec(const branch instruction, registers& regs, apsr_reg& flags) {
 
 
-	if(!flags.condition_passed(instruction.cond)) {
+	if(!flags.condition_passed(instruction.cond())) {
 		return;
 	}
 
