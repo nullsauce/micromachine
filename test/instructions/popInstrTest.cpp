@@ -18,7 +18,7 @@
    Encoding: 1011 1 10 P:1 RegisterList:8 */
 TEST_F(CpuTestHarness, pop_JustPopPC)
 {
-	emitInstruction16("1011110Prrrrrrrr", 1, 0);
+	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0);
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, pop_JustPopPC)
 
 TEST_F(CpuTestHarness, pop_JustPopR0)
 {
-	emitInstruction16("1011110Prrrrrrrr", 0, 1);
+	code_gen().emit_ins16("1011110Prrrrrrrr", 0, 1);
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(R0, 0xFFFFFFFF);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, pop_JustPopR0)
 
 TEST_F(CpuTestHarness, pop_JustPopR7)
 {
-	emitInstruction16("1011110Prrrrrrrr", 0, (1 << 7));
+	code_gen().emit_ins16("1011110Prrrrrrrr", 0, (1 << 7));
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(R7, 0xFFFFFFFF);
@@ -48,7 +48,7 @@ TEST_F(CpuTestHarness, pop_JustPopR7)
 
 TEST_F(CpuTestHarness, pop_PopAll)
 {
-	emitInstruction16("1011110Prrrrrrrr", 1, 0xFF);
+	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0xFF);
 	setRegisterValue(SP, INITIAL_SP - 4 * 9);
 	setExpectedRegisterValue(SP, INITIAL_SP);
 	setExpectedRegisterValue(R0, 9);
@@ -67,7 +67,7 @@ TEST_F(CpuTestHarness, pop_PopAll)
 
 TEST_F(CpuTestHarness, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 {
-	emitInstruction16("1011110Prrrrrrrr", 1, 0);
+	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0);
 	setExpectedXPSRflags("t");
 	setRegisterValue(SP, INITIAL_SP - 4);
 	setExpectedRegisterValue(SP, INITIAL_SP);
@@ -83,7 +83,7 @@ TEST_F(CpuTestHarness, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 /*
 TEST_F(CpuTestHarness, pop_HardFaultFromInvalidMemoryRead)
 {
-    emitInstruction16("1011110Prrrrrrrr", 0, 1);
+    code_gen().emit_ins16("1011110Prrrrrrrr", 0, 1);
     setRegisterValue(SP, 0xFFFFFFFC);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     step(&m_context);
@@ -91,7 +91,7 @@ TEST_F(CpuTestHarness, pop_HardFaultFromInvalidMemoryRead)
 /*
 TEST_SIM_ONLY(pop, UnpredictableToPopNoRegisters)
 {
-    emitInstruction16("1011110Prrrrrrrr", 0, 0);
+    code_gen().emit_ins16("1011110Prrrrrrrr", 0, 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     step(&m_context);
 }

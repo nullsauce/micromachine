@@ -18,14 +18,14 @@
    Encoding: 1101 1111 Imm:8 */
 TEST_F(CpuTestHarness, svc_SmallestImmediate)
 {
-	emitInstruction16("11011111iiiiiiii", 0);
+	code_gen().emit_ins16("11011111iiiiiiii", 0);
 	setExpectedExceptionTaken(CPU_STEP_SVC);
 	step();
 }
 
 TEST_F(CpuTestHarness, svc_LargestImmediate)
 {
-	emitInstruction16("11011111iiiiiiii", 255);
+	code_gen().emit_ins16("11011111iiiiiiii", 255);
 	setExpectedExceptionTaken(CPU_STEP_SVC);
 	step();
 }

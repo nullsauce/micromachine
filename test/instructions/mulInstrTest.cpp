@@ -18,7 +18,7 @@
    Encoding: 010000 1101 Rn:3 Rdm:3 */
 TEST_F(CpuTestHarness, mul_UseLowestRegisterForAllArgs)
 {
-	emitInstruction16("0100001101nnnddd", R0, R0);
+	code_gen().emit_ins16("0100001101nnnddd", R0, R0);
 	setExpectedXPSRflags("nZ");
 	setExpectedRegisterValue(R0, 0U);
 	step();
@@ -26,7 +26,7 @@ TEST_F(CpuTestHarness, mul_UseLowestRegisterForAllArgs)
 
 TEST_F(CpuTestHarness, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult)
 {
-	emitInstruction16("0100001101nnnddd", R7, R7);
+	code_gen().emit_ins16("0100001101nnnddd", R7, R7);
 	setExpectedXPSRflags("Nz");
 	setExpectedRegisterValue(R7, 0x77777777U * 0x77777777U);
 	step();
@@ -34,7 +34,7 @@ TEST_F(CpuTestHarness, mul_UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResul
 
 TEST_F(CpuTestHarness, mul_UseDifferentRegistersForEachArg)
 {
-	emitInstruction16("0100001101nnnddd", R1, R2);
+	code_gen().emit_ins16("0100001101nnnddd", R1, R2);
 	setRegisterValue(R1, 0xA5A5);
 	setRegisterValue(R2, 2);
 	setExpectedXPSRflags("nz");
@@ -44,7 +44,7 @@ TEST_F(CpuTestHarness, mul_UseDifferentRegistersForEachArg)
 
 TEST_F(CpuTestHarness, mul_MultiplyBy16BitMaximumValues)
 {
-	emitInstruction16("0100001101nnnddd", R1, R2);
+	code_gen().emit_ins16("0100001101nnnddd", R1, R2);
 	setRegisterValue(R1, 0xFFFF);
 	setRegisterValue(R2, 0xFFFF);
 	setExpectedXPSRflags("Nz");

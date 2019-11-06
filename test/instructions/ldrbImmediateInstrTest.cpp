@@ -18,7 +18,7 @@
    Encoding: 011 1 1 Imm:5 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, ldrbImmediate_UseAMixOfRegistersWordAligned)
 {
-	emitInstruction16("01111iiiiinnnttt", 0, R7, R0);
+	code_gen().emit_ins16("01111iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R0, 0xED);
@@ -27,7 +27,7 @@ TEST_F(CpuTestHarness, ldrbImmediate_UseAMixOfRegistersWordAligned)
 
 TEST_F(CpuTestHarness, ldrbImmediate_UseAnotherMixOfRegistersSecondByteInWord)
 {
-	emitInstruction16("01111iiiiinnnttt", 1, R0, R7);
+	code_gen().emit_ins16("01111iiiiinnnttt", 1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R7, 0xFE);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHarness, ldrbImmediate_UseAnotherMixOfRegistersSecondByteInWord)
 
 TEST_F(CpuTestHarness, ldrbImmediate_YetAnotherMixOfRegistersThirdByteInWord)
 {
-	emitInstruction16("01111iiiiinnnttt", 2, R1, R4);
+	code_gen().emit_ins16("01111iiiiinnnttt", 2, R1, R4);
 	setRegisterValue(R1, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R4, 0xAD);
@@ -45,7 +45,7 @@ TEST_F(CpuTestHarness, ldrbImmediate_YetAnotherMixOfRegistersThirdByteInWord)
 
 TEST_F(CpuTestHarness, ldrbImmediate_YetAnotherMixOfRegistersFourthByteInWord)
 {
-	emitInstruction16("01111iiiiinnnttt", 3, R2, R5);
+	code_gen().emit_ins16("01111iiiiinnnttt", 3, R2, R5);
 	setRegisterValue(R2, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	setExpectedRegisterValue(R5, 0xBA);
@@ -54,7 +54,7 @@ TEST_F(CpuTestHarness, ldrbImmediate_YetAnotherMixOfRegistersFourthByteInWord)
 
 TEST_F(CpuTestHarness, ldrbImmediate_UseLargestOffset)
 {
-	emitInstruction16("01111iiiiinnnttt", 31, R3, R0);
+	code_gen().emit_ins16("01111iiiiinnnttt", 31, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	memory_write_32(INITIAL_PC + 28, 0x12345678);
 	setExpectedRegisterValue(R0, 0x12);
@@ -63,7 +63,7 @@ TEST_F(CpuTestHarness, ldrbImmediate_UseLargestOffset)
 
 TEST_F(CpuTestHarness, ldrbImmediate_LoadAPositiveValue)
 {
-	emitInstruction16("01111iiiiinnnttt", 0, R3, R0);
+	code_gen().emit_ins16("01111iiiiinnnttt", 0, R3, R0);
 	setRegisterValue(R3, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xFFFFFF7F);
 	setExpectedRegisterValue(R0, 0x7F);
@@ -72,7 +72,7 @@ TEST_F(CpuTestHarness, ldrbImmediate_LoadAPositiveValue)
 
 TEST_F(CpuTestHarness, ldrbImmediate_AttemptLoadInvalidAddress)
 {
-	emitInstruction16("01111iiiiinnnttt", 0, R3, R0);
+	code_gen().emit_ins16("01111iiiiinnnttt", 0, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();

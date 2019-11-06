@@ -19,7 +19,7 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(CpuTestHarness, movImmediate_MovToR0)
 {
-	emitInstruction16("00100dddiiiiiiii", R0, 127);
+	code_gen().emit_ins16("00100dddiiiiiiii", R0, 127);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	setExpectedXPSRflags("nzc");
 	clearCarry();
@@ -29,7 +29,7 @@ TEST_F(CpuTestHarness, movImmediate_MovToR0)
 
 TEST_F(CpuTestHarness, movImmediate_MovToR7)
 {
-	emitInstruction16("00100dddiiiiiiii", R7, 127);
+	code_gen().emit_ins16("00100dddiiiiiiii", R7, 127);
 	setExpectedXPSRflags("nzC");
 	setCarry();
 	setExpectedRegisterValue(R7, 127);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, movImmediate_MovToR7)
 
 TEST_F(CpuTestHarness, movImmediate_MovSmallestImmediateValueToR3)
 {
-	emitInstruction16("00100dddiiiiiiii", R3, 0);
+	code_gen().emit_ins16("00100dddiiiiiiii", R3, 0);
 	setExpectedXPSRflags("nZ");
 	setExpectedRegisterValue(R3, 0);
 	step();
@@ -46,7 +46,7 @@ TEST_F(CpuTestHarness, movImmediate_MovSmallestImmediateValueToR3)
 
 TEST_F(CpuTestHarness, movImmediate_MovLargestImmediateValueToR3)
 {
-	emitInstruction16("00100dddiiiiiiii", R3, 255);
+	code_gen().emit_ins16("00100dddiiiiiiii", R3, 255);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R3, 255);
 	step();

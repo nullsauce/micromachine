@@ -19,7 +19,7 @@
 TEST_SIM_ONLY(sev, BasicTest
 )
 {
-emitInstruction16("1011111101000000");
+code_gen().emit_ins16("1011111101000000");
 setExpectedStepReturn(PINKYSIM_STEP_UNSUPPORTED);
 pinkySimStep(&m_context);
 }

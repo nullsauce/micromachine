@@ -18,7 +18,7 @@
    Encoding: 1101 Cond:4 Imm:8 */
 TEST_F(CpuTestHarness, b_BEQ_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_EQ, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 0);
 	// These tests set the APSR flags to specific value and expect them to be unmodified upon return.
 	setExpectedXPSRflags("z");
 	clearZero();
@@ -27,7 +27,7 @@ TEST_F(CpuTestHarness, b_BEQ_NotTaken)
 
 TEST_F(CpuTestHarness, b_BEQ_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_EQ, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 0);
 	setExpectedXPSRflags("Z");
 	setZero();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -36,7 +36,7 @@ TEST_F(CpuTestHarness, b_BEQ_Taken)
 
 TEST_F(CpuTestHarness, b_BNE_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_NE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_NE, 0);
 	setExpectedXPSRflags("Z");
 	setZero();
 	step();
@@ -44,7 +44,7 @@ TEST_F(CpuTestHarness, b_BNE_NotTaken)
 
 TEST_F(CpuTestHarness, b_BNE_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_NE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_NE, 0);
 	setExpectedXPSRflags("z");
 	clearZero();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -53,7 +53,7 @@ TEST_F(CpuTestHarness, b_BNE_Taken)
 
 TEST_F(CpuTestHarness, b_BCS_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_CS, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_CS, 0);
 	setExpectedXPSRflags("c");
 	clearCarry();
 	step();
@@ -61,7 +61,7 @@ TEST_F(CpuTestHarness, b_BCS_NotTaken)
 
 TEST_F(CpuTestHarness, b_BCS_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_CS, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_CS, 0);
 	setExpectedXPSRflags("C");
 	setCarry();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -70,7 +70,7 @@ TEST_F(CpuTestHarness, b_BCS_Taken)
 
 TEST_F(CpuTestHarness, b_BCC_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_CC, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_CC, 0);
 	setExpectedXPSRflags("C");
 	setCarry();
 	step();
@@ -78,7 +78,7 @@ TEST_F(CpuTestHarness, b_BCC_NotTaken)
 
 TEST_F(CpuTestHarness, b_BCC_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_CC, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_CC, 0);
 	setExpectedXPSRflags("c");
 	clearCarry();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -87,7 +87,7 @@ TEST_F(CpuTestHarness, b_BCC_Taken)
 
 TEST_F(CpuTestHarness, b_BMI_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_MI, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_MI, 0);
 	setExpectedXPSRflags("n");
 	clearNegative();
 	step();
@@ -95,7 +95,7 @@ TEST_F(CpuTestHarness, b_BMI_NotTaken)
 
 TEST_F(CpuTestHarness, b_BMI_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_MI, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_MI, 0);
 	setExpectedXPSRflags("N");
 	setNegative();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -104,7 +104,7 @@ TEST_F(CpuTestHarness, b_BMI_Taken)
 
 TEST_F(CpuTestHarness, b_BPL_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_PL, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_PL, 0);
 	setExpectedXPSRflags("N");
 	setNegative();
 	step();
@@ -112,7 +112,7 @@ TEST_F(CpuTestHarness, b_BPL_NotTaken)
 
 TEST_F(CpuTestHarness, b_BPL_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_PL, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_PL, 0);
 	setExpectedXPSRflags("n");
 	clearNegative();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -121,7 +121,7 @@ TEST_F(CpuTestHarness, b_BPL_Taken)
 
 TEST_F(CpuTestHarness, b_BVS_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_VS, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_VS, 0);
 	setExpectedXPSRflags("v");
 	clearOverflow();
 	step();
@@ -129,7 +129,7 @@ TEST_F(CpuTestHarness, b_BVS_NotTaken)
 
 TEST_F(CpuTestHarness, b_BVS_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_VS, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_VS, 0);
 	setExpectedXPSRflags("V");
 	setOverflow();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -138,7 +138,7 @@ TEST_F(CpuTestHarness, b_BVS_Taken)
 
 TEST_F(CpuTestHarness, b_BVC_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_VC, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_VC, 0);
 	setExpectedXPSRflags("V");
 	setOverflow();
 	step();
@@ -146,7 +146,7 @@ TEST_F(CpuTestHarness, b_BVC_NotTaken)
 
 TEST_F(CpuTestHarness, b_BVC_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_VC, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_VC, 0);
 	setExpectedXPSRflags("v");
 	clearOverflow();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
@@ -155,7 +155,7 @@ TEST_F(CpuTestHarness, b_BVC_Taken)
 
 TEST_F(CpuTestHarness, b_BHI_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_HI, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_HI, 0);
 	setExpectedXPSRflags("cZ");
 	clearCarry();
 	setZero();
@@ -164,7 +164,7 @@ TEST_F(CpuTestHarness, b_BHI_NotTaken)
 
 TEST_F(CpuTestHarness, b_BHI_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_HI, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_HI, 0);
 	setExpectedXPSRflags("Cz");
 	setCarry();
 	clearZero();
@@ -174,7 +174,7 @@ TEST_F(CpuTestHarness, b_BHI_Taken)
 
 TEST_F(CpuTestHarness, b_BLS_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LS, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LS, 0);
 	setExpectedXPSRflags("Cz");
 	setCarry();
 	clearZero();
@@ -183,7 +183,7 @@ TEST_F(CpuTestHarness, b_BLS_NotTaken)
 
 TEST_F(CpuTestHarness, b_BLS_Taken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LS, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LS, 0);
 	setExpectedXPSRflags("cZ");
 	clearCarry();
 	setZero();
@@ -193,7 +193,7 @@ TEST_F(CpuTestHarness, b_BLS_Taken)
 
 TEST_F(CpuTestHarness, b_BGE_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
 	setExpectedXPSRflags("Nv");
 	setNegative();
 	clearOverflow();
@@ -202,7 +202,7 @@ TEST_F(CpuTestHarness, b_BGE_NotTaken)
 
 TEST_F(CpuTestHarness, b_BGE_Taken1)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
 	setExpectedXPSRflags("NV");
 	setNegative();
 	setOverflow();
@@ -212,7 +212,7 @@ TEST_F(CpuTestHarness, b_BGE_Taken1)
 
 TEST_F(CpuTestHarness, b_BGE_Taken2)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_GE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
 	setExpectedXPSRflags("nv");
 	clearNegative();
 	clearOverflow();
@@ -222,7 +222,7 @@ TEST_F(CpuTestHarness, b_BGE_Taken2)
 
 TEST_F(CpuTestHarness, b_BLT_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
 	setExpectedXPSRflags("NV");
 	setNegative();
 	setOverflow();
@@ -231,7 +231,7 @@ TEST_F(CpuTestHarness, b_BLT_NotTaken)
 
 TEST_F(CpuTestHarness, b_BLT_Taken1)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
 	setExpectedXPSRflags("Nv");
 	setNegative();
 	clearOverflow();
@@ -241,7 +241,7 @@ TEST_F(CpuTestHarness, b_BLT_Taken1)
 
 TEST_F(CpuTestHarness, b_BLT_Taken2)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LT, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
 	setExpectedXPSRflags("nV");
 	clearNegative();
 	setOverflow();
@@ -251,7 +251,7 @@ TEST_F(CpuTestHarness, b_BLT_Taken2)
 
 TEST_F(CpuTestHarness, b_BGT_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
 	setExpectedXPSRflags("ZNV");
 	setZero();
 	setNegative();
@@ -261,7 +261,7 @@ TEST_F(CpuTestHarness, b_BGT_NotTaken)
 
 TEST_F(CpuTestHarness, b_BGT_Taken1)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
 	setExpectedXPSRflags("znv");
 	clearZero();
 	clearNegative();
@@ -272,7 +272,7 @@ TEST_F(CpuTestHarness, b_BGT_Taken1)
 
 TEST_F(CpuTestHarness, b_BGT_Taken2)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_GT, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
 	setExpectedXPSRflags("zNV");
 	clearZero();
 	setNegative();
@@ -283,7 +283,7 @@ TEST_F(CpuTestHarness, b_BGT_Taken2)
 
 TEST_F(CpuTestHarness, b_BLE_NotTaken)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
 	setExpectedXPSRflags("zNV");
 	clearZero();
 	setNegative();
@@ -293,7 +293,7 @@ TEST_F(CpuTestHarness, b_BLE_NotTaken)
 
 TEST_F(CpuTestHarness, b_BLE_Taken1)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
 	setExpectedXPSRflags("ZNv");
 	setZero();
 	setNegative();
@@ -304,7 +304,7 @@ TEST_F(CpuTestHarness, b_BLE_Taken1)
 
 TEST_F(CpuTestHarness, b_BLE_Taken2)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_LE, 0);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
 	setExpectedXPSRflags("ZnV");
 	setZero();
 	clearNegative();
@@ -315,7 +315,7 @@ TEST_F(CpuTestHarness, b_BLE_Taken2)
 
 TEST_F(CpuTestHarness, b_BEQ_TakenWithLargestPositiveOffset)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_EQ, 127);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 127);
 	setExpectedXPSRflags("Z");
 	setZero();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 + 127 * 2);
@@ -324,7 +324,7 @@ TEST_F(CpuTestHarness, b_BEQ_TakenWithLargestPositiveOffset)
 
 TEST_F(CpuTestHarness, b_BEQ_TakenWithLargesNegativeOffset)
 {
-	emitInstruction16("1101cccciiiiiiii", COND_EQ, -128);
+	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, -128);
 	setExpectedXPSRflags("Z");
 	setZero();
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 - 128 * 2);
@@ -337,21 +337,21 @@ TEST_F(CpuTestHarness, b_BEQ_TakenWithLargesNegativeOffset)
    Encoding: 11100 Imm:11 */
 TEST_F(CpuTestHarness, b_BAL_ZeroOffset)
 {
-	emitInstruction16("11100iiiiiiiiiii", 0);
+	code_gen().emit_ins16("11100iiiiiiiiiii", 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	step();
 }
 
 TEST_F(CpuTestHarness, b_BAL_LargestPositiveOffset)
 {
-	emitInstruction16("11100iiiiiiiiiii", 1023);
+	code_gen().emit_ins16("11100iiiiiiiiiii", 1023);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 + 1023 * 2);
 	step();
 }
 
 TEST_F(CpuTestHarness, b_BAL_LargestNegativeOffset)
 {
-	emitInstruction16("11100iiiiiiiiiii", -1024);
+	code_gen().emit_ins16("11100iiiiiiiiiii", -1024);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 - 1024 * 2);
 	step();
 }

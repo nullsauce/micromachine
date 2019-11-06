@@ -20,7 +20,7 @@
 TEST_SIM_ONLY(bkpt, SmallestImmediate
 )
 {
-emitInstruction16("10111110iiiiiiii", 0);
+code_gen().emit_ins16("10111110iiiiiiii", 0);
 setExpectedRegisterValue(PC, INITIAL_PC);
 setExpectedStepReturn(PINKYSIM_STEP_BKPT);
 pinkySimStep(&m_context);
@@ -29,7 +29,7 @@ pinkySimStep(&m_context);
 TEST_SIM_ONLY(bkpt, LargestImmediate
 )
 {
-emitInstruction16("10111110iiiiiiii", 255);
+code_gen().emit_ins16("10111110iiiiiiii", 255);
 setExpectedRegisterValue(PC, INITIAL_PC);
 setExpectedStepReturn(PINKYSIM_STEP_BKPT);
 pinkySimStep(&m_context);

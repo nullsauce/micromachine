@@ -18,7 +18,7 @@
    Encoding: 0101 101 Rm:3 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, ldrhRegister_UseAMixOfRegistersWordAligned)
 {
-	emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101101mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, ldrhRegister_UseAMixOfRegistersWordAligned)
 
 TEST_F(CpuTestHarness, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
 {
-	emitInstruction16("0101101mmmnnnttt", R1, R0, R7);
+	code_gen().emit_ins16("0101101mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
 	setRegisterValue(R1, 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, ldrhRegister_UseAnotherMixOfRegistersWordAligned)
 
 TEST_F(CpuTestHarness, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
 {
-	emitInstruction16("0101101mmmnnnttt", R0, R7, R4);
+	code_gen().emit_ins16("0101101mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 6);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -48,7 +48,7 @@ TEST_F(CpuTestHarness, ldrhRegister_YetAnotherMixOfRegistersNotWordAligned)
 
 TEST_F(CpuTestHarness, ldrhRegister_AttemptUnalignedLoad)
 {
-	emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101101mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 1);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
@@ -57,7 +57,7 @@ TEST_F(CpuTestHarness, ldrhRegister_AttemptUnalignedLoad)
 
 TEST_F(CpuTestHarness, ldrhRegister_AttemptLoadFromInvalidAddress)
 {
-	emitInstruction16("0101101mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101101mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
