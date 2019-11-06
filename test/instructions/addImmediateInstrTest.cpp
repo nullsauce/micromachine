@@ -19,7 +19,7 @@
    Encoding: 000 11 1 0 Imm:3 Rn:3 Rd:3 */
 TEST_F(CpuTestHarness, addImmediate_T1UseLowestRegisterOnlyAddLargestImmediate)
 {
-	emitInstruction16("0001110iiinnnddd", 7, R0, R0);
+	code_gen().emit_ins16("0001110iiinnnddd", 7, R0, R0);
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R0, 0U + 7U);
 	step();
@@ -27,7 +27,7 @@ TEST_F(CpuTestHarness, addImmediate_T1UseLowestRegisterOnlyAddLargestImmediate)
 
 TEST_F(CpuTestHarness, addImmediate_T1UseHigestRegisterOnlyAddSmallestImmediate)
 {
-	emitInstruction16("0001110iiinnnddd", 0, R7, R7);
+	code_gen().emit_ins16("0001110iiinnnddd", 0, R7, R7);
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R7, 0x77777777U + 0U);
 	step();
@@ -35,7 +35,7 @@ TEST_F(CpuTestHarness, addImmediate_T1UseHigestRegisterOnlyAddSmallestImmediate)
 
 TEST_F(CpuTestHarness, addImmediate_T1UseDifferentRegistersForEachArg)
 {
-	emitInstruction16("0001110iiinnnddd", 3, R7, R0);
+	code_gen().emit_ins16("0001110iiinnnddd", 3, R7, R0);
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R0, 0x77777777U + 3U);
 	step();
@@ -43,7 +43,7 @@ TEST_F(CpuTestHarness, addImmediate_T1UseDifferentRegistersForEachArg)
 
 TEST_F(CpuTestHarness, addImmediate_T1ForceCarryByAdding1ToLargestInteger)
 {
-	emitInstruction16("0001110iiinnnddd", 1, R6, R1);
+	code_gen().emit_ins16("0001110iiinnnddd", 1, R6, R1);
 	setExpectedXPSRflags("nZCv");
 	setRegisterValue(R6, 0xFFFFFFFFU);
 	setExpectedRegisterValue(R1, 0);
@@ -52,7 +52,7 @@ TEST_F(CpuTestHarness, addImmediate_T1ForceCarryByAdding1ToLargestInteger)
 
 TEST_F(CpuTestHarness, addImmediate_T1ForceOverflowPastLargestPositiveInteger)
 {
-	emitInstruction16("0001110iiinnnddd", 1, R2, R5);
+	code_gen().emit_ins16("0001110iiinnnddd", 1, R2, R5);
 	setExpectedXPSRflags("NzcV");
 	setRegisterValue(R2, 0x7FFFFFFFU);
 	setExpectedRegisterValue(R5, 0x7FFFFFFFU + 1);
@@ -65,7 +65,7 @@ TEST_F(CpuTestHarness, addImmediate_T1ForceOverflowPastLargestPositiveInteger)
    Encoding: 001 10 Rdn:3 Imm:8 */
 TEST_F(CpuTestHarness, addImmediate_T2UseLowestRegisterAndAddLargestImmediate)
 {
-	emitInstruction16("00110dddiiiiiiii", R0, 255);
+	code_gen().emit_ins16("00110dddiiiiiiii", R0, 255);
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R0, 0U + 255U);
 	step();
@@ -73,7 +73,7 @@ TEST_F(CpuTestHarness, addImmediate_T2UseLowestRegisterAndAddLargestImmediate)
 
 TEST_F(CpuTestHarness, addImmediate_T2UseHigestRegisterAndAddSmallestImmediate)
 {
-	emitInstruction16("00110dddiiiiiiii", R7, 0);
+	code_gen().emit_ins16("00110dddiiiiiiii", R7, 0);
 	setExpectedXPSRflags("nzcv");
 	setExpectedRegisterValue(R7, 0x77777777U + 0U);
 	step();
@@ -81,7 +81,7 @@ TEST_F(CpuTestHarness, addImmediate_T2UseHigestRegisterAndAddSmallestImmediate)
 
 TEST_F(CpuTestHarness, addImmediate_T2ForceCarryByAdding1ToLargestInteger)
 {
-	emitInstruction16("00110dddiiiiiiii", R3, 1);
+	code_gen().emit_ins16("00110dddiiiiiiii", R3, 1);
 	setExpectedXPSRflags("nZCv");
 	setRegisterValue(R3, 0xFFFFFFFFU);
 	setExpectedRegisterValue(R3, 0);
@@ -90,7 +90,7 @@ TEST_F(CpuTestHarness, addImmediate_T2ForceCarryByAdding1ToLargestInteger)
 
 TEST_F(CpuTestHarness, addImmediate_T2ForceOverflowPastLargestPositiveInteger)
 {
-	emitInstruction16("00110dddiiiiiiii", R3, 1);
+	code_gen().emit_ins16("00110dddiiiiiiii", R3, 1);
 	setExpectedXPSRflags("NzcV");
 	setRegisterValue(R3, 0x7FFFFFFFU);
 	setExpectedRegisterValue(R3, 0x7FFFFFFFU + 1);

@@ -18,7 +18,7 @@
    Encoding: 010000 0100 Rm:3 Rdn:3 */
 TEST_F(CpuTestHarness, asrRegister_Shift1by1_CarryOutFromLowestBit)
 {
-	emitInstruction16("0100000100mmmddd", R0, R7);
+	code_gen().emit_ins16("0100000100mmmddd", R0, R7);
 	setRegisterValue(R7, 1);
 	setRegisterValue(R0, 1);
 	setExpectedXPSRflags("nZC");
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, asrRegister_Shift1by1_CarryOutFromLowestBit)
 
 TEST_F(CpuTestHarness, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
 {
-	emitInstruction16("0100000100mmmddd", R0, R7);
+	code_gen().emit_ins16("0100000100mmmddd", R0, R7);
 	setRegisterValue(R7, 1);
 	setRegisterValue(R0, 0);
 	setExpectedXPSRflags("nz");
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
 
 TEST_F(CpuTestHarness, asrRegister_Shift2by1_NoCarryFromLowestBit)
 {
-	emitInstruction16("0100000100mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, 2);
 	setRegisterValue(R3, 1);
 	setExpectedXPSRflags("nzc");
@@ -48,7 +48,7 @@ TEST_F(CpuTestHarness, asrRegister_Shift2by1_NoCarryFromLowestBit)
 
 TEST_F(CpuTestHarness, asrRegister_ShiftNegativeNumberby31)
 {
-	emitInstruction16("0100000100mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, -1);
 	setRegisterValue(R3, 31);
 	setExpectedXPSRflags("NzC");
@@ -58,7 +58,7 @@ TEST_F(CpuTestHarness, asrRegister_ShiftNegativeNumberby31)
 
 TEST_F(CpuTestHarness, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
 {
-	emitInstruction16("0100000100mmmddd", R7, R0);
+	code_gen().emit_ins16("0100000100mmmddd", R7, R0);
 	setRegisterValue(R0, 0x80000000);
 	setRegisterValue(R7, 32);
 	setExpectedXPSRflags("NzC");
@@ -68,7 +68,7 @@ TEST_F(CpuTestHarness, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHig
 
 TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueby33)
 {
-	emitInstruction16("0100000100mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, -1);
 	setRegisterValue(R3, 33);
 	setExpectedXPSRflags("NzC");
@@ -78,7 +78,7 @@ TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueby33)
 
 TEST_F(CpuTestHarness, asrRegister_ShiftPositiveValueby33)
 {
-	emitInstruction16("0100000100mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, 0x7FFFFFFF);
 	setRegisterValue(R3, 33);
 	setExpectedXPSRflags("nZc");
@@ -88,7 +88,7 @@ TEST_F(CpuTestHarness, asrRegister_ShiftPositiveValueby33)
 
 TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
 {
-	emitInstruction16("0100000100mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000100mmmddd", R3, R2);
 	setRegisterValue(R2, -1);
 	setRegisterValue(R3, 255);
 	setExpectedXPSRflags("NzC");
@@ -98,7 +98,7 @@ TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
 
 TEST_F(CpuTestHarness, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
 {
-	emitInstruction16("0100000100mmmddd", R7, R0);
+	code_gen().emit_ins16("0100000100mmmddd", R7, R0);
 	setRegisterValue(R0, -1);
 	setRegisterValue(R7, 256);
 	setExpectedXPSRflags("Nz");
@@ -108,7 +108,7 @@ TEST_F(CpuTestHarness, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmo
 
 TEST_F(CpuTestHarness, asrRegister_ShiftLargestPositiveNumberBy31)
 {
-	emitInstruction16("0100000100mmmddd", R2, R3);
+	code_gen().emit_ins16("0100000100mmmddd", R2, R3);
 	setRegisterValue(R3, 0x7FFFFFFF);
 	setRegisterValue(R2, 31);
 	setExpectedXPSRflags("nZC");
@@ -118,7 +118,7 @@ TEST_F(CpuTestHarness, asrRegister_ShiftLargestPositiveNumberBy31)
 
 TEST_F(CpuTestHarness, asrRegister_ShiftLargestNegativeNumberBy1)
 {
-	emitInstruction16("0100000100mmmddd", R2, R3);
+	code_gen().emit_ins16("0100000100mmmddd", R2, R3);
 	setRegisterValue(R3, 0x80000000);
 	setRegisterValue(R2, 1);
 	setExpectedXPSRflags("Nzc");

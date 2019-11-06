@@ -43,6 +43,9 @@ void CpuTestHarness::SetUp()
 	// map host memory
 	_cpu.mem().map(_memory.data(), 0, _memory.size());
 
+	// expose cpu memory to assembler
+	_code_gen.set_mem(&_cpu.mem());
+
 	initContext();
 }
 
@@ -53,6 +56,10 @@ void CpuTestHarness::initContext()
 	std::fill(_memory.begin(), _memory.end(), 0);
 
 	_cpu.reset();
+
+	// assembler will start emiting instructions at the initial code position
+	_code_gen.set_base_address(INITIAL_PC);
+	_code_gen.set_write_pos(0);
 
 	m_expectedStepReturn = 0;
 	m_expectedXPSRflags = 0;

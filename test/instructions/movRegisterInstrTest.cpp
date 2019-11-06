@@ -19,33 +19,33 @@
    NOTE: This encoding doesn't update the APSR flags. */
 TEST_F(CpuTestHarness, movRegister_UseLowestRegisterForAllArgs)
 {
-	emitInstruction16("01000110dmmmmddd", R0, R0);
+	code_gen().emit_ins16("01000110dmmmmddd", R0, R0);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_UseHighRegisterForAllArgs)
 {
-	emitInstruction16("01000110dmmmmddd", LR, LR);
+	code_gen().emit_ins16("01000110dmmmmddd", LR, LR);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MoveHighRegisterToLowRegister)
 {
-	emitInstruction16("01000110dmmmmddd", R7, R12);
+	code_gen().emit_ins16("01000110dmmmmddd", R7, R12);
 	setExpectedRegisterValue(R7, 0xCCCCCCCC);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MoveLowRegisterToLHighRegister)
 {
-	emitInstruction16("01000110dmmmmddd", R12, R7);
+	code_gen().emit_ins16("01000110dmmmmddd", R12, R7);
 	setExpectedRegisterValue(R12, 0x77777777);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 {
-	emitInstruction16("01000110dmmmmddd", PC, R1);
+	code_gen().emit_ins16("01000110dmmmmddd", PC, R1);
 	setRegisterValue(R1, INITIAL_PC + 1025);
 	setExpectedRegisterValue(PC, INITIAL_PC + 1024);
 	step();
@@ -53,7 +53,7 @@ TEST_F(CpuTestHarness, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared
 
 TEST_F(CpuTestHarness, movRegister_MoveEvenAddressIntoPC)
 {
-	emitInstruction16("01000110dmmmmddd", PC, R2);
+	code_gen().emit_ins16("01000110dmmmmddd", PC, R2);
 	setRegisterValue(R2, INITIAL_PC + 1024);
 	setExpectedRegisterValue(PC, INITIAL_PC + 1024);
 	step();
@@ -61,7 +61,7 @@ TEST_F(CpuTestHarness, movRegister_MoveEvenAddressIntoPC)
 
 TEST_F(CpuTestHarness, movRegister_MovePCintoOtherRegister)
 {
-	emitInstruction16("01000110dmmmmddd", R3, PC);
+	code_gen().emit_ins16("01000110dmmmmddd", R3, PC);
 	setExpectedRegisterValue(R3, INITIAL_PC + 4);
 	step();
 }

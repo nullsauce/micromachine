@@ -19,7 +19,7 @@
              10 (0) 0 (1)(1)(1)(1) 0101 option:4 */
 TEST_F(pinkySimBase, dmb_OptionSetTo15)
 {
-	emitInstruction32("1111001110111111", "100011110101oooo", 15);
+	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 15);
 	pinkySimStep(&m_context);
 }
 

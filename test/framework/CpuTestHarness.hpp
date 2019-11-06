@@ -15,7 +15,7 @@
 #include <cassert>
 
 #include "cpu.hpp"
-
+#include "code_generator.hpp"
 
 // Include C++ headers for test harness.
 //#include "CppUTest/TestHarness.h"
@@ -118,6 +118,7 @@ class CpuTestHarness : public ::testing::Test
 protected:
 	const size_t MEMORY_SIZE = 0x8000;
 	cpu _cpu;
+	code_generator _code_gen;
 	std::vector<uint8_t> _memory;
 
 	int m_expectedStepReturn;
@@ -129,6 +130,11 @@ protected:
 	uint32_t m_expectedIPSR;
 	uint32_t m_emitAddress;
 	uint32_t PRIMASK;
+
+
+	code_generator& code_gen() {
+		return _code_gen;
+	}
 
 	void memory_write_32(uint32_t address, uint32_t value);
 	uint32_t memory_read_32(uint32_t address);

@@ -18,7 +18,7 @@
    Encoding: 010000 0110 Rm:3 Rdn:3 */
 TEST_F(CpuTestHarness, sbcRegister_UseLowestRegisterForAllArgsAndShouldBeZeroWithCarrySetForNoBorrow)
 {
-	emitInstruction16("0100000110mmmddd", R0, R0);
+	code_gen().emit_ins16("0100000110mmmddd", R0, R0);
 	setExpectedXPSRflags("nZCv");
 	setExpectedRegisterValue(R0, 0);
 	setCarry();
@@ -27,7 +27,7 @@ TEST_F(CpuTestHarness, sbcRegister_UseLowestRegisterForAllArgsAndShouldBeZeroWit
 
 TEST_F(CpuTestHarness, sbcRegister_UseHigestRegisterForAllArgsAndShouldBeZeroWithCarrySetForNoBorrow)
 {
-	emitInstruction16("0100000110mmmddd", R7, R7);
+	code_gen().emit_ins16("0100000110mmmddd", R7, R7);
 	setExpectedXPSRflags("nZCv");
 	setExpectedRegisterValue(R7, 0);
 	setCarry();
@@ -37,7 +37,7 @@ TEST_F(CpuTestHarness, sbcRegister_UseHigestRegisterForAllArgsAndShouldBeZeroWit
 TEST_F(CpuTestHarness,
 	   sbcRegister_UseDifferentRegistersForEachArgAndOnlyCarryShouldBeSetToIndicateNoBorrow)
 {
-	emitInstruction16("0100000110mmmddd", R1, R2);
+	code_gen().emit_ins16("0100000110mmmddd", R1, R2);
 	setExpectedXPSRflags("nzCv");
 	setExpectedRegisterValue(R2, 0x22222222U - 0x11111111U);
 	setCarry();
@@ -46,7 +46,7 @@ TEST_F(CpuTestHarness,
 
 TEST_F(CpuTestHarness, sbcRegister_ForceCarryClearToIndicateBorrowAndResultWillBeNegative)
 {
-	emitInstruction16("0100000110mmmddd", R1, R0);
+	code_gen().emit_ins16("0100000110mmmddd", R1, R0);
 	setExpectedXPSRflags("Nzcv");
 	setRegisterValue(R1, 1);
 	setExpectedRegisterValue(R0, 0U - 1U);
@@ -56,7 +56,7 @@ TEST_F(CpuTestHarness, sbcRegister_ForceCarryClearToIndicateBorrowAndResultWillB
 
 TEST_F(CpuTestHarness, sbcRegister_ForceNegativeOverflow)
 {
-	emitInstruction16("0100000110mmmddd", R1, R2);
+	code_gen().emit_ins16("0100000110mmmddd", R1, R2);
 	setExpectedXPSRflags("nzCV");
 	setRegisterValue(R2, 0x80000000U);
 	setRegisterValue(R1, 1U);
@@ -67,7 +67,7 @@ TEST_F(CpuTestHarness, sbcRegister_ForceNegativeOverflow)
 
 TEST_F(CpuTestHarness, sbcRegister_ForcePositiveOverflow)
 {
-	emitInstruction16("0100000110mmmddd", R1, R2);
+	code_gen().emit_ins16("0100000110mmmddd", R1, R2);
 	setExpectedXPSRflags("NzcV");
 	setRegisterValue(R2, 0x7FFFFFFFU);
 	setRegisterValue(R1, -1U);
@@ -78,7 +78,7 @@ TEST_F(CpuTestHarness, sbcRegister_ForcePositiveOverflow)
 
 TEST_F(CpuTestHarness, sbcRegister_ClearCarryToCauseABorrowToOccur)
 {
-	emitInstruction16("0100000110mmmddd", R1, R2);
+	code_gen().emit_ins16("0100000110mmmddd", R1, R2);
 	setExpectedXPSRflags("nzCv");
 	setExpectedRegisterValue(R2, 0x22222222U - 1U - 0x11111111U);
 	clearCarry(); // Causes borrow.

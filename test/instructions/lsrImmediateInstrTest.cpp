@@ -22,7 +22,7 @@
    Encoding: 000 01 imm:5 Rm:3 Rd:3 */
 TEST_F(CpuTestHarness, lsrImmediate_R2by1toR0)
 {
-	emitInstruction16("00001iiiiimmmddd", IMM_1, R2, R0);
+	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, R2, R0);
 	setExpectedXPSRflags("nzc");
 	setExpectedRegisterValue(R0, 0x22222222U >> 1);
 	step();
@@ -30,7 +30,7 @@ TEST_F(CpuTestHarness, lsrImmediate_R2by1toR0)
 
 TEST_F(CpuTestHarness, lsrImmediate_R7by32toR0_ZeroResult)
 {
-	emitInstruction16("00001iiiiimmmddd", IMM_32, R7, R0);
+	code_gen().emit_ins16("00001iiiiimmmddd", IMM_32, R7, R0);
 	setExpectedXPSRflags("nZc");
 	setExpectedRegisterValue(R0, 0x0);
 	step();
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, lsrImmediate_R7by32toR0_ZeroResult)
 
 TEST_F(CpuTestHarness, lsrImmediate_R1by1toR7_CarryOut)
 {
-	emitInstruction16("00001iiiiimmmddd", IMM_1, R1, R7);
+	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, R1, R7);
 	setExpectedXPSRflags("nzC");
 	setExpectedRegisterValue(R7, 0x11111111U >> 1);
 	step();
@@ -46,7 +46,7 @@ TEST_F(CpuTestHarness, lsrImmediate_R1by1toR7_CarryOut)
 
 TEST_F(CpuTestHarness, lsrImmediate_R0by32_CarryOutAndIsZero)
 {
-	emitInstruction16("00001iiiiimmmddd", IMM_32, R0, R0);
+	code_gen().emit_ins16("00001iiiiimmmddd", IMM_32, R0, R0);
 	setExpectedXPSRflags("nZC");
 	setRegisterValue(R0, 0x80000000U);
 	setExpectedRegisterValue(R0, 0U);

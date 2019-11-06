@@ -19,7 +19,7 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(CpuTestHarness, bicRegister_UseLowestRegisterForBothArgs)
 {
-	emitInstruction16("0100001110mmmddd", R0, R0);
+	code_gen().emit_ins16("0100001110mmmddd", R0, R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	setExpectedXPSRflags("nZc");
 	clearCarry();
@@ -29,7 +29,7 @@ TEST_F(CpuTestHarness, bicRegister_UseLowestRegisterForBothArgs)
 
 TEST_F(CpuTestHarness, bicRegister_UseHighestRegisterForBothArgs)
 {
-	emitInstruction16("0100001110mmmddd", R7, R7);
+	code_gen().emit_ins16("0100001110mmmddd", R7, R7);
 	setExpectedXPSRflags("nZC");
 	setCarry();
 	setExpectedRegisterValue(R7, 0);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, bicRegister_UseHighestRegisterForBothArgs)
 
 TEST_F(CpuTestHarness, bicRegister_UseR3andR7)
 {
-	emitInstruction16("0100001110mmmddd", R3, R7);
+	code_gen().emit_ins16("0100001110mmmddd", R3, R7);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R7, 0x77777777 & ~0x33333333);
 	step();
@@ -46,7 +46,7 @@ TEST_F(CpuTestHarness, bicRegister_UseR3andR7)
 
 TEST_F(CpuTestHarness, bicRegister_UseBicToClearLSbit)
 {
-	emitInstruction16("0100001110mmmddd", R6, R1);
+	code_gen().emit_ins16("0100001110mmmddd", R6, R1);
 	setRegisterValue(R1, -1);
 	setRegisterValue(R6, 1);
 	setExpectedXPSRflags("Nz");

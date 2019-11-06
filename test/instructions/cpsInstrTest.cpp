@@ -18,7 +18,7 @@
 
 TEST_F(CpuTestHarness, cps_InterruptEnable)
 {
-	emitInstruction16("10110110011i0010", 0);
+	code_gen().emit_ins16("10110110011i0010", 0);
 	PRIMASK |= PRIMASK_PM;
 	step();
 	EXPECT_FALSE(PRIMASK & PRIMASK_PM);
@@ -26,7 +26,7 @@ TEST_F(CpuTestHarness, cps_InterruptEnable)
 
 TEST_F(CpuTestHarness, cps_InterruptDisable)
 {
-	emitInstruction16("10110110011i0010", 1);
+	code_gen().emit_ins16("10110110011i0010", 1);
 	PRIMASK &= ~PRIMASK_PM;
 	step();
 	EXPECT_TRUE(PRIMASK & PRIMASK_PM);
@@ -35,7 +35,7 @@ TEST_F(CpuTestHarness, cps_InterruptDisable)
 /*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit0)
 {
-    emitInstruction16("10110110011i0011", 0);
+    code_gen().emit_ins16("10110110011i0011", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
@@ -43,7 +43,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit0)
 *//*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit1)
 {
-    emitInstruction16("10110110011i0000", 0);
+    code_gen().emit_ins16("10110110011i0000", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
@@ -51,7 +51,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit1)
 *//*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit2)
 {
-    emitInstruction16("10110110011i0110", 0);
+    code_gen().emit_ins16("10110110011i0110", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);
@@ -59,7 +59,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit2)
 *//*
 TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit3)
 {
-    emitInstruction16("10110110011i1010", 0);
+    code_gen().emit_ins16("10110110011i1010", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);

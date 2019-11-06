@@ -18,7 +18,7 @@
    Encoding: 011 0 0 Imm:5 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, strImmediate_T1UseAMixOfRegistersWithSmallestImmediateOffset)
 {
-	emitInstruction16("01100iiiiinnnttt", 0, R7, R0);
+	code_gen().emit_ins16("01100iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
@@ -27,7 +27,7 @@ TEST_F(CpuTestHarness, strImmediate_T1UseAMixOfRegistersWithSmallestImmediateOff
 
 TEST_F(CpuTestHarness, strImmediate_T1UseAnotherMixOfRegistersWithLargestImmediateOffset)
 {
-	emitInstruction16("01100iiiiinnnttt", 31, R0, R7);
+	code_gen().emit_ins16("01100iiiiinnnttt", 31, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
 	memory_write_32(INITIAL_PC + 31 * 4, 0xBAADFEED);
 	step();
@@ -36,7 +36,7 @@ TEST_F(CpuTestHarness, strImmediate_T1UseAnotherMixOfRegistersWithLargestImmedia
 
 TEST_F(CpuTestHarness, strImmediate_T1AttemptUnalignedStore)
 {
-	emitInstruction16("01100iiiiinnnttt", 0, R3, R2);
+	code_gen().emit_ins16("01100iiiiinnnttt", 0, R3, R2);
 	setRegisterValue(R3, INITIAL_PC + 2);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
@@ -44,7 +44,7 @@ TEST_F(CpuTestHarness, strImmediate_T1AttemptUnalignedStore)
 
 TEST_F(CpuTestHarness, strImmediate_T1AttemptStoreToInvalidAddress)
 {
-	emitInstruction16("01100iiiiinnnttt", 16, R3, R2);
+	code_gen().emit_ins16("01100iiiiinnnttt", 16, R3, R2);
 	setRegisterValue(R3, 0xFFFFFFFC - 16 * 4);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
@@ -56,7 +56,7 @@ TEST_F(CpuTestHarness, strImmediate_T1AttemptStoreToInvalidAddress)
    Encoding: 1001 0 Rt:3 Imm:8 */
 TEST_F(CpuTestHarness, strImmediate_T2HighestRegisterWithSmallestImmediateOffset)
 {
-	emitInstruction16("10010tttiiiiiiii", R7, 0);
+	code_gen().emit_ins16("10010tttiiiiiiii", R7, 0);
 	setRegisterValue(SP, INITIAL_PC + 1024);
 	memory_write_32(INITIAL_PC + 1024, 0xBAADFEED);
 	step();
@@ -65,7 +65,7 @@ TEST_F(CpuTestHarness, strImmediate_T2HighestRegisterWithSmallestImmediateOffset
 
 TEST_F(CpuTestHarness, strImmediate_T2LowestRegisterWithLargestImmediateOffset)
 {
-	emitInstruction16("10010tttiiiiiiii", R0, 255);
+	code_gen().emit_ins16("10010tttiiiiiiii", R0, 255);
 	setRegisterValue(SP, INITIAL_PC + 1024);
 	memory_write_32(INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED);
 	step();
@@ -74,7 +74,7 @@ TEST_F(CpuTestHarness, strImmediate_T2LowestRegisterWithLargestImmediateOffset)
 /*
 TEST_SIM_ONLY(strImmediate, T2AttemptUnalignedStore)
 {
-    emitInstruction16("10010tttiiiiiiii", R2, 0);
+    code_gen().emit_ins16("10010tttiiiiiiii", R2, 0);
     setRegisterValue(SP, INITIAL_PC + 1026);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     setExpectedRegisterValue(PC, INITIAL_PC);
@@ -85,7 +85,7 @@ TEST_SIM_ONLY(strImmediate, T2AttemptUnalignedStore)
 /*
 TEST_SIM_ONLY(strImmediate, T2AttemptStoreToInvalidAddress)
 {
-    emitInstruction16("10010tttiiiiiiii", R2, 0);
+    code_gen().emit_ins16("10010tttiiiiiiii", R2, 0);
     setRegisterValue(SP, 0xFFFFFFFC);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     step(&m_context);

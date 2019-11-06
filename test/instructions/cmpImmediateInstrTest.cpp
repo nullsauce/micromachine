@@ -18,28 +18,28 @@
    Encoding: 001 01 Rn:3 Imm:8 */
 TEST_F(CpuTestHarness, cmpImmediate_CompareLowestRegisterToEqualValue)
 {
-	emitInstruction16("00101nnniiiiiiii", R0, 0);
+	code_gen().emit_ins16("00101nnniiiiiiii", R0, 0);
 	setExpectedXPSRflags("nZCv");
 	step();
 }
 
 TEST_F(CpuTestHarness, cmpImmediate_CompareHighestRegisterToImmediateWhichIsSmaller)
 {
-	emitInstruction16("00101nnniiiiiiii", R7, 127);
+	code_gen().emit_ins16("00101nnniiiiiiii", R7, 127);
 	setExpectedXPSRflags("nzCv");
 	step();
 }
 
 TEST_F(CpuTestHarness, cmpImmediate_CompareRegisterToLargestImmediateWhichIsLarger)
 {
-	emitInstruction16("00101nnniiiiiiii", R0, 255);
+	code_gen().emit_ins16("00101nnniiiiiiii", R0, 255);
 	setExpectedXPSRflags("Nzcv");
 	step();
 }
 
 TEST_F(CpuTestHarness, cmpImmediate_CompareRegisterToImmediateWhichWillGenerateNegativeOverflow)
 {
-	emitInstruction16("00101nnniiiiiiii", R3, 1);
+	code_gen().emit_ins16("00101nnniiiiiiii", R3, 1);
 	setRegisterValue(R3, 0x80000000);
 	setExpectedXPSRflags("nzCV");
 	step();

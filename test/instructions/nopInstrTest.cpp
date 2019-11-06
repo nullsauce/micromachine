@@ -18,7 +18,7 @@
    Encoding: 1011 1111 0000 0000 */
 TEST_F(CpuTestHarness, nop_BasicTest)
 {
-	emitInstruction16("1011111100000000");
+	code_gen().emit_ins16("1011111100000000");
 	step();
 }
 
@@ -31,7 +31,7 @@ TEST_F(CpuTestHarness, nop_UnallocatedHints)
 {
     for (uint32_t opA = 5 ; opA < 16 ; opA++)
     {
-        emitInstruction16("10111111aaaa0000", opA);
+        code_gen().emit_ins16("10111111aaaa0000", opA);
         step(&m_context);
         initContext();
     }
