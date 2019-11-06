@@ -58,8 +58,7 @@ void CpuTestHarness::initContext()
 	_cpu.reset();
 
 	// assembler will start emiting instructions at the initial code position
-	_code_gen.set_base_address(INITIAL_PC);
-	_code_gen.set_write_pos(0);
+	_code_gen.set_write_address(INITIAL_PC);
 
 	m_expectedStepReturn = 0;
 	m_expectedXPSRflags = 0;
