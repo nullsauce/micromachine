@@ -109,10 +109,6 @@
 #define CPU_RUN_SINGLESTEP     9
 
 
-
-#define READ_WRITE 0
-#define READ_ONLY  1
-
 class CpuTestHarness : public ::testing::Test
 {
 protected:
