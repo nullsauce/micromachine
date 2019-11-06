@@ -20,18 +20,20 @@
 TEST_F(pinkySimBase, dmb_OptionSetTo15)
 {
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 15);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	pinkySimStep(&m_context);
 }
 
 TEST_F(pinkySimBase, dmb_OptionSetTo0)
 {
-	emitInstruction32("1111001110111111", "100011110101oooo", 0);
+	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 0);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	pinkySimStep(&m_context);
 }
 /*
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_0)
 {
-    emitInstruction32("1111001110111110", "100011110101oooo", 15);
+    code_gen().emit_ins32("1111001110111110", "100011110101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -39,7 +41,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_0)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_1)
 {
-    emitInstruction32("1111001110111101", "100011110101oooo", 15);
+    code_gen().emit_ins32("1111001110111101", "100011110101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -47,7 +49,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_1)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_2)
 {
-    emitInstruction32("1111001110111011", "100011110101oooo", 15);
+    code_gen().emit_ins32("1111001110111011", "100011110101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -55,7 +57,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_2)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_3)
 {
-    emitInstruction32("1111001110110111", "100011110101oooo", 15);
+    code_gen().emit_ins32("1111001110110111", "100011110101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -63,7 +65,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_3)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_8)
 {
-    emitInstruction32("1111001110111111", "100011100101oooo", 15);
+    code_gen().emit_ins32("1111001110111111", "100011100101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -71,7 +73,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_8)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_9)
 {
-    emitInstruction32("1111001110111111", "100011010101oooo", 15);
+    code_gen().emit_ins32("1111001110111111", "100011010101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -79,7 +81,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_9)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_10)
 {
-    emitInstruction32("1111001110111111", "100010110101oooo", 15);
+    code_gen().emit_ins32("1111001110111111", "100010110101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -87,7 +89,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_10)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_11)
 {
-    emitInstruction32("1111001110111111", "100001110101oooo", 15);
+    code_gen().emit_ins32("1111001110111111", "100001110101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -95,7 +97,7 @@ TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_11)
 
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit2_13)
 {
-    emitInstruction32("1111001110111111", "101011110101oooo", 15);
+    code_gen().emit_ins32("1111001110111111", "101011110101oooo", 15);
     setExpectedStepReturn(PINKYSIM_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
