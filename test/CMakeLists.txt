@@ -8,6 +8,8 @@ set(ALL_TEST_OBJS "")
 set(CPU_TESTS_COMMON_FILES
 		framework/CpuTestHarness.hpp
 		framework/CpuTestHarness.cpp
+		framework/code_generator.hpp
+		framework/code_generator.cpp
 )
 
 add_definitions(-DTEST_SRC_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
