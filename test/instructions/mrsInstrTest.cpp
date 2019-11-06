@@ -28,6 +28,7 @@
 TEST_F(CpuTestHarness, mrs_FromAPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_APSR);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();
 	clearZero();
@@ -43,6 +44,7 @@ TEST_F(CpuTestHarness, mrs_FromAPSR)
 TEST_F(CpuTestHarness, mrs_FromIAPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R0, SYS_IAPSR);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();
 	clearZero();
@@ -58,6 +60,7 @@ TEST_F(CpuTestHarness, mrs_FromIAPSR)
 TEST_F(CpuTestHarness, mrs_FromEAPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EAPSR);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();
 	clearZero();
@@ -73,6 +76,7 @@ TEST_F(CpuTestHarness, mrs_FromEAPSR)
 TEST_F(CpuTestHarness, mrs_FromXPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_XPSR);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();
 	clearZero();
@@ -88,6 +92,7 @@ TEST_F(CpuTestHarness, mrs_FromXPSR)
 TEST_F(CpuTestHarness, mrs_FromIPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IPSR);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();
 	clearZero();
@@ -103,6 +108,7 @@ TEST_F(CpuTestHarness, mrs_FromIPSR)
 TEST_F(CpuTestHarness, mrs_FromEPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_EPSR);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();
 	clearZero();
@@ -118,6 +124,7 @@ TEST_F(CpuTestHarness, mrs_FromEPSR)
 TEST_F(CpuTestHarness, mrs_FromIEPSR)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_IEPSR);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();
 	clearZero();
@@ -133,6 +140,7 @@ TEST_F(CpuTestHarness, mrs_FromIEPSR)
 TEST_F(CpuTestHarness, mrs_FromMSP)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_MSP);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	setExpectedRegisterValue(R12, INITIAL_SP);
 	step();
@@ -141,6 +149,7 @@ TEST_F(CpuTestHarness, mrs_FromMSP)
 TEST_F(CpuTestHarness, mrs_FromPSP)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PSP);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	setExpectedRegisterValue(R12, 0x0);
 	step();
@@ -149,6 +158,7 @@ TEST_F(CpuTestHarness, mrs_FromPSP)
 TEST_F(CpuTestHarness, mrs_FromPRIMASKsetTo1)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	PRIMASK = 1;
 	setExpectedRegisterValue(R12, 1);
@@ -158,6 +168,7 @@ TEST_F(CpuTestHarness, mrs_FromPRIMASKsetTo1)
 TEST_F(CpuTestHarness, mrs_PRIMASKto0)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_PRIMASK);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	PRIMASK = 0;
 	setExpectedRegisterValue(R12, 0);
@@ -167,6 +178,7 @@ TEST_F(CpuTestHarness, mrs_PRIMASKto0)
 TEST_F(CpuTestHarness, mrs_CONTROLIgnored)
 {
 	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_CONTROL);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	setExpectedRegisterValue(R12, 0);
 	step();
