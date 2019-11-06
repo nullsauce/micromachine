@@ -50,8 +50,7 @@ TEST_F(CpuTestHarness, ldrLiteral_AttemptToLoadFromInvalidAddress)
 	setRegisterValue(PC, INITIAL_SP - 128);
 	setExpectedRegisterValue(PC, INITIAL_SP - 128);
 	memory_write_32(INITIAL_SP - 128, 0);
-	code_gen().set_base_address(INITIAL_SP - 128);
-	code_gen().set_write_pos(0);
+	code_gen().set_write_address(INITIAL_SP - 128);
 	code_gen().emit_ins16("01001tttiiiiiiii", R0, 255);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
