@@ -68,7 +68,6 @@ void CpuTestHarness::initContext()
 	m_expectedLR = 0;
 	m_expectedPC = 0;
 	m_expectedIPSR = 0;
-	m_emitAddress = 0;
 	PRIMASK = 0;
 
 	m_expectedStepReturn = CPU_STEP_OK;
@@ -114,9 +113,6 @@ void CpuTestHarness::initContext()
 	setRegisterValue(SP, INITIAL_SP);
 	setRegisterValue(LR, INITIAL_LR);
 	setRegisterValue(PC, INITIAL_PC);
-
-	m_emitAddress = INITIAL_PC;
-
 }
 
 void CpuTestHarness::TearDown()
@@ -240,97 +236,7 @@ void CpuTestHarness::setRegisterValue(int index, uint32_t value)
 
 	if (index == PC) {
 		setExpectedRegisterValue(index, value + 2);
-
 	}
-
-}
-
-
-void CpuTestHarness::emitInstruction16(const char *pEncoding, ...)
-{
-	va_list valist;
-
-	va_start(valist, pEncoding);
-	emitInstruction16Varg(pEncoding, valist);
-	va_end(valist);
-}
-
-void CpuTestHarness::emitInstruction32(const char *pEncoding1, const char *pEncoding2, ...)
-{
-	va_list valist;
-
-	va_start(valist, pEncoding2);
-	emitInstruction16Varg(pEncoding1, valist);
-	emitInstruction16Varg(pEncoding2, valist);
-	va_end(valist);
-}
-
-void CpuTestHarness::emitInstruction16Varg(const char *pEncoding, va_list valist)
-{
-	uint16_t instr = 0;
-	size_t i = 0;
-	char last = '\0';
-	const char *p;
-	struct Field
-	{
-		uint32_t value;
-		char c;
-	} fields[6];
-
-	assert (16 == strlen(pEncoding));
-	memset(fields, 0, sizeof(fields));
-
-	// Go through pEncoding from left to right and find all fields to be inserted.
-	p = pEncoding;
-	while (*p) {
-		char c = *p++;
-
-		if (c != '1' && c != '0' && c != last) {
-			// Determine if we already saw this field earlier.
-			bool found = false;
-			for (size_t j = 0; j < i; j++) {
-				if (fields[j].c == c)
-					found = true;
-			}
-
-			// If this is the first time we have seen the field, then save its value in fields array.
-			if (!found) {
-				assert (i < sizeof(fields) / sizeof(fields[0]));
-
-				fields[i].value = va_arg(valist, uint32_t);
-				fields[i].c = c;
-				last = c;
-				i++;
-			}
-		}
-	}
-
-	// Go through pEncoding again from right to left and insert field bits.
-	p = pEncoding + 15;
-	while (p >= pEncoding) {
-		char c = *p--;
-
-		instr >>= 1;
-
-		if (c == '1') {
-			instr |= (1 << 15);
-		} else if (c == '0') {
-			instr |= (0 << 15);
-		} else {
-			size_t j;
-			for (j = 0; j < i; j++) {
-				if (fields[j].c == c)
-					break;
-			}
-			assert (j != i);
-
-			instr |= (fields[j].value & 1) << 15;
-			fields[j].value >>= 1;
-		}
-	}
-
-	_cpu.mem().write16(m_emitAddress, instr);
-	m_emitAddress += 2;
 }
 
 void CpuTestHarness::pinkySimStep()
