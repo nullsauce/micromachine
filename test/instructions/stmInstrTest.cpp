@@ -18,7 +18,7 @@
    Encoding: 1100 0 Rn:3 RegisterList:8 */
 TEST_F(CpuTestHarness, stm_JustPushR0WithR7AsAddress)
 {
-	emitInstruction16("11000nnnrrrrrrrr", R7, (1 << 0));
+	code_gen().emit_ins16("11000nnnrrrrrrrr", R7, (1 << 0));
 	setRegisterValue(R7, INITIAL_PC + 16);
 	setExpectedRegisterValue(R7, INITIAL_PC + 16 + 1 * 4);
 	memory_write_32(INITIAL_PC + 16, 0xFFFFFFFF);
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, stm_JustPushR0WithR7AsAddress)
 
 TEST_F(CpuTestHarness, stm_JustPushR7WithR0AsAddress)
 {
-	emitInstruction16("11000nnnrrrrrrrr", R0, (1 << 7));
+	code_gen().emit_ins16("11000nnnrrrrrrrr", R0, (1 << 7));
 	setRegisterValue(R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(R0, INITIAL_PC + 16 + 1 * 4);
 	memory_write_32(INITIAL_PC + 16, 0xFFFFFFFF);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, stm_JustPushR7WithR0AsAddress)
 
 TEST_F(CpuTestHarness, stm_PushAllWithR0AsAddress)
 {
-	emitInstruction16("11000nnnrrrrrrrr", R0, 0xFF);
+	code_gen().emit_ins16("11000nnnrrrrrrrr", R0, 0xFF);
 	setRegisterValue(R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(R0, INITIAL_PC + 16 + 8 * 4);
 	for (int i = 0; i < 8; i++)
@@ -51,7 +51,7 @@ TEST_F(CpuTestHarness, stm_PushAllWithR0AsAddress)
 
 TEST_F(CpuTestHarness, stm_PushAllButR7WithR7AsAddress)
 {
-	emitInstruction16("11000nnnrrrrrrrr", R7, 0x7F);
+	code_gen().emit_ins16("11000nnnrrrrrrrr", R7, 0x7F);
 	setRegisterValue(R7, INITIAL_PC + 16);
 	setExpectedRegisterValue(R7, INITIAL_PC + 16 + 7 * 4);
 	for (int i = 0; i < 7; i++)
@@ -63,7 +63,7 @@ TEST_F(CpuTestHarness, stm_PushAllButR7WithR7AsAddress)
 
 TEST_F(CpuTestHarness, stm_HardFaultFromInvalidMemoryWrite)
 {
-	emitInstruction16("11000nnnrrrrrrrr", R0, 1 << 0);
+	code_gen().emit_ins16("11000nnnrrrrrrrr", R0, 1 << 0);
 	setRegisterValue(R0, 0xFFFFFFFC);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
@@ -71,7 +71,7 @@ TEST_F(CpuTestHarness, stm_HardFaultFromInvalidMemoryWrite)
 /*
 TEST_SIM_ONLY(stm, UnpredictableToPushNoRegisters)
 {
-    emitInstruction16("11000nnnrrrrrrrr", R0, 0);
+    code_gen().emit_ins16("11000nnnrrrrrrrr", R0, 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -79,7 +79,7 @@ TEST_SIM_ONLY(stm, UnpredictableToPushNoRegisters)
 
 TEST_SIM_ONLY(stm, UnpredictableToPushWritebackRegisterWhichIsntFirstSaved)
 {
-    emitInstruction16("11000nnnrrrrrrrr", R7, 0xFF);
+    code_gen().emit_ins16("11000nnnrrrrrrrr", R7, 0xFF);
     setRegisterValue(R7, INITIAL_PC + 16);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);

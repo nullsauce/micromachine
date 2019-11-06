@@ -17,7 +17,7 @@
    Encoding: 011 1 0 Imm:5 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, strbImmediate_UseAMixOfRegistersWordAlignedWithSmallestOffset)
 {
-	emitInstruction16("01110iiiiinnnttt", 0, R7, R0);
+	code_gen().emit_ins16("01110iiiiinnnttt", 0, R7, R0);
 	setRegisterValue(R7, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
@@ -26,7 +26,7 @@ TEST_F(CpuTestHarness, strbImmediate_UseAMixOfRegistersWordAlignedWithSmallestOf
 
 TEST_F(CpuTestHarness, strbImmediate_UseAnotherMixOfRegistersSecondByteInWord)
 {
-	emitInstruction16("01110iiiiinnnttt", 1, R0, R7);
+	code_gen().emit_ins16("01110iiiiinnnttt", 1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
@@ -35,7 +35,7 @@ TEST_F(CpuTestHarness, strbImmediate_UseAnotherMixOfRegistersSecondByteInWord)
 
 TEST_F(CpuTestHarness, strbImmediate_YetAnotherMixOfRegistersThirdByteInWord)
 {
-	emitInstruction16("01110iiiiinnnttt", 2, R3, R4);
+	code_gen().emit_ins16("01110iiiiinnnttt", 2, R3, R4);
 	setRegisterValue(R3, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
@@ -44,7 +44,7 @@ TEST_F(CpuTestHarness, strbImmediate_YetAnotherMixOfRegistersThirdByteInWord)
 
 TEST_F(CpuTestHarness, strbImmediate_YetAnotherMixOfRegistersFourthByteInWord)
 {
-	emitInstruction16("01110iiiiinnnttt", 3, R1, R5);
+	code_gen().emit_ins16("01110iiiiinnnttt", 3, R1, R5);
 	setRegisterValue(R1, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
@@ -53,7 +53,7 @@ TEST_F(CpuTestHarness, strbImmediate_YetAnotherMixOfRegistersFourthByteInWord)
 
 TEST_F(CpuTestHarness, strbImmediate_LargestOffset)
 {
-	emitInstruction16("01110iiiiinnnttt", 31, R2, R4);
+	code_gen().emit_ins16("01110iiiiinnnttt", 31, R2, R4);
 	setRegisterValue(R2, INITIAL_PC);
 	memory_write_32(INITIAL_PC + 28, 0xBAADFEED);
 	step();
@@ -62,7 +62,7 @@ TEST_F(CpuTestHarness, strbImmediate_LargestOffset)
 
 TEST_F(CpuTestHarness, strbImmediate_AttemptStoreToInvalidAddress)
 {
-	emitInstruction16("01110iiiiinnnttt", 0, R3, R0);
+	code_gen().emit_ins16("01110iiiiinnnttt", 0, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();

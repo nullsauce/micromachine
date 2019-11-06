@@ -15,14 +15,14 @@
 
 TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllZeroesForImmedaite)
 {
-	emitInstruction16("11011110iiiiiiii", 0);
+	code_gen().emit_ins16("11011110iiiiiiii", 0);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
 
 TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllOnesForImmedaite)
 {
-	emitInstruction16("11011110iiiiiiii", -1);
+	code_gen().emit_ins16("11011110iiiiiiii", -1);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

@@ -18,7 +18,7 @@
    Encoding: 0101 011 Rm:3 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 {
-	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, ldrsbRegister_UseAMixOfRegistersWordAligned_NegativeValue
 
 TEST_F(CpuTestHarness, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_NegativeValue)
 {
-	emitInstruction16("0101011mmmnnnttt", R1, R0, R7);
+	code_gen().emit_ins16("0101011mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
 	setRegisterValue(R1, 5);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, ldrsbRegister_UseAnotherMixOfRegistersSecondByteInWord_Ne
 
 TEST_F(CpuTestHarness, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_NegativeValue)
 {
-	emitInstruction16("0101011mmmnnnttt", R0, R7, R4);
+	code_gen().emit_ins16("0101011mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 6);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -48,7 +48,7 @@ TEST_F(CpuTestHarness, ldrsbRegister_YetAnotherMixOfRegistersThirdByteInWord_Neg
 
 TEST_F(CpuTestHarness, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_NegativeValue)
 {
-	emitInstruction16("0101011mmmnnnttt", R0, R7, R5);
+	code_gen().emit_ins16("0101011mmmnnnttt", R0, R7, R5);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 7);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -58,7 +58,7 @@ TEST_F(CpuTestHarness, ldrsbRegister_YetAnotherMixOfRegistersFourthByteInWord_Ne
 
 TEST_F(CpuTestHarness, ldrsbRegister_LoadAPositiveValue)
 {
-	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
 	memory_write_32(INITIAL_PC + 4, 0xFFFFFF7F);
@@ -68,7 +68,7 @@ TEST_F(CpuTestHarness, ldrsbRegister_LoadAPositiveValue)
 
 TEST_F(CpuTestHarness, ldrsbRegister_AttemptLoadInvalidAddress)
 {
-	emitInstruction16("0101011mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101011mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);

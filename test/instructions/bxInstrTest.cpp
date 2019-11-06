@@ -19,7 +19,7 @@
 TEST_F(CpuTestHarness,
 	   bx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
 {
-	emitInstruction16("010001110mmmm000", R0);
+	code_gen().emit_ins16("010001110mmmm000", R0);
 	setExpectedXPSRflags("t");
 	setRegisterValue(R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
@@ -33,7 +33,7 @@ TEST_F(CpuTestHarness,
 
 TEST_F(CpuTestHarness, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb)
 {
-	emitInstruction16("010001110mmmm000", LR);
+	code_gen().emit_ins16("010001110mmmm000", LR);
 	setRegisterValue(LR, (INITIAL_PC + 16) | 1);
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
 	step();
@@ -41,7 +41,7 @@ TEST_F(CpuTestHarness, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredF
 /*
 TEST_SIM_ONLY(bx, UnpredictableToUseR15)
 {
-    emitInstruction16("010001110mmmm000", PC);
+    code_gen().emit_ins16("010001110mmmm000", PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -49,7 +49,7 @@ TEST_SIM_ONLY(bx, UnpredictableToUseR15)
 
 TEST_SIM_ONLY(bx, UnpredictableForBit0ToBeHigh)
 {
-    emitInstruction16("010001110mmmm001", R0);
+    code_gen().emit_ins16("010001110mmmm001", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -57,7 +57,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit0ToBeHigh)
 
 TEST_SIM_ONLY(bx, UnpredictableForBit1ToBeHigh)
 {
-    emitInstruction16("010001110mmmm010", R0);
+    code_gen().emit_ins16("010001110mmmm010", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -65,7 +65,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit1ToBeHigh)
 
 TEST_SIM_ONLY(bx, UnpredictableForBit2ToBeHigh)
 {
-    emitInstruction16("010001110mmmm100", R0);
+    code_gen().emit_ins16("010001110mmmm100", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);

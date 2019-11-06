@@ -18,21 +18,21 @@
    Encoding: 010000 1011 Rm:3 Rn:3 */
 TEST_F(CpuTestHarness, cmnRegister_UseLowestRegisterForAllArgs)
 {
-	emitInstruction16("0100001011mmmnnn", R0, R0);
+	code_gen().emit_ins16("0100001011mmmnnn", R0, R0);
 	setExpectedXPSRflags("nZcv");
 	step();
 }
 
 TEST_F(CpuTestHarness, cmnRegister_UseHigestRegisterForAllArgs)
 {
-	emitInstruction16("0100001011mmmnnn", R7, R7);
+	code_gen().emit_ins16("0100001011mmmnnn", R7, R7);
 	setExpectedXPSRflags("NzcV");
 	step();
 }
 
 TEST_F(CpuTestHarness, cmnRegister_UseDifferentRegistersForEachArg)
 {
-	emitInstruction16("0100001011mmmnnn", R1, R2);
+	code_gen().emit_ins16("0100001011mmmnnn", R1, R2);
 	setExpectedXPSRflags("nzcv");
 	step();
 }
@@ -40,7 +40,7 @@ TEST_F(CpuTestHarness, cmnRegister_UseDifferentRegistersForEachArg)
 // Force APSR flags to be set which haven't already been covered above.
 TEST_F(CpuTestHarness, cmnRegister_ForceCarryWithNoOverflow)
 {
-	emitInstruction16("0100001011mmmnnn", R1, R2);
+	code_gen().emit_ins16("0100001011mmmnnn", R1, R2);
 	setExpectedXPSRflags("nZCv");
 	setRegisterValue(R1, -1);
 	setRegisterValue(R2, 1);
@@ -49,7 +49,7 @@ TEST_F(CpuTestHarness, cmnRegister_ForceCarryWithNoOverflow)
 
 TEST_F(CpuTestHarness, cmnRegister_ForceCarryAndOverflow)
 {
-	emitInstruction16("0100001011mmmnnn", R1, R2);
+	code_gen().emit_ins16("0100001011mmmnnn", R1, R2);
 	setExpectedXPSRflags("nzCV");
 	setRegisterValue(R1, -1);
 	setRegisterValue(R2, 0x80000000U);

@@ -18,7 +18,7 @@
    Encoding: 0101 111 Rm:3 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, ldrshRegister_UseAMixOfRegistersWordAligned_NegativeValue)
 {
-	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, ldrshRegister_UseAMixOfRegistersWordAligned_NegativeValue
 
 TEST_F(CpuTestHarness, ldrshRegister_UseAnotherMixOfRegistersWordAligned_NegativeValue)
 {
-	emitInstruction16("0101111mmmnnnttt", R1, R0, R7);
+	code_gen().emit_ins16("0101111mmmnnnttt", R1, R0, R7);
 	setRegisterValue(R0, INITIAL_PC);
 	setRegisterValue(R1, 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, ldrshRegister_UseAnotherMixOfRegistersWordAligned_Negativ
 
 TEST_F(CpuTestHarness, ldrshRegister_YetAnotherMixOfRegistersNotWordAligned_NegativeValue)
 {
-	emitInstruction16("0101111mmmnnnttt", R0, R7, R4);
+	code_gen().emit_ins16("0101111mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 6);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
@@ -48,7 +48,7 @@ TEST_F(CpuTestHarness, ldrshRegister_YetAnotherMixOfRegistersNotWordAligned_Nega
 
 TEST_F(CpuTestHarness, ldrshRegister_LoadPositiveHalfWord)
 {
-	emitInstruction16("0101111mmmnnnttt", R0, R7, R4);
+	code_gen().emit_ins16("0101111mmmnnnttt", R0, R7, R4);
 	setRegisterValue(R7, INITIAL_PC);
 	setRegisterValue(R0, 4);
 	memory_write_32(INITIAL_PC + 4, 0xFFFF7FFF);
@@ -58,7 +58,7 @@ TEST_F(CpuTestHarness, ldrshRegister_LoadPositiveHalfWord)
 
 TEST_F(CpuTestHarness, ldrshRegister_AttemptUnalignedLoad)
 {
-	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, INITIAL_PC);
 	setRegisterValue(R7, 1);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
@@ -67,7 +67,7 @@ TEST_F(CpuTestHarness, ldrshRegister_AttemptUnalignedLoad)
 
 TEST_F(CpuTestHarness, ldrshRegister_AttemptLoadFromInvalidAddress)
 {
-	emitInstruction16("0101111mmmnnnttt", R7, R3, R0);
+	code_gen().emit_ins16("0101111mmmnnnttt", R7, R3, R0);
 	setRegisterValue(R3, 0xFFFFFFFC);
 	setRegisterValue(R7, 0);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
