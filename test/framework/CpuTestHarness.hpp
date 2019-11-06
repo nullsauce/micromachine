@@ -128,9 +128,7 @@ protected:
 	uint32_t m_expectedLR;
 	uint32_t m_expectedPC;
 	uint32_t m_expectedIPSR;
-	uint32_t m_emitAddress;
 	uint32_t PRIMASK;
-
 
 	code_generator& code_gen() {
 		return _code_gen;
@@ -150,9 +148,6 @@ protected:
 	void setExpectedIPSR(uint32_t expectedValue);
 	void setExpectedRegisterValue(int index, uint32_t expectedValue);
 	void setRegisterValue(int index, uint32_t value);
-	void emitInstruction16(const char *pEncoding, ...);
-	void emitInstruction32(const char *pEncoding1, const char *pEncoding2, ...);
-	void emitInstruction16Varg(const char *pEncoding, va_list valist);
 	void pinkySimStep();
 	void validateSignaledException();
 	void validateXPSR();
