@@ -18,7 +18,7 @@
    Encoding: 1100 1 Rn:3 RegisterList:8 */
 TEST_F(CpuTestHarness, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
 {
-	emitInstruction16("11001nnnrrrrrrrr", R7, (1 << 0));
+	code_gen().emit_ins16("11001nnnrrrrrrrr", R7, (1 << 0));
 	setRegisterValue(R7, INITIAL_PC + 16);
 	setExpectedRegisterValue(R7, INITIAL_PC + 16 + 1 * 4);
 	setExpectedRegisterValue(R0, 0xFFFFFFFF);
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
 
 TEST_F(CpuTestHarness, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
 {
-	emitInstruction16("11001nnnrrrrrrrr", R0, (1 << 7));
+	code_gen().emit_ins16("11001nnnrrrrrrrr", R0, (1 << 7));
 	setRegisterValue(R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(R0, INITIAL_PC + 16 + 1 * 4);
 	setExpectedRegisterValue(R7, 0xFFFFFFFF);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
 
 TEST_F(CpuTestHarness, ldm_PopAllNoWriteback)
 {
-	emitInstruction16("11001nnnrrrrrrrr", R0, 0xFF);
+	code_gen().emit_ins16("11001nnnrrrrrrrr", R0, 0xFF);
 	setRegisterValue(R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(R0, 0);
 	setExpectedRegisterValue(R1, 1);
@@ -55,7 +55,7 @@ TEST_F(CpuTestHarness, ldm_PopAllNoWriteback)
 
 TEST_F(CpuTestHarness, ldm_PopAllButAddressRegister_WritebackNewAddress)
 {
-	emitInstruction16("11001nnnrrrrrrrr", R7, 0x7F);
+	code_gen().emit_ins16("11001nnnrrrrrrrr", R7, 0x7F);
 	setRegisterValue(R7, INITIAL_PC + 16);
 	setExpectedRegisterValue(R0, 0);
 	setExpectedRegisterValue(R1, 1);
@@ -72,7 +72,7 @@ TEST_F(CpuTestHarness, ldm_PopAllButAddressRegister_WritebackNewAddress)
 
 TEST_F(CpuTestHarness, ldm_HardFaultFromInvalidMemoryRead)
 {
-	emitInstruction16("11001nnnrrrrrrrr", 0, (1 << 0));
+	code_gen().emit_ins16("11001nnnrrrrrrrr", 0, (1 << 0));
 	setRegisterValue(R0, 0xFFFFFFFC);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
@@ -80,7 +80,7 @@ TEST_F(CpuTestHarness, ldm_HardFaultFromInvalidMemoryRead)
 /*
 TEST_SIM_ONLY(ldm, UnpredictableToPopNoRegisters)
 {
-    emitInstruction16("11001nnnrrrrrrrr", 0, 0);
+    code_gen().emit_ins16("11001nnnrrrrrrrr", 0, 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(PC, INITIAL_PC);
     step(&m_context);

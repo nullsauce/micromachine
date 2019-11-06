@@ -18,7 +18,7 @@
    Encoding: 010000 0111 Rm:3 Rdn:3 */
 TEST_F(CpuTestHarness, rorRegister_Rotate1by1_CarryOutFromLowestBit)
 {
-	emitInstruction16("0100000111mmmddd", R0, R7);
+	code_gen().emit_ins16("0100000111mmmddd", R0, R7);
 	setExpectedXPSRflags("NzC");
 	setRegisterValue(R0, 1);
 	setRegisterValue(R7, 1);
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, rorRegister_Rotate1by1_CarryOutFromLowestBit)
 
 TEST_F(CpuTestHarness, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
 {
-	emitInstruction16("0100000111mmmddd", R7, R0);
+	code_gen().emit_ins16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("nz");
 	setRegisterValue(R0, 1);
 	setRegisterValue(R7, 0);
@@ -38,7 +38,7 @@ TEST_F(CpuTestHarness, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
 
 TEST_F(CpuTestHarness, rorRegister_Rotate2by1_NoCarry)
 {
-	emitInstruction16("0100000111mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
 	setRegisterValue(R2, 2);
 	setRegisterValue(R3, 1);
@@ -48,7 +48,7 @@ TEST_F(CpuTestHarness, rorRegister_Rotate2by1_NoCarry)
 
 TEST_F(CpuTestHarness, rorRegister_Rotate16Bits)
 {
-	emitInstruction16("0100000111mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
 	setRegisterValue(R2, 0x12345678);
 	setRegisterValue(R3, 16);
@@ -58,7 +58,7 @@ TEST_F(CpuTestHarness, rorRegister_Rotate16Bits)
 
 TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf31)
 {
-	emitInstruction16("0100000111mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
 	setRegisterValue(R2, 0x80000000);
 	setRegisterValue(R3, 31);
@@ -68,7 +68,7 @@ TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf31)
 
 TEST_F(CpuTestHarness, rorRegister_RotateBy32_CarryOutHighestBit)
 {
-	emitInstruction16("0100000111mmmddd", R7, R0);
+	code_gen().emit_ins16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("NzC");
 	setRegisterValue(R0, 0x80000000);
 	setRegisterValue(R7, 32);
@@ -78,7 +78,7 @@ TEST_F(CpuTestHarness, rorRegister_RotateBy32_CarryOutHighestBit)
 
 TEST_F(CpuTestHarness, rorRegister_RotateBy33)
 {
-	emitInstruction16("0100000111mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("NzC");
 	setRegisterValue(R2, 0x80000001);
 	setRegisterValue(R3, 33);
@@ -88,7 +88,7 @@ TEST_F(CpuTestHarness, rorRegister_RotateBy33)
 
 TEST_F(CpuTestHarness, rorRegister_RotateWithMaximumShiftOf255)
 {
-	emitInstruction16("0100000111mmmddd", R3, R2);
+	code_gen().emit_ins16("0100000111mmmddd", R3, R2);
 	setExpectedXPSRflags("nzc");
 	setRegisterValue(R2, 0x80000000);
 	setRegisterValue(R3, 255);
@@ -98,7 +98,7 @@ TEST_F(CpuTestHarness, rorRegister_RotateWithMaximumShiftOf255)
 
 TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
 {
-	emitInstruction16("0100000111mmmddd", R7, R0);
+	code_gen().emit_ins16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("Nz");
 	setRegisterValue(R0, 0x80000000);
 	setRegisterValue(R7, 256);
@@ -108,7 +108,7 @@ TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_
 
 TEST_F(CpuTestHarness, rorRegister_Rotate0by16)
 {
-	emitInstruction16("0100000111mmmddd", R7, R0);
+	code_gen().emit_ins16("0100000111mmmddd", R7, R0);
 	setExpectedXPSRflags("nZc");
 	setRegisterValue(R0, 0);
 	setRegisterValue(R7, 16);

@@ -19,7 +19,7 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(CpuTestHarness, andRegister_UseLowestRegisterForBothArgs)
 {
-	emitInstruction16("0100000000mmmddd", R0, R0);
+	code_gen().emit_ins16("0100000000mmmddd", R0, R0);
 	setExpectedXPSRflags("nZc");
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	clearCarry();
@@ -29,7 +29,7 @@ TEST_F(CpuTestHarness, andRegister_UseLowestRegisterForBothArgs)
 
 TEST_F(CpuTestHarness, andRegister_UseHighestRegisterForBothArgs)
 {
-	emitInstruction16("0100000000mmmddd", R7, R7);
+	code_gen().emit_ins16("0100000000mmmddd", R7, R7);
 	setExpectedXPSRflags("nzC");
 	setCarry();
 	step();
@@ -37,7 +37,7 @@ TEST_F(CpuTestHarness, andRegister_UseHighestRegisterForBothArgs)
 
 TEST_F(CpuTestHarness, andRegister_AndR3andR7)
 {
-	emitInstruction16("0100000000mmmddd", R3, R7);
+	code_gen().emit_ins16("0100000000mmmddd", R3, R7);
 	setExpectedXPSRflags("nz");
 	setExpectedRegisterValue(R7, 0x33333333);
 	step();
@@ -45,7 +45,7 @@ TEST_F(CpuTestHarness, andRegister_AndR3andR7)
 
 TEST_F(CpuTestHarness, andRegister_UseAndToJustKeepNegativeSignBit)
 {
-	emitInstruction16("0100000000mmmddd", R6, R1);
+	code_gen().emit_ins16("0100000000mmmddd", R6, R1);
 	setRegisterValue(R1, -1);
 	setRegisterValue(R6, 0x80000000);
 	setExpectedXPSRflags("Nz");
@@ -55,7 +55,7 @@ TEST_F(CpuTestHarness, andRegister_UseAndToJustKeepNegativeSignBit)
 
 TEST_F(CpuTestHarness, andRegister_HaveAndResultNotBeSameAsEitherSource)
 {
-	emitInstruction16("0100000000mmmddd", R5, R2);
+	code_gen().emit_ins16("0100000000mmmddd", R5, R2);
 	setRegisterValue(R2, 0x12345678);
 	setRegisterValue(R5, 0xF0F0F0F0);
 	setExpectedXPSRflags("nz");

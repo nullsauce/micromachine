@@ -18,7 +18,7 @@
    Encoding: 1011 1010 01 Rm:3 Rd:3 */
 TEST_F(CpuTestHarness, rev16_RevR0toR7)
 {
-	emitInstruction16("1011101001mmmddd", R0, R7);
+	code_gen().emit_ins16("1011101001mmmddd", R0, R7);
 	setRegisterValue(R0, 0x12345678);
 	setExpectedRegisterValue(R7, 0x34127856);
 	step();
@@ -26,7 +26,7 @@ TEST_F(CpuTestHarness, rev16_RevR0toR7)
 
 TEST_F(CpuTestHarness, rev16_RevR7toR0)
 {
-	emitInstruction16("1011101001mmmddd", R7, R0);
+	code_gen().emit_ins16("1011101001mmmddd", R7, R0);
 	setRegisterValue(R7, 0x12345678);
 	setExpectedRegisterValue(R0, 0x34127856);
 	step();

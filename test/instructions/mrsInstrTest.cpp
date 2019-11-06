@@ -27,7 +27,7 @@
              10 (0) 0 Rd:4 SYSm:8 */
 TEST_F(CpuTestHarness, mrs_FromAPSR)
 {
-	emitInstruction32("1111001111101111", "1000ddddssssssss", R12, SYS_APSR);
+	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", R12, SYS_APSR);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NzCv");
 	setNegative();

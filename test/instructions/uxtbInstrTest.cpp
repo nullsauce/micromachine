@@ -19,7 +19,7 @@
    Encoding: 1011 0010 11 Rm:3 Rd:3 */
 TEST_F(CpuTestHarness, uxtb_ExtendLowestRegisterIntoHighestRegister_PositiveValue)
 {
-	emitInstruction16("1011001011mmmddd", R7, R0);
+	code_gen().emit_ins16("1011001011mmmddd", R7, R0);
 	setRegisterValue(R7, 0x7F);
 	setExpectedRegisterValue(R0, 0x7F);
 	step();
@@ -27,7 +27,7 @@ TEST_F(CpuTestHarness, uxtb_ExtendLowestRegisterIntoHighestRegister_PositiveValu
 
 TEST_F(CpuTestHarness, uxtb_ExtendHighestRegisterIntoLowestRegister_NegativeValue)
 {
-	emitInstruction16("1011001011mmmddd", R0, R7);
+	code_gen().emit_ins16("1011001011mmmddd", R0, R7);
 	setRegisterValue(R0, 0x80);
 	setExpectedRegisterValue(R7, 0x80);
 	step();
@@ -35,7 +35,7 @@ TEST_F(CpuTestHarness, uxtb_ExtendHighestRegisterIntoLowestRegister_NegativeValu
 
 TEST_F(CpuTestHarness, uxtb_OverwriteUpperBits_PositiveValue)
 {
-	emitInstruction16("1011001011mmmddd", R6, R1);
+	code_gen().emit_ins16("1011001011mmmddd", R6, R1);
 	setRegisterValue(R6, 0xBADBAD7F);
 	setExpectedRegisterValue(R1, 0x7F);
 	step();
@@ -43,7 +43,7 @@ TEST_F(CpuTestHarness, uxtb_OverwriteUpperBits_PositiveValue)
 
 TEST_F(CpuTestHarness, uxtb_OverwriteUpperBits_NegativeValue)
 {
-	emitInstruction16("1011001011mmmddd", R2, R5);
+	code_gen().emit_ins16("1011001011mmmddd", R2, R5);
 	setRegisterValue(R2, 0xBADBAD80);
 	setExpectedRegisterValue(R5, 0x80);
 	step();
