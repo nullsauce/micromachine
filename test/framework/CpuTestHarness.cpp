@@ -256,8 +256,6 @@ void CpuTestHarness::emitInstruction32(const char *pEncoding1, const char *pEnco
 	emitInstruction16Varg(pEncoding1, valist);
 	emitInstruction16Varg(pEncoding2, valist);
 	va_end(valist);
-
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 }
 
 void CpuTestHarness::emitInstruction16Varg(const char *pEncoding, va_list valist)

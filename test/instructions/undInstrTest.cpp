@@ -30,6 +30,7 @@ TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllOnesForImmedaite)
 TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllZeroesForImmediate)
 {
 	emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", 0, 0);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
@@ -37,6 +38,7 @@ TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllZeroesForImmediate)
 TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllOnesForImmediate)
 {
 	emitInstruction32("111101111111iiii", "1010iiiiiiiiiiii", -1, -1);
+	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
