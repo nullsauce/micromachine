@@ -20,7 +20,7 @@
     Note: J1 and J2 are translated to immediate bits via I? = NOT(J? XOR S) */
 TEST_F(CpuTestHarness, bl_OffsetOf0)
 {
-	emitInstruction32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0, 1, 1, 0);
+	code_gen().emit_ins32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0, 1, 1, 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 4) | 1);
 	step();
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, bl_OffsetOf0)
 
 TEST_F(CpuTestHarness, bl_MaximumPositiveOffset)
 {
-	emitInstruction32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0x3FF, 0, 0, 0x7FF);
+	code_gen().emit_ins32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0x3FF, 0, 0, 0x7FF);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 + 16777214);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 4) | 1);
 	step();
@@ -36,7 +36,7 @@ TEST_F(CpuTestHarness, bl_MaximumPositiveOffset)
 
 TEST_F(CpuTestHarness, bl_MaximumNegativeOffset)
 {
-	emitInstruction32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 1, 0, 0, 0, 0);
+	code_gen().emit_ins32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 1, 0, 0, 0, 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4 - 16777216);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 4) | 1);
 	step();
