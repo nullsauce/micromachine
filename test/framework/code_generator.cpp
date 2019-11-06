@@ -3,7 +3,7 @@
 #include <cstring>
 
 code_generator::code_generator()
-	: _write_pos(0)
+	: _write_address(0)
 	, _base_address(0)
 	, _mem(nullptr)
 {
@@ -14,12 +14,8 @@ void code_generator::set_mem(memory* mem) {
 	_mem = mem;
 }
 
-void code_generator::set_base_address(uint32_t address) {
-	_base_address = address;
-}
-
-void code_generator::set_write_pos(uint32_t pos) {
-	_write_pos = pos;
+void code_generator::set_write_address(uint32_t address) {
+	_write_address = address;
 }
 
 void code_generator::emit_ins16(const char* encoding, ...) {
@@ -42,8 +38,8 @@ void code_generator::emit_ins32(const char* encoding1, const char* encoding2, ..
 
 void code_generator::write(uint16_t instruction) {
 	precond(_mem != nullptr, "mem can't be null");
-	_mem->write16(_base_address + _write_pos * sizeof(uint16_t), instruction);
-	_write_pos++;
+	_mem->write16(_write_address, instruction);
+	_write_address += sizeof(uint16_t);
 }
 
 uint16_t code_generator::assemble_instruction(const char* encoding, va_list valist) {
