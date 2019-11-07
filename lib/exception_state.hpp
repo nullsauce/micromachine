@@ -34,7 +34,6 @@ public:
 		, _active(false)
 		, _number(number)
 	{
-		fprintf(stderr, "ExceptionState for %d\n", number);
 	}
 
 	using priority_t  = uint8_t;
@@ -324,6 +323,30 @@ struct ExceptionStateVector {
 			}
 		}
 		return top;
+	}
+
+	ExceptionState::priority_t current_execution_priority() const {
+
+		ExceptionState::priority_t prio = ExceptionState::DEFAULT_PRIORITY;
+		ExceptionState::priority_t boosted_prio = ExceptionState::DEFAULT_PRIORITY;
+
+		for(size_t i = 2; i < 32; i++) {
+			ExceptionState& e = _indexed[i];
+			if(!e.is_active()) continue;
+			if(e.priority() < prio) {
+				prio = e.priority();
+			}
+		}
+
+		// TODO primask lookup
+		// if primask.pm
+		//   boosted_prio = 0
+
+		if(boosted_prio < prio) {
+			return boosted_prio;
+		} else {
+			return prio;
+		}
 	}
 
 	void reset() {
