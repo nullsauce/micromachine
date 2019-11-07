@@ -3,71 +3,81 @@
 //
 
 #include <gtest/gtest.h>
-#include "exception_vector.hpp"
+#include "exception_state.hpp"
+#include "interrupter.hpp"
 
-TEST(ExceptionsTest, NotPendingWhenEmpty)
+class ExceptionVectorTestBench : public ::testing::Test {
+protected:
+	nvic _nvic;
+	shpr2_reg _sph2;
+	shpr3_reg _sph3;
+	ExceptionStateVector _evec;
+	interrupter _interrupter;
+	ExceptionVectorTestBench()
+		: _evec(_nvic, _sph2, _sph3)
+		, _interrupter(_evec)
+	{}
+
+	void SetUp() override {
+		_nvic.reset();
+		_sph2.reset();
+		_sph3.reset();
+		_evec.reset();
+	}
+
+	void TearDown() override {
+
+	}
+
+};
+/*
+TEST_F(ExceptionVectorTestBench, NotPendingWhenEmpty)
 {
-	exception_vector vec;
-	EXPECT_FALSE(vec.any_pending());
+	EXPECT_FALSE(_evec.any_active());
 }
 
-TEST(ExceptionsTest, RasingOnePendingShouldBePending)
+TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBePending)
 {
-	exception_vector vec;
-	vec.raise(exception_number::ex_name::HARDFAULT);
-	EXPECT_TRUE(vec.any_pending());
+	_interrupter.raise_hardfault();
+	EXPECT_TRUE(_evec.any_pending());
 }
 
-TEST(ExceptionsTest, RasingOnePendingShouldBeTheSamePending)
+TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBeTheOneSeenAsTopPending)
 {
-	exception_vector vec;
-	vec.raise(exception_number::ex_name::HARDFAULT);
-	EXPECT_TRUE(vec.any_pending());
-	ASSERT_NE(nullptr, vec.top_pending_exception());
-	EXPECT_EQ(exception_number::ex_name::HARDFAULT, vec.top_pending_exception()->number());
+	_interrupter.raise_hardfault();
+	EXPECT_TRUE(_evec.any_pending());
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::HARDFAULT, _evec.top_pending()->number());
 }
+*/
 
-TEST(ExceptionsTest, PendingFlagScope)
+TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 {
-	exception_vector vec;
-	vec.raise(exception_number::ex_name::HARDFAULT);
-	EXPECT_TRUE(vec.any_pending());
-	vec.activate(exception_number::ex_name::HARDFAULT);
-	EXPECT_FALSE(vec.any_pending());
-	vec.deactivate(exception_number::ex_name::HARDFAULT);
-	EXPECT_FALSE(vec.any_pending());
-}
-
-TEST(ExceptionsTest, TopPendingShouldBeHighestPriority)
-{
-	exception_vector vec;
-
 	// Raise a HARDFAULT exception
-	vec.raise(exception_number::ex_name::HARDFAULT);
-	ASSERT_NE(nullptr, vec.top_pending_exception());
-	EXPECT_EQ(exception_number::ex_name::HARDFAULT, vec.top_pending_exception()->number());
+	_interrupter.raise_hardfault();
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::HARDFAULT, _evec.top_pending()->number());
 
-	// Raise a RESET exception
+	// Raise a NMI exception
 	// Reset is higher priority and should take precedence as top pending
-	vec.raise(exception_number::ex_name::RESET);
-	EXPECT_EQ(exception_number::ex_name::RESET, vec.top_pending_exception()->number());
+	_interrupter.raise_nmi();
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::NMI, _evec.top_pending()->number());
 
-	// Simulate handling of the RESET exception
-	vec.activate(exception_number::ex_name::RESET);
-	vec.deactivate(exception_number::ex_name::RESET);
+	// Simulate handling of the NMI exception
+	_evec.interrupt_state(Exception::Type::NMI)->activate();
+	_evec.interrupt_state(Exception::Type::NMI)->clear_pending();
+	_evec.interrupt_state(Exception::Type::NMI)->deactivate();
 
 	// The HARDFAULT exception should still be pending
-	ASSERT_NE(nullptr, vec.top_pending_exception());
-	EXPECT_EQ(exception_number::ex_name::HARDFAULT, vec.top_pending_exception()->number());
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::HARDFAULT, _evec.top_pending()->number());
 
-	// Simulate handling of the HARDFAULT exception
-	vec.activate(exception_number::ex_name::HARDFAULT);
+	// Simulate the handling of the HARDFAULT exception
+	_evec.interrupt_state(Exception::Type::HARDFAULT)->activate();
+	_evec.interrupt_state(Exception::Type::HARDFAULT)->clear_pending();
+	_evec.interrupt_state(Exception::Type::HARDFAULT)->deactivate();
+
 	// There should be no more pending exceptions
-	EXPECT_EQ(nullptr, vec.top_pending_exception());
-	vec.deactivate(exception_number::ex_name::HARDFAULT);
-
-	// There should be no more pending exceptions
-	EXPECT_EQ(nullptr, vec.top_pending_exception());
-
-
+	EXPECT_EQ(nullptr, _evec.top_pending());
 }

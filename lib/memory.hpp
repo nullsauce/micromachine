@@ -13,11 +13,12 @@
 #include "registers/system_control/shpr2.hpp"
 #include "registers/system_control/shpr3.hpp"
 #include "registers/system_control/systick.hpp"
-#include "exception_vector.hpp"
+
+#include "interrupter.hpp"
 
 #define memory_hardfault(reason_fmt,...)\
 	fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__); \
-	_exception.raise(exception_number::ex_name::HARDFAULT);
+	_interrupter.raise_memory_hardfault();
 
 namespace {
 
@@ -91,8 +92,8 @@ public:
 		const std::string _name;
 	};
 
-	memory(exception_vector& exception_vector, const system_control_register_map& scr_map)
-		: _exception(exception_vector)
+	memory(interrupter& interrupter, const system_control_register_map& scr_map)
+		: _interrupter(interrupter)
 		, _system_control_registers(scr_map) {
 	}
 
@@ -342,7 +343,7 @@ private:
 	}
 
 	region_vec _regions;
-	exception_vector& _exception;
+	interrupter& _interrupter;
 	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers;
 
 };

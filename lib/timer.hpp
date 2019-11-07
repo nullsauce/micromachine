@@ -11,13 +11,13 @@ and/or distributed without the express permission of Flavio Roth.
 #define MICROMACHINE_EMU_TIMER_HPP
 
 #include "registers/system_control/systick.hpp"
-#include "exception_vector.hpp"
+#include "interrupter.hpp"
 
 class systick {
 public:
 
-	systick(exception_vector& exception_vector)
-		: _exception_vector(exception_vector)
+	systick(interrupter& interrupter)
+		: _interrupter(interrupter)
 		, _current_value(_control) {
 
 	}
@@ -46,7 +46,7 @@ public:
 			_current_value.decrement();
 			if(0U == _current_value) {
 				_control.set_count_flag(true);
-				_exception_vector.raise(exception_number::ex_name::SYSTICK);
+				_interrupter.raise_systick();
 			}
 		}
 	}
@@ -68,7 +68,7 @@ public:
 	}
 
 private:
-	exception_vector& _exception_vector;
+	interrupter& _interrupter;
 	systick_control_reg _control;
 	systick_current_value_reg _current_value;
 	systick_reload_value_reg _reload_value;

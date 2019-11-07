@@ -3,7 +3,7 @@
 
 #include "types.hpp"
 #include "xpsr_reg.hpp"
-#include "exception_type.hpp"
+#include "exception_defs.hpp"
 
 struct ipsr_reg : public xpsr_reg {
 
@@ -11,12 +11,12 @@ struct ipsr_reg : public xpsr_reg {
 	// IPSR bits are XPSR's bit 0 to 5
 	using ipsr_bits = bits<0, 6>;
 
-	void set_exception_number(exception_number number) {
-		ipsr_bits::of(_xpsr) = ipsr_bits::of(number.int_value());
+	void set_exception_number(Exception::Type number) {
+		ipsr_bits::of(_xpsr) = ipsr_bits::of(number);
 	}
 
-	exception_number exception_num() const {
-		return exception_number::from_uint(ipsr_bits::of(_xpsr));
+	Exception::Type exception_num() const {
+		return static_cast<Exception::Type>(ipsr_bits::of(_xpsr).extract());
 	}
 
 private:
