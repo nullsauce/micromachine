@@ -160,7 +160,8 @@ public:
 
 
 struct ExceptionStateVector {
-
+	ExceptionStateVector(const ExceptionStateVector&) = delete;
+	void operator=(const ExceptionStateVector&) = delete;
 	ExceptionStateVector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
 		: _reset(Exception::Type::RESET)
 		, _nmi(Exception::Type::NMI)
@@ -185,38 +186,38 @@ struct ExceptionStateVector {
 		, _ext_interrupt_14(Exception::Type::EXTI_14, nvic)
 		, _ext_interrupt_15(Exception::Type::EXTI_15, nvic)
 		, _indexed {
-			&_used_for_sp,
-			&_reset,
-			&_nmi,
-			&_hard_fault,
-			&_reserved_0,
-			&_reserved_1,
-			&_reserved_2,
-			&_reserved_3,
-			&_reserved_4,
-			&_reserved_5,
-			&_reserved_6,
-			&_svc,
-			&_reserved_7,
-			&_reserved_8,
-			&_pend_sv,
-			&_sys_tick,
-			&_ext_interrupt_0,
-			&_ext_interrupt_1,
-			&_ext_interrupt_2,
-			&_ext_interrupt_3,
-			&_ext_interrupt_4,
-			&_ext_interrupt_5,
-			&_ext_interrupt_6,
-			&_ext_interrupt_7,
-			&_ext_interrupt_8,
-			&_ext_interrupt_9,
-			&_ext_interrupt_10,
-			&_ext_interrupt_11,
-			&_ext_interrupt_12,
-			&_ext_interrupt_13,
-			&_ext_interrupt_14,
-			&_ext_interrupt_15
+			_used_for_sp,
+			_reset,
+			_nmi,
+			_hard_fault,
+			_reserved_0,
+			_reserved_1,
+			_reserved_2,
+			_reserved_3,
+			_reserved_4,
+			_reserved_5,
+			_reserved_6,
+			_svc,
+			_reserved_7,
+			_reserved_8,
+			_pend_sv,
+			_sys_tick,
+			_ext_interrupt_0,
+			_ext_interrupt_1,
+			_ext_interrupt_2,
+			_ext_interrupt_3,
+			_ext_interrupt_4,
+			_ext_interrupt_5,
+			_ext_interrupt_6,
+			_ext_interrupt_7,
+			_ext_interrupt_8,
+			_ext_interrupt_9,
+			_ext_interrupt_10,
+			_ext_interrupt_11,
+			_ext_interrupt_12,
+			_ext_interrupt_13,
+			_ext_interrupt_14,
+			_ext_interrupt_15
 		}
 	{}
 
@@ -252,87 +253,90 @@ struct ExceptionStateVector {
 	NvicBasedExceptionState<13> _ext_interrupt_13;
 	NvicBasedExceptionState<14> _ext_interrupt_14;
 	NvicBasedExceptionState<15> _ext_interrupt_15;
-	ExceptionState* _indexed[32];
+
+
+	std::reference_wrapper<ExceptionState> const _indexed[32];
 
 	//TODO: create a 'fast' version of the indexed array that omits the reserved field to speed up iterations
 
 	template<Exception::Type Ex>
-	ExceptionState* interrupt_state()
+	ExceptionState& interrupt_state()
 	{
 		return _indexed[Ex];
 	}
 
 	template<Exception::Type Ex>
-	const ExceptionState* interrupt_state() const
+	const ExceptionState& interrupt_state() const
 	{
 		return _indexed[Ex];
 	}
 
-	ExceptionState* interrupt_state(Exception::Type t)
+	ExceptionState& interrupt_state(Exception::Type t)
 	{
-		ExceptionState* s = _indexed[t];
+		ExceptionState& s = _indexed[t];
 		return s;
 	}
 
-	const ExceptionState* interrupt_state(Exception::Type t) const
+	const ExceptionState& interrupt_state(Exception::Type t) const
 	{
 		return _indexed[t];
 	}
 
-	ExceptionState* interrupt_state(uint32_t number)
+	ExceptionState& interrupt_state(uint32_t number)
 	{
 		return interrupt_state(static_cast<Exception::Type>(number));
 	}
 
-	const ExceptionState* interrupt_state(uint32_t number) const
+	const ExceptionState& interrupt_state(uint32_t number) const
 	{
 		return interrupt_state(static_cast<Exception::Type>(number));
 	}
 
 	size_t active_count() const {
-		return std::count_if(std::begin(_indexed), std::end(_indexed), [](const ExceptionState* e){ return e->is_active(); });
+		return std::count_if(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){ return e.is_active(); });
 	}
 
 	bool any_active() const {
-		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const ExceptionState* e){ return e->is_active(); });
+		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){ return e.is_active(); });
 	}
 
 	bool any_pending() const {
-		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const ExceptionState* e){ return e->is_pending(); });
+		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){ return e.is_pending(); });
 	}
 
 	ExceptionState* top_pending() {
 		// Filter the pendinh exception by using a partition function which will return two ranges. The first range
 		// will contain all the pending exceptions. The order is respected.
-		auto false_partition = std::stable_partition(std::begin(_indexed), std::end(_indexed),  [](const ExceptionState* e){
-			return e->is_pending();
-		});
+		/*
+		auto false_partition = std::stable_partition(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){
+			return e.is_pending();
+		});*/
 
 		// Find the pending exception with the lowest priority
-		auto it = std::min_element(std::begin(_indexed), false_partition, [](const ExceptionState* a, const ExceptionState* b){
-			auto prio_a = a->priority();
-			auto prio_b = b->priority();
+		auto it = std::min_element(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& a, const ExceptionState& b){
+			auto prio_a = a.priority();
+			auto prio_b = b.priority();
 			if(prio_a < prio_b) {
 				return true;
 			} else if(prio_a == prio_b) {
 				// When two pending exceptions have the same group priority, the lower pending exception number has
 				// priority over the higher pending number as part of the priority precedence rule
-				return a->number() < b->number();
+				return a.number() < b.number();
 			} else {
 				return false;
 			}
 		});
 
 		if(it != std::end(_indexed)) {
-			return *it;
+			return &it->get();
 		} else {
 			return nullptr;
 		}
 	}
 
 	void reset() {
-		for(ExceptionState* e : _indexed) {
-			e->reset();
+		for(ExceptionState& e : _indexed) {
+			e.reset();
 		}
 	}
 
