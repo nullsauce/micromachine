@@ -39,6 +39,8 @@ public:
 
 	using priority_t  = uint8_t;
 
+	static constexpr priority_t DEFAULT_PRIORITY = 4;
+
 	virtual priority_t priority() const = 0;
 
 	Exception::Type number() const {
@@ -305,33 +307,23 @@ struct ExceptionStateVector {
 	}
 
 	ExceptionState* top_pending() {
-		// Filter the pendinh exception by using a partition function which will return two ranges. The first range
-		// will contain all the pending exceptions. The order is respected.
-		/*
-		auto false_partition = std::stable_partition(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){
-			return e.is_pending();
-		});*/
-
+		ExceptionState* top = nullptr;
 		// Find the pending exception with the lowest priority
-		auto it = std::min_element(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& a, const ExceptionState& b){
-			auto prio_a = a.priority();
-			auto prio_b = b.priority();
-			if(prio_a < prio_b) {
-				return true;
-			} else if(prio_a == prio_b) {
+		for(ExceptionState& e : _indexed) {
+			// ignore exception that are not pending
+			if(!e.is_pending()) continue;
+			// select any exception with lower priority value
+			if(top == nullptr || e.priority() < top->priority()) {
+				top = &e;
+			} else if(e.priority() == top->priority()) {
 				// When two pending exceptions have the same group priority, the lower pending exception number has
 				// priority over the higher pending number as part of the priority precedence rule
-				return a.number() < b.number();
-			} else {
-				return false;
+				if(e.number() < top->number()) {
+					top = &e;
+				}
 			}
-		});
-
-		if(it != std::end(_indexed)) {
-			return &it->get();
-		} else {
-			return nullptr;
 		}
+		return top;
 	}
 
 	void reset() {
