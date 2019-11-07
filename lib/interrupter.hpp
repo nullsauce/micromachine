@@ -18,7 +18,7 @@ private:
 
 	template<Exception::Type Ex>
 	void raise() {
-		_exception_vector.interrupt_state<Ex>()->set_pending();
+		_exception_vector.interrupt_state<Ex>().set_pending();
 	}
 
 public:
@@ -26,7 +26,7 @@ public:
 	interrupter(ExceptionStateVector& exception_vector);
 
 	void raise_nmi() {
-		_exception_vector.interrupt_state(Exception::Type::NMI)->set_pending();
+		raise<Exception::Type::NMI>();
 	}
 
 	void raise_memory_hardfault() {
