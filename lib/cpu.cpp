@@ -27,10 +27,12 @@ namespace  {
 }
 
 cpu::cpu()
-	: _regs(_exception_manager)
+	: _regs(_exception_manager.ctx_switcher)
+	, _exception_vector(_nvic, _sphr2_reg, _sphr3_reg)
+	, _interrupter(_exception_vector)
 	, _generic_io_reg(std::ref(_io_reg_callback))
-	, _system_timer(_exception_vector)
-	, _mem(_exception_vector,{
+	, _system_timer(_interrupter)
+	, _mem(_interrupter,{
 		std::make_pair(0xE000ED1C, std::ref(_sphr2_reg)),
 		std::make_pair(0xE000ED20, std::ref(_sphr3_reg)),
 		std::make_pair(0xE000E010, std::ref(_system_timer.control_register())),
@@ -43,19 +45,19 @@ cpu::cpu()
 		std::make_pair(NVIC_ISPR, std::ref(_nvic._ispr_reg)),
 		std::make_pair(NVIC_ICPR, std::ref(_nvic._icpr_reg)),
 		std::make_pair(NVIC_ICPR, std::ref(_nvic._icpr_reg)),
-		std::make_pair(NVIC_IPR0, std::ref(_nvic.priority_reg_at(0))),
-		std::make_pair(NVIC_IPR1, std::ref(_nvic.priority_reg_at(1))),
-		std::make_pair(NVIC_IPR2, std::ref(_nvic.priority_reg_at(2))),
-		std::make_pair(NVIC_IPR3, std::ref(_nvic.priority_reg_at(3))),
-		std::make_pair(NVIC_IPR4, std::ref(_nvic.priority_reg_at(4))),
-		std::make_pair(NVIC_IPR5, std::ref(_nvic.priority_reg_at(5))),
-		std::make_pair(NVIC_IPR6, std::ref(_nvic.priority_reg_at(6))),
-		std::make_pair(NVIC_IPR7, std::ref(_nvic.priority_reg_at(7))),
+		std::make_pair(NVIC_IPR0, std::ref(_nvic.priority_reg<0>())),
+		std::make_pair(NVIC_IPR1, std::ref(_nvic.priority_reg<1>())),
+		std::make_pair(NVIC_IPR2, std::ref(_nvic.priority_reg<2>())),
+		std::make_pair(NVIC_IPR3, std::ref(_nvic.priority_reg<3>())),
+		std::make_pair(NVIC_IPR4, std::ref(_nvic.priority_reg<4>())),
+		std::make_pair(NVIC_IPR5, std::ref(_nvic.priority_reg<5>())),
+		std::make_pair(NVIC_IPR6, std::ref(_nvic.priority_reg<6>())),
+		std::make_pair(NVIC_IPR7, std::ref(_nvic.priority_reg<7>())),
 	})
 	, _break_signal(false)
-	, _exec_dispatcher(_regs, _mem, _exception_vector, _break_signal)
+	, _exec_dispatcher(_regs, _mem, _interrupter, _break_signal)
 	, _exception_manager(_regs, _mem, _exception_vector)
-	, _interrupt_manager(_mem, _nvic, _sphr2_reg, _sphr3_reg)
+//	, _interrupt_manager(_mem, _nvic, _sphr2_reg, _sphr3_reg)
 	, _initial_pc(0)
 	, _debug_instruction_counter(0)
 {
@@ -201,7 +203,7 @@ cpu::State cpu::step() {
 	if(!_regs.execution_status_register().thumb_bit_set()) {
 		// Thumb bit not set
 		// all instructions in this state are UNDEFINED .
-		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
+		_interrupter.raise_hardfault();
 	} else {
 		_regs.set_pc(current_addr + 4);  // simulate prefetch of 2 instructions
 		_regs.reset_pc_dirty_status();
@@ -211,6 +213,8 @@ cpu::State cpu::step() {
 	bool hard_fault = false;
 	// Next instruction might not be adjacent, if a jump happen.
 	uint32_t next_instruction_address = get_next_instruction_address(current_addr, instr);
+
+	/*
 	exception_state* pending_exception = _exception_vector.top_pending_exception();
 	if(pending_exception) {
 		// The exception entry will handle its own jump/PC settings
@@ -219,7 +223,7 @@ cpu::State cpu::step() {
 	} else {
 		// Otherwise the PC is restored here
 		_regs.set_pc(next_instruction_address);
-	}
+	}*/
 
 	// if exception to be serviced
 		// context switch
@@ -252,7 +256,7 @@ uint32_t cpu::get_next_instruction_address(uint32_t instr_addr, instruction_pair
 	}
 }
 
-const exception_vector& cpu::exceptions() const {
+const ExceptionStateVector& cpu::exceptions() const {
 	return _exception_vector;
 }
 

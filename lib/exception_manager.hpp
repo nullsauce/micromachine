@@ -15,42 +15,47 @@ and/or distributed without the express permission of Flavio Roth.
 #include "instruction_pair.hpp"
 #include "memory.hpp"
 #include "exception_return_handler.hpp"
+#include "context_switcher.hpp"
+#include "exception_state.hpp"
 
-class exception_manager : public exception_return_handler{
+class exception_manager {
 public:
-	exception_manager(
-		registers& regs,
-		memory& mem,
-		exception_vector& exceptions);
-	void exception_return(uint32_t ret_address) override ;
-	void reset();
+
+	exception_manager(registers& regs, memory& mem, ExceptionStateVector& exception_vector)
+		: _exception_vector(exception_vector)
+		, _regs(regs)
+		, ctx_switcher(regs, mem, _exception_vector) {
+
+	}
+
+	void reset() {
+		_regs.exec_mode_register().set_thread_mode();
+	}
 
 	void process_pending_exception(uint32_t current_addr, instruction_pair instruction, uint32_t next_instruction_address) {
 		// Check if this pending exception has priority over the current priority of the
 		// instruction stream.
 		// Lower priority value means higher priority.
-		bool smaller = _exception_vector.top_pending_exception()->priority() < _exception_vector.current_priority();
+		//bool smaller = _exception_vector.top_pending_exception()->priority() < _exception_vector.current_priority();
+
 		// TODO: Check Priority grouping.
 		// When two pending exceptions have the same group priority, the lower pending exception number has
 		// priority over the higher pending number as part of the priority precedence rule.
-		if(smaller) {
+		//if(smaller) {
 			// yep, lets activate this exception
-			_regs.set_pc(current_addr);
-			exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction, next_instruction_address);
-		}
+		//	_regs.set_pc(current_addr);
+		//	context_switcher.exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction, next_instruction_address);
+		//}
+
 	}
 
 private:
+	ExceptionStateVector& _exception_vector;
+	registers& _regs;
 
-	void exception_entry(exception_state& ex, uint32_t instruction_address, instruction_pair current_instruction, uint32_t next_instruction_address);
-
-	void pop_stack(uint32_t frame_ptr, uint32_t return_address);
-	void push_stack(uint32_t return_address);
-
-
-	registers& 			_regs;
-	memory& _mem;
-	exception_vector&	_exception_vector;
+public:
+	// this variable is public because its address is needed before all objects are properly initialized
+	context_switcher ctx_switcher;
 
 };
 

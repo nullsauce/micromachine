@@ -122,6 +122,21 @@ public:
 
 	}
 
+	void reset() {
+		_iser_reg.reset();
+		_icer_reg.reset();
+		_ispr_reg.reset();
+		_icpr_reg.reset();
+		for(auto& reg : _priority_regs) {
+			reg.reset();
+		}
+	}
+
+	template<size_t index>
+	nvic_ipr_reg& priority_reg() {
+		return _priority_regs[index];
+	}
+
 	nvic_ipr_reg& priority_reg_at(size_t index) {
 		return _priority_regs.at(index);
 	}

@@ -16,10 +16,10 @@
 #include "exec.hpp"
 #include "memory.hpp"
 #include "registers/exec_mode_reg.hpp"
-#include "exception_vector.hpp"
 #include "exception_manager.hpp"
 #include "exec_dispatcher.hpp"
 #include "interrupt_manager.hpp"
+#include "interrupter.hpp"
 #include "disasm.hpp"
 #include "timer.hpp"
 #include "nvic.hpp"
@@ -42,7 +42,7 @@ public:
 	instruction_pair fetch_instruction(uint32_t address) const;
 	instruction_pair fetch_instruction_debug(uint32_t address) const;
 	State step();
-	const exception_vector& exceptions() const;
+	const ExceptionStateVector& exceptions() const;
 	memory& mem();
 	const memory& mem() const;
 	registers& regs();
@@ -66,19 +66,20 @@ private:
 	uint32_t get_next_instruction_address(uint32_t instr_addr, instruction_pair instruction) const;
 	uint32_t get_next_instruction_address() const;
 
-	exception_vector	_exception_vector;
 	generic_io_reg::callback_t _io_reg_callback;
 	registers 			_regs;
+	ExceptionStateVector _exception_vector;
+	interrupter			_interrupter;
+	nvic				_nvic;
 	shpr2_reg 			_sphr2_reg;
 	shpr3_reg 			_sphr3_reg;
 	generic_io_reg		_generic_io_reg;
 	systick				_system_timer;
-	nvic				_nvic;
 	memory 				_mem;
 	bool				_break_signal;
 	exec_dispatcher 	_exec_dispatcher;
 	exception_manager 	_exception_manager;
-	interrupt_manager _interrupt_manager;
+	//interrupt_manager _interrupt_manager;
 
 
 	// TODO: this is not needed here
