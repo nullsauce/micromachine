@@ -30,7 +30,7 @@ protected:
 	}
 
 };
-/*
+
 TEST_F(ExceptionVectorTestBench, NotPendingWhenEmpty)
 {
 	EXPECT_FALSE(_evec.any_active());
@@ -49,7 +49,7 @@ TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBeTheOneSeenAsTopPending)
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(Exception::Type::HARDFAULT, _evec.top_pending()->number());
 }
-*/
+
 
 TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 {
