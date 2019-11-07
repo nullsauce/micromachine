@@ -207,7 +207,7 @@ private:
 	apsr_reg 		_app_status_register;
 	ipsr_reg 		_interrupt_status_register;
 	epsr_reg		_execution_status_register;
-	uint32_t 			_primask_register;
+	uint32_t 		_primask_register;
 	sp_reg 			_sp;
 	standard_reg 	_lr;
 	pc_reg 			_pc;
