@@ -214,16 +214,18 @@ cpu::State cpu::step() {
 	// Next instruction might not be adjacent, if a jump happen.
 	uint32_t next_instruction_address = get_next_instruction_address(current_addr, instr);
 
-	/*
-	exception_state* pending_exception = _exception_vector.top_pending_exception();
+
+	ExceptionState* pending_exception = _exception_vector.top_pending();
 	if(pending_exception) {
 		// The exception entry will handle its own jump/PC settings
-		hard_fault = pending_exception->number() == exception_number(exception_number::ex_name::HARDFAULT);
+		hard_fault = pending_exception->number() == Exception::Type::HARDFAULT;
 		_exception_manager.process_pending_exception(current_addr, instr, next_instruction_address);
 	} else {
 		// Otherwise the PC is restored here
 		_regs.set_pc(next_instruction_address);
-	}*/
+	}
+
+
 
 	// if exception to be serviced
 		// context switch
