@@ -4,7 +4,7 @@
 
 #ifndef MICROMACHINE_EXCEPTION_HPP
 #define MICROMACHINE_EXCEPTION_HPP
-
+/*
 #include <cstddef>
 #include <vector>
 #include <functional>
@@ -154,6 +154,6 @@ public:
 	}
 };
 
-
+*/
 
 #endif //MICROMACHINE_EXCEPTION_HPP

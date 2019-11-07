@@ -24,10 +24,10 @@ set(SRCS
     registers/custom/generic_io_reg.hpp
     memory.hpp
     nvic.hpp
-    exception_vector.hpp
-    exception_type.hpp
     string_format.hpp
     exec_dispatcher.hpp
+    interrupter.hpp
+    interrupter.cpp
     dispatcher.hpp
     disasm.hpp
     exception_manager.hpp

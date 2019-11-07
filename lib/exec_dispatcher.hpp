@@ -3,19 +3,19 @@
 
 #include "dispatcher.hpp"
 #include "exec.hpp"
-#include "exception_vector.hpp"
 #include "memory.hpp"
 #include "registers/registers.hpp"
 #include "registers/apsr_reg.hpp"
+#include "interrupter.hpp"
 
 class exec_dispatcher : public dispatcher {
 public:
 	exec_dispatcher(
 		registers& regs,
 		memory& mem,
-		exception_vector& exceptions,
+		interrupter& interrupter,
 		bool& break_signal)
-	: _exception_vector(exceptions)
+	: _interrupter(interrupter)
 	, _regs(regs)
 	, _mem(mem)
 	, _break_signal(break_signal)
@@ -24,19 +24,19 @@ public:
 
 private:
 
-	exception_vector& _exception_vector;
+	interrupter& _interrupter;
 	registers& _regs;
 	memory& _mem;
 	bool& _break_signal;
 
 	void invalid_instruction(const uint16_t instr) override {
 		(void)instr;
-		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
+		_interrupter.raise_hardfault();
 	}
 
 	void invalid_instruction(const instruction_pair instr) override {
 		(void)instr;
-		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
+		_interrupter.raise_hardfault();
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
@@ -280,16 +280,15 @@ private:
 		exec(instruction, _regs);
 	}
 	void dispatch(const svc) override {
-		_exception_vector.raise(exception_number::ex_name::SVCALL);
+		_interrupter.raise_svcall();
 	}
 	void dispatch(const udf instr) override {
-		(void)instr;
 		// undefined instruction
-		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
+		_interrupter.raise_hardfault();
 	}
 	void dispatch(const udfw) override {
 		// undefined instruction
-		_exception_vector.raise(exception_number::ex_name::HARDFAULT);
+		_interrupter.raise_hardfault();
 	}
 };
 

@@ -5,6 +5,7 @@
 #ifndef MICROMACHINE_EXCEPTION_VECTOR_HPP
 #define MICROMACHINE_EXCEPTION_VECTOR_HPP
 
+/*
 #include <array>
 #include <list>
 #include <stack>
@@ -324,5 +325,6 @@ private:
 	exception_state::priority_t _current_priority;
 	std::stack<exception_state::priority_t> _stream_priority;
 };
+*/
 
 #endif //MICROMACHINE_EXCEPTION_VECTOR_HPP

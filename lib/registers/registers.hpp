@@ -7,7 +7,7 @@
 
 
 
-#include "exception_vector.hpp"
+
 #include "registers/exec_mode_reg.hpp"
 #include "registers/control_reg.hpp"
 #include "registers/standard_reg.hpp"
