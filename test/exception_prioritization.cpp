@@ -65,18 +65,18 @@ TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 	EXPECT_EQ(Exception::Type::NMI, _evec.top_pending()->number());
 
 	// Simulate handling of the NMI exception
-	_evec.interrupt_state(Exception::Type::NMI)->activate();
-	_evec.interrupt_state(Exception::Type::NMI)->clear_pending();
-	_evec.interrupt_state(Exception::Type::NMI)->deactivate();
+	_evec.interrupt_state(Exception::Type::NMI).activate();
+	_evec.interrupt_state(Exception::Type::NMI).clear_pending();
+	_evec.interrupt_state(Exception::Type::NMI).deactivate();
 
 	// The HARDFAULT exception should still be pending
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(Exception::Type::HARDFAULT, _evec.top_pending()->number());
 
 	// Simulate the handling of the HARDFAULT exception
-	_evec.interrupt_state(Exception::Type::HARDFAULT)->activate();
-	_evec.interrupt_state(Exception::Type::HARDFAULT)->clear_pending();
-	_evec.interrupt_state(Exception::Type::HARDFAULT)->deactivate();
+	_evec.interrupt_state(Exception::Type::HARDFAULT).activate();
+	_evec.interrupt_state(Exception::Type::HARDFAULT).clear_pending();
+	_evec.interrupt_state(Exception::Type::HARDFAULT).deactivate();
 
 	// There should be no more pending exceptions
 	EXPECT_EQ(nullptr, _evec.top_pending());
