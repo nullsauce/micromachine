@@ -30,7 +30,6 @@ public:
 	void branch_interworking(uint32_t address) {
 		if(_exec_mode_reg.is_handler_mode() &&
 			0b1111 == bits<28,4>::of(address)) {
-			// TODO ExceptionReturn
 			uint32_t return_address = bits<0,28>::of(address);
 			_exception_return_handler.exception_return(return_address);
 		} else {
@@ -53,10 +52,12 @@ public:
 	}
 
 	void branch_link_interworking(uint32_t address) {
-		if(!bits<0>::of(address)) fprintf(stderr, "HARDFAULT NEXT (branch_interworking)\n");
-		// trigger a hard fault on next instruction if Thumb bit is not set
+		// if the thumb bit is not set, a hard fault is taken on the next instruction
+		// assign the last bit of jump_addr to the thumb bit to trigger a hardfault at next instruction fetch
 		_epsr_reg.set_thumb_bit(bits<0>::of(address));
+
 		// Inter-working branch, thumb bit is always cleared
+		bits<0>::of(address) = false;
 		branch(address);
 	}
 
