@@ -32,21 +32,27 @@ public:
 		_regs.exec_mode_register().set_thread_mode();
 	}
 
-	void process_pending_exception(uint32_t current_addr, instruction_pair instruction, uint32_t next_instruction_address) {
-		// Check if this pending exception has priority over the current priority of the
-		// instruction stream.
-		// Lower priority value means higher priority.
-		//bool smaller = _exception_vector.top_pending_exception()->priority() < _exception_vector.current_priority();
+	bool process_pending_exception(uint32_t current_addr, instruction_pair instruction, uint32_t next_instruction_address) {
 
-		// TODO: Check Priority grouping.
-		// When two pending exceptions have the same group priority, the lower pending exception number has
-		// priority over the higher pending number as part of the priority precedence rule.
-		//if(smaller) {
-			// yep, lets activate this exception
-		//	_regs.set_pc(current_addr);
-		//	context_switcher.exception_entry(*_exception_vector.top_pending_exception(), current_addr, instruction, next_instruction_address);
-		//}
+		ExceptionState* pending_exception = _exception_vector.top_pending();
+		if(nullptr == pending_exception) {
+			// no exceptions to process
+			return false;
+		}
 
+		// compute the current execution priority by looking at all active exceptions
+		ExceptionState::priority_t current_execution_priority = _exception_vector.current_execution_priority();
+		ExceptionState::priority_t pending_exception_priority = pending_exception->priority();
+
+		// do we need to switch the context to a new exception ?
+		if(pending_exception_priority < current_execution_priority) {
+			// instruction flow must be interrupted by this higher priority exception
+			_regs.set_pc(current_addr);
+			ctx_switcher.exception_entry(*pending_exception, current_addr, instruction, next_instruction_address);
+			return true;
+		}
+
+		return false;
 	}
 
 private:
