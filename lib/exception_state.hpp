@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	using priority_t  = uint8_t;
+	using priority_t  = int8_t;
 
 	static constexpr priority_t DEFAULT_PRIORITY = 4;
 
