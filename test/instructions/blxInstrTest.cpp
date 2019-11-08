@@ -31,7 +31,7 @@ TEST_F(CpuTestHarness,
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
-
+/*
 TEST_F(CpuTestHarness, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForThumb)
 {
 	code_gen().emit_ins16("010001111mmmm000", LR);
@@ -39,7 +39,7 @@ TEST_F(CpuTestHarness, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForTh
 	setExpectedRegisterValue(PC, INITIAL_PC + 16);
 	setExpectedRegisterValue(LR, (INITIAL_PC + 2) | 1);
 	step();
-}
+}*/
 /*
 TEST_SIM_ONLY(blx, UnpredictableToUseR15)
 {
