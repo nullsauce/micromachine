@@ -209,10 +209,8 @@ cpu::State cpu::step() {
 	}
 
 	bool hard_fault = false;
-	// Next instruction might not be adjacent, if a jump happen.
-	uint32_t next_instruction_address = get_next_instruction_address(current_addr, instr);
 
-	if(_exception_manager.process_pending_exception(current_addr, instr, next_instruction_address)) {
+	if(_exception_manager.process_pending_exception(current_addr, instr, current_addr)) {
 
 	} else {
 		// simulate prefetch of 2 instructions during execution
@@ -220,6 +218,8 @@ cpu::State cpu::step() {
 		_regs.reset_pc_dirty_status();
 		execute(instr);
 		// the PC is restored here
+		// Next instruction might not be adjacent, if a jump happen.
+		uint32_t next_instruction_address = get_next_instruction_address(current_addr, instr);
 		_regs.set_pc(next_instruction_address);
 	}
 

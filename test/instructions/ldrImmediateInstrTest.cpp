@@ -50,8 +50,6 @@ TEST_F(CpuTestHarness, ldrImmediate_T1AttemptLoadFromInvalidAddress)
 	step();
 }
 
-
-
 /* LDR - Immediate Encoding T2 (SP is base register)
    Encoding: 1001 1 Rt:3 Imm:8 */
 TEST_F(CpuTestHarness, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
