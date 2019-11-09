@@ -497,18 +497,17 @@ static void exec(const blx instruction, registers& regs) {
 		unpredictable();
 	}
 
-
 	// Compute the return address. PC is two instruction ahead because of prefetch
-	uint32_t next_instr_addr = regs.get_pc() - 2;
+	uint32_t next_instr_addr = regs.get_pc() - 2; // 16386
 
 	// force thumb bit on return address
 	bits<0>::of(next_instr_addr) = true;
 
+	// get the address to jump to
+	uint32_t jump_addr = regs.get(instruction.rm()); // jump_addr 16401
+
 	// write return address to link register
 	regs.set_lr(next_instr_addr);
-
-	// get the address to jump to
-	uint32_t jump_addr = regs.get(instruction.rm());
 
 	// jump
 	regs.branch_link_interworking(jump_addr);

@@ -32,6 +32,16 @@ TEST_F(CpuTestHarness, blx_UseLowestRegisterToBranchToEvenAddressWhichClearsThum
 	step();
 }*/
 
+
+TEST_F(CpuTestHarness, blx_UseRegisterToBranchToOddAddressAsRequiredForThumb)
+{
+	code_gen().emit_ins16("010001111mmmm000", R2);
+	setRegisterValue(R2, (INITIAL_PC + 16) | 1);
+	setExpectedRegisterValue(PC, INITIAL_PC + 16);
+	setExpectedRegisterValue(LR, (INITIAL_PC + 2) | 1);
+	step();
+}
+
 TEST_F(CpuTestHarness, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForThumb)
 {
 	code_gen().emit_ins16("010001111mmmm000", LR);
