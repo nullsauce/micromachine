@@ -16,9 +16,8 @@
 #include "exec.hpp"
 #include "memory.hpp"
 #include "registers/exec_mode_reg.hpp"
-#include "exception_manager.hpp"
+#include "context_switcher.hpp"
 #include "exec_dispatcher.hpp"
-#include "interrupt_manager.hpp"
 #include "interrupter.hpp"
 #include "disasm.hpp"
 #include "timer.hpp"
@@ -59,12 +58,31 @@ public:
 	}
 
 private:
+
+	ExceptionState* next_exception_to_take() {
+
+		ExceptionState* pending_exception = _exception_vector.top_pending();
+		if(nullptr == pending_exception) {
+			// no exceptions to process
+			return nullptr;
+		}
+
+		// compute the current execution priority by looking at all active exceptions
+		ExceptionState::priority_t current_execution_priority = _exception_vector.current_execution_priority();
+		ExceptionState::priority_t pending_exception_priority = pending_exception->priority();
+
+		// do we need to switch the context to a new exception ?
+		if(pending_exception_priority < current_execution_priority) {
+			// instruction flow must be interrupted by this higher priority exception
+			return pending_exception;
+		}
+
+		return nullptr;
+	}
+
 	void execute(const instruction_pair instr);
 
-	void enter_handler_mode();
-	void enter_thread_mode();
 	uint32_t get_next_instruction_address(uint32_t instr_addr, instruction_pair instruction) const;
-	uint32_t get_next_instruction_address() const;
 
 	generic_io_reg::callback_t _io_reg_callback;
 	registers 			_regs;
@@ -78,17 +96,13 @@ private:
 	memory 				_mem;
 	bool				_break_signal;
 	exec_dispatcher 	_exec_dispatcher;
-	exception_manager 	_exception_manager;
+	context_switcher 	_ctx_switcher;
 	//interrupt_manager _interrupt_manager;
 
 
 	// TODO: this is not needed here
 	uint32_t _initial_pc;
 	uint64_t _debug_instruction_counter;
-
-
-
-
 };
 
 #endif //MICROMACHINE_CPU_HPP
