@@ -41,6 +41,10 @@ public:
 		raise<Exception::Type::SVCALL>();
 	}
 
+	void raise_pendsv() {
+		raise<Exception::Type::PENDSV>();
+	}
+
 	void raise_systick() {
 		raise<Exception::Type::SYSTICK>();
 	}

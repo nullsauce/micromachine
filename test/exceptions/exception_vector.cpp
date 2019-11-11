@@ -29,6 +29,12 @@ protected:
 
 	}
 
+	void SimulateExceptionHandling(Exception::Type e) {
+		_evec.interrupt_state(e).activate();
+		_evec.interrupt_state(e).clear_pending();
+		_evec.interrupt_state(e).deactivate();
+	}
+
 };
 
 TEST_F(ExceptionVectorTestBench, NotPendingWhenEmpty)
@@ -65,18 +71,14 @@ TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 	EXPECT_EQ(Exception::Type::NMI, _evec.top_pending()->number());
 
 	// Simulate handling of the NMI exception
-	_evec.interrupt_state(Exception::Type::NMI).activate();
-	_evec.interrupt_state(Exception::Type::NMI).clear_pending();
-	_evec.interrupt_state(Exception::Type::NMI).deactivate();
+	SimulateExceptionHandling(Exception::Type::NMI);
 
 	// The HARDFAULT exception should still be pending
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(Exception::Type::HARDFAULT, _evec.top_pending()->number());
 
 	// Simulate the handling of the HARDFAULT exception
-	_evec.interrupt_state(Exception::Type::HARDFAULT).activate();
-	_evec.interrupt_state(Exception::Type::HARDFAULT).clear_pending();
-	_evec.interrupt_state(Exception::Type::HARDFAULT).deactivate();
+	SimulateExceptionHandling(Exception::Type::HARDFAULT);
 
 	// There should be no more pending exceptions
 	EXPECT_EQ(nullptr, _evec.top_pending());
@@ -97,3 +99,39 @@ TEST_F(ExceptionVectorTestBench, ExceptionWithLowerNumberTakesPrecedenceOnExcept
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(Exception::Type::EXTI_12, _evec.top_pending()->number());
 }
+
+
+TEST_F(ExceptionVectorTestBench, ShprBasedPriorityExceptionPriorityReadWrite)
+{
+	_evec.interrupt_state<Exception::Type::SVCALL>().set_priority(3);
+	_evec.interrupt_state<Exception::Type::PENDSV>().set_priority(2);
+	_evec.interrupt_state<Exception::Type::SYSTICK>().set_priority(1);
+
+	EXPECT_EQ(3, _evec.interrupt_state<Exception::Type::SVCALL>().priority());
+	EXPECT_EQ(2, _evec.interrupt_state<Exception::Type::PENDSV>().priority());
+	EXPECT_EQ(1, _evec.interrupt_state<Exception::Type::SYSTICK>().priority());
+}
+
+TEST_F(ExceptionVectorTestBench, ExceptionWithLowerPriorityTakesPecedence)
+{
+	_evec.interrupt_state<Exception::Type::SVCALL>().set_priority(3);
+	_evec.interrupt_state<Exception::Type::PENDSV>().set_priority(2);
+	_evec.interrupt_state<Exception::Type::SYSTICK>().set_priority(1);
+	_interrupter.raise_pendsv();
+	_interrupter.raise_svcall();
+	_interrupter.raise_systick();
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::SYSTICK, _evec.top_pending()->number());
+	SimulateExceptionHandling(Exception::Type::SYSTICK);
+
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::PENDSV, _evec.top_pending()->number());
+	SimulateExceptionHandling(Exception::Type::PENDSV);
+
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::SVCALL, _evec.top_pending()->number());
+	SimulateExceptionHandling(Exception::Type::SVCALL);
+
+	ASSERT_EQ(nullptr, _evec.top_pending());
+}
+

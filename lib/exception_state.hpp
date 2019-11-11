@@ -92,7 +92,8 @@ public:
 	}
 
 	void set_priority(priority_t priority) override {
-		// not supported, do nothing
+		// not supported
+		precond(false, "Can't set priority of a fixed priority exception");
 	}
 };
 
@@ -105,15 +106,6 @@ public:
 		: ExceptionState(number)
 		, _reg(reg)
 	{}
-
-	priority_t priority() const override {
-		return _reg.pri11();
-	}
-
-	void set_priority(priority_t priority) override {
-		precond(priority > -1 && priority < 4, "priority not withing range");
-		_reg.pri11() = (uint8_t)priority;
-	}
 
 };
 
@@ -131,8 +123,14 @@ public:
 class Pri11ExceptionState : public Shpr2BasedExceptionState {
 public:
 	using Shpr2BasedExceptionState::Shpr2BasedExceptionState;
+
 	priority_t priority() const override {
 		return _reg.pri11();
+	}
+
+	void set_priority(priority_t priority) override {
+		precond(priority > -1 && priority < 4, "priority not withing range");
+		_reg.pri11() = (uint8_t)priority;
 	}
 };
 
@@ -145,7 +143,7 @@ public:
 	}
 
 	void set_priority(priority_t priority) override {
-		_reg.pri14() = priority;
+		_reg.pri14() = (uint8_t)priority;
 	}
 };
 
@@ -158,7 +156,7 @@ public:
 	}
 
 	void set_priority(priority_t priority) override {
-		_reg.pri15() = priority;
+		_reg.pri15() = (uint8_t)priority;
 	}
 };
 
@@ -186,6 +184,17 @@ public:
 	NonImplementedExceptionState()
 		: FixedPriorityExceptionState(Exception::INVALID)
 	{}
+
+	priority_t priority() const override {
+		// not supported
+		precond(false, "Can't get priority of an unimplemented exception");
+		return 126;
+	}
+
+	void set_priority(priority_t priority) override {
+		// not supported
+		precond(false, "Can't set priority of an unimplemented exception");
+	}
 };
 
 
