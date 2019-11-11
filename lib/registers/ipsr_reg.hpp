@@ -11,12 +11,12 @@ struct ipsr_reg : public xpsr_reg {
 	// IPSR bits are XPSR's bit 0 to 5
 	using ipsr_bits = bits<0, 6>;
 
-	void set_exception_number(Exception::Type number) {
+	void set_exception_number(exception::Type number) {
 		ipsr_bits::of(_xpsr) = ipsr_bits::of(number);
 	}
 
-	Exception::Type exception_num() const {
-		return static_cast<Exception::Type>(ipsr_bits::of(_xpsr).extract());
+	exception::Type exception_num() const {
+		return static_cast<exception::Type>(ipsr_bits::of(_xpsr).extract());
 	}
 
 private:
