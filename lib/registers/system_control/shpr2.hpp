@@ -9,9 +9,15 @@ public:
 	using ireg::operator=;
 	using pr11_bits = bits<30, 2>;
 
-	uint32_t pri11() const {
-		return self<pr11_bits>();
+
+	pr11_bits::const_integer_slice<uint32_t> pri11() const {
+		return pr11_bits::of(_word);
 	}
+
+	pr11_bits::integer_slice<uint32_t> pri11() {
+		return pr11_bits::of(_word);
+	}
+
 
 private:
 	static constexpr uint32_t _mask = (0b11 << 30);

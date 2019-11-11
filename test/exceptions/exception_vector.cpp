@@ -81,3 +81,19 @@ TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 	// There should be no more pending exceptions
 	EXPECT_EQ(nullptr, _evec.top_pending());
 }
+
+
+TEST_F(ExceptionVectorTestBench, RaiseExternalInterrupt)
+{
+	_interrupter.raise_external_interrupt(12);
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::EXTI_12, _evec.top_pending()->number());
+}
+
+TEST_F(ExceptionVectorTestBench, ExceptionWithLowerNumberTakesPrecedenceOnExceptionWithSamePriority)
+{
+	_interrupter.raise_external_interrupt(13);
+	_interrupter.raise_external_interrupt(12);
+	ASSERT_NE(nullptr, _evec.top_pending());
+	EXPECT_EQ(Exception::Type::EXTI_12, _evec.top_pending()->number());
+}
