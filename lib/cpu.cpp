@@ -155,7 +155,7 @@ void cpu::reset() {
 	LR = bits(32) UNKNOWN; // Value must be initialised by software
 	CurrentMode = Mode_Thread;
 	APSR = bits(32) UNKNOWN; // Flags UNPREDICTABLE from reset
-	IPSR<5:0> = 0x0; // Exception number clearedat reset
+	IPSR<5:0> = 0x0; // exception number clearedat reset
 	PRIMASK.PM = '0'; // Priority mask cleared at reset
 	CONTROL.SPSEL = '0'; // Current stack is Main
 	CONTROL.nPRIV = '0'; // Thread is privileged
@@ -206,7 +206,7 @@ cpu::State cpu::step() {
 		_interrupter.raise_hardfault();
 	}
 
-	ExceptionState* ex = next_exception_to_take();
+	exception_state* ex = next_exception_to_take();
 
 	if(nullptr == ex) {
 		// execute instruction at current PC
@@ -240,7 +240,7 @@ uint32_t cpu::get_next_instruction_address(uint32_t instr_addr, instruction_pair
 	}
 }
 
-const ExceptionStateVector& cpu::exceptions() const {
+const exception_state_vector& cpu::exceptions() const {
 	return _exception_vector;
 }
 

@@ -14,43 +14,43 @@ and/or distributed without the express permission of The Micromachine project.
 
 class interrupter {
 private:
-	ExceptionStateVector& _exception_vector;
+	exception_state_vector& _exception_vector;
 
-	template<Exception::Type Ex>
+	template<exception::Type Ex>
 	void raise() {
 		_exception_vector.interrupt_state<Ex>().set_pending();
 	}
 
 public:
 
-	interrupter(ExceptionStateVector& exception_vector);
+	interrupter(exception_state_vector& exception_vector);
 
 	void raise_nmi() {
-		raise<Exception::Type::NMI>();
+		raise<exception::Type::NMI>();
 	}
 
 	void raise_memory_hardfault() {
-		raise<Exception::Type::HARDFAULT>();
+		raise<exception::Type::HARDFAULT>();
 	}
 
 	void raise_hardfault() {
-		raise<Exception::Type::HARDFAULT>();
+		raise<exception::Type::HARDFAULT>();
 	}
 
 	void raise_svcall() {
-		raise<Exception::Type::SVCALL>();
+		raise<exception::Type::SVCALL>();
 	}
 
 	void raise_pendsv() {
-		raise<Exception::Type::PENDSV>();
+		raise<exception::Type::PENDSV>();
 	}
 
 	void raise_systick() {
-		raise<Exception::Type::SYSTICK>();
+		raise<exception::Type::SYSTICK>();
 	}
 
 	void raise_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(Exception::Type::EXTI_00 + number).set_pending();;
+		_exception_vector.interrupt_state(exception::Type::EXTI_00 + number).set_pending();;
 	}
 
 };

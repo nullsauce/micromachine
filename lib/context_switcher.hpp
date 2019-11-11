@@ -18,11 +18,11 @@ class context_switcher : public exception_return_handler {
 private:
 	registers& _regs;
 	memory& _mem;
-	ExceptionStateVector& _exception_vector;
+	exception_state_vector& _exception_vector;
 
 public:
 
-	context_switcher(registers& regs, memory& mem, ExceptionStateVector& exception_vector)
+	context_switcher(registers& regs, memory& mem, exception_state_vector& exception_vector)
 		: _regs(regs)
 		, _mem(mem)
 		, _exception_vector(exception_vector)
@@ -38,7 +38,7 @@ public:
 			fprintf(stderr, "unpredicatable.\n");
 		}
 
-		Exception::Type exception_returning_from = _regs.interrupt_status_register().exception_num();
+		exception::Type exception_returning_from = _regs.interrupt_status_register().exception_num();
 
 		if(!_exception_vector.interrupt_state(exception_returning_from).is_active()) {
 			// unpredicatable
@@ -117,7 +117,7 @@ public:
 		// IMPLEMENTATION DEFINED
 	}
 
-	void exception_entry(ExceptionState& exception_state, uint32_t instruction_address, instruction_pair
+	void exception_entry(exception_state& exception_state, uint32_t instruction_address, instruction_pair
 	current_instruction, uint32_t next_instruction_address) {
 
 		//TODO: I think return_address should be based on real next address.
@@ -127,9 +127,9 @@ public:
 		// 1. Compute the return address
 		switch(exception_state.number()) {
 			// address of the instruction causing fault
-			case Exception::Type::HARDFAULT: return_address = instruction_address; break;
-			case Exception::Type::SVCALL: return_address = next_instruction_address; break;
-			case Exception::Type::PENDSV: return_address = next_instruction_address; break;
+			case exception::Type::HARDFAULT: return_address = instruction_address; break;
+			case exception::Type::SVCALL: return_address = next_instruction_address; break;
+			case exception::Type::PENDSV: return_address = next_instruction_address; break;
 			default: break;
 		}
 
@@ -191,9 +191,9 @@ public:
 		_regs.app_status_register().copy_bits(bits<28,4>::of(psr_bits));
 		bool force_thread = _regs.exec_mode_register().is_thread_mode() && _regs.control_register().n_priv();
 		if(force_thread) {
-			_regs.interrupt_status_register().set_exception_number(Exception::from_number(0));
+			_regs.interrupt_status_register().set_exception_number(exception::from_number(0));
 		} else {
-			_regs.interrupt_status_register().set_exception_number(Exception::from_number(bits<0,6>::of(psr_bits)));
+			_regs.interrupt_status_register().set_exception_number(exception::from_number(bits<0,6>::of(psr_bits)));
 		}
 		_regs.execution_status_register().set_thumb_bit(bits<epsr_reg::THUMB_BIT>::of(psr_bits));
 	}

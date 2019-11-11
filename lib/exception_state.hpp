@@ -20,16 +20,16 @@ and/or distributed without the express permission of The Micromachine project.
 #include "registers/system_control/shpr2.hpp"
 #include "registers/system_control/shpr3.hpp"
 
-class ExceptionState
+class exception_state
 {
 
 private:
 	bool _pending;
 	bool _active;
-	const Exception::Type _number;
+	const exception::Type _number;
 
 public:
-	ExceptionState(Exception::Type number)
+	exception_state(exception::Type number)
 		: _pending(false)
 		, _active(false)
 		, _number(number)
@@ -43,7 +43,7 @@ public:
 	virtual priority_t priority() const = 0;
 	virtual void set_priority(priority_t priority) = 0;
 
-	Exception::Type number() const {
+	exception::Type number() const {
 		return _number;
 	}
 
@@ -84,9 +84,9 @@ public:
 };
 
 template<int8_t Priority>
-class FixedPriorityExceptionState : public ExceptionState {
+class fixed_priority_exception_state : public exception_state {
 public:
-	using ExceptionState::ExceptionState;
+	using exception_state::exception_state;
 	priority_t priority() const override {
 		return Priority;
 	}
@@ -97,32 +97,32 @@ public:
 	}
 };
 
-class Shpr2BasedExceptionState : public ExceptionState {
+class shpr2_exception_state : public exception_state {
 protected:
 	shpr2_reg& _reg;
 
 public:
-	Shpr2BasedExceptionState(Exception::Type number, shpr2_reg& reg)
-		: ExceptionState(number)
+	shpr2_exception_state(exception::Type number, shpr2_reg& reg)
+		: exception_state(number)
 		, _reg(reg)
 	{}
 
 };
 
-class Shpr3BasedExceptionState : public ExceptionState {
+class shpr3_exception_state : public exception_state {
 protected:
 	shpr3_reg& _reg;
 
 public:
-	Shpr3BasedExceptionState(Exception::Type number, shpr3_reg& reg)
-		: ExceptionState(number)
+	shpr3_exception_state(exception::Type number, shpr3_reg& reg)
+		: exception_state(number)
 		, _reg(reg)
 	{}
 };
 
-class Pri11ExceptionState : public Shpr2BasedExceptionState {
+class pri11_exception_state : public shpr2_exception_state {
 public:
-	using Shpr2BasedExceptionState::Shpr2BasedExceptionState;
+	using shpr2_exception_state::shpr2_exception_state;
 
 	priority_t priority() const override {
 		return _reg.pri11();
@@ -134,9 +134,9 @@ public:
 	}
 };
 
-class Pri14ExceptionState : public Shpr3BasedExceptionState {
+class pri14_exception_state : public shpr3_exception_state {
 public:
-	using Shpr3BasedExceptionState::Shpr3BasedExceptionState;
+	using shpr3_exception_state::shpr3_exception_state;
 
 	priority_t priority() const override {
 		return _reg.pri14();
@@ -147,9 +147,9 @@ public:
 	}
 };
 
-class Pri15ExceptionState : public Shpr3BasedExceptionState {
+class pri15_exception_state : public shpr3_exception_state {
 public:
-	using Shpr3BasedExceptionState::Shpr3BasedExceptionState;
+	using shpr3_exception_state::shpr3_exception_state;
 
 	priority_t priority() const override {
 		return _reg.pri15();
@@ -161,12 +161,12 @@ public:
 };
 
 template<size_t ExternalInterruptNumber>
-class NvicBasedExceptionState : public ExceptionState {
+class nvic_based_exception_state : public exception_state {
 private:
 	nvic& _nvic;
 public:
-	NvicBasedExceptionState(Exception::Type number, nvic& nvic)
-		: ExceptionState(number)
+	nvic_based_exception_state(exception::Type number, nvic& nvic)
+		: exception_state(number)
 		, _nvic(nvic)
 	{}
 
@@ -179,10 +179,10 @@ public:
 	}
 };
 
-class NonImplementedExceptionState : public FixedPriorityExceptionState<4> {
+class non_implemented_exception_state : public fixed_priority_exception_state<4> {
 public:
-	NonImplementedExceptionState()
-		: FixedPriorityExceptionState(Exception::INVALID)
+	non_implemented_exception_state()
+		: fixed_priority_exception_state(exception::INVALID)
 	{}
 
 	priority_t priority() const override {
@@ -198,34 +198,34 @@ public:
 };
 
 
-class ExceptionStateVector {
+class exception_state_vector {
 public:
-	ExceptionStateVector(const ExceptionStateVector&) = delete;
-	void operator=(const ExceptionStateVector&) = delete;
+	exception_state_vector(const exception_state_vector&) = delete;
+	void operator=(const exception_state_vector&) = delete;
 
-	ExceptionStateVector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
-		: _reset(Exception::Type::RESET)
-		, _nmi(Exception::Type::NMI)
-		, _hard_fault(Exception::Type::HARDFAULT)
-		, _svc(Exception::Type::SVCALL, sph2)
-		, _pend_sv(Exception::Type::PENDSV, sph3)
-		, _sys_tick(Exception::Type::SYSTICK, sph3)
-		, _ext_interrupt_0(Exception::Type::EXTI_00, nvic)
-		, _ext_interrupt_1(Exception::Type::EXTI_01, nvic)
-		, _ext_interrupt_2(Exception::Type::EXTI_02, nvic)
-		, _ext_interrupt_3(Exception::Type::EXTI_03, nvic)
-		, _ext_interrupt_4(Exception::Type::EXTI_04, nvic)
-		, _ext_interrupt_5(Exception::Type::EXTI_05, nvic)
-		, _ext_interrupt_6(Exception::Type::EXTI_06, nvic)
-		, _ext_interrupt_7(Exception::Type::EXTI_07, nvic)
-		, _ext_interrupt_8(Exception::Type::EXTI_08, nvic)
-		, _ext_interrupt_9(Exception::Type::EXTI_09, nvic)
-		, _ext_interrupt_10(Exception::Type::EXTI_10, nvic)
-		, _ext_interrupt_11(Exception::Type::EXTI_11, nvic)
-		, _ext_interrupt_12(Exception::Type::EXTI_12, nvic)
-		, _ext_interrupt_13(Exception::Type::EXTI_13, nvic)
-		, _ext_interrupt_14(Exception::Type::EXTI_14, nvic)
-		, _ext_interrupt_15(Exception::Type::EXTI_15, nvic)
+	exception_state_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
+		: _reset(exception::Type::RESET)
+		, _nmi(exception::Type::NMI)
+		, _hard_fault(exception::Type::HARDFAULT)
+		, _svc(exception::Type::SVCALL, sph2)
+		, _pend_sv(exception::Type::PENDSV, sph3)
+		, _sys_tick(exception::Type::SYSTICK, sph3)
+		, _ext_interrupt_0(exception::Type::EXTI_00, nvic)
+		, _ext_interrupt_1(exception::Type::EXTI_01, nvic)
+		, _ext_interrupt_2(exception::Type::EXTI_02, nvic)
+		, _ext_interrupt_3(exception::Type::EXTI_03, nvic)
+		, _ext_interrupt_4(exception::Type::EXTI_04, nvic)
+		, _ext_interrupt_5(exception::Type::EXTI_05, nvic)
+		, _ext_interrupt_6(exception::Type::EXTI_06, nvic)
+		, _ext_interrupt_7(exception::Type::EXTI_07, nvic)
+		, _ext_interrupt_8(exception::Type::EXTI_08, nvic)
+		, _ext_interrupt_9(exception::Type::EXTI_09, nvic)
+		, _ext_interrupt_10(exception::Type::EXTI_10, nvic)
+		, _ext_interrupt_11(exception::Type::EXTI_11, nvic)
+		, _ext_interrupt_12(exception::Type::EXTI_12, nvic)
+		, _ext_interrupt_13(exception::Type::EXTI_13, nvic)
+		, _ext_interrupt_14(exception::Type::EXTI_14, nvic)
+		, _ext_interrupt_15(exception::Type::EXTI_15, nvic)
 		, _indexed {{
 			_used_for_sp,
 			_reset,
@@ -263,96 +263,96 @@ public:
 	{}
 
 private:
-	NonImplementedExceptionState _used_for_sp;
-	FixedPriorityExceptionState<-3> _reset;
-	FixedPriorityExceptionState<-2> _nmi;
-	FixedPriorityExceptionState<-1> _hard_fault;
-	NonImplementedExceptionState _reserved_0;
-	NonImplementedExceptionState _reserved_1;
-	NonImplementedExceptionState _reserved_2;
-	NonImplementedExceptionState _reserved_3;
-	NonImplementedExceptionState _reserved_4;
-	NonImplementedExceptionState _reserved_5;
-	NonImplementedExceptionState _reserved_6;
-	Pri11ExceptionState _svc;
-	NonImplementedExceptionState _reserved_7;
-	NonImplementedExceptionState _reserved_8;
-	Pri14ExceptionState _pend_sv;
-	Pri15ExceptionState _sys_tick;
-	NvicBasedExceptionState<0> _ext_interrupt_0;
-	NvicBasedExceptionState<1> _ext_interrupt_1;
-	NvicBasedExceptionState<2> _ext_interrupt_2;
-	NvicBasedExceptionState<3> _ext_interrupt_3;
-	NvicBasedExceptionState<4> _ext_interrupt_4;
-	NvicBasedExceptionState<5> _ext_interrupt_5;
-	NvicBasedExceptionState<6> _ext_interrupt_6;
-	NvicBasedExceptionState<7> _ext_interrupt_7;
-	NvicBasedExceptionState<8> _ext_interrupt_8;
-	NvicBasedExceptionState<9> _ext_interrupt_9;
-	NvicBasedExceptionState<10> _ext_interrupt_10;
-	NvicBasedExceptionState<11> _ext_interrupt_11;
-	NvicBasedExceptionState<12> _ext_interrupt_12;
-	NvicBasedExceptionState<13> _ext_interrupt_13;
-	NvicBasedExceptionState<14> _ext_interrupt_14;
-	NvicBasedExceptionState<15> _ext_interrupt_15;
+	non_implemented_exception_state _used_for_sp;
+	fixed_priority_exception_state<-3> _reset;
+	fixed_priority_exception_state<-2> _nmi;
+	fixed_priority_exception_state<-1> _hard_fault;
+	non_implemented_exception_state _reserved_0;
+	non_implemented_exception_state _reserved_1;
+	non_implemented_exception_state _reserved_2;
+	non_implemented_exception_state _reserved_3;
+	non_implemented_exception_state _reserved_4;
+	non_implemented_exception_state _reserved_5;
+	non_implemented_exception_state _reserved_6;
+	pri11_exception_state _svc;
+	non_implemented_exception_state _reserved_7;
+	non_implemented_exception_state _reserved_8;
+	pri14_exception_state _pend_sv;
+	pri15_exception_state _sys_tick;
+	nvic_based_exception_state<0> _ext_interrupt_0;
+	nvic_based_exception_state<1> _ext_interrupt_1;
+	nvic_based_exception_state<2> _ext_interrupt_2;
+	nvic_based_exception_state<3> _ext_interrupt_3;
+	nvic_based_exception_state<4> _ext_interrupt_4;
+	nvic_based_exception_state<5> _ext_interrupt_5;
+	nvic_based_exception_state<6> _ext_interrupt_6;
+	nvic_based_exception_state<7> _ext_interrupt_7;
+	nvic_based_exception_state<8> _ext_interrupt_8;
+	nvic_based_exception_state<9> _ext_interrupt_9;
+	nvic_based_exception_state<10> _ext_interrupt_10;
+	nvic_based_exception_state<11> _ext_interrupt_11;
+	nvic_based_exception_state<12> _ext_interrupt_12;
+	nvic_based_exception_state<13> _ext_interrupt_13;
+	nvic_based_exception_state<14> _ext_interrupt_14;
+	nvic_based_exception_state<15> _ext_interrupt_15;
 
-	std::array<std::reference_wrapper<ExceptionState>, 32> _indexed;
+	std::array<std::reference_wrapper<exception_state>, 32> _indexed;
 
 public:
 
-	const ExceptionState& at(size_t index) const {
+	const exception_state& at(size_t index) const {
 		return _indexed.at(index);
 	}
 
-	template<Exception::Type Ex>
-	ExceptionState& interrupt_state()
+	template<exception::Type Ex>
+	exception_state& interrupt_state()
 	{
 		return _indexed[Ex];
 	}
 
-	template<Exception::Type Ex>
-	const ExceptionState& interrupt_state() const
+	template<exception::Type Ex>
+	const exception_state& interrupt_state() const
 	{
 		return _indexed[Ex];
 	}
 
-	ExceptionState& interrupt_state(Exception::Type t)
+	exception_state& interrupt_state(exception::Type t)
 	{
-		ExceptionState& s = _indexed[t];
+		exception_state& s = _indexed[t];
 		return s;
 	}
 
-	const ExceptionState& interrupt_state(Exception::Type t) const
+	const exception_state& interrupt_state(exception::Type t) const
 	{
 		return _indexed[t];
 	}
 
-	ExceptionState& interrupt_state(uint32_t number)
+	exception_state& interrupt_state(uint32_t number)
 	{
-		return interrupt_state(static_cast<Exception::Type>(number));
+		return interrupt_state(static_cast<exception::Type>(number));
 	}
 
-	const ExceptionState& interrupt_state(uint32_t number) const
+	const exception_state& interrupt_state(uint32_t number) const
 	{
-		return interrupt_state(static_cast<Exception::Type>(number));
+		return interrupt_state(static_cast<exception::Type>(number));
 	}
 
 	size_t active_count() const {
-		return std::count_if(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){ return e.is_active(); });
+		return std::count_if(std::begin(_indexed), std::end(_indexed), [](const exception_state& e){ return e.is_active(); });
 	}
 
 	bool any_active() const {
-		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){ return e.is_active(); });
+		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const exception_state& e){ return e.is_active(); });
 	}
 
 	bool any_pending() const {
-		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const ExceptionState& e){ return e.is_pending(); });
+		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const exception_state& e){ return e.is_pending(); });
 	}
 
-	ExceptionState* top_pending() {
-		ExceptionState* top = nullptr;
+	exception_state* top_pending() {
+		exception_state* top = nullptr;
 		// Find the pending exception with the lowest priority
-		for(ExceptionState& e : _indexed) {
+		for(exception_state& e : _indexed) {
 			// ignore exception that are not pending
 			if(!e.is_pending()) continue;
 			// select any exception with lower priority value
@@ -370,7 +370,7 @@ public:
 	}
 
 	void reset() {
-		for(ExceptionState& e : _indexed) {
+		for(exception_state& e : _indexed) {
 			e.reset();
 		}
 	}

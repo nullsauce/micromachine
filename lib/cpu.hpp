@@ -41,7 +41,7 @@ public:
 	instruction_pair fetch_instruction(uint32_t address) const;
 	instruction_pair fetch_instruction_debug(uint32_t address) const;
 	State step();
-	const ExceptionStateVector& exceptions() const;
+	const exception_state_vector& exceptions() const;
 	memory& mem();
 	const memory& mem() const;
 	registers& regs();
@@ -59,17 +59,17 @@ public:
 
 private:
 
-	ExceptionState* next_exception_to_take() {
+	exception_state* next_exception_to_take() {
 
-		ExceptionState* pending_exception = _exception_vector.top_pending();
+		exception_state* pending_exception = _exception_vector.top_pending();
 		if(nullptr == pending_exception) {
 			// no exceptions to process
 			return nullptr;
 		}
 
 		// compute the current execution priority by looking at all active exceptions
-		ExceptionState::priority_t current_priority = current_execution_priority();
-		ExceptionState::priority_t pending_priority = pending_exception->priority();
+		exception_state::priority_t current_priority = current_execution_priority();
+		exception_state::priority_t pending_priority = pending_exception->priority();
 
 		// do we need to switch the context to a new exception ?
 		if(pending_priority < current_priority) {
@@ -80,13 +80,13 @@ private:
 		return nullptr;
 	}
 
-	ExceptionState::priority_t current_execution_priority() const {
+	exception_state::priority_t current_execution_priority() const {
 
-		ExceptionState::priority_t prio = ExceptionState::DEFAULT_PRIORITY;
-		ExceptionState::priority_t boosted_prio = ExceptionState::DEFAULT_PRIORITY;
+		exception_state::priority_t prio = exception_state::DEFAULT_PRIORITY;
+		exception_state::priority_t boosted_prio = exception_state::DEFAULT_PRIORITY;
 
 		for(size_t i = 2; i < 32; i++) {
-			const ExceptionState& e = _exception_vector.at(i);
+			const exception_state& e = _exception_vector.at(i);
 			if(!e.is_active()) continue;
 			if(e.priority() < prio) {
 				prio = e.priority();
@@ -111,7 +111,7 @@ private:
 
 	generic_io_reg::callback_t _io_reg_callback;
 	registers 			_regs;
-	ExceptionStateVector _exception_vector;
+	exception_state_vector _exception_vector;
 	interrupter			_interrupter;
 	nvic				_nvic;
 	shpr2_reg 			_sphr2_reg;
