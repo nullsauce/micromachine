@@ -11,12 +11,20 @@ public:
 	using pr14_bits = bits<30, 2>;
 	using pr15_bits = bits<30, 2>;
 
-	uint32_t pri14() const {
-		return self<pr14_bits>();
+	pr14_bits::const_integer_slice<uint32_t> pri14() const {
+		return pr14_bits::of(_word);
 	}
 
-	uint32_t pri15() const {
-		return self<pr15_bits>();
+	pr14_bits::integer_slice<uint32_t> pri14() {
+		return pr14_bits::of(_word);
+	}
+
+	pr15_bits::const_integer_slice<uint32_t> pri15() const {
+		return pr14_bits::of(_word);
+	}
+
+	pr15_bits::integer_slice<uint32_t> pri15() {
+		return pr14_bits::of(_word);
 	}
 
 private:

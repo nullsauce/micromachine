@@ -45,6 +45,10 @@ public:
 		raise<Exception::Type::SYSTICK>();
 	}
 
+	void raise_external_interrupt(uint8_t number) {
+		_exception_vector.interrupt_state(Exception::Type::EXTI_00 + number).set_pending();;
+	}
+
 };
 
 #endif //MICROMACHINE_EMU_INTERRUPTOR_HPP
