@@ -763,7 +763,7 @@ static void exec(const push instruction, registers& regs, memory& mem) {
 }
 
 static void exec(const cps instruction, registers& regs) {
-	bits<0>::of(regs.primask_register()) = instruction.im;
+	regs.primask_register().set_pm(instruction.im);
 }
 
 static void exec(const pop instruction, registers& regs, memory& mem) {
@@ -935,7 +935,7 @@ static void exec(const mrs instruction, registers& regs) {
 		case 0b00010: {
 			switch((uint8_t)bits<0,3>::of(instruction.sysn)) {
 				case 0b000: {
-					val = bits<0>::of(regs.primask_register());
+					val = regs.primask_register().pm();
 				} break;
 				case 0b001: {
 					bits<0, 2>::of(val) = bits<0, 2>::of((uint32_t)regs.control_register());
@@ -970,7 +970,7 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 		} break;
 		case msr::SpecialRegister::PRIMASK: {
 			// TODO: MSR SpecialRegister::PRIMASK
-			bits<0>::of(regs.primask_register()) = bits<0>::of(regs.get(instruction.rn));
+			regs.primask_register().set_pm(bits<0>::of(regs.get(instruction.rn)));
 		} break;
 		case msr::SpecialRegister::CONTROL: {
 			if(regs.exec_mode_register().is_thread_mode()) {
