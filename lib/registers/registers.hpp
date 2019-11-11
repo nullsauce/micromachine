@@ -16,7 +16,9 @@
 #include "registers/apsr_reg.hpp"
 #include "registers/ipsr_reg.hpp"
 #include "registers/epsr_reg.hpp"
+#include "registers/primask_reg.hpp"
 #include "exception_return_handler.hpp"
+
 //#define USE_INDIRECT_REG_ACCESS
 struct registers {
 
@@ -182,11 +184,11 @@ struct registers {
 		return _execution_status_register;
 	}
 
-	uint32_t& primask_register() {
+	primask_reg& primask_register() {
 		return _primask_register;
 	}
 
-	const uint32_t& primask_register() const {
+	const primask_reg& primask_register() const {
 		return _primask_register;
 	}
 
@@ -203,11 +205,11 @@ private:
 	standard_reg 	_gen_pupose_registers[13];
 	control_reg 	_control_register;
 	exec_mode_reg 	_exec_mode_register;
-	uint32_t 			_xpsr_register;
+	uint32_t 		_xpsr_register;
 	apsr_reg 		_app_status_register;
 	ipsr_reg 		_interrupt_status_register;
 	epsr_reg		_execution_status_register;
-	uint32_t 		_primask_register;
+	primask_reg 	_primask_register;
 	sp_reg 			_sp;
 	standard_reg 	_lr;
 	pc_reg 			_pc;
