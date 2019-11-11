@@ -136,18 +136,6 @@ TEST(BitsTest, SingleBitSliceAssignableFromBool)
 		("bitslice of length 1 should be assignable from bool");
 }
 
-TEST(BitsTest, SingleBitSliceNotAssignableFromLargerInt)
-{
-	testing::assert_not_assignable<slice<0, 1, uint16_t>, uint8_t>
-		("bitslice of length 1 should not be assignable from uint8_t");
-}
-
-TEST(BitsTest, SmallBitSliceNotAssignableFromLargerInt)
-{
-	testing::assert_not_assignable<slice<0, 6, uint16_t>, uint8_t>
-		("bitslice of length 6 should not be assignable from uint8_t");
-}
-
 TEST(BitsTest, SubSliceReadConsistency)
 {
 	uint16_t a = 0x1234;
@@ -185,4 +173,19 @@ TEST(BitSliceRegressionTest, PrintFPrintsWrongData)
 	sprintf(buf, "%x", bits<0, 8>::of(a).extract());
 	EXPECT_STREQ(buf, "af");
 }
+
+TEST(BitsTest, WriteFromLargerIntegerAtStartDoesntOverflow)
+{
+	uint16_t a = 0b0000110100001111;
+	bits<4, 2>::of(a) = 0xffff;
+	EXPECT_EQ(0b0000110100111111, a);
+}
+
+TEST(BitsTest, WriteFromLargerIntegerAtEndDoesntOverflow)
+{
+	uint16_t a = 0b0000110100001111;
+	bits<13, 3>::of(a) = 0xffff;
+	EXPECT_EQ(0b1110110100001111, a);
+}
+
 
