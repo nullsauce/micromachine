@@ -8,7 +8,7 @@ class shpr3_reg : public word_reg {
 public:
 	using ireg::operator=;
 
-	using pr14_bits = bits<30, 2>;
+	using pr14_bits = bits<22, 2>;
 	using pr15_bits = bits<30, 2>;
 
 	pr14_bits::const_integer_slice<uint32_t> pri14() const {
@@ -20,11 +20,11 @@ public:
 	}
 
 	pr15_bits::const_integer_slice<uint32_t> pri15() const {
-		return pr14_bits::of(_word);
+		return pr15_bits::of(_word);
 	}
 
 	pr15_bits::integer_slice<uint32_t> pri15() {
-		return pr14_bits::of(_word);
+		return pr15_bits::of(_word);
 	}
 
 private:
