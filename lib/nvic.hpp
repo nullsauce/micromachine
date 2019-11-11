@@ -13,11 +13,6 @@ public:
 	template <size_t index>
 	using bits_for = bits<6 + (index * 8), 2>;
 
-	/*
-	uint8_t get_priority_n(size_t index) const {
-		return binops::get_bits(_word, 6 + (index * 8), 2);
-	}*/
-
 	template<size_t index>
 	typename bits_for<index>::template const_integer_slice<uint32_t> priority_bits_for_nth_interrupt() const {
 		return bits_for<index>::of(_word);
@@ -146,50 +141,47 @@ public:
 		}
 	}
 
-	template<size_t index>
-	typename nvic_ipr_reg::bits_for<index % 4>::template integer_slice<uint32_t> priority_bits_for() {
-		return priority_reg<index / 4>().template priority_bits_for_nth_interrupt<index % 4>();
+	/// Gets a mutable reference to the two priority bits for a given external interrupt
+	/// \tparam exti_number External interrupter number [0 - 15]
+	/// \return a mutable reference to the two priority bits of this external interrupt
+	template<size_t exti_number>
+	typename nvic_ipr_reg::bits_for<exti_number % 4>::template integer_slice<uint32_t> priority_bits_for() {
+		return priority_reg<exti_number / 4>().template priority_bits_for_nth_interrupt<exti_number % 4>();
 	}
 
-	template<size_t index>
-	typename nvic_ipr_reg::bits_for<index % 4>::template const_integer_slice<uint32_t> priority_bits_for() const {
-		return priority_reg<index / 4>().template priority_bits_for_nth_interrupt<index % 4>();
+	/// Gets an immutable reference to the two priority bits for a given external interrupt
+	/// \tparam exti_number External interrupter number [0 - 15]
+	/// \return an immutable reference to the two priority bits of this external interrupt
+	template<size_t exti_number>
+	typename nvic_ipr_reg::bits_for<exti_number % 4>::template const_integer_slice<uint32_t> priority_bits_for() const {
+		return priority_reg<exti_number / 4>().template priority_bits_for_nth_interrupt<exti_number % 4>();
 	}
 
-
-
+	/// Gets a mutable reference to the nth interrupt priority register
+	/// \tparam index register index
+	/// \return a mutable reference to this interrupt priority register
 	template<size_t index>
 	nvic_ipr_reg& priority_reg() {
 		return _priority_regs[index];
 	}
 
+	/// Gets an immutable reference to the nth interrupt priority register
+	/// \tparam index register index
+	/// \return an immutable reference to this interrupt priority register
 	template<size_t index>
 	const nvic_ipr_reg& priority_reg() const {
 		return _priority_regs[index];
 	}
 
-protected:
-		/*
-	nvic_ipr_reg& priority_reg_at(size_t index) {
-		return _priority_regs.at(index);
-	}*/
-
-
-	/*
-	uint8_t external_interrupt_priority(size_t external_interrupt_number) const {
-		return _priority_regs.at(external_interrupt_number / 4)
-			.get_priority_n(external_interrupt_number % 4);
-	}*/
-
+// TODO: make this protected or private
 public:
-
 	nvic_iser_reg _iser_reg;
 	nvic_icer_reg _icer_reg;
 	nvic_ispr_reg _ispr_reg;
 	nvic_icpr_reg _icpr_reg;
 	std::array<nvic_ipr_reg, 8> _priority_regs;
 
-	friend class tester;
+	// used for unit tests
 	class tester {
 	public:
 		tester(nvic* nvic) : _nvic(nvic) {}
@@ -204,8 +196,6 @@ public:
 	};
 
 private:
-
-
 	uint32_t _enable_status;
 	uint32_t _pending_status;
 };
