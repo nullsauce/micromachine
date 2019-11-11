@@ -32,12 +32,18 @@ public:
 		_regs.exec_mode_register().set_thread_mode();
 	}
 
-	bool process_pending_exception(uint32_t current_addr, instruction_pair instruction, uint32_t next_instruction_address) {
+	void take_exception(ExceptionState& exception_state, uint32_t instruction_address, instruction_pair
+	current_instruction, uint32_t next_instruction_address) {
+		_regs.set_pc(instruction_address);
+		ctx_switcher.exception_entry(exception_state, instruction_address, current_instruction, next_instruction_address);
+	}
+
+	ExceptionState* next_exception_to_take() {
 
 		ExceptionState* pending_exception = _exception_vector.top_pending();
 		if(nullptr == pending_exception) {
 			// no exceptions to process
-			return false;
+			return nullptr;
 		}
 
 		// compute the current execution priority by looking at all active exceptions
@@ -47,12 +53,10 @@ public:
 		// do we need to switch the context to a new exception ?
 		if(pending_exception_priority < current_execution_priority) {
 			// instruction flow must be interrupted by this higher priority exception
-			_regs.set_pc(current_addr);
-			ctx_switcher.exception_entry(*pending_exception, current_addr, instruction, next_instruction_address);
-			return true;
+			return pending_exception;
 		}
 
-		return false;
+		return nullptr;
 	}
 
 private:
