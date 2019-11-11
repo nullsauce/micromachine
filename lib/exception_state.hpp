@@ -160,9 +160,11 @@ public:
 };
 
 
-struct ExceptionStateVector {
+class ExceptionStateVector {
+public:
 	ExceptionStateVector(const ExceptionStateVector&) = delete;
 	void operator=(const ExceptionStateVector&) = delete;
+
 	ExceptionStateVector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
 		: _reset(Exception::Type::RESET)
 		, _nmi(Exception::Type::NMI)
@@ -186,7 +188,7 @@ struct ExceptionStateVector {
 		, _ext_interrupt_13(Exception::Type::EXTI_13, nvic)
 		, _ext_interrupt_14(Exception::Type::EXTI_14, nvic)
 		, _ext_interrupt_15(Exception::Type::EXTI_15, nvic)
-		, _indexed {
+		, _indexed {{
 			_used_for_sp,
 			_reset,
 			_nmi,
@@ -219,9 +221,10 @@ struct ExceptionStateVector {
 			_ext_interrupt_13,
 			_ext_interrupt_14,
 			_ext_interrupt_15
-		}
+		}}
 	{}
 
+private:
 	NonImplementedExceptionState _used_for_sp;
 	FixedPriorityExceptionState<-3> _reset;
 	FixedPriorityExceptionState<-2> _nmi;
@@ -255,10 +258,13 @@ struct ExceptionStateVector {
 	NvicBasedExceptionState<14> _ext_interrupt_14;
 	NvicBasedExceptionState<15> _ext_interrupt_15;
 
+	std::array<std::reference_wrapper<ExceptionState>, 32> _indexed;
 
-	std::reference_wrapper<ExceptionState> const _indexed[32];
+public:
 
-	//TODO: create a 'fast' version of the indexed array that omits the reserved field to speed up iterations
+	const ExceptionState& at(size_t index) const {
+		return _indexed.at(index);
+	}
 
 	template<Exception::Type Ex>
 	ExceptionState& interrupt_state()
@@ -323,30 +329,6 @@ struct ExceptionStateVector {
 			}
 		}
 		return top;
-	}
-
-	ExceptionState::priority_t current_execution_priority() const {
-
-		ExceptionState::priority_t prio = ExceptionState::DEFAULT_PRIORITY;
-		ExceptionState::priority_t boosted_prio = ExceptionState::DEFAULT_PRIORITY;
-
-		for(size_t i = 2; i < 32; i++) {
-			ExceptionState& e = _indexed[i];
-			if(!e.is_active()) continue;
-			if(e.priority() < prio) {
-				prio = e.priority();
-			}
-		}
-
-		// TODO primask lookup
-		// if primask.pm
-		//   boosted_prio = 0
-
-		if(boosted_prio < prio) {
-			return boosted_prio;
-		} else {
-			return prio;
-		}
 	}
 
 	void reset() {

@@ -68,16 +68,41 @@ private:
 		}
 
 		// compute the current execution priority by looking at all active exceptions
-		ExceptionState::priority_t current_execution_priority = _exception_vector.current_execution_priority();
-		ExceptionState::priority_t pending_exception_priority = pending_exception->priority();
+		ExceptionState::priority_t current_priority = current_execution_priority();
+		ExceptionState::priority_t pending_priority = pending_exception->priority();
 
 		// do we need to switch the context to a new exception ?
-		if(pending_exception_priority < current_execution_priority) {
+		if(pending_priority < current_priority) {
 			// instruction flow must be interrupted by this higher priority exception
 			return pending_exception;
 		}
 
 		return nullptr;
+	}
+
+	ExceptionState::priority_t current_execution_priority() const {
+
+		ExceptionState::priority_t prio = ExceptionState::DEFAULT_PRIORITY;
+		ExceptionState::priority_t boosted_prio = ExceptionState::DEFAULT_PRIORITY;
+
+		for(size_t i = 2; i < 32; i++) {
+			const ExceptionState& e = _exception_vector.at(i);
+			if(!e.is_active()) continue;
+			if(e.priority() < prio) {
+				prio = e.priority();
+			}
+		}
+
+		// if primask is set, ignore all maskable interrupts by
+		// pretending the executing priority is now 0
+		if(_regs.primask_register().pm())
+			prio = 0;
+
+		if(boosted_prio < prio) {
+			return boosted_prio;
+		} else {
+			return prio;
+		}
 	}
 
 	void execute(const instruction_pair instr);
