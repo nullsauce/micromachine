@@ -208,36 +208,30 @@ cpu::State cpu::step() {
 
 	}
 
-	bool hard_fault = false;
+	ExceptionState* ex = _exception_manager.next_exception_to_take();
 
-	if(_exception_manager.process_pending_exception(current_addr, instr, current_addr)) {
-
-	} else {
+	if(nullptr == ex) {
+		// execute instruction at current PC
 		// simulate prefetch of 2 instructions during execution
 		_regs.set_pc(current_addr + 4);
 		_regs.reset_pc_dirty_status();
 		execute(instr);
-		// the PC is restored here
-		// Next instruction might not be adjacent, if a jump happen.
-		uint32_t next_instruction_address = get_next_instruction_address(current_addr, instr);
+
+		ex = _exception_manager.next_exception_to_take();
+
+	}
+
+	uint32_t next_instruction_address = get_next_instruction_address(current_addr, instr);
+
+	if(ex) {
+		// an exception to be taken is pending
+		_exception_manager.take_exception(*ex, current_addr, instr, next_instruction_address);
+	} else {
+		// no exception taken, execution will continue at next address
 		_regs.set_pc(next_instruction_address);
 	}
 
-
-
-	// if exception to be serviced
-		// context switch
-	// else
-		// fetch instruction[pc]
-		// mimic PC
-		// execute
-		// if pc didnt change
-			// restore pc
-			// increment pc
-
-
-
-	return hard_fault ? cpu::State::FAULT : cpu::State::RUN;
+	return cpu::State::RUN;
 }
 
 uint32_t cpu::get_next_instruction_address() const {
