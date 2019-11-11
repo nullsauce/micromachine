@@ -35,7 +35,11 @@ struct slice {
 
 
 	template<typename other_integer_type>
-	using enable_only_if_can_store = typename std::enable_if<binops::binsize<other_integer_type>() <= len, same_type>::type;
+	using enable_only_if_source_has_less_or_equal_bits = typename std::enable_if<binops::binsize<other_integer_type>() <= len,
+	same_type>::type;
+
+	template<typename other_integer_type>
+	using enable_only_if_source_has_more_bits = typename std::enable_if<(binops::binsize<other_integer_type>() > len), same_type>::type;
 
 	using smallest_std_integer = typename std::conditional<len == 1,
 		bool,
@@ -152,8 +156,14 @@ struct slice {
 	}
 
 	template<typename int_type, size_t num_bits = len>
-	enable_only_if_can_store<int_type>& operator=(int_type other) {
+	enable_only_if_source_has_less_or_equal_bits<int_type>& operator=(int_type other) {
 		write_val(other);
+		return *this;
+	}
+
+	template<typename int_type, size_t num_bits = len>
+	enable_only_if_source_has_more_bits<int_type>& operator=(int_type other) {
+		write_bits(_val, offset, other, 0, len);
 		return *this;
 	}
 
