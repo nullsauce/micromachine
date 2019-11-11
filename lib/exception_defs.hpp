@@ -10,7 +10,7 @@ and/or distributed without the express permission of MindMaze SA.
 #ifndef MICROMACHINE_EMU_EXCEPTION_DEFS_HPP
 #define MICROMACHINE_EMU_EXCEPTION_DEFS_HPP
 
-class Exception {
+class exception {
 public:
 	enum Type : uint32_t
 	{
