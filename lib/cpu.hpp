@@ -93,7 +93,7 @@ private:
 			}
 		}
 
-		// if primask is set, ignore all maskable interrupts by
+		// if primask is set, ignore all maskable exceptions by
 		// pretending the executing priority is now 0
 		if(_regs.primask_register().pm())
 			prio = 0;

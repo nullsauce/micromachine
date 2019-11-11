@@ -10,8 +10,22 @@ class nvic_ipr_reg : public word_reg {
 public:
 	using ireg::operator=;
 
+	template <size_t index>
+	using bits_for = bits<6 + (index * 8), 2>;
+
+	/*
 	uint8_t get_priority_n(size_t index) const {
 		return binops::get_bits(_word, 6 + (index * 8), 2);
+	}*/
+
+	template<size_t index>
+	typename bits_for<index>::template const_integer_slice<uint32_t> priority_bits_for_nth_interrupt() const {
+		return bits_for<index>::of(_word);
+	}
+
+	template<size_t index>
+	typename bits_for<index>::template integer_slice<uint32_t> priority_bits_for_nth_interrupt() {
+		return bits_for<index>::of(_word);
 	}
 
 private:
@@ -73,7 +87,7 @@ private:
 };
 
 /* Interrupt Set-Enable Register
- * Enables, or reads the enabled state of one or more interrupts.
+ * Enables, or reads the enabled state of one or more exceptions.
  */
 class nvic_iser_reg : public nvic_enable_on_write_reg {
 public:
@@ -82,7 +96,7 @@ public:
 };
 
 /* Interrupt Clear Enable Register
- * Disables, or reads the enabled state of one or more interrupts.
+ * Disables, or reads the enabled state of one or more exceptions.
  */
 class nvic_icer_reg : public nvic_disable_on_write_reg {
 public:
@@ -91,8 +105,8 @@ public:
 };
 
 /* Interrupt Set-Pending Register
- * On writes, sets the status of one or more interrupts to pending. On reads, shows the
- * pending status of the interrupts.
+ * On writes, sets the status of one or more exceptions to pending. On reads, shows the
+ * pending status of the exceptions.
  */
 class nvic_ispr_reg : public nvic_enable_on_write_reg {
 public:
@@ -101,8 +115,8 @@ public:
 };
 
 /* Interrupt Clear-Pending Register
- * On writes, clears the status of one or more interrupts to pending. On reads, shows
- * the pending status of the interrupts.
+ * On writes, clears the status of one or more exceptions to pending. On reads, shows
+ * the pending status of the exceptions.
  */
 class nvic_icpr_reg : public nvic_disable_on_write_reg {
 public:
@@ -133,18 +147,41 @@ public:
 	}
 
 	template<size_t index>
+	typename nvic_ipr_reg::bits_for<index % 4>::template integer_slice<uint32_t> priority_bits_for() {
+		return priority_reg<index / 4>().template priority_bits_for_nth_interrupt<index % 4>();
+	}
+
+	template<size_t index>
+	typename nvic_ipr_reg::bits_for<index % 4>::template const_integer_slice<uint32_t> priority_bits_for() const {
+		return priority_reg<index / 4>().template priority_bits_for_nth_interrupt<index % 4>();
+	}
+
+
+
+	template<size_t index>
 	nvic_ipr_reg& priority_reg() {
 		return _priority_regs[index];
 	}
 
-	nvic_ipr_reg& priority_reg_at(size_t index) {
-		return _priority_regs.at(index);
+	template<size_t index>
+	const nvic_ipr_reg& priority_reg() const {
+		return _priority_regs[index];
 	}
 
+protected:
+		/*
+	nvic_ipr_reg& priority_reg_at(size_t index) {
+		return _priority_regs.at(index);
+	}*/
+
+
+	/*
 	uint8_t external_interrupt_priority(size_t external_interrupt_number) const {
 		return _priority_regs.at(external_interrupt_number / 4)
 			.get_priority_n(external_interrupt_number % 4);
-	}
+	}*/
+
+public:
 
 	nvic_iser_reg _iser_reg;
 	nvic_icer_reg _icer_reg;

@@ -41,6 +41,7 @@ public:
 	static constexpr priority_t DEFAULT_PRIORITY = 4;
 
 	virtual priority_t priority() const = 0;
+	virtual void set_priority(priority_t priority) = 0;
 
 	Exception::Type number() const {
 		return _number;
@@ -89,25 +90,39 @@ public:
 	priority_t priority() const override {
 		return Priority;
 	}
+
+	void set_priority(priority_t priority) override {
+		// not supported, do nothing
+	}
 };
 
 class Shpr2BasedExceptionState : public ExceptionState {
 protected:
-	const shpr2_reg& _reg;
+	shpr2_reg& _reg;
 
 public:
-	Shpr2BasedExceptionState(Exception::Type number, const shpr2_reg& reg)
+	Shpr2BasedExceptionState(Exception::Type number, shpr2_reg& reg)
 		: ExceptionState(number)
 		, _reg(reg)
 	{}
+
+	priority_t priority() const override {
+		return _reg.pri11();
+	}
+
+	void set_priority(priority_t priority) override {
+		precond(priority > -1 && priority < 4, "priority not withing range");
+		_reg.pri11() = (uint8_t)priority;
+	}
+
 };
 
 class Shpr3BasedExceptionState : public ExceptionState {
 protected:
-	const shpr3_reg& _reg;
+	shpr3_reg& _reg;
 
 public:
-	Shpr3BasedExceptionState(Exception::Type number, const shpr3_reg& reg)
+	Shpr3BasedExceptionState(Exception::Type number, shpr3_reg& reg)
 		: ExceptionState(number)
 		, _reg(reg)
 	{}
@@ -123,32 +138,46 @@ public:
 
 class Pri14ExceptionState : public Shpr3BasedExceptionState {
 public:
-using Shpr3BasedExceptionState::Shpr3BasedExceptionState;
+	using Shpr3BasedExceptionState::Shpr3BasedExceptionState;
+
 	priority_t priority() const override {
 		return _reg.pri14();
+	}
+
+	void set_priority(priority_t priority) override {
+		_reg.pri14() = priority;
 	}
 };
 
 class Pri15ExceptionState : public Shpr3BasedExceptionState {
 public:
 	using Shpr3BasedExceptionState::Shpr3BasedExceptionState;
+
 	priority_t priority() const override {
 		return _reg.pri15();
+	}
+
+	void set_priority(priority_t priority) override {
+		_reg.pri15() = priority;
 	}
 };
 
 template<size_t ExternalInterruptNumber>
 class NvicBasedExceptionState : public ExceptionState {
 private:
-	const nvic& _nvic;
+	nvic& _nvic;
 public:
-	NvicBasedExceptionState(Exception::Type number, const nvic& nvic)
+	NvicBasedExceptionState(Exception::Type number, nvic& nvic)
 		: ExceptionState(number)
 		, _nvic(nvic)
 	{}
 
 	priority_t priority() const override {
-		return _nvic.external_interrupt_priority(ExternalInterruptNumber);
+		return _nvic.priority_bits_for<ExternalInterruptNumber>();
+	}
+
+	void set_priority(priority_t priority) override {
+		_nvic.priority_bits_for<ExternalInterruptNumber>() = priority;
 	}
 };
 
