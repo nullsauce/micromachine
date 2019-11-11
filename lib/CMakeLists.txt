@@ -30,8 +30,6 @@ set(SRCS
     interrupter.cpp
     dispatcher.hpp
     disasm.hpp
-    exception_manager.hpp
-    exception_manager.cpp
     cpu.hpp
     cpu.cpp
 )
