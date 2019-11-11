@@ -2,7 +2,7 @@
 
 #include "interrupter.hpp"
 
-interrupter::interrupter(ExceptionStateVector& exception_vector)
+interrupter::interrupter(exception_state_vector& exception_vector)
 	: _exception_vector(exception_vector)
 {
 
