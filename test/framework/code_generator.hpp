@@ -18,9 +18,9 @@ public:
 	void set_write_address(uint32_t address);
 	void emit_ins16(const char* encoding, ...);
 	void emit_ins32(const char* encoding1, const char* encoding2, ...);
+	void write(uint16_t instruction);
 
 private:
-	void write(uint16_t instruction);
 	static uint16_t assemble_instruction(const char* encoding, va_list valist);
 };
 
