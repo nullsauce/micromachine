@@ -51,6 +51,7 @@ public:
 	void activate()
 	{
 		_active = true;
+		_pending = false;
 	}
 
 	void deactivate()

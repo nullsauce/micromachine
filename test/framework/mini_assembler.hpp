@@ -23,8 +23,9 @@ public:
 
 	{}
 
-	void seek_to(uint32_t address) {
+	mini_assembler& seek_to(uint32_t address) {
 		_code_gen.set_write_address(address);
+		return *this;
 	}
 
 	mini_assembler& emit_nop() {
@@ -43,6 +44,16 @@ public:
 		unconditional_branch b;
 		b.set_offset(offset);
 		_code_gen.write(b.value());
+		return *this;
+	}
+
+	mini_assembler& emit_pop_pc() {
+		_code_gen.write(0b1011110100000000);
+		return *this;
+	}
+
+	mini_assembler& emit_push_lr() {
+		_code_gen.write(0b1011010100000000);
 		return *this;
 	}
 
