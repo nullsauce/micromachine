@@ -495,6 +495,11 @@ struct branch : public standard_imm8_cond {
 
 struct unconditional_branch : public standard_imm11 {
 	using standard_imm11::standard_imm11;
+
+	unconditional_branch()
+		: standard_imm11(0b1110000000000000)
+	{}
+
 	// t2 encoding of B
 	uint32_t imm32() const {
 		return imm11() << 1;
@@ -502,7 +507,11 @@ struct unconditional_branch : public standard_imm11 {
 
 	int32_t offset() const {
 		uint32_t signed_offset = imm32();
-		return binops::sign<int32_t>(signed_offset, 12);
+		return binops::sign<int32_t>(signed_offset, 12); // TODO: seems like 12 should be 11 ?
+	}
+
+	void set_offset(int16_t offset) {
+		imm11() = (offset >> 1U);
 	}
 };
 

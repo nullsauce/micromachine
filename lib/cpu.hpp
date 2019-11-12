@@ -57,33 +57,14 @@ public:
 		_io_reg_callback = callback;
 	}
 
-private:
-
-	exception_state* next_exception_to_take() {
-
-		exception_state* pending_exception = _exception_vector.top_pending();
-		if(nullptr == pending_exception) {
-			// no exceptions to process
-			return nullptr;
-		}
-
-		// compute the current execution priority by looking at all active exceptions
-		exception_state::priority_t current_priority = current_execution_priority();
-		exception_state::priority_t pending_priority = pending_exception->priority();
-
-		// do we need to switch the context to a new exception ?
-		if(pending_priority < current_priority) {
-			// instruction flow must be interrupted by this higher priority exception
-			return pending_exception;
-		}
-
-		return nullptr;
+	interrupter& interrupt() {
+		return _interrupter;
 	}
 
-	exception_state::priority_t current_execution_priority() const {
+	exception::priority_t current_execution_priority() const {
 
-		exception_state::priority_t prio = exception_state::DEFAULT_PRIORITY;
-		exception_state::priority_t boosted_prio = exception_state::DEFAULT_PRIORITY;
+		exception::priority_t prio = exception::THREAD_MODE_PRIORITY;
+		exception::priority_t boosted_prio = exception::THREAD_MODE_PRIORITY;
 
 		for(size_t i = 2; i < 32; i++) {
 			const exception_state& e = _exception_vector.at(i);
@@ -103,6 +84,29 @@ private:
 		} else {
 			return prio;
 		}
+	}
+
+private:
+
+	exception_state* next_exception_to_take() {
+
+		exception_state* pending_exception = _exception_vector.top_pending();
+		if(nullptr == pending_exception) {
+			// no exceptions to process
+			return nullptr;
+		}
+
+		// compute the current execution priority by looking at all active exceptions
+		exception::priority_t current_priority = current_execution_priority();
+		exception::priority_t pending_priority = pending_exception->priority();
+
+		// do we need to switch the context to a new exception ?
+		if(pending_priority < current_priority) {
+			// instruction flow must be interrupted by this higher priority exception
+			return pending_exception;
+		}
+
+		return nullptr;
 	}
 
 	void execute(const instruction_pair instr);
