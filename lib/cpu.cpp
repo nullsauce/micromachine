@@ -194,11 +194,11 @@ cpu::State cpu::step() {
 	const uint32_t cur_instruction_address = _regs.get_pc();
 	instruction_pair cur_intruction = fetch_instruction(cur_instruction_address);
 
-	/*
+
 	fprintf(stderr, "S %08x: %s\n",
-		(size_t)cur_instruction_address,
+		cur_instruction_address,
 		disasm::disassemble_instruction(cur_intruction, cur_instruction_address).c_str()
-	);*/
+	);
 
 	if(!_regs.execution_status_register().thumb_bit_set()) {
 		// Thumb bit not set

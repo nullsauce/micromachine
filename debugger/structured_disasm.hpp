@@ -575,7 +575,7 @@ private:
 		//std::string narrow_suffix = format_use_narrow_branch() ? ".n" : "";
 		//format("b%2.2s"+narrow_suffix+" "+IMM(), condition_string(instruction.cond), label);
 		emit_name("b");
-		emit_condition_flag(condition_string(instruction.cond));
+		emit_condition_flag(condition_string(instruction.cond()));
 		emit_label_address(label);
 	}
 	void dispatch(const unconditional_branch instruction) override {
