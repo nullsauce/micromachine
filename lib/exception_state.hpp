@@ -36,12 +36,8 @@ public:
 	{
 	}
 
-	using priority_t  = int8_t;
-
-	static constexpr priority_t DEFAULT_PRIORITY = 4;
-
-	virtual priority_t priority() const = 0;
-	virtual void set_priority(priority_t priority) = 0;
+	virtual exception::priority_t priority() const = 0;
+	virtual void set_priority(exception::priority_t priority) = 0;
 
 	exception::Type number() const {
 		return _number;
@@ -87,11 +83,11 @@ template<int8_t Priority>
 class fixed_priority_exception_state : public exception_state {
 public:
 	using exception_state::exception_state;
-	priority_t priority() const override {
+	exception::priority_t priority() const override {
 		return Priority;
 	}
 
-	void set_priority(priority_t priority) override {
+	void set_priority(exception::priority_t priority) override {
 		// not supported
 		precond(false, "Can't set priority of a fixed priority exception");
 	}
@@ -124,11 +120,11 @@ class pri11_exception_state : public shpr2_exception_state {
 public:
 	using shpr2_exception_state::shpr2_exception_state;
 
-	priority_t priority() const override {
+	exception::priority_t priority() const override {
 		return _reg.pri11();
 	}
 
-	void set_priority(priority_t priority) override {
+	void set_priority(exception::priority_t priority) override {
 		precond(priority > -1 && priority < 4, "priority not withing range");
 		_reg.pri11() = (uint8_t)priority;
 	}
@@ -138,11 +134,11 @@ class pri14_exception_state : public shpr3_exception_state {
 public:
 	using shpr3_exception_state::shpr3_exception_state;
 
-	priority_t priority() const override {
+	exception::priority_t priority() const override {
 		return _reg.pri14();
 	}
 
-	void set_priority(priority_t priority) override {
+	void set_priority(exception::priority_t priority) override {
 		_reg.pri14() = (uint8_t)priority;
 	}
 };
@@ -151,11 +147,11 @@ class pri15_exception_state : public shpr3_exception_state {
 public:
 	using shpr3_exception_state::shpr3_exception_state;
 
-	priority_t priority() const override {
+	exception::priority_t priority() const override {
 		return _reg.pri15();
 	}
 
-	void set_priority(priority_t priority) override {
+	void set_priority(exception::priority_t priority) override {
 		_reg.pri15() = (uint8_t)priority;
 	}
 };
@@ -170,11 +166,11 @@ public:
 		, _nvic(nvic)
 	{}
 
-	priority_t priority() const override {
+	exception::priority_t priority() const override {
 		return _nvic.priority_bits_for<ExternalInterruptNumber>();
 	}
 
-	void set_priority(priority_t priority) override {
+	void set_priority(exception::priority_t priority) override {
 		_nvic.priority_bits_for<ExternalInterruptNumber>() = priority;
 	}
 };
@@ -185,13 +181,13 @@ public:
 		: fixed_priority_exception_state(exception::INVALID)
 	{}
 
-	priority_t priority() const override {
+	exception::priority_t priority() const override {
 		// not supported
 		precond(false, "Can't get priority of an unimplemented exception");
 		return 126;
 	}
 
-	void set_priority(priority_t priority) override {
+	void set_priority(exception::priority_t priority) override {
 		// not supported
 		precond(false, "Can't set priority of an unimplemented exception");
 	}
@@ -378,4 +374,4 @@ public:
 };
 
 
-#endif //MICROMACHINE_EMU_EXCEPTION_STATE_HPP
+#endif //MICROMACHINE_EMU_EXCEPTION_DEFS_HPP
