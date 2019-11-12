@@ -42,6 +42,17 @@ TEST_F(ExceptionVectorTestBench, NotPendingWhenEmpty)
 	EXPECT_FALSE(_evec.any_active());
 }
 
+TEST_F(ExceptionVectorTestBench, ActivatingClearsPendingFlag)
+{
+	_interrupter.raise_hardfault();
+	EXPECT_TRUE(_evec.any_pending());
+	EXPECT_EQ(exception::Type::HARDFAULT, _evec.top_pending()->number());
+	_evec.interrupt_state<exception::Type::HARDFAULT>().activate();
+	EXPECT_FALSE(_evec.interrupt_state<exception::Type::HARDFAULT>().is_pending());
+	EXPECT_FALSE(_evec.any_pending());
+	EXPECT_EQ(nullptr, _evec.top_pending()->number());
+}
+
 TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBePending)
 {
 	_interrupter.raise_hardfault();

@@ -17,12 +17,6 @@ static uint32_t interrupt_handler_address(uint32_t exception_number)
 	return (100U + offset);
 }
 
-CpuTestHarness::CpuTestHarness()
-	: _assembler(_code_gen)
-{
-
-}
-
 void CpuTestHarness::memory_write_32(uint32_t address, uint32_t value)
 {
 	_cpu.mem().write32(address, value);
