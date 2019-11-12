@@ -16,6 +16,7 @@
 
 #include "cpu.hpp"
 #include "code_generator.hpp"
+#include "mini_assembler.hpp"
 
 // Include C++ headers for test harness.
 //#include "CppUTest/TestHarness.h"
@@ -112,9 +113,11 @@
 class CpuTestHarness : public ::testing::Test
 {
 protected:
+	CpuTestHarness();
 	const size_t MEMORY_SIZE = 0x8000;
 	cpu _cpu;
 	code_generator _code_gen;
+	mini_assembler _assembler;
 	std::vector<uint8_t> _memory;
 
 	int m_expectedStepReturn;

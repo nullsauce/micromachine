@@ -12,6 +12,11 @@ and/or distributed without the express permission of MindMaze SA.
 
 class exception {
 public:
+	using priority_t  = int8_t;
+	static constexpr priority_t RESET_PRIORITY = -3;
+	static constexpr priority_t NMI_PRIORITY = -2;
+	static constexpr priority_t HARDFAULT_PRIORITY = -1;
+	static constexpr priority_t THREAD_MODE_PRIORITY = 4; // this is the default priority
 	enum Type : uint32_t
 	{
 		INVALID = 0,

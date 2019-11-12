@@ -116,7 +116,7 @@ declare_pinksim_test(instructions/cpsInstrTest.cpp)
 
 declare_test(binary_helpers_tests binary_helpers_tests.cpp)
 #declare_test(alu_tests alu_tests.cpp)
-declare_test(exception_prioritization exceptions/exception_prioritisation.cpp)
+declare_pinksim_test(exceptions/exception_prioritisation.cpp)
 declare_test(exception_vector exceptions/exception_vector.cpp)
 declare_test(systick systick.cpp)
 declare_test(nvic nvic.cpp)
