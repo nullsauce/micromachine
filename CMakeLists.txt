@@ -16,7 +16,8 @@ include(cotire)
 
 add_subdirectory(lib)
 add_subdirectory(run)
-add_subdirectory(debugger)
+#add_subdirectory(debugger)
+add_subdirectory(termdbg)
 add_subdirectory(test)
 add_subdirectory(benchmark)
 
