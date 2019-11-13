@@ -1,7 +1,7 @@
 #ifndef MICROMACHINE_EMU_CODE_GENERATOR_HPP
 #define MICROMACHINE_EMU_CODE_GENERATOR_HPP
 
-#include "memory.hpp"
+#include "memory/memory.hpp"
 
 #include <cstdarg>
 
