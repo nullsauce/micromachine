@@ -11,7 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 #define MICROMACHINE_EMU_QMEMREGION_HPP
 
 #include <QObject>
-#include "memory.hpp"
+#include "memory/memory.hpp"
 
 class QMemRegion : public QObject {
 	Q_OBJECT
