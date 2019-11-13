@@ -8,7 +8,7 @@
 #include "types.hpp"
 #include "instructions.hpp"
 #include "alu.hpp"
-#include "memory.hpp"
+#include "memory/memory.hpp"
 #include "registers/apsr_reg.hpp"
 #include "registers/registers.hpp"
 

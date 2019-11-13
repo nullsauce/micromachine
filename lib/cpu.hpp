@@ -7,14 +7,13 @@
 
 
 #include "types.hpp"
+#include "exec.hpp"
+#include "instructions.hpp"
+#include "memory/memory.hpp"
 #include "instruction_pair.hpp"
 #include "registers/registers.hpp"
 #include "registers/apsr_reg.hpp"
 #include "registers/custom/generic_io_reg.hpp"
-#include "exec.hpp"
-#include "instructions.hpp"
-#include "exec.hpp"
-#include "memory.hpp"
 #include "registers/exec_mode_reg.hpp"
 #include "context_switcher.hpp"
 #include "exec_dispatcher.hpp"
@@ -46,8 +45,6 @@ public:
 	const memory& mem() const;
 	registers& regs();
 	const registers& regs() const;
-
-	bool load_elf(const std::string& path);
 
 	uint64_t debug_instruction_counter() const {
 		return _debug_instruction_counter;
