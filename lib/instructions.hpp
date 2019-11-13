@@ -9,8 +9,10 @@
 #include <string>
 #include <sstream>
 #include "types.hpp"
+#include "instruction_pair.hpp"
 #include "registers/registers.hpp"
 #include "string_format.hpp"
+
 
 template<typename uint_type>
 class generic_instruction {

@@ -16,7 +16,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <QQmlListProperty>
 #include "structured_disasm.hpp"
 
-#include "memory.hpp"
+#include "memory/memory.hpp"
 
 
 class Instruction : public QObject {

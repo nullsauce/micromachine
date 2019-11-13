@@ -3,7 +3,7 @@
 
 #include "dispatcher.hpp"
 #include "exec.hpp"
-#include "memory.hpp"
+#include "memory/memory.hpp"
 #include "registers/registers.hpp"
 #include "registers/apsr_reg.hpp"
 #include "interrupter.hpp"
