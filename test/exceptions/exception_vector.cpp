@@ -50,7 +50,6 @@ TEST_F(ExceptionVectorTestBench, ActivatingClearsPendingFlag)
 	_evec.interrupt_state<exception::Type::HARDFAULT>().activate();
 	EXPECT_FALSE(_evec.interrupt_state<exception::Type::HARDFAULT>().is_pending());
 	EXPECT_FALSE(_evec.any_pending());
-	EXPECT_EQ(nullptr, _evec.top_pending()->number());
 }
 
 TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBePending)
