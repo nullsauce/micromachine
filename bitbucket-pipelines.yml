@@ -13,6 +13,7 @@ pipelines:
         caches:
           - externaldeps
         script:
+          - ./checkout.sh
           # system info
           - echo $(uname -a)
           - echo $(nproc)
