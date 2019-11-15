@@ -57,7 +57,6 @@ cpu::cpu()
 	, _exec_dispatcher(_regs, _mem, _interrupter, _break_signal)
 	, _ctx_switcher(_regs, _mem, _exception_vector)
 //	, _interrupt_manager(_mem, _nvic, _sphr2_reg, _sphr3_reg)
-	, _initial_pc(0)
 	, _debug_instruction_counter(0)
 {
 #ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
@@ -71,7 +70,7 @@ void cpu::execute(const instruction_pair instr)
 	_exec_dispatcher.dispatch_instruction(instr);
 }
 
-void cpu::reset() {
+void cpu::reset(uint32_t initial_pc) {
 
 	uint32_t initial_sp_main = _mem.read32_unchecked(0U) & 0xFFFFFFFC;
 
@@ -80,7 +79,7 @@ void cpu::reset() {
 	_regs.reset();
 	_regs.app_status_register().reset();
 	_regs.set_sp(initial_sp_main);
-	_regs.set_pc(_initial_pc);
+	_regs.set_pc(initial_pc);
 	_system_timer.reset();
 	_sphr2_reg.reset();
 	_sphr3_reg.reset();
