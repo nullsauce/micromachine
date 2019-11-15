@@ -3,6 +3,7 @@
 #include <chrono>
 #include <unistd.h>
 #include "cpu.hpp"
+#include "programmer.hpp"
 
 int main(int argc, const char** argv) {
 
@@ -12,8 +13,10 @@ int main(int argc, const char** argv) {
 	}
 
 	cpu c;
-	if(!c.load_elf(argv[1])) {
-		fprintf(stderr, "Error: invalid ELF file given %s\n", argv[0]);
+	programmer::program::ptr program = programmer::load_elf(argv[1], c.mem());
+
+	if(program->is_null()) {
+		fprintf(stderr, "Error: Failed to load the given ELF file %s\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
@@ -21,7 +24,7 @@ int main(int argc, const char** argv) {
 		write(STDOUT_FILENO, &data, 1);
 	});
 
-	c.reset();
+	c.reset(program->entry_point());
 	auto start = std::chrono::steady_clock::now();
 	decltype(start) end;
 	for(;;) {

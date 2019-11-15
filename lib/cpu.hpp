@@ -36,7 +36,7 @@ public:
 		BREAK,
 	};
 
-	void reset();
+	void reset(uint32_t initial_pc);
 	instruction_pair fetch_instruction(uint32_t address) const;
 	instruction_pair fetch_instruction_debug(uint32_t address) const;
 	State step();
@@ -127,7 +127,6 @@ private:
 
 
 	// TODO: this is not needed here
-	uint32_t _initial_pc;
 	uint64_t _debug_instruction_counter;
 };
 
