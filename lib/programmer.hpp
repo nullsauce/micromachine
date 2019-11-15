@@ -10,34 +10,57 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_PROGRAMMER_HPP
 #define MICROMACHINE_EMU_PROGRAMMER_HPP
 
-#include "memory/cpu.hpp"
+#include "memory/memory.hpp"
 #include "elfio/elfio.hpp"
 
 class programmer {
 public:
 
-	static bool
+	class program {
+	public:
+		using ptr = std::shared_ptr<program>;
+		using memory_chunk = std::vector<uint8_t>;
+		memory_chunk& allocate_chunk(size_t size) {
+			_memory.emplace_back(size, (uint8_t)0);
+			return _memory.at(_memory.size()-1);
+		}
+		bool is_null() const {
+			return _memory.empty();
+		}
+		uint32_t entry_point() const {
+			return _entry_point;
+		}
+		void set_entry_point(uint32_t address) {
+			_entry_point = address;
+		}
+	private:
+		std::vector<memory_chunk> _memory;
+		uint32_t _entry_point = 0;
+	};
 
-	static bool cpu::load_elf(const std::string &path, cpu& mem) {
+
+	static program::ptr load_elf(const std::string &path, memory& mem) {
+		program::ptr prog = std::make_shared<program>();
 		ELFIO::elfio elfReader;
 		if (!elfReader.load(path)) {
-			return false;
+			return prog;
 		}
 
 		if (elfReader.get_class() != ELFCLASS32) {
-			return false;
+			return prog;
 		}
 
 		if (elfReader.get_encoding() != ELFDATA2LSB) {
-			return false;
+			return prog;
 		}
+
 
 		ELFIO::Elf_Half sec_num = elfReader.sections.size();
 
 		uint32_t entryPoint = (uint32_t)elfReader.get_entry();
 		fprintf(stderr, "PC will be set to %08X\n", entryPoint);
 
-		_initial_pc = entryPoint;
+		prog->set_entry_point(entryPoint);
 
 		//std::cout << "Number of sections: " << sec_num << std::endl;
 		for (int i = 0; i < sec_num; ++i) {
@@ -52,17 +75,17 @@ public:
 
 				fprintf(stderr, "Creating memory section for %s\n", section->get_name().c_str());
 
-				uint8_t* data = (uint8_t*)calloc(1, section->get_size());
+				program::memory_chunk& chunk = prog->allocate_chunk(section->get_size());
 
 				// should we copy data to this section ?
 				if(section->get_type() & SHT_PROGBITS) {
-					memcpy(data, section->get_data(), section->get_size());
+					memcpy(chunk.data(), section->get_data(), section->get_size());
 				}
-				cpu.mem().map(data, section->get_address(), section->get_size(), section->get_name());
+				mem.map(chunk.data(), section->get_address(), section->get_size(), section->get_name());
 			}
 		}
 
-		return true;
+		return prog;
 	}
 
 
