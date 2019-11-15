@@ -55,7 +55,7 @@ void CpuTestHarness::initContext()
 	// zero memory
 	std::fill(_memory.begin(), _memory.end(), 0);
 
-	_cpu.reset();
+	_cpu.reset(INITIAL_PC);
 
 	// assembler will start emiting instructions at the initial code position
 	_code_gen.set_write_address(INITIAL_PC);
