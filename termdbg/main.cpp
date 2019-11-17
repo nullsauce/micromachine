@@ -16,7 +16,31 @@
 #include <cppurses/widget/widgets/menu_stack.hpp>
 #include <cppurses/widget/widgets/titlebar.hpp>
 #include <cppurses/widget/widgets/text_display.hpp>
+#include <queue>
 
+namespace {
+	void set_background(cppurses::Border& border, cppurses::Color color) {
+		border.segments.north.brush.set_background(color);
+		border.segments.south.brush.set_background(color);
+		border.segments.east.brush.set_background(color);
+		border.segments.west.brush.set_background(color);
+		border.segments.north_east.brush.set_background(color);
+		border.segments.north_west.brush.set_background(color);
+		border.segments.south_east.brush.set_background(color);
+		border.segments.south_west.brush.set_background(color);
+	}
+
+	void set_foreground(cppurses::Border& border, cppurses::Color color) {
+		border.segments.north.brush.set_foreground(color);
+		border.segments.south.brush.set_foreground(color);
+		border.segments.east.brush.set_foreground(color);
+		border.segments.west.brush.set_foreground(color);
+		border.segments.north_east.brush.set_foreground(color);
+		border.segments.north_west.brush.set_foreground(color);
+		border.segments.south_east.brush.set_foreground(color);
+		border.segments.south_west.brush.set_foreground(color);
+	}
+}
 
 class RegistersView : public cppurses::layout::Vertical {
 private:
@@ -38,14 +62,9 @@ public:
 		memset(_previous_values, 0, 16);
 		regs_text.set_alignment(cppurses::Alignment::Left);
 		regs_text.clear();
-		regs_text.width_policy.fixed(15);
-		regs_text.height_policy.fixed(18);
-		regs_text.border.enable();
-	}
-
-	bool timer_event() override {
-		update();
-		return Widget::timer_event();
+		width_policy.fixed(15);
+		height_policy.fixed(18);
+		border.enable();
 	}
 
 	bool paint_event() override {
@@ -71,6 +90,20 @@ public:
 			}
 		}
 	}
+
+	bool focus_in_event() override {
+		set_background(border, cppurses::Color::Dark_red);
+		set_foreground(border, cppurses::Color::Yellow);
+		this->update();
+		return Widget::focus_in_event();
+	}
+
+	bool focus_out_event() override {
+		set_background(border, cppurses::Color::Black);
+		set_foreground(border, cppurses::Color::White);
+		this->update();
+		return Widget::focus_out_event();
+	}
 };
 
 class DisasmView : public cppurses::layout::Vertical {
@@ -85,17 +118,26 @@ public:
 		: _cpu(cpu)
 		, _page_address(0)
 		, _page_end(0) {
-		this->enable_animation(std::chrono::milliseconds(20));
+
 		disasm_text.set_alignment(cppurses::Alignment::Left);
 		disasm_text.clear();
-		disasm_text.width_policy.minimum(20);
-		disasm_text.width_policy.maximum(40);
-		disasm_text.border.enable();
+		width_policy.minimum(22);
+		width_policy.maximum(42);
+		border.enable();
 	}
 
-	bool timer_event() override {
-		update();
-		return Widget::timer_event();
+	bool focus_in_event() override {
+		set_background(border, cppurses::Color::Dark_red);
+		set_foreground(border, cppurses::Color::Yellow);
+		this->update();
+		return Widget::focus_in_event();
+	}
+
+	bool focus_out_event() override {
+		set_background(border, cppurses::Color::Black);
+		set_foreground(border, cppurses::Color::White);
+		this->update();
+		return Widget::focus_out_event();
 	}
 
 	bool paint_event() override {
@@ -132,27 +174,114 @@ public:
 
 };
 
-class Main_menu : public cppurses::layout::Horizontal {
+class LogView : public cppurses::layout::Vertical  {
+private:
+	std::deque<std::string> _lines;
+
 public:
+	cppurses::Text_display& _text{this->make_child<cppurses::Text_display>()};
+
+	bool paint_event() override {
+		render();
+		return Widget::paint_event();
+	}
+
+	void append_line(const std::string& txt) {
+		_lines.push_back(txt + "\n");
+		update();
+	}
+
+	void render() {
+		_text.clear();
+		size_t displayable_lines = _text.height();
+		auto start = std::prev(_lines.end(), std::min(displayable_lines, _lines.size()));
+		while(start != _lines.end()) {
+			_text.append(*start);
+			start++;
+		}
+	}
+
+	bool focus_in_event() override {
+		set_background(border, cppurses::Color::Dark_red);
+		set_foreground(border, cppurses::Color::Yellow);
+		this->update();
+		return Widget::focus_in_event();
+	}
+
+	bool focus_out_event() override {
+		set_background(border, cppurses::Color::Black);
+		set_foreground(border, cppurses::Color::White);
+		this->update();
+		return Widget::focus_out_event();
+	}
+};
+
+
+
+class Main_menu : public cppurses::layout::Horizontal {
+private:
 	cpu& _cpu;
-	DisasmView& disasm_view;
+	DisasmView& _disasm_view;
 	RegistersView& registers_view;
+	LogView& log_view;
+	Widget& box;
+
+public:
 	Main_menu(cpu& cpu)
 		: _cpu(cpu)
-		, disasm_view(this->make_child<DisasmView>(_cpu))
+		, _disasm_view(this->make_child<DisasmView>(_cpu))
 		, registers_view(this->make_child<RegistersView>(_cpu))
+		, log_view(this->make_child<LogView>())
+		, box(this->make_child<Widget>())
 	{
-		this->focus_policy = cppurses::Focus_policy::Direct;
-		this->set_name("Main_menu - head widget");
+		log_view.width_policy.fixed(30);
+		log_view.height_policy.expanding(10);
+		log_view.border.enable();
+		focus_policy = cppurses::Focus_policy::Tab;
+		box.border.enable();
+		box.width_policy.fixed(20);
+		box.height_policy.fixed(4);
+
+		_disasm_view.focus_policy = cppurses::Focus_policy::Tab;
+		registers_view.focus_policy = cppurses::Focus_policy::Tab;
+		log_view.focus_policy = cppurses::Focus_policy::Tab;
+
+		set_name("Main_menu - head widget");
+		enable_animation(std::chrono::milliseconds(10));
+
+
+
+		/*
 		key_pressed.connect([this](cppurses::Key::Code k){
-			_cpu.step();
+			for(int i = 0; i < 1; i++) {
+				_cpu.step();
+			}
+			//log_view.append_line("Hey" + std::to_string(_cpu.regs().get_pc()));
 			update();
+		});*/
+
+		_cpu.set_io_callback([this](uint8_t op, uint8_t data){
+			static std::stringstream linebuf;
+			linebuf.put(data);
+			if(data == '\n') {
+				log_view.append_line(linebuf.str());
+				linebuf.clear();
+			}
 		});
+
+
+	}
+
+	bool timer_event() override {
+		_cpu.step();
+		update();
+		return Widget::timer_event();
 	}
 
 	void update() override  {
-		disasm_view.update();
+		_disasm_view.update();
 		registers_view.update();
+		log_view.update();
 		Widget::update();
 	}
 };
@@ -172,9 +301,6 @@ int main(int argc, const char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	c.set_io_callback([](uint8_t op, uint8_t data){
-		write(STDOUT_FILENO, &data, 1);
-	});
 
 	c.reset(program->entry_point());
 

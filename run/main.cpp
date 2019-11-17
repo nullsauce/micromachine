@@ -21,7 +21,9 @@ int main(int argc, const char** argv) {
 	}
 
 	c.set_io_callback([](uint8_t op, uint8_t data){
-		write(STDOUT_FILENO, &data, 1);
+		if(0 == write(STDOUT_FILENO, &data, 1)) {
+			fprintf(stderr, "failed to write to stdout\n");
+		}
 	});
 
 	c.reset(program->entry_point());
