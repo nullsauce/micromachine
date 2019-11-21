@@ -42,6 +42,12 @@ namespace {
 		border.segments.south_east.brush.set_foreground(color);
 		border.segments.south_west.brush.set_foreground(color);
 	}
+
+	template<typename TO, typename FROM>
+	std::unique_ptr<TO> static_unique_pointer_cast (std::unique_ptr<FROM>&& old){
+		return std::unique_ptr<TO>{static_cast<TO*>(old.release())};
+		//conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
+	}
 }
 
 class RegistersView : public cppurses::layout::Vertical {
@@ -94,14 +100,12 @@ public:
 	}
 
 	bool focus_in_event() override {
-		set_background(border, cppurses::Color::Dark_red);
 		set_foreground(border, cppurses::Color::Yellow);
 		this->update();
 		return Widget::focus_in_event();
 	}
 
 	bool focus_out_event() override {
-		set_background(border, cppurses::Color::Black);
 		set_foreground(border, cppurses::Color::White);
 		this->update();
 		return Widget::focus_out_event();
@@ -135,14 +139,12 @@ public:
 	}
 
 	bool focus_in_event() override {
-		set_background(border, cppurses::Color::Dark_red);
 		set_foreground(border, cppurses::Color::Yellow);
 		this->update();
 		return Widget::focus_in_event();
 	}
 
 	bool focus_out_event() override {
-		set_background(border, cppurses::Color::Black);
 		set_foreground(border, cppurses::Color::White);
 		this->update();
 		return Widget::focus_out_event();
@@ -210,14 +212,12 @@ public:
 	}
 
 	bool focus_in_event() override {
-		set_background(border, cppurses::Color::Dark_red);
 		set_foreground(border, cppurses::Color::Yellow);
 		this->update();
 		return Widget::focus_in_event();
 	}
 
 	bool focus_out_event() override {
-		set_background(border, cppurses::Color::Black);
 		set_foreground(border, cppurses::Color::White);
 		this->update();
 		return Widget::focus_out_event();
@@ -229,8 +229,8 @@ class SingleLineTextInput : public cppurses::Textbox {
 public:
 	bool _placeholder_is_set;
 	sig::Signal<void(const cppurses::Glyph_string&)> text_entered;
+	sig::Signal<void()> input_aborted;
 	cppurses::Glyph_string _placeholder_text;
-	cppurses::Color _saved_color;
 
 	SingleLineTextInput(const cppurses::Glyph_string& placeholder)
 		: _placeholder_is_set(true)
@@ -238,12 +238,15 @@ public:
 		enable_placeholder();
 		height_policy.fixed(3);
 		border.enable();
-
+		
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
 		if(keyboard.key == cppurses::Key::Enter) {
 			text_entered(this->contents());
+			return false;
+		} else if(keyboard.key == cppurses::Key::Escape) {
+			input_aborted();
 			return false;
 		} else if(contents().empty()) {
 				enable_placeholder();
@@ -257,7 +260,6 @@ public:
 	}
 
 	void enable_placeholder() {
-		_saved_color = brush.foreground_color().get();
 		brush.set_foreground(cppurses::Color::Dark_gray);
 		set_contents(_placeholder_text);
 		_placeholder_is_set = true;
@@ -268,24 +270,39 @@ public:
 		clear();
 		_placeholder_is_set = false;
 	}
+
+	bool focus_in_event() override {
+		set_foreground(border, cppurses::Color::Yellow);
+		this->update();
+		return Widget::focus_in_event();
+	}
+
+	bool focus_out_event() override {
+		set_foreground(border, cppurses::Color::White);
+		this->update();
+		return Widget::focus_out_event();
+	}
 };
 
 template<class ViewT>
-class CommandableView : public cppurses::layout::Stack  {
+class CommandableView : public cppurses::layout::Vertical  {
 protected:
-	SingleLineTextInput& _command_input;
+	std::unique_ptr<SingleLineTextInput> _offscreen_input;
 	ViewT& _view;
 public:
 	template<typename... Args>
 	CommandableView(Args&&... args)
-		: _command_input(make_page<SingleLineTextInput>("command..."))
-		, _view(make_page<ViewT>(std::forward<Args>(args)...)) {
-
-		_command_input.height_policy.fixed(3);
-		_command_input.text_entered.connect([this](const cppurses::Glyph_string& text){
+		: _offscreen_input(std::make_unique<SingleLineTextInput>("command..."))
+		, _view(make_child<ViewT>(std::forward<Args>(args)...)) {
+		_offscreen_input->set_name("command_input");
+		_offscreen_input->height_policy.fixed(3);
+		_offscreen_input->text_entered.connect([this](const cppurses::Glyph_string& text){
 			if(process_command(text.str())) {
 				close_menu();
 			}
+		});
+		_offscreen_input->input_aborted.connect([this](){
+			close_menu();
 		});
 		_view.border.disable();
 		key_pressed.connect([this](cppurses::Key::Code key){
@@ -293,17 +310,38 @@ public:
 				open_menu();
 			}
 		});
-		set_active_page(1);
+		//set_active_page(1);
+
 	}
 
 	void open_menu() {
-		set_active_page(0);
-		cppurses::Focus::set_focus_to(_command_input);
+		//set_active_page(0);
+		//_command_input.enable(true, true);
+		if(_offscreen_input) {
+			children.insert(std::move(_offscreen_input), 0);
+			cppurses::Focus::set_focus_to(*children.get()[0]);
+		}
+		update();
 	}
 
 	void close_menu() {
-		set_active_page(1);
+		//set_active_page(1);
+		//_command_input.disable(true, true);
+		_offscreen_input = static_unique_pointer_cast<SingleLineTextInput, cppurses::Widget>(children.remove("command_input"));
 		cppurses::Focus::set_focus_to(*this);
+		update();
+	}
+
+	bool focus_in_event() override {
+		set_foreground(border, cppurses::Color::Yellow);
+		this->update();
+		return Widget::focus_in_event();
+	}
+
+	bool focus_out_event() override {
+		set_foreground(border, cppurses::Color::White);
+		this->update();
+		return Widget::focus_out_event();
 	}
 
 private:
@@ -351,57 +389,120 @@ public:
 		: _memory(memory)
 		, _address(0)
 		, _text(make_child<cppurses::Text_display>()) {
+
 	}
 
 	bool paint_event() override {
 		render();
+		update();
 		return Widget::paint_event();
 	}
 
+	void scroll_byte_up() {
+		scroll_up(1);
+	}
+
+	void scroll_byte_down() {
+		scroll_down(1);
+	}
+
+	void scroll_line_up() {
+		scroll_up(displayable_clomuns());
+	}
+	void scroll_line_down() {
+		scroll_down(displayable_clomuns());
+	}
+
+	void scroll_page_up() {
+		scroll_up(displayable_clomuns() * displayable_lines());
+	}
+	void scroll_page_down() {
+		scroll_down(displayable_clomuns() * displayable_lines());
+	}
+
+
+	void scroll_up(uint32_t offset) {
+		set_address(_address + offset);
+	}
+
+	void scroll_down(uint32_t offset) {
+		set_address(_address - offset);
+	}
+
+	void set_address(uint32_t address) {
+		_address = address;
+		update();
+	}
+
+	size_t displayable_lines() const {
+		return _text.height();
+	}
+
+	size_t max_displayable_clomuns() const {
+		return std::max(0,((int)_text.width()-10)) / 3;
+	}
+
+	size_t displayable_clomuns() const {
+		return (max_displayable_clomuns() / 4) * 4;
+	}
+
 	void render() {
+
 		_text.clear();
-		size_t displayable_lines = _text.height();
-		size_t displayable_columns = (_text.width()-9) / 3;
-		size_t displayable_words = displayable_columns / 4;
 		static std::vector<char> buff;
-		buff.reserve(16 + (displayable_words * 4 * 3));
+		buff.reserve(16 + (displayable_clomuns() * 3));
 		std::stringstream ss;
-		for(size_t l = 0; l < displayable_lines; l++) {
-			const uint32_t line_address = _address + (l * displayable_columns);
-			std::sprintf(buff.data(), "%08x|", (uint32_t)line_address);
+		for(size_t l = 0; l < displayable_lines(); l++) {
+			const uint32_t line_address = _address + (l * displayable_clomuns());
+			std::sprintf(buff.data(), "%08x│", (uint32_t)line_address);
 			ss << buff.data();
-			for(size_t w = 0; w < displayable_words; w++) {
-				std::sprintf(buff.data(), "%02x %02x %02x %02x ",
-					_memory.read8(line_address + 0),
-					_memory.read8(line_address + 1),
-					_memory.read8(line_address + 2),
-					_memory.read8(line_address + 3)
-				);
+			for(size_t c = 0; c < displayable_clomuns(); c++) {
+				std::sprintf(buff.data(), "%02x ", _memory.read8_unchecked(line_address + c));
 				ss << buff.data();
 			}
-			ss << std::endl;
 		}
+		ss << std::endl;
 		_text.set_contents(ss.str());
-
 	}
 };
 
 
 class SomeView : public CommandableView<MemoryView> {
-private:
 
 public:
 
 	SomeView(cpu& cpu)
 	 : CommandableView<MemoryView>(cpu.mem()) {
-
 		register_command("goto", std::regex("(g(?:oto))? ([a-f0-9]+)"));
-
 	}
+
+	bool key_press_event(const cppurses::Key::State& keyboard) override {
+		auto key = keyboard.key;
+		if(key == cppurses::Key::Code::Arrow_up) {
+			_view.scroll_line_down();
+			return true;
+		} else if(key == cppurses::Key::Code::Arrow_down) {
+			_view.scroll_line_up();
+			return true;
+		} else if(key == 337) {
+			_view.scroll_page_down();
+			return true;
+		} else if(key == 336) {
+			_view.scroll_page_up();
+			return true;
+		}
+		update();
+		return CommandableView<MemoryView>::key_press_event(keyboard);
+	}
+
 
 	bool handle_command(const std::vector<std::string>& args) override {
 		if(args[1] == "goto" || args[1] == "g") {
-			return true;
+			uint32_t address = 0;
+			if(1 == sscanf(args[2].data(),"%x", &address)) {
+				_view.set_address(address);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -427,7 +528,7 @@ public:
 		, log_view(this->make_child<SomeView>(cpu))
 	{
 		log_view.width_policy.expanding(10);
-		log_view.width_policy.min_size(14);
+		log_view.width_policy.min_size(20);
 		log_view.height_policy.expanding(10);
 		log_view.border.enable();
 		focus_policy = cppurses::Focus_policy::Tab;
