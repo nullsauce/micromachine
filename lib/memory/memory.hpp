@@ -76,6 +76,11 @@ public:
 		return read<uint8_t>(address, ok);
 	}
 
+	uint8_t read8_unchecked(uint32_t address) const {
+		return read_unchecked<uint8_t>(address);
+	}
+
+
 	void map(uint8_t* host, uint32_t start_addr, uint32_t size, const std::string& name) {
 		_regions.emplace_back(host, start_addr, size, name);
 	}
