@@ -238,7 +238,7 @@ public:
 		enable_placeholder();
 		height_policy.fixed(3);
 		border.enable();
-		
+
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
@@ -382,12 +382,16 @@ class MemoryView : public cppurses::layout::Vertical {
 private:
 	const memory& _memory;
 	uint32_t _address;
+	uint32_t _cursor_x;
+	uint32_t _cursor_y;
 	cppurses::Text_display& _text;
 
 public:
 	MemoryView(memory& memory)
 		: _memory(memory)
 		, _address(0)
+		, _cursor_x(0)
+		, _cursor_y(0)
 		, _text(make_child<cppurses::Text_display>()) {
 
 	}
@@ -414,12 +418,11 @@ public:
 	}
 
 	void scroll_page_up() {
-		scroll_up(displayable_clomuns() * displayable_lines());
+		scroll_up(displayable_bytes());
 	}
 	void scroll_page_down() {
-		scroll_down(displayable_clomuns() * displayable_lines());
+		scroll_down(displayable_bytes());
 	}
-
 
 	void scroll_up(uint32_t offset) {
 		set_address(_address + offset);
@@ -434,6 +437,55 @@ public:
 		update();
 	}
 
+	void navigate_to_address(uint32_t address) {
+		_cursor_x = 0;
+		_cursor_y = 0;
+		set_address(address);
+	}
+
+	void move_cursor_left() {
+		if(_cursor_x == 0) {
+			_cursor_x = displayable_clomuns() - 1;
+		} else {
+			_cursor_x--;
+		}
+		update();
+	}
+
+	void move_cursor_right() {
+		if(_cursor_x < displayable_clomuns() - 1) {
+			_cursor_x++;
+		} else {
+			_cursor_x = 0;
+		}
+		update();
+	}
+
+	void move_cursor_up() {
+		if(_cursor_y > 0) {
+			_cursor_y--;
+		} else {
+			scroll_line_down();
+			_cursor_y = 0;
+		}
+		update();
+	}
+
+	void move_cursor_down() {
+		if(_cursor_y < displayable_lines() - 1) {
+			_cursor_y++;
+		} else {
+			scroll_line_up();
+			_cursor_y = displayable_lines() - 1;
+		}
+		update();
+	}
+
+	uint32_t cursor_address() const {
+		return _address + (_cursor_y * displayable_clomuns()) + (_cursor_x);
+
+	}
+
 	size_t displayable_lines() const {
 		return _text.height();
 	}
@@ -446,6 +498,10 @@ public:
 		return (max_displayable_clomuns() / 4) * 4;
 	}
 
+	size_t displayable_bytes() const {
+		return displayable_clomuns() * displayable_lines();
+	}
+
 	void render() {
 
 		_text.clear();
@@ -455,14 +511,21 @@ public:
 		for(size_t l = 0; l < displayable_lines(); l++) {
 			const uint32_t line_address = _address + (l * displayable_clomuns());
 			std::sprintf(buff.data(), "%08x│", (uint32_t)line_address);
-			ss << buff.data();
+			_text.append(buff.data());
 			for(size_t c = 0; c < displayable_clomuns(); c++) {
-				std::sprintf(buff.data(), "%02x ", _memory.read8_unchecked(line_address + c));
-				ss << buff.data();
+				uint32_t address = line_address + c;
+				std::sprintf(buff.data(), "%02x ", _memory.read8_unchecked(address));
+				if(cursor_address() == address) {
+					_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
+					_text.append(buff.data());
+					_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
+				} else {
+					_text.append(buff.data());
+				}
 			}
 		}
-		ss << std::endl;
-		_text.set_contents(ss.str());
+		_text.append("\n");
+		//this->cursor.set_position(cppurses::Point{20,1});
 	}
 };
 
@@ -479,16 +542,26 @@ public:
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
 		auto key = keyboard.key;
 		if(key == cppurses::Key::Code::Arrow_up) {
-			_view.scroll_line_down();
+			//_view.scroll_line_down();
+			_view.move_cursor_up();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_down) {
-			_view.scroll_line_up();
+			//_view.scroll_line_up();
+			_view.move_cursor_down();
+			return true;
+		} else if(key == cppurses::Key::Code::Arrow_left) {
+			//_view.scroll_line_up();
+			_view.move_cursor_left();
+			return true;
+		} else if(key == cppurses::Key::Code::Arrow_right) {
+			//_view.scroll_line_up();
+			_view.move_cursor_right();
 			return true;
 		} else if(key == 337) {
-			_view.scroll_page_down();
+			//_view.scroll_page_down();
 			return true;
 		} else if(key == 336) {
-			_view.scroll_page_up();
+			//_view.scroll_page_up();
 			return true;
 		}
 		update();
@@ -500,7 +573,7 @@ public:
 		if(args[1] == "goto" || args[1] == "g") {
 			uint32_t address = 0;
 			if(1 == sscanf(args[2].data(),"%x", &address)) {
-				_view.set_address(address);
+				_view.navigate_to_address(address);
 				return true;
 			}
 		}
