@@ -19,6 +19,8 @@
 #include <queue>
 #include <cppurses/widget/widgets/textbox.hpp>
 #include <regex>
+#include <cppurses/widget/widgets/push_button.hpp>
+#include <cppurses/widget/widgets/label.hpp>
 
 namespace {
 	void set_background(cppurses::Border& border, cppurses::Color color) {
@@ -120,8 +122,6 @@ private:
 
 
 public:
-
-
 	cppurses::Text_display& disasm_text{this->make_child<cppurses::Text_display>()};
 
 	DisasmView(cpu& cpu)
@@ -284,83 +284,20 @@ public:
 	}
 };
 
-template<class ViewT>
-class CommandableView : public cppurses::layout::Vertical  {
-protected:
-	std::unique_ptr<SingleLineTextInput> _offscreen_input;
-	ViewT& _view;
+
+class CommandInput : public SingleLineTextInput {
 public:
-	template<typename... Args>
-	CommandableView(Args&&... args)
-		: _offscreen_input(std::make_unique<SingleLineTextInput>("command..."))
-		, _view(make_child<ViewT>(std::forward<Args>(args)...)) {
-		_offscreen_input->set_name("command_input");
-		_offscreen_input->height_policy.fixed(3);
-		_offscreen_input->text_entered.connect([this](const cppurses::Glyph_string& text){
-			if(process_command(text.str())) {
-				close_menu();
-			}
-		});
-		_offscreen_input->input_aborted.connect([this](){
-			close_menu();
-		});
-		_view.border.disable();
-		key_pressed.connect([this](cppurses::Key::Code key){
-			if(key == cppurses::Key::o) {
-				open_menu();
-			}
-		});
-		//set_active_page(1);
-
+	sig::Signal<void(const std::string&, const std::vector<std::string>&)> command_parsed;
+	CommandInput(const cppurses::Glyph_string& placeholder)
+		: SingleLineTextInput(placeholder){
+		text_entered.connect(std::bind(&CommandInput::handle_command, this, std::placeholders::_1));
 	}
 
-	void open_menu() {
-		//set_active_page(0);
-		//_command_input.enable(true, true);
-		if(_offscreen_input) {
-			children.insert(std::move(_offscreen_input), 0);
-			cppurses::Focus::set_focus_to(*children.get()[0]);
-		}
-		update();
-	}
-
-	void close_menu() {
-		//set_active_page(1);
-		//_command_input.disable(true, true);
-		_offscreen_input = static_unique_pointer_cast<SingleLineTextInput, cppurses::Widget>(children.remove("command_input"));
-		cppurses::Focus::set_focus_to(*this);
-		update();
-	}
-
-	bool focus_in_event() override {
-		set_foreground(border, cppurses::Color::Yellow);
-		this->update();
-		return Widget::focus_in_event();
-	}
-
-	bool focus_out_event() override {
-		set_foreground(border, cppurses::Color::White);
-		this->update();
-		return Widget::focus_out_event();
+	void register_command(const std::string& command, const std::regex& pattern, const std::string& description = "") {
+		_commands.push_back({command, description, pattern});
 	}
 
 private:
-
-	bool process_command(const std::string& text) {
-		for(const command& c : _commands) {
-			std::smatch match;
-			if(std::regex_match(text, match, c.pattern)) {
-				std::vector<std::string> groups;
-				for(size_t i = 0; i < match.size(); i++) {
-					groups.push_back(match[i]);
-				}
-				return handle_command(groups);
-			}
-		}
-		return false;
-	}
-
-protected:
 	struct command {
 		const std::string name;
 		const std::string description;
@@ -369,17 +306,58 @@ protected:
 
 	std::vector<command> _commands;
 
-	void register_command(const std::string& name, const std::regex& pattern, const std::string& description = "") {
-		_commands.push_back({name, description, pattern});
-	}
-
-	virtual bool handle_command(const std::vector<std::string>& args) {
+	bool handle_command(const cppurses::Glyph_string& text) {
+		for(const command& c : _commands) {
+			std::smatch match;
+			std::string input = text.str();
+			if(std::regex_match(input, match, c.pattern)) {
+				if(match.size() < 2) continue;
+				std::vector<std::string> groups;
+				for(size_t i = 2; i < match.size(); i++) {
+					groups.push_back(match[i]);
+				}
+				command_parsed(match[1], groups);
+			}
+		}
 		return false;
 	}
 };
 
-class MemoryView : public cppurses::layout::Vertical {
+template<class Widg_t>
+class HidableElement {
 private:
+	std::unique_ptr<Widg_t> _menu_widget;
+	cppurses::Widget* _parent;
+public:
+
+	template<typename... Args>
+	HidableElement(cppurses::Widget* parent, Args&&... args)
+		: _menu_widget(std::make_unique<Widg_t>(std::forward<Args>(args)...))
+		, _parent(parent)
+	{}
+
+	void show() {
+		if(_menu_widget) {
+			_parent->children.insert(std::move(_menu_widget), 0);
+			cppurses::Focus::set_focus_to(*_parent->children.get()[0].get());
+		}
+	}
+
+	void hide() {
+		if(_parent->children.get().size() > 0) {
+			cppurses::Widget* widget = _parent->children.get()[0].get();
+			_menu_widget = static_unique_pointer_cast<Widg_t, cppurses::Widget>(_parent->children.remove(widget));
+			cppurses::Focus::set_focus_to(*_parent);
+		}
+	}
+
+	Widg_t& get() {
+		return *_menu_widget.get();
+	}
+};
+
+class MemoryView : public cppurses::layout::Vertical {
+protected:
 	const memory& _memory;
 	uint32_t _address;
 	uint32_t _cursor_x;
@@ -525,37 +503,222 @@ public:
 			}
 		}
 		_text.append("\n");
-		//this->cursor.set_position(cppurses::Point{20,1});
+	}
+};
+
+template<typename Widg_t>
+class TableView : public cppurses::layout::Vertical {
+public:
+	template <typename... Args>
+	TableView(int rows, int columns, Args&&... args) {
+		for(int r = 0; r < rows; r++) {
+			auto& row = make_child<cppurses::layout::Horizontal>();
+			for(int c = 0; c < columns; c++) {
+				auto& cell = row.make_child<Widg_t>(std::forward<Args>(args)...);
+				cell.border.enable();
+				cell.border.segments.west.disable();
+				cell.border.segments.north.disable();
+				cell.border.segments.north_west.disable();
+				cell.border.segments.north_east.disable();
+				cell.border.segments.south_west.disable();
+			}
+		}
+	}
+};
+
+class Table: public cppurses::layout::Vertical {
+public:
+	Table(int columns)
+		: _num_columns(columns)
+		, _num_cells(0) {
+
+	}
+
+	template <typename Widg_t, typename... Args>
+	Widg_t& make_cell(Args&&... args) {
+		auto& row = get_next_free_row();
+		auto& cell = row.make_child<Widg_t>(std::forward<Args>(args)...);
+
+		cell.border.enable();
+		cell.border.segments.west.disable();
+		cell.border.segments.north.disable();
+		cell.border.segments.north_west.disable();
+		cell.border.segments.north_east.disable();
+		cell.border.segments.south_west.disable();
+		_num_cells++;
+		return cell;
+	}
+
+	bool resize_event(cppurses::Area new_size, cppurses::Area old_size) override {
+		// prevent rows with empty cells to use all the horizontal space by
+		// forcing the width on each cell.
+		bool res = cppurses::layout::Vertical::resize_event(new_size, old_size);
+		for(auto& row : _rows) {
+			for(auto& cell : row.get().children.get()) {
+				cell.get()->width_policy.fixed(std::max(0, (int)(width() / _num_columns)));
+			}
+		}
+		return res;
+	}
+
+	template <typename Widg_t>
+	Widg_t& get_cell_at(size_t col, size_t row) {
+		return static_cast<Widg_t&>(*_rows[row].get().children.get().at(col).get());
+	}
+
+	template <typename Widg_t>
+	Widg_t& get_cell_at(size_t index) {
+		return get_cell_at<Widg_t>(index % _num_columns, index / _num_columns);
+	}
+
+	size_t num_rows() const {
+		return _rows.size();
+	}
+
+private:
+	const size_t _num_columns;
+	size_t _num_cells;
+	std::vector<std::reference_wrapper<cppurses::layout::Horizontal>> _rows;
+
+	cppurses::layout::Horizontal& get_next_free_row() {
+		if(_num_cells % _num_columns == 0) {
+			return make_empty_row();
+		} else {
+			return _rows.at(_rows.size()-1).get();
+		}
+	}
+
+	cppurses::layout::Horizontal& make_empty_row() {
+		auto& row = make_child<cppurses::layout::Horizontal>();
+		_rows.push_back(row);
+		return row;
+	}
+};
+
+class Tex : public cppurses::Text_display {
+public:
+	Tex(const cppurses::Glyph_string& text) : cppurses::Text_display(text) {
+		set_alignment(cppurses::Alignment::Left);
 	}
 };
 
 
-class SomeView : public CommandableView<MemoryView> {
-
+class SomeView : public cppurses::layout::Vertical {
 public:
+	cpu& _cpu;
+	Table& _table {make_child<Table>(4)};
+	MemoryView& _memview;
+	HidableElement<CommandInput> _menu;
+	//TableView<Tex>& _table {make_child<TableView<Tex>>(5, 3, "row")};
+
 
 	SomeView(cpu& cpu)
-	 : CommandableView<MemoryView>(cpu.mem()) {
-		register_command("goto", std::regex("(g(?:oto))? ([a-f0-9]+)"));
+	 : _cpu(cpu)
+	 , _memview(make_child<MemoryView>(cpu.mem()))
+	 , _menu(this, cppurses::Glyph_string("command...")) {
+		_table.height_policy.fixed(4);
+		_table.make_cell<Tex>(".");
+	 	_table.make_cell<Tex>("8");
+	 	_table.make_cell<Tex>("16");
+	 	_table.make_cell<Tex>("32");
+
+	 	_table.make_cell<Tex>("unsigned");
+	 	_table.make_cell<Tex>("u8");
+	 	_table.make_cell<Tex>("u16");
+	 	_table.make_cell<Tex>("u32");
+
+		_table.make_cell<Tex>("signed");
+	 	_table.make_cell<Tex>("i8");
+	 	_table.make_cell<Tex>("i16");
+		_table.make_cell<Tex>("i32");
+
+
+		_menu.get().register_command("goto", std::regex("(goto) ([a-f0-9]+)"));
+		_menu.get().command_parsed.connect([this](const std::string& command, const std::vector<std::string>& args){
+			if(process_command(command, args)) {
+				close_menu();
+			}
+		});
+
+		_menu.get().input_aborted.connect([this](){
+			close_menu();
+		});
+
+		key_pressed.connect([this](cppurses::Key::Code key){
+			if(key == cppurses::Key::o) {
+				open_menu();
+			}
+		});
+	}
+
+	void close_menu() {
+		_menu.hide();
+	}
+
+	void open_menu() {
+		_menu.show();
+	}
+
+	bool process_command(const std::string& command, const std::vector<std::string>& args) {
+		if(command == "goto" && args.size() > 0) {
+			uint32_t address = 0;
+			if(1 == sscanf(args[0].data(), "%x", &address)) {
+				_memview.navigate_to_address(address);
+				return true;
+			}
+		}
+		return true;
+	}
+
+	bool paint_event() override {
+		render();
+		update();
+		return Widget::paint_event();
+	}
+
+	void render() {
+		_table.get_cell_at<Tex>(1,1).set_contents(std::to_string(
+			(uint8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
+		));
+		_table.get_cell_at<Tex>(2,1).set_contents(std::to_string(
+			(uint16_t)_cpu.mem().read16_unchecked(_memview.cursor_address())
+		));
+		_table.get_cell_at<Tex>(3,1).set_contents(std::to_string(
+			(uint32_t)_cpu.mem().read32_unchecked(_memview.cursor_address())
+		));
+
+		_table.get_cell_at<Tex>(1,2).set_contents(std::to_string(
+			(int8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
+		));
+		_table.get_cell_at<Tex>(2,2).set_contents(std::to_string(
+			(int16_t)_cpu.mem().read16_unchecked(_memview.cursor_address())
+		));
+		_table.get_cell_at<Tex>(3,2).set_contents(std::to_string(
+			(int32_t)_cpu.mem().read32_unchecked(_memview.cursor_address())
+		));
+
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
 		auto key = keyboard.key;
-		if(key == cppurses::Key::Code::Arrow_up) {
+		if(key == cppurses::Key::Code::o) {
+			_menu.show();
+			return true;
+		} else if(key == cppurses::Key::Code::Arrow_up) {
 			//_view.scroll_line_down();
-			_view.move_cursor_up();
+			_memview.move_cursor_up();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_down) {
 			//_view.scroll_line_up();
-			_view.move_cursor_down();
+			_memview.move_cursor_down();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_left) {
 			//_view.scroll_line_up();
-			_view.move_cursor_left();
+			_memview.move_cursor_left();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_right) {
 			//_view.scroll_line_up();
-			_view.move_cursor_right();
+			_memview.move_cursor_right();
 			return true;
 		} else if(key == 337) {
 			//_view.scroll_page_down();
@@ -565,24 +728,19 @@ public:
 			return true;
 		}
 		update();
-		return CommandableView<MemoryView>::key_press_event(keyboard);
+		return _memview.key_press_event(keyboard);
 	}
 
-
-	bool handle_command(const std::vector<std::string>& args) override {
-		if(args[1] == "goto" || args[1] == "g") {
-			uint32_t address = 0;
-			if(1 == sscanf(args[2].data(),"%x", &address)) {
-				_view.navigate_to_address(address);
-				return true;
-			}
-		}
-		return false;
+	bool focus_in_event() override {
+		set_foreground(border, cppurses::Color::Yellow);
+		this->update();
+		return Widget::focus_in_event();
 	}
 
-protected:
-	virtual void handle_command(const std::string& cmd) {
-
+	bool focus_out_event() override {
+		set_foreground(border, cppurses::Color::White);
+		this->update();
+		return Widget::focus_out_event();
 	}
 };
 
@@ -601,7 +759,7 @@ public:
 		, log_view(this->make_child<SomeView>(cpu))
 	{
 		log_view.width_policy.expanding(10);
-		log_view.width_policy.min_size(20);
+		log_view.width_policy.min_size(24);
 		log_view.height_policy.expanding(10);
 		log_view.border.enable();
 		focus_policy = cppurses::Focus_policy::Tab;
@@ -659,6 +817,7 @@ int main(int argc, const char** argv) {
 
 	cppurses::System sys;
 	Main_menu demo_menu(c);
+	demo_menu.width_policy.min_size(100);
 	cppurses::System::set_initial_focus(&demo_menu);
 	return sys.run(demo_menu);
 }
