@@ -356,20 +356,26 @@ public:
 
 class MemoryView : public cppurses::layout::Vertical {
 protected:
-	const memory& _memory;
 	uint32_t _address;
 	uint32_t _cursor_x;
 	uint32_t _cursor_y;
 	cppurses::Text_display& _text;
+	const memory_mapping* _segment;
 
 public:
-	MemoryView(memory& memory)
-		: _memory(memory)
-		, _address(0)
+	MemoryView()
+		: _address(0)
 		, _cursor_x(0)
 		, _cursor_y(0)
-		, _text(make_child<cppurses::Text_display>()) {
+		, _text(make_child<cppurses::Text_display>())
+		, _segment(nullptr) {
 
+	}
+
+	void set_segment(const memory_mapping* segment) {
+		_segment = segment;
+		_address = 0;
+		update();
 	}
 
 	bool paint_event() override {
@@ -401,11 +407,11 @@ public:
 	}
 
 	void scroll_up(uint32_t offset) {
-		set_address(_address + offset);
+		set_address(std::max(_address + offset, _segment->size()));
 	}
 
 	void scroll_down(uint32_t offset) {
-		set_address(_address - offset);
+		set_address(std::min(_address - offset, _segment->size()));
 	}
 
 	void set_address(uint32_t address) {
@@ -479,24 +485,27 @@ public:
 	}
 
 	void render() {
-
 		_text.clear();
+		if(nullptr == _segment) return;
+		const uint8_t* segment_base = _segment->host_mem();
 		static std::vector<char> buff;
 		buff.reserve(16 + (displayable_clomuns() * 3));
 		std::stringstream ss;
 		for(size_t l = 0; l < displayable_lines(); l++) {
 			const uint32_t line_address = _address + (l * displayable_clomuns());
-			std::sprintf(buff.data(), "%08x│", (uint32_t)line_address);
+			std::sprintf(buff.data(), "%08x│", (uint32_t)line_address + _segment->start());
 			_text.append(buff.data());
 			for(size_t c = 0; c < displayable_clomuns(); c++) {
 				uint32_t address = line_address + c;
-				std::sprintf(buff.data(), "%02x ", _memory.read8_unchecked(address));
-				if(cursor_address() == address) {
-					_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
-					_text.append(buff.data());
-					_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
-				} else {
-					_text.append(buff.data());
+				if(address < _segment->end()) {
+					std::sprintf(buff.data(), "%02x ", segment_base[address]);
+					if(cursor_address() == address) {
+						_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
+						_text.append(buff.data());
+						_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
+					} else {
+						_text.append(buff.data());
+					}
 				}
 			}
 		}
@@ -619,7 +628,7 @@ public:
 
 	MemoryBrowser(cpu& cpu)
 	 : _cpu(cpu)
-	 , _memview(make_child<MemoryView>(cpu.mem()))
+	 , _memview(make_child<MemoryView>())
 	 , _menu(this, cppurses::Glyph_string("command..."))
 	 , _memory_segments(this, cpu.mem()) {
 		_info_table.height_policy.fixed(6);
@@ -665,11 +674,16 @@ public:
 
 		_memory_segments.get().segment_selected.connect([this](const memory_mapping& segment){
 			_memory_segments.hide();
+			_memview.set_segment(&segment);
 		});
 
 		_memory_segments.get().input_cancelled.connect([this](){
 			_memory_segments.hide();
 		});
+
+		if(!_cpu.mem().regions().empty()) {
+			_memview.set_segment(&_cpu.mem().regions()[0]);
+		}
 	}
 
 	void close_menu() {
