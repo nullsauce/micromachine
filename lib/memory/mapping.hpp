@@ -28,6 +28,10 @@ public:
 		return _end;
 	}
 
+	uint32_t size() const {
+		return end() - start();
+	}
+
 	const uint8_t* host_mem() const {
 		return _host_mem;
 	}
