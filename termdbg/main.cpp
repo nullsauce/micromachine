@@ -131,8 +131,6 @@ public:
 
 		disasm_text.set_alignment(cppurses::Alignment::Left);
 		disasm_text.clear();
-		width_policy.minimum(22);
-		width_policy.maximum(42);
 		border.enable();
 
 
@@ -506,39 +504,23 @@ public:
 	}
 };
 
-template<typename Widg_t>
-class TableView : public cppurses::layout::Vertical {
-public:
-	template <typename... Args>
-	TableView(int rows, int columns, Args&&... args) {
-		for(int r = 0; r < rows; r++) {
-			auto& row = make_child<cppurses::layout::Horizontal>();
-			for(int c = 0; c < columns; c++) {
-				auto& cell = row.make_child<Widg_t>(std::forward<Args>(args)...);
-				cell.border.enable();
-				cell.border.segments.west.disable();
-				cell.border.segments.north.disable();
-				cell.border.segments.north_west.disable();
-				cell.border.segments.north_east.disable();
-				cell.border.segments.south_west.disable();
-			}
-		}
-	}
-};
-
 class Table: public cppurses::layout::Vertical {
 public:
 	Table(int columns)
 		: _num_columns(columns)
 		, _num_cells(0) {
-
+		border.enable();
+		border.segments.south.disable();
+		border.segments.west.disable();
+		border.segments.east.disable();
+		border.segments.south_west.disable();
+		border.segments.south_east.disable();
 	}
 
 	template <typename Widg_t, typename... Args>
 	Widg_t& make_cell(Args&&... args) {
 		auto& row = get_next_free_row();
 		auto& cell = row.make_child<Widg_t>(std::forward<Args>(args)...);
-
 		cell.border.enable();
 		cell.border.segments.west.disable();
 		cell.border.segments.north.disable();
@@ -595,10 +577,10 @@ private:
 	}
 };
 
-class Tex : public cppurses::Text_display {
+class RightAlignedText : public cppurses::Text_display {
 public:
-	Tex(const cppurses::Glyph_string& text) : cppurses::Text_display(text) {
-		set_alignment(cppurses::Alignment::Left);
+	RightAlignedText(const cppurses::Glyph_string& text) : cppurses::Text_display(text) {
+		set_alignment(cppurses::Alignment::Right);
 	}
 };
 
@@ -606,31 +588,35 @@ public:
 class SomeView : public cppurses::layout::Vertical {
 public:
 	cpu& _cpu;
-	Table& _table {make_child<Table>(4)};
 	MemoryView& _memview;
 	HidableElement<CommandInput> _menu;
-	//TableView<Tex>& _table {make_child<TableView<Tex>>(5, 3, "row")};
-
+	Table& _info_table {make_child<Table>(4)};
 
 	SomeView(cpu& cpu)
 	 : _cpu(cpu)
 	 , _memview(make_child<MemoryView>(cpu.mem()))
 	 , _menu(this, cppurses::Glyph_string("command...")) {
-		_table.height_policy.fixed(4);
-		_table.make_cell<Tex>(".");
-	 	_table.make_cell<Tex>("8");
-	 	_table.make_cell<Tex>("16");
-	 	_table.make_cell<Tex>("32");
-
-	 	_table.make_cell<Tex>("unsigned");
-	 	_table.make_cell<Tex>("u8");
-	 	_table.make_cell<Tex>("u16");
-	 	_table.make_cell<Tex>("u32");
-
-		_table.make_cell<Tex>("signed");
-	 	_table.make_cell<Tex>("i8");
-	 	_table.make_cell<Tex>("i16");
-		_table.make_cell<Tex>("i32");
+		_info_table.height_policy.fixed(6);
+		_info_table.make_cell<RightAlignedText>(".");
+	 	_info_table.make_cell<RightAlignedText>("8 bits");
+	 	_info_table.make_cell<RightAlignedText>("16 bits");
+	 	_info_table.make_cell<RightAlignedText>("32 bits");
+	 	_info_table.make_cell<RightAlignedText>("LE uns.");
+	 	_info_table.make_cell<RightAlignedText>("u8");
+	 	_info_table.make_cell<RightAlignedText>("u16");
+	 	_info_table.make_cell<RightAlignedText>("u32");
+		_info_table.make_cell<RightAlignedText>("LE sig.");
+	 	_info_table.make_cell<RightAlignedText>("i8");
+	 	_info_table.make_cell<RightAlignedText>("i16");
+		_info_table.make_cell<RightAlignedText>("i32");
+		_info_table.make_cell<RightAlignedText>("BE uns.");
+	 	_info_table.make_cell<RightAlignedText>("u8");
+	 	_info_table.make_cell<RightAlignedText>("u16");
+	 	_info_table.make_cell<RightAlignedText>("u32");
+		_info_table.make_cell<RightAlignedText>("BE sig.");
+	 	_info_table.make_cell<RightAlignedText>("i8");
+	 	_info_table.make_cell<RightAlignedText>("i16");
+		_info_table.make_cell<RightAlignedText>("i32");
 
 
 		_menu.get().register_command("goto", std::regex("(goto) ([a-f0-9]+)"));
@@ -677,26 +663,48 @@ public:
 	}
 
 	void render() {
-		_table.get_cell_at<Tex>(1,1).set_contents(std::to_string(
+		char buff[32];
+		snprintf(buff, 32, "%08x", _memview.cursor_address());
+		_info_table.get_cell_at<RightAlignedText>(0,0).set_contents(buff);
+		_info_table.get_cell_at<RightAlignedText>(1,1).set_contents(std::to_string(
 			(uint8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
 		));
-		_table.get_cell_at<Tex>(2,1).set_contents(std::to_string(
+		_info_table.get_cell_at<RightAlignedText>(2,1).set_contents(std::to_string(
 			(uint16_t)_cpu.mem().read16_unchecked(_memview.cursor_address())
 		));
-		_table.get_cell_at<Tex>(3,1).set_contents(std::to_string(
+		_info_table.get_cell_at<RightAlignedText>(3,1).set_contents(std::to_string(
 			(uint32_t)_cpu.mem().read32_unchecked(_memview.cursor_address())
 		));
 
-		_table.get_cell_at<Tex>(1,2).set_contents(std::to_string(
+		_info_table.get_cell_at<RightAlignedText>(1,2).set_contents(std::to_string(
 			(int8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
 		));
-		_table.get_cell_at<Tex>(2,2).set_contents(std::to_string(
+		_info_table.get_cell_at<RightAlignedText>(2,2).set_contents(std::to_string(
 			(int16_t)_cpu.mem().read16_unchecked(_memview.cursor_address())
 		));
-		_table.get_cell_at<Tex>(3,2).set_contents(std::to_string(
+		_info_table.get_cell_at<RightAlignedText>(3,2).set_contents(std::to_string(
 			(int32_t)_cpu.mem().read32_unchecked(_memview.cursor_address())
 		));
 
+		_info_table.get_cell_at<RightAlignedText>(1,3).set_contents(std::to_string(
+			(uint8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
+		));
+		_info_table.get_cell_at<RightAlignedText>(2,3).set_contents(std::to_string(
+			(uint16_t)__builtin_bswap16(_cpu.mem().read16_unchecked(_memview.cursor_address()))
+		));
+		_info_table.get_cell_at<RightAlignedText>(3,3).set_contents(std::to_string(
+			(uint32_t)__builtin_bswap32(_cpu.mem().read32_unchecked(_memview.cursor_address()))
+		));
+
+		_info_table.get_cell_at<RightAlignedText>(1,4).set_contents(std::to_string(
+			(int8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
+		));
+		_info_table.get_cell_at<RightAlignedText>(2,4).set_contents(std::to_string(
+			(int16_t)__builtin_bswap16(_cpu.mem().read16_unchecked(_memview.cursor_address()))
+		));
+		_info_table.get_cell_at<RightAlignedText>(3,4).set_contents(std::to_string(
+			(int32_t)__builtin_bswap32(_cpu.mem().read32_unchecked(_memview.cursor_address()))
+		));
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
@@ -744,27 +752,69 @@ public:
 	}
 };
 
+class ExecControlView : public cppurses::layout::Vertical {
+private:
+	cppurses::Push_button& _play_btn {make_child<cppurses::Push_button>(">")};
+	cppurses::Push_button& _pause_btn {make_child<cppurses::Push_button>("||")};
+	cppurses::Push_button& _step_btn {make_child<cppurses::Push_button>(">|")};
+
+public:
+	ExecControlView() {
+		_play_btn.clicked.connect([this](){
+			_play_btn.border.disable();
+		});
+		_play_btn.border.enable();
+		_play_btn.border.segments.south.disable();
+		_play_btn.border.segments.south_east.disable();
+		_play_btn.border.segments.south_west.disable();
+		_pause_btn.border.enable();
+		_pause_btn.border.segments.south_west.symbol = L'├';
+		_pause_btn.border.segments.south_east.symbol = L'┤';
+		_pause_btn.border.segments.north_west.symbol = L'├';
+		_pause_btn.border.segments.north_east.symbol = L'┤';
+
+		_step_btn.border.enable();
+		_play_btn.height_policy.fixed(2);
+		_pause_btn.height_policy.fixed(3);
+
+		_step_btn.border.segments.north.disable();
+		_step_btn.border.segments.north_east.disable();
+		_step_btn.border.segments.north_west.disable();
+		_step_btn.height_policy.fixed(2);
+		//border.enable();
+	}
+
+};
+
 class Main_menu : public cppurses::layout::Horizontal {
 private:
 	cpu& _cpu;
 	DisasmView& _disasm_view;
+	cppurses::layout::Vertical& _central_panel;
 	RegistersView& registers_view;
+	ExecControlView& _exec_control_view;
 	SomeView& log_view;
 
 public:
 	Main_menu(cpu& cpu)
 		: _cpu(cpu)
 		, _disasm_view(this->make_child<DisasmView>(_cpu))
-		, registers_view(this->make_child<RegistersView>(_cpu))
+		, _central_panel(this->make_child<cppurses::layout::Vertical>())
+		, registers_view(_central_panel.make_child<RegistersView>(_cpu))
+		, _exec_control_view(_central_panel.make_child<ExecControlView>())
 		, log_view(this->make_child<SomeView>(cpu))
 	{
+
+		//_central_panel.width_policy.minimum(22);
+		_central_panel.width_policy.maximum(15);
 		log_view.width_policy.expanding(10);
 		log_view.width_policy.min_size(24);
-		log_view.height_policy.expanding(10);
+
 		log_view.border.enable();
+
 		focus_policy = cppurses::Focus_policy::Tab;
 
-		_disasm_view.focus_policy = cppurses::Focus_policy::Tab;
+		_central_panel.focus_policy = cppurses::Focus_policy::Tab;
 		registers_view.focus_policy = cppurses::Focus_policy::Tab;
 		log_view.focus_policy = cppurses::Focus_policy::Tab;
 
