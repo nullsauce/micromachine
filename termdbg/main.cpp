@@ -584,18 +584,44 @@ public:
 	}
 };
 
+class MemorySegmentList : public cppurses::Menu {
+public:
+	sig::Signal<void(const memory_mapping&)> segment_selected;
+	sig::Signal<void()> input_cancelled;
 
-class SomeView : public cppurses::layout::Vertical {
+	MemorySegmentList(const memory& mem)
+		: cppurses::Menu("segments") {
+
+		for(const auto& segment : mem.regions()) {
+			append_item(segment.name()).connect([this, segment](){
+				segment_selected(segment);
+			});
+		}
+	}
+
+	bool key_press_event(const cppurses::Key::State& keyboard) override {
+		if(keyboard.key == cppurses::Key::Escape) {
+			input_cancelled();
+			return false;
+		}
+		return cppurses::Menu::key_press_event(keyboard);
+	}
+};
+
+
+class MemoryBrowser : public cppurses::layout::Vertical {
 public:
 	cpu& _cpu;
 	MemoryView& _memview;
 	HidableElement<CommandInput> _menu;
+	HidableElement<MemorySegmentList> _memory_segments;
 	Table& _info_table {make_child<Table>(4)};
 
-	SomeView(cpu& cpu)
+	MemoryBrowser(cpu& cpu)
 	 : _cpu(cpu)
 	 , _memview(make_child<MemoryView>(cpu.mem()))
-	 , _menu(this, cppurses::Glyph_string("command...")) {
+	 , _menu(this, cppurses::Glyph_string("command..."))
+	 , _memory_segments(this, cpu.mem()) {
 		_info_table.height_policy.fixed(6);
 		_info_table.make_cell<RightAlignedText>(".");
 	 	_info_table.make_cell<RightAlignedText>("8 bits");
@@ -634,6 +660,15 @@ public:
 			if(key == cppurses::Key::o) {
 				open_menu();
 			}
+		});
+
+
+		_memory_segments.get().segment_selected.connect([this](const memory_mapping& segment){
+			_memory_segments.hide();
+		});
+
+		_memory_segments.get().input_cancelled.connect([this](){
+			_memory_segments.hide();
 		});
 	}
 
@@ -711,6 +746,9 @@ public:
 		auto key = keyboard.key;
 		if(key == cppurses::Key::Code::o) {
 			_menu.show();
+			return true;
+		} if(key == cppurses::Key::Code::m) {
+			_memory_segments.show();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_up) {
 			//_view.scroll_line_down();
@@ -793,7 +831,7 @@ private:
 	cppurses::layout::Vertical& _central_panel;
 	RegistersView& registers_view;
 	ExecControlView& _exec_control_view;
-	SomeView& log_view;
+	MemoryBrowser& _memory_browser;
 
 public:
 	Main_menu(cpu& cpu)
@@ -802,21 +840,21 @@ public:
 		, _central_panel(this->make_child<cppurses::layout::Vertical>())
 		, registers_view(_central_panel.make_child<RegistersView>(_cpu))
 		, _exec_control_view(_central_panel.make_child<ExecControlView>())
-		, log_view(this->make_child<SomeView>(cpu))
+		, _memory_browser(this->make_child<MemoryBrowser>(cpu))
 	{
 
 		//_central_panel.width_policy.minimum(22);
 		_central_panel.width_policy.maximum(15);
-		log_view.width_policy.expanding(10);
-		log_view.width_policy.min_size(24);
+		_memory_browser.width_policy.expanding(10);
+		_memory_browser.width_policy.min_size(24);
 
-		log_view.border.enable();
+		_memory_browser.border.enable();
 
 		focus_policy = cppurses::Focus_policy::Tab;
 
 		_central_panel.focus_policy = cppurses::Focus_policy::Tab;
 		registers_view.focus_policy = cppurses::Focus_policy::Tab;
-		log_view.focus_policy = cppurses::Focus_policy::Tab;
+		_memory_browser.focus_policy = cppurses::Focus_policy::Tab;
 
 		set_name("Main_menu - head widget");
 		enable_animation(std::chrono::milliseconds(10));
@@ -825,7 +863,7 @@ public:
 			static std::stringstream linebuf;
 			linebuf.put(data);
 			if(data == '\n') {
-				//log_view.append_line(linebuf.str());
+				//_memory_browser.append_line(linebuf.str());
 				linebuf.clear();
 			}
 		});
@@ -842,7 +880,7 @@ public:
 	void update() override  {
 		_disasm_view.update();
 		registers_view.update();
-		log_view.update();
+		_memory_browser.update();
 		Widget::update();
 	}
 };
