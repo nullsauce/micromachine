@@ -354,9 +354,10 @@ public:
 	}
 };
 
+
 class MemoryView : public cppurses::layout::Vertical {
 protected:
-	uint32_t _address;
+	uint32_t _segment_offset;
 	uint32_t _cursor_x;
 	uint32_t _cursor_y;
 	cppurses::Text_display& _text;
@@ -364,7 +365,7 @@ protected:
 
 public:
 	MemoryView()
-		: _address(0)
+		: _segment_offset(0)
 		, _cursor_x(0)
 		, _cursor_y(0)
 		, _text(make_child<cppurses::Text_display>())
@@ -373,9 +374,11 @@ public:
 	}
 
 	void set_segment(const memory_mapping* segment) {
-		_segment = segment;
-		_address = 0;
-		update();
+		if(_segment != segment) {
+			_segment = segment;
+			navigate_to_offset(0);
+			update();
+		}
 	}
 
 	bool paint_event() override {
@@ -407,69 +410,94 @@ public:
 	}
 
 	void scroll_up(uint32_t offset) {
-		set_address(std::max(_address + offset, _segment->size()));
+		set_segment_offset(std::min(_segment_offset + offset, _segment->size() - 1));
 	}
 
 	void scroll_down(uint32_t offset) {
-		set_address(std::min(_address - offset, _segment->size()));
+		set_segment_offset(std::min(_segment_offset - offset, _segment->size() - 1));
 	}
 
-	void set_address(uint32_t address) {
-		_address = address;
+	void set_segment_offset(uint32_t segment_offset) {
+		_segment_offset = segment_offset;
 		update();
 	}
 
-	void navigate_to_address(uint32_t address) {
+	void navigate_to_offset(uint32_t offset) {
 		_cursor_x = 0;
 		_cursor_y = 0;
-		set_address(address);
+		set_segment_offset(offset);
+	}
+
+	uint32_t address_to_segment(uint32_t address) {
+		return address - _segment->start();
+	}
+
+	void navigate_to_address(uint32_t address) {
+		set_segment_offset(address_to_segment(address));
 	}
 
 	void move_cursor_left() {
 		if(_cursor_x == 0) {
-			_cursor_x = displayable_clomuns() - 1;
+			if(is_valid_segment_offset(segment_offset_at_cursor_pos(displayable_clomuns()-1, _cursor_y))) {
+				_cursor_x = displayable_clomuns()-1;
+			}
 		} else {
-			_cursor_x--;
+			if(is_valid_segment_offset(segment_offset_at_cursor_pos(_cursor_x - 1, _cursor_y))) {
+				_cursor_x--;
+			}
 		}
 		update();
 	}
 
 	void move_cursor_right() {
-		if(_cursor_x < displayable_clomuns() - 1) {
-			_cursor_x++;
+		if(_cursor_x == displayable_clomuns() - 1) {
+			if(is_valid_segment_offset(segment_offset_at_cursor_pos(0, _cursor_y))) {
+				_cursor_x = 0;
+			}
 		} else {
-			_cursor_x = 0;
+			if(is_valid_segment_offset(segment_offset_at_cursor_pos(_cursor_x + 1, _cursor_y))) {
+				_cursor_x++;
+			}
 		}
 		update();
 	}
 
 	void move_cursor_up() {
-		if(_cursor_y > 0) {
-			_cursor_y--;
-		} else {
-			scroll_line_down();
-			_cursor_y = 0;
+		if(is_valid_segment_offset(segment_offset_at_cursor_pos(_cursor_x, _cursor_y - 1))) {
+			if(_cursor_y == 0) {
+				scroll_line_down();
+			} else {
+				_cursor_y--;
+			}
 		}
 		update();
 	}
 
 	void move_cursor_down() {
-		if(_cursor_y < displayable_lines() - 1) {
-			_cursor_y++;
-		} else {
-			scroll_line_up();
-			_cursor_y = displayable_lines() - 1;
+		if(is_valid_segment_offset(segment_offset_at_cursor_pos(_cursor_x, _cursor_y + 1))) {
+			if(_cursor_y < displayable_lines() - 1) {
+				_cursor_y++;
+			} else {
+				scroll_line_up();
+			}
 		}
 		update();
 	}
 
-	uint32_t cursor_address() const {
-		return _address + (_cursor_y * displayable_clomuns()) + (_cursor_x);
+	uint32_t segment_offset_at_cursor_pos(uint32_t cursor_x, uint32_t cursor_y) const {
+		return _segment_offset + (cursor_y * displayable_clomuns()) + (cursor_x);
+	}
 
+	uint32_t cursor_address() const {
+		return segment_offset_at_cursor_pos(_cursor_x, _cursor_y);
 	}
 
 	size_t displayable_lines() const {
 		return _text.height();
+	}
+
+	uint32_t displayed_bytes() {
+		return std::min(_segment_offset + displayable_bytes(), _segment->size());
 	}
 
 	size_t max_displayable_clomuns() const {
@@ -480,8 +508,12 @@ public:
 		return (max_displayable_clomuns() / 4) * 4;
 	}
 
-	size_t displayable_bytes() const {
+	uint32_t displayable_bytes() const {
 		return displayable_clomuns() * displayable_lines();
+	}
+
+	bool is_valid_segment_offset(uint32_t segment_offset) {
+		return segment_offset < _segment->size();
 	}
 
 	void render() {
@@ -492,21 +524,27 @@ public:
 		buff.reserve(16 + (displayable_clomuns() * 3));
 		std::stringstream ss;
 		for(size_t l = 0; l < displayable_lines(); l++) {
-			const uint32_t line_address = _address + (l * displayable_clomuns());
-			std::sprintf(buff.data(), "%08x│", (uint32_t)line_address + _segment->start());
+			const uint32_t line_offset = _segment_offset + (l * displayable_clomuns());
+			if(!is_valid_segment_offset(line_offset)) {
+				break;
+			}
+
+			std::sprintf(buff.data(), "%08x│", (uint32_t)line_offset + _segment->start());
 			_text.append(buff.data());
 			for(size_t c = 0; c < displayable_clomuns(); c++) {
-				uint32_t address = line_address + c;
-				if(address < _segment->end()) {
-					std::sprintf(buff.data(), "%02x ", segment_base[address]);
-					if(cursor_address() == address) {
-						_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
-						_text.append(buff.data());
-						_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
-					} else {
-						_text.append(buff.data());
-					}
+				uint32_t byte_offset = line_offset + c;
+				if(!is_valid_segment_offset(byte_offset)) {
+					break;
 				}
+				std::sprintf(buff.data(), "%02x ", segment_base[byte_offset]);
+				if(cursor_address() == byte_offset) {
+					_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
+					_text.append(buff.data());
+					_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
+				} else {
+					_text.append(buff.data());
+				}
+
 			}
 		}
 		_text.append("\n");
@@ -595,17 +633,18 @@ public:
 
 class MemorySegmentList : public cppurses::Menu {
 public:
-	sig::Signal<void(const memory_mapping&)> segment_selected;
+	sig::Signal<void(size_t)> segment_selected;
 	sig::Signal<void()> input_cancelled;
 
 	MemorySegmentList(const memory& mem)
 		: cppurses::Menu("segments") {
 
-		for(const auto& segment : mem.regions()) {
-			append_item(segment.name()).connect([this, segment](){
-				segment_selected(segment);
+		for(size_t i = 0; i < mem.regions().size(); i++) {
+			append_item( mem.regions()[i].name()).connect([this, i](){
+				segment_selected(i);
 			});
 		}
+
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
@@ -618,19 +657,85 @@ public:
 };
 
 
+class MemorySegmentInfo : public cppurses::layout::Horizontal {
+private:
+	const memory_mapping* _segment {nullptr};
+	cppurses::Text_display& _segment_name {make_child<cppurses::Text_display>("")};
+	cppurses::Text_display& _segment_size {make_child<cppurses::Text_display>("")};
+	cppurses::Text_display& _segment_start {make_child<cppurses::Text_display>("")};
+	cppurses::Text_display& _segment_end {make_child<cppurses::Text_display>("")};
+
+public:
+
+	MemorySegmentInfo() {
+		border.enable();
+		border.segments.disable_all();
+		border.segments.south.enable();
+		height_policy.fixed(2);
+		_segment_name.set_alignment(cppurses::Alignment::Left);
+		_segment_size.set_alignment(cppurses::Alignment::Right);
+		_segment_start.set_alignment(cppurses::Alignment::Right);
+		_segment_end.set_alignment(cppurses::Alignment::Right);
+
+		_segment_size.border.enable();
+		_segment_size.border.segments.disable_all();
+		_segment_size.border.segments.west.enable();
+
+		_segment_start.border.enable();
+		_segment_start.border.segments.disable_all();
+		_segment_start.border.segments.west.enable();
+
+		_segment_end.border.enable();
+		_segment_end.border.segments.disable_all();
+		_segment_end.border.segments.west.enable();
+	}
+
+	void set_segment(const memory_mapping* segment) {
+		if(_segment != segment) {
+			_segment = segment;
+			update();
+		}
+	}
+
+	bool paint_event() override {
+		render();
+		return Widget::paint_event();
+	}
+
+	void render() {
+		if(nullptr == _segment) return;
+		char buf[32];
+		_segment_name.set_contents(_segment->name());
+
+		snprintf(buf, 32, "size: %08x", _segment->size());
+		_segment_size.set_contents(buf);
+
+		snprintf(buf, 32, "beg: %08x", _segment->start());
+		_segment_start.set_contents(buf);
+
+		snprintf(buf, 32, "end: %08x", _segment->end());
+		_segment_end.set_contents(buf);
+	}
+
+};
+
+
 class MemoryBrowser : public cppurses::layout::Vertical {
 public:
 	cpu& _cpu;
-	MemoryView& _memview;
 	HidableElement<CommandInput> _menu;
 	HidableElement<MemorySegmentList> _memory_segments;
+	MemorySegmentInfo& _segment_info;
+	MemoryView& _memview;
+
 	Table& _info_table {make_child<Table>(4)};
 
 	MemoryBrowser(cpu& cpu)
 	 : _cpu(cpu)
-	 , _memview(make_child<MemoryView>())
 	 , _menu(this, cppurses::Glyph_string("command..."))
-	 , _memory_segments(this, cpu.mem()) {
+	 , _memory_segments(this, cpu.mem())
+	 , _segment_info(make_child<MemorySegmentInfo>())
+ 	 , _memview(make_child<MemoryView>()) {
 		_info_table.height_policy.fixed(6);
 		_info_table.make_cell<RightAlignedText>(".");
 	 	_info_table.make_cell<RightAlignedText>("8 bits");
@@ -671,10 +776,11 @@ public:
 			}
 		});
 
-
-		_memory_segments.get().segment_selected.connect([this](const memory_mapping& segment){
+		_memory_segments.get().segment_selected.connect([this](size_t segment_index){
 			_memory_segments.hide();
-			_memview.set_segment(&segment);
+			auto* segment = &_cpu.mem().regions()[segment_index];
+			_memview.set_segment(segment);
+			_segment_info.set_segment(segment);
 		});
 
 		_memory_segments.get().input_cancelled.connect([this](){
@@ -682,7 +788,9 @@ public:
 		});
 
 		if(!_cpu.mem().regions().empty()) {
-			_memview.set_segment(&_cpu.mem().regions()[0]);
+			auto* segment = &_cpu.mem().regions()[0];
+			_memview.set_segment(segment);
+			_segment_info.set_segment(segment);
 		}
 	}
 
@@ -698,8 +806,15 @@ public:
 		if(command == "goto" && args.size() > 0) {
 			uint32_t address = 0;
 			if(1 == sscanf(args[0].data(), "%x", &address)) {
-				_memview.navigate_to_address(address);
-				return true;
+				const memory_mapping* segment = _cpu.mem().find_const_region(address);
+				if(segment) {
+					_memview.set_segment(segment);
+					_segment_info.set_segment(segment);
+					_memview.navigate_to_address(address);
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
 		return true;
@@ -707,7 +822,6 @@ public:
 
 	bool paint_event() override {
 		render();
-		update();
 		return Widget::paint_event();
 	}
 
