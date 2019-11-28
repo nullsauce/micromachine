@@ -114,9 +114,71 @@ public:
 	}
 };
 
+
+class Breakpoint {
+private:
+	const uint32_t _address;
+	bool _enabled;
+	bool _reached;
+
+public:
+	Breakpoint(uint32_t address)
+		: _address(address)
+		, _enabled(true)
+		, _reached(false) {
+
+	}
+
+	bool enabled() const {
+		return _enabled;
+	}
+
+	void set_reached(bool reached) {
+		_reached = reached;
+	}
+};
+
+class BreakpointManager {
+public:
+	using BreakpointMap = std::unordered_map<uint32_t, Breakpoint>;
+	using MaybeBreakpoint = std::pair<BreakpointMap::iterator, bool>;
+
+private:
+	BreakpointMap _breakpoints;
+	Breakpoint& create_breakpoint(uint32_t address) {
+		auto it = _breakpoints.emplace(address, address);
+		return it.first->second;
+	}
+
+public:
+
+	MaybeBreakpoint breakpoint_at(uint32_t addr) {
+		auto bkp = _breakpoints.find(addr);
+		if(bkp != _breakpoints.end()) {
+			return {bkp, true};
+		} else {
+			return {_breakpoints.end(), false};
+		}
+	}
+
+	void create_destroy_breakpoint_at(uint32_t address) {
+		auto maybe_breakpoint = breakpoint_at(address);
+		if(maybe_breakpoint.second) {
+			_breakpoints.erase(maybe_breakpoint.first);
+		} else {
+			create_breakpoint(address);
+		}
+	}
+
+
+};
+
+
+
 class DisasmView : public cppurses::layout::Vertical {
 private:
 	cpu& _cpu;
+	BreakpointManager& _breakpoint_manager;
 	uint32_t _page_address;
 	uint32_t _page_end;
 
@@ -124,8 +186,9 @@ private:
 public:
 	cppurses::Text_display& disasm_text{this->make_child<cppurses::Text_display>()};
 
-	DisasmView(cpu& cpu)
+	DisasmView(cpu& cpu, BreakpointManager& breakpoint_manager)
 		: _cpu(cpu)
+		, _breakpoint_manager(breakpoint_manager)
 		, _page_address(0)
 		, _page_end(0) {
 
@@ -154,6 +217,7 @@ public:
 	}
 
 	void render() {
+		static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> str_converter;
 		disasm_text.clear();
 		uint32_t pc = _cpu.regs().get_pc();
 		uint32_t address = pc;
@@ -163,18 +227,29 @@ public:
 		} else {
 			address = _page_address;
 		}
-		char line[128] = {0};
+		wchar_t line[128] = {0};
 		for(size_t i = 0; i < lines_per_page; i++) {
 			auto instruction = _cpu.fetch_instruction(address);
 			std::string disasm = disasm::disassemble_instruction(instruction, address);
-			sprintf(line, "%08x│ %s\n", address, disasm.c_str());
+			//std::wstring wdisasm(disasm.begin(), disasm.end());
+			swprintf(line, sizeof(line), L" %08x│ %s\n", address, disasm.c_str());
+			auto maybe_breakpoint = _breakpoint_manager.breakpoint_at(address);
+			bool breakpoint_present = maybe_breakpoint.second;
+			if(breakpoint_present) {
+				disasm_text.insert_brush.add_attributes(cppurses::Attribute::Underline);
+				if(maybe_breakpoint.first->second.enabled()) {
+					line[0] = L'•';
+				} else {
+					line[0] = L'◦';
+				}
+			}
 			if(address == pc) {
 				disasm_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
 				disasm_text.append(line);
-				disasm_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
 			} else {
 				disasm_text.append(line);
 			}
+			disasm_text.insert_brush.clear_attributes();
 			address += instruction.size();
 		}
 		_page_end = address;
@@ -952,8 +1027,11 @@ public:
 
 };
 
+
+
 class Main_menu : public cppurses::layout::Horizontal {
 private:
+	BreakpointManager _breakpoint_manager;
 	cpu& _cpu;
 	DisasmView& _disasm_view;
 	cppurses::layout::Vertical& _central_panel;
@@ -961,16 +1039,18 @@ private:
 	ExecControlView& _exec_control_view;
 	MemoryBrowser& _memory_browser;
 
+
 public:
 	Main_menu(cpu& cpu)
 		: _cpu(cpu)
-		, _disasm_view(this->make_child<DisasmView>(_cpu))
+		, _disasm_view(this->make_child<DisasmView>(_cpu, _breakpoint_manager))
 		, _central_panel(this->make_child<cppurses::layout::Vertical>())
 		, registers_view(_central_panel.make_child<RegistersView>(_cpu))
 		, _exec_control_view(_central_panel.make_child<ExecControlView>())
 		, _memory_browser(this->make_child<MemoryBrowser>(cpu))
 	{
-
+		_breakpoint_manager.create_destroy_breakpoint_at(0xb003);
+		_breakpoint_manager.create_destroy_breakpoint_at(0x3b0);
 		//_central_panel.width_policy.minimum(22);
 		_central_panel.width_policy.maximum(15);
 		_memory_browser.width_policy.expanding(10);
@@ -999,9 +1079,23 @@ public:
 
 	}
 
-	bool timer_event() override {
-		_cpu.step();
+	void step(size_t cpu_steps = 1) {
+		for(size_t i = 0; i < cpu_steps; i++) {
+			uint32_t addr = _cpu.regs().get_pc();
+			BreakpointManager::MaybeBreakpoint bp = _breakpoint_manager.breakpoint_at(addr);
+			bool breakpoint_found = bp.second;
+			auto& breakpoint = bp.first->second;
+			if(breakpoint_found && breakpoint.enabled()) {
+				breakpoint.set_reached(true);
+				break;
+			} else {
+				_cpu.step();
+			}
+		}
 		update();
+	}
+
+	bool timer_event() override {
 		return Widget::timer_event();
 	}
 
