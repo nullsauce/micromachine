@@ -133,6 +133,10 @@ public:
 		return _enabled;
 	}
 
+	bool reached() const {
+		return _reached;
+	}
+
 	void set_reached(bool reached) {
 		_reached = reached;
 	}
@@ -231,7 +235,6 @@ public:
 		for(size_t i = 0; i < lines_per_page; i++) {
 			auto instruction = _cpu.fetch_instruction(address);
 			std::string disasm = disasm::disassemble_instruction(instruction, address);
-			//std::wstring wdisasm(disasm.begin(), disasm.end());
 			swprintf(line, sizeof(line), L" %08x│ %s\n", address, disasm.c_str());
 			auto maybe_breakpoint = _breakpoint_manager.breakpoint_at(address);
 			bool breakpoint_present = maybe_breakpoint.second;
@@ -1038,6 +1041,7 @@ private:
 	RegistersView& registers_view;
 	ExecControlView& _exec_control_view;
 	MemoryBrowser& _memory_browser;
+	bool _process_steps;
 
 
 public:
@@ -1048,6 +1052,7 @@ public:
 		, registers_view(_central_panel.make_child<RegistersView>(_cpu))
 		, _exec_control_view(_central_panel.make_child<ExecControlView>())
 		, _memory_browser(this->make_child<MemoryBrowser>(cpu))
+		, _process_steps(true)
 	{
 		_breakpoint_manager.create_destroy_breakpoint_at(0xb003);
 		_breakpoint_manager.create_destroy_breakpoint_at(0x3b0);
@@ -1065,7 +1070,7 @@ public:
 		_memory_browser.focus_policy = cppurses::Focus_policy::Tab;
 
 		set_name("Main_menu - head widget");
-		enable_animation(std::chrono::milliseconds(10));
+
 
 		_cpu.set_io_callback([this](uint8_t op, uint8_t data){
 			static std::stringstream linebuf;
@@ -1076,26 +1081,44 @@ public:
 			}
 		});
 
-
+		enable_animation(std::chrono::milliseconds(10));
 	}
 
-	void step(size_t cpu_steps = 1) {
+	bool key_press_event(const cppurses::Key::State& keyboard) override {
+		if(keyboard.key == cppurses::Key::s) {
+			step();
+			return true;
+		}
+		return false;
+	}
+
+	bool step(size_t cpu_steps = 1) {
+		bool interrupted = false;
 		for(size_t i = 0; i < cpu_steps; i++) {
+			_cpu.step();
 			uint32_t addr = _cpu.regs().get_pc();
 			BreakpointManager::MaybeBreakpoint bp = _breakpoint_manager.breakpoint_at(addr);
 			bool breakpoint_found = bp.second;
 			auto& breakpoint = bp.first->second;
 			if(breakpoint_found && breakpoint.enabled()) {
 				breakpoint.set_reached(true);
+				interrupted = true;
 				break;
-			} else {
-				_cpu.step();
 			}
 		}
 		update();
+		return interrupted;
 	}
 
 	bool timer_event() override {
+		if(!_process_steps) return false;
+
+		if(step(100)) {
+			_process_steps = false;
+		} else {
+			_process_steps = true;
+
+		}
 		return Widget::timer_event();
 	}
 
