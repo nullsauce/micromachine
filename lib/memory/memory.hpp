@@ -98,6 +98,17 @@ public:
 		return _regions;
 	}
 
+	const memory_mapping* find_const_region(uint32_t address) const {
+		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const memory_mapping& mm){
+			return in_range(address, mm);
+		});
+
+		if(std::end(_regions) != it) {
+			return it.base();
+		}
+		return nullptr;
+	}
+
 private:
 
 	template <typename access_t>
@@ -199,17 +210,6 @@ private:
 
 	static bool in_range(uint32_t address, const memory_mapping& mm) {
 		return address >= mm.start() && address < mm.end();
-	}
-
-	const memory_mapping* find_const_region(uint32_t address) const {
-		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const memory_mapping& mm){
-			return in_range(address, mm);
-		});
-
-		if(std::end(_regions) != it) {
-			return it.base();
-		}
-		return nullptr;
 	}
 
 	memory_mapping* find_region(uint32_t address) {
