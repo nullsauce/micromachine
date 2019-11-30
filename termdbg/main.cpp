@@ -173,8 +173,6 @@ public:
 			create_breakpoint(address);
 		}
 	}
-
-
 };
 
 
@@ -185,21 +183,20 @@ private:
 	BreakpointManager& _breakpoint_manager;
 	uint32_t _page_address;
 	uint32_t _page_end;
-
+	uint32_t _cursor_address;
+	cppurses::Text_display& _text{this->make_child<cppurses::Text_display>()};
 
 public:
-	cppurses::Text_display& disasm_text{this->make_child<cppurses::Text_display>()};
-
 	DisasmView(cpu& cpu, BreakpointManager& breakpoint_manager)
 		: _cpu(cpu)
 		, _breakpoint_manager(breakpoint_manager)
 		, _page_address(0)
-		, _page_end(0) {
+		, _page_end(0)
+		, _cursor_address(0) {
 
-		disasm_text.set_alignment(cppurses::Alignment::Left);
-		disasm_text.clear();
+		_text.set_alignment(cppurses::Alignment::Left);
+		_text.clear();
 		border.enable();
-
 
 	}
 
@@ -216,22 +213,81 @@ public:
 	}
 
 	bool paint_event() override {
+		//_cursor_address = _cpu.regs().get_pc();
 		render();
 		return Widget::paint_event();
 	}
 
+private:
+
+	uint32_t previous_nth_address(size_t n) {
+		uint32_t address = _cursor_address;
+		for(size_t i = 0; i < n; i++) {
+			address = previous_instruction_address(address);
+		}
+		return address;
+	}
+
+	uint32_t previous_cursor_address() {
+		return previous_instruction_address(_cursor_address);
+	}
+
+	uint32_t previous_instruction_address(uint32_t address) {
+		uint32_t look_behind_adress = address - sizeof(instruction_pair);
+		instruction_pair look_behind = _cpu.fetch_instruction(look_behind_adress);
+		if(look_behind.is_wide()) {
+			return look_behind_adress;
+		} else {
+			return look_behind_adress + sizeof(uint16_t);
+		}
+	}
+
+	uint32_t next_cursor_address() {
+		return next_intruction_address(_cursor_address);
+	}
+
+	uint32_t next_intruction_address(uint32_t address) {
+		return address + _cpu.fetch_instruction(address).size();
+	}
+
+	void move_cursor_up() {
+		const uint32_t lines_per_page = _text.height();
+		uint32_t new_address = previous_cursor_address();
+		if(new_address < _page_address) {
+			_page_address = previous_nth_address(lines_per_page);
+		}
+		_cursor_address = new_address;
+		update();
+	}
+
+	void move_cursor_down() {
+		uint32_t new_address = next_cursor_address();
+		if(new_address >= _page_end) {
+			_page_address = new_address;
+		}
+		_cursor_address = new_address;
+		update();
+	}
+
+	bool key_press_event(const cppurses::Key::State& keyboard) override {
+		if(keyboard.key == cppurses::Key::Arrow_down) {
+			move_cursor_down();
+			return true;
+		} else if(keyboard.key == cppurses::Key::Arrow_up) {
+			move_cursor_up();
+			return true;
+		} else {
+			return cppurses::layout::Vertical::key_press_event(keyboard);
+		}
+	}
+
 	void render() {
 		static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> str_converter;
-		disasm_text.clear();
-		uint32_t pc = _cpu.regs().get_pc();
-		uint32_t address = pc;
-		uint32_t lines_per_page = disasm_text.height();
-		if(address > _page_end || address < _page_address) {
-			_page_address = address;
-		} else {
-			address = _page_address;
-		}
-		wchar_t line[128] = {0};
+		_text.clear();
+		const uint32_t lines_per_page = _text.height();
+
+	 	wchar_t line[128] = {0};
+		uint32_t address = _page_address;
 		for(size_t i = 0; i < lines_per_page; i++) {
 			auto instruction = _cpu.fetch_instruction(address);
 			std::string disasm = disasm::disassemble_instruction(instruction, address);
@@ -239,20 +295,20 @@ public:
 			auto maybe_breakpoint = _breakpoint_manager.breakpoint_at(address);
 			bool breakpoint_present = maybe_breakpoint.second;
 			if(breakpoint_present) {
-				disasm_text.insert_brush.add_attributes(cppurses::Attribute::Underline);
+				_text.insert_brush.add_attributes(cppurses::Attribute::Underline);
 				if(maybe_breakpoint.first->second.enabled()) {
 					line[0] = L'•';
 				} else {
 					line[0] = L'◦';
 				}
 			}
-			if(address == pc) {
-				disasm_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
-				disasm_text.append(line);
+			if(address == _cursor_address) {
+				_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
+				_text.append(line);
 			} else {
-				disasm_text.append(line);
+				_text.append(line);
 			}
-			disasm_text.insert_brush.clear_attributes();
+			_text.insert_brush.clear_attributes();
 			address += instruction.size();
 		}
 		_page_end = address;
@@ -566,7 +622,7 @@ public:
 		return _segment_offset + (cursor_y * displayable_clomuns()) + (cursor_x);
 	}
 
-	uint32_t cursor_address() const {
+	uint32_t cursor_offset() const {
 		return segment_offset_at_cursor_pos(_cursor_x, _cursor_y);
 	}
 
@@ -615,7 +671,7 @@ public:
 					break;
 				}
 				std::sprintf(buff.data(), "%02x ", segment_base[byte_offset]);
-				if(cursor_address() == byte_offset) {
+				if(cursor_offset() == byte_offset) {
 					_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
 					_text.append(buff.data());
 					_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
@@ -797,6 +853,69 @@ public:
 
 };
 
+class InfoTable : public Table {
+private:
+	const memory_mapping* _segment = nullptr;
+	uint32_t _segment_offset = 0;
+
+public:
+	using Table::Table;
+
+	void set_segment(const memory_mapping* segment) {
+		if(_segment != segment) {
+			_segment = segment;
+			update();
+		}
+	}
+
+	void set_segment_offset(uint32_t offset) {
+		if(offset != _segment_offset) {
+			_segment_offset = offset;
+			update();
+		}
+	}
+
+private:
+	bool paint_event() override {
+		render();
+		return Widget::paint_event();
+	}
+
+	void render() {
+
+		if(nullptr == _segment) return;
+
+		const uint8_t* ptr = _segment->host_mem() + _segment_offset;
+
+		uint8_t u8le = *(uint8_t*)ptr;
+		uint16_t u16le = *(uint16_t*)ptr;
+		uint32_t u32le = *(uint32_t*)ptr;
+		int8_t i8le = *(int8_t*)ptr;
+		int16_t i16le = *(int16_t*)ptr;
+		int32_t i32le = *(int32_t*)ptr;
+		uint8_t u8be = u8le;
+		uint16_t u16be = __builtin_bswap16(u16le);
+		uint32_t u32be = __builtin_bswap32(u32le);
+		int8_t i8be = i8le;
+		int16_t i16be = __builtin_bswap16(i16le);
+		int32_t i32be =__builtin_bswap16(i32le);
+
+		get_cell_at<RightAlignedText>(1,1).set_contents(std::to_string(u8le));
+		get_cell_at<RightAlignedText>(2,1).set_contents(std::to_string(u16le));
+		get_cell_at<RightAlignedText>(3,1).set_contents(std::to_string(u32le));
+		get_cell_at<RightAlignedText>(1,2).set_contents(std::to_string(i8le));
+		get_cell_at<RightAlignedText>(2,2).set_contents(std::to_string(i16le));
+		get_cell_at<RightAlignedText>(3,2).set_contents(std::to_string(i32le));
+
+		get_cell_at<RightAlignedText>(1,3).set_contents(std::to_string(u8be));
+		get_cell_at<RightAlignedText>(2,3).set_contents(std::to_string(u16be));
+		get_cell_at<RightAlignedText>(3,3).set_contents(std::to_string(u32be));
+		get_cell_at<RightAlignedText>(1,4).set_contents(std::to_string(i8be));
+		get_cell_at<RightAlignedText>(2,4).set_contents(std::to_string(i16be));
+		get_cell_at<RightAlignedText>(3,4).set_contents(std::to_string(i32be));
+	}
+};
+
 
 class MemoryBrowser : public cppurses::layout::Vertical {
 public:
@@ -805,8 +924,7 @@ public:
 	HidableElement<MemorySegmentList> _memory_segments;
 	MemorySegmentInfo& _segment_info;
 	MemoryView& _memview;
-
-	Table& _info_table {make_child<Table>(4)};
+	InfoTable& _info_table {make_child<InfoTable>(4)};
 
 	MemoryBrowser(cpu& cpu)
 	 : _cpu(cpu)
@@ -859,6 +977,7 @@ public:
 			auto* segment = &_cpu.mem().regions()[segment_index];
 			_memview.set_segment(segment);
 			_segment_info.set_segment(segment);
+			_info_table.set_segment(segment);
 		});
 
 		_memory_segments.get().input_cancelled.connect([this](){
@@ -869,6 +988,7 @@ public:
 			auto* segment = &_cpu.mem().regions()[0];
 			_memview.set_segment(segment);
 			_segment_info.set_segment(segment);
+			_info_table.set_segment(segment);
 		}
 	}
 
@@ -880,6 +1000,13 @@ public:
 		_menu.show();
 	}
 
+	void update() override {
+		_info_table.set_segment_offset(_memview.cursor_offset());
+		_memview.update();
+		_info_table.update();
+		return cppurses::layout::Vertical::update();
+	}
+
 	bool process_command(const std::string& command, const std::vector<std::string>& args) {
 		if(command == "goto" && args.size() > 0) {
 			uint32_t address = 0;
@@ -888,6 +1015,7 @@ public:
 				if(segment) {
 					_memview.set_segment(segment);
 					_segment_info.set_segment(segment);
+					_info_table.set_segment(segment);
 					_memview.navigate_to_address(address);
 					return true;
 				} else {
@@ -905,72 +1033,39 @@ public:
 
 	void render() {
 		char buff[32];
-		snprintf(buff, 32, "%08x", _memview.cursor_address());
+		snprintf(buff, 32, "%08x", _memview.cursor_offset());
 		_info_table.get_cell_at<RightAlignedText>(0,0).set_contents(buff);
-		_info_table.get_cell_at<RightAlignedText>(1,1).set_contents(std::to_string(
-			(uint8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
-		));
-		_info_table.get_cell_at<RightAlignedText>(2,1).set_contents(std::to_string(
-			(uint16_t)_cpu.mem().read16_unchecked(_memview.cursor_address())
-		));
-		_info_table.get_cell_at<RightAlignedText>(3,1).set_contents(std::to_string(
-			(uint32_t)_cpu.mem().read32_unchecked(_memview.cursor_address())
-		));
-
-		_info_table.get_cell_at<RightAlignedText>(1,2).set_contents(std::to_string(
-			(int8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
-		));
-		_info_table.get_cell_at<RightAlignedText>(2,2).set_contents(std::to_string(
-			(int16_t)_cpu.mem().read16_unchecked(_memview.cursor_address())
-		));
-		_info_table.get_cell_at<RightAlignedText>(3,2).set_contents(std::to_string(
-			(int32_t)_cpu.mem().read32_unchecked(_memview.cursor_address())
-		));
-
-		_info_table.get_cell_at<RightAlignedText>(1,3).set_contents(std::to_string(
-			(uint8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
-		));
-		_info_table.get_cell_at<RightAlignedText>(2,3).set_contents(std::to_string(
-			(uint16_t)__builtin_bswap16(_cpu.mem().read16_unchecked(_memview.cursor_address()))
-		));
-		_info_table.get_cell_at<RightAlignedText>(3,3).set_contents(std::to_string(
-			(uint32_t)__builtin_bswap32(_cpu.mem().read32_unchecked(_memview.cursor_address()))
-		));
-
-		_info_table.get_cell_at<RightAlignedText>(1,4).set_contents(std::to_string(
-			(int8_t)_cpu.mem().read8_unchecked(_memview.cursor_address())
-		));
-		_info_table.get_cell_at<RightAlignedText>(2,4).set_contents(std::to_string(
-			(int16_t)__builtin_bswap16(_cpu.mem().read16_unchecked(_memview.cursor_address()))
-		));
-		_info_table.get_cell_at<RightAlignedText>(3,4).set_contents(std::to_string(
-			(int32_t)__builtin_bswap32(_cpu.mem().read32_unchecked(_memview.cursor_address()))
-		));
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
 		auto key = keyboard.key;
 		if(key == cppurses::Key::Code::o) {
 			_menu.show();
+			update();
 			return true;
 		} if(key == cppurses::Key::Code::m) {
 			_memory_segments.show();
+			update();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_up) {
 			//_view.scroll_line_down();
 			_memview.move_cursor_up();
+			update();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_down) {
 			//_view.scroll_line_up();
 			_memview.move_cursor_down();
+			update();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_left) {
 			//_view.scroll_line_up();
 			_memview.move_cursor_left();
+			update();
 			return true;
 		} else if(key == cppurses::Key::Code::Arrow_right) {
 			//_view.scroll_line_up();
 			_memview.move_cursor_right();
+			update();
 			return true;
 		} else if(key == 337) {
 			//_view.scroll_page_down();
@@ -979,7 +1074,6 @@ public:
 			//_view.scroll_page_up();
 			return true;
 		}
-		update();
 		return _memview.key_press_event(keyboard);
 	}
 
@@ -1052,7 +1146,7 @@ public:
 		, registers_view(_central_panel.make_child<RegistersView>(_cpu))
 		, _exec_control_view(_central_panel.make_child<ExecControlView>())
 		, _memory_browser(this->make_child<MemoryBrowser>(cpu))
-		, _process_steps(true)
+		, _process_steps(false)
 	{
 		_breakpoint_manager.create_destroy_breakpoint_at(0xb003);
 		_breakpoint_manager.create_destroy_breakpoint_at(0x3b0);
@@ -1065,6 +1159,7 @@ public:
 
 		focus_policy = cppurses::Focus_policy::Tab;
 
+		_disasm_view.focus_policy = cppurses::Focus_policy::Tab;
 		_central_panel.focus_policy = cppurses::Focus_policy::Tab;
 		registers_view.focus_policy = cppurses::Focus_policy::Tab;
 		_memory_browser.focus_policy = cppurses::Focus_policy::Tab;
@@ -1085,11 +1180,29 @@ public:
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
-		if(keyboard.key == cppurses::Key::s) {
+		if(paused() && keyboard.key == cppurses::Key::s) {
 			step();
+			return true;
+		} else if(paused() && keyboard.key == cppurses::Key::r) {
+			resume();
+			return true;
+		} else if(!paused() && keyboard.key == cppurses::Key::p) {
+			pause();
 			return true;
 		}
 		return false;
+	}
+
+	void resume() {
+		_process_steps = true;
+	}
+
+	void pause() {
+		_process_steps = false;
+	}
+
+	bool paused() const {
+		return !_process_steps;
 	}
 
 	bool step(size_t cpu_steps = 1) {
@@ -1111,13 +1224,11 @@ public:
 	}
 
 	bool timer_event() override {
-		if(!_process_steps) return false;
-
+		if(paused()) return false;
 		if(step(100)) {
-			_process_steps = false;
+			pause();
 		} else {
-			_process_steps = true;
-
+			resume();
 		}
 		return Widget::timer_event();
 	}
