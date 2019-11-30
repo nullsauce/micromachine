@@ -7,7 +7,8 @@
 static
 bool is_wide_thumb_encoding(const uint16_t& instruction) {
 	return 0b111 == bits<13,3>::of(instruction) &&
-	       0b00 !=  bits<11,2>::of(instruction);
+	       0b00 !=  bits<11,2>::of(instruction) &&
+	       0b1 != bits<11, 1>::of(instruction);
 }
 
 struct instruction_pair {
