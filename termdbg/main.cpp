@@ -182,7 +182,6 @@ private:
 	cpu& _cpu;
 	BreakpointManager& _breakpoint_manager;
 	uint32_t _page_address;
-	uint32_t _page_end;
 	uint32_t _cursor_address;
 	cppurses::Text_display& _text{this->make_child<cppurses::Text_display>()};
 
@@ -191,7 +190,6 @@ public:
 		: _cpu(cpu)
 		, _breakpoint_manager(breakpoint_manager)
 		, _page_address(0)
-		, _page_end(0)
 		, _cursor_address(0) {
 
 		_text.set_alignment(cppurses::Alignment::Left);
@@ -213,17 +211,39 @@ public:
 	}
 
 	bool paint_event() override {
-		//_cursor_address = _cpu.regs().get_pc();
 		render();
 		return Widget::paint_event();
 	}
 
-private:
+	void set_cursor_address(uint32_t address) {
+		if(address != _cursor_address) {
+			size_t bytes_per_page = lines_per_page();
 
-	uint32_t previous_nth_address(size_t n) {
-		uint32_t address = _cursor_address;
+			uint32_t prev_address = address;
+			for(int i = 0; i < 100; i++) {
+				prev_address = previous_instruction_address(prev_address);
+				if(prev_address % bytes_per_page == 0) {
+					_page_address = prev_address;
+					_cursor_address = address;
+					return;
+				}
+			}
+		}
+	}
+
+
+
+private:
+	uint32_t previous_nth_address(uint32_t address, size_t n) {
 		for(size_t i = 0; i < n; i++) {
 			address = previous_instruction_address(address);
+		}
+		return address;
+	}
+
+	uint32_t next_nth_address(uint32_t address, size_t n) {
+		for(size_t i = 0; i < n; i++) {
+			address = next_intruction_address(address);
 		}
 		return address;
 	}
@@ -250,11 +270,18 @@ private:
 		return address + _cpu.fetch_instruction(address).size();
 	}
 
+	uint32_t lines_per_page() const {
+		return std::max((uint32_t)1, (uint32_t)_text.height());
+	}
+
+	uint32_t last_page_address() {
+		return next_nth_address(_page_address, (uint32_t)std::max((int)lines_per_page()-1, 0));
+	}
+
 	void move_cursor_up() {
-		const uint32_t lines_per_page = _text.height();
 		uint32_t new_address = previous_cursor_address();
-		if(new_address < _page_address) {
-			_page_address = previous_nth_address(lines_per_page);
+		if(_cursor_address == _page_address) {
+			_page_address = previous_nth_address(_cursor_address, lines_per_page());
 		}
 		_cursor_address = new_address;
 		update();
@@ -262,7 +289,7 @@ private:
 
 	void move_cursor_down() {
 		uint32_t new_address = next_cursor_address();
-		if(new_address >= _page_end) {
+		if(_cursor_address == last_page_address()) {
 			_page_address = new_address;
 		}
 		_cursor_address = new_address;
@@ -284,11 +311,10 @@ private:
 	void render() {
 		static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> str_converter;
 		_text.clear();
-		const uint32_t lines_per_page = _text.height();
 
 	 	wchar_t line[128] = {0};
 		uint32_t address = _page_address;
-		for(size_t i = 0; i < lines_per_page; i++) {
+		for(size_t i = 0; i < lines_per_page(); i++) {
 			auto instruction = _cpu.fetch_instruction(address);
 			std::string disasm = disasm::disassemble_instruction(instruction, address);
 			swprintf(line, sizeof(line), L" %08x│ %s\n", address, disasm.c_str());
@@ -311,7 +337,6 @@ private:
 			_text.insert_brush.clear_attributes();
 			address += instruction.size();
 		}
-		_page_end = address;
 	}
 
 };
@@ -1234,9 +1259,11 @@ public:
 	}
 
 	void update() override  {
+		_disasm_view.set_cursor_address(_cpu.regs().get_pc());
 		_disasm_view.update();
 		registers_view.update();
 		_memory_browser.update();
+
 		Widget::update();
 	}
 };
