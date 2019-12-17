@@ -5,7 +5,11 @@
 #include "cpu.hpp"
 #include "programmer.hpp"
 
+#include "gdb-server.hpp"
+
 int main(int argc, const char** argv) {
+
+
 
 	if(argc < 2) {
 		fprintf(stderr, "usage: %s <elf-executable>\n", argv[0]);
@@ -13,6 +17,7 @@ int main(int argc, const char** argv) {
 	}
 
 	cpu c;
+
 	programmer::program::ptr program = programmer::load_elf(argv[1], c.mem());
 
 	if(program->is_null()) {
@@ -27,6 +32,7 @@ int main(int argc, const char** argv) {
 	});
 
 	c.reset(program->entry_point());
+	gdb_server g(c);
 	auto start = std::chrono::steady_clock::now();
 	decltype(start) end;
 	for(;;) {
