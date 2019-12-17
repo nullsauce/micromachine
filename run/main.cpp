@@ -32,7 +32,7 @@ int main(int argc, const char** argv) {
 	});
 
 	c.reset(program->entry_point());
-	gdb_server g(c);
+	gdb_server g(c, program);
 	auto start = std::chrono::steady_clock::now();
 	decltype(start) end;
 	for(;;) {
