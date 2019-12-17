@@ -113,15 +113,32 @@ public:
 			matchbuff += std::string(recvbuf, received);
 			fprintf(stderr, "recvbuf: %s\n", std::string(recvbuf, received).c_str());
 			std::smatch m;
-			std::regex e ("\\$([^#]*)#([a-f0-9]{2})");
+			std::regex e ("(\\+)|(\\x03)|(\\$([^#]*)#([a-f0-9]{2}))");
 			while (std::regex_search(matchbuff, m, e)) {
-				std::string data = m[1];
-				std::string checksum = m[2];
-				uint64_t computed_checksum = compute_checksum(data);
+				std::string whole_match = m[0];
+
+
+				// handle special cases for user interruption via CTRL+C (0x03)
+				// and client ack (+)
+				if(whole_match.compare("+") == 0) {
+					// ack
+					fprintf(stderr, "parsed: ack\n");
+				} else if(whole_match.compare("\x03") == 0) {
+					// CTRL+C
+					fprintf(stderr, "User requested exit\n");
+					client.send_packet("O48656c6c6f2c20776f726c64210a");
+				} else {
+					std::string data = m[4];
+					std::string checksum = m[5];
+					//uint64_t computed_checksum = compute_checksum(data);
+					fprintf(stderr, "parsed: %s\n", data.c_str());
+					client.send_ack();
+					handle_packet(data, client);
+				}
+
+				// 'consume' the matched expression by keeping
+				// only whats after the match.
 				matchbuff = m.suffix().str();
-				fprintf(stderr, "parsed: %s\n", data.c_str());
-				client.send_ack();
-				handle_packet(data, client);
 			}
 		}
 		fprintf(stderr, "connection lost\n");
@@ -132,11 +149,19 @@ public:
 			client.send_packet("PacketSize=1024");
 		} else if(packet.rfind("vMustReplyEmpty", 0) == 0) {
 			client.send_packet("");
-		} else if(packet.rfind("Hg", 0) == 0) {
+		} else if(packet[0] == 'H') {
+			if(packet[1] == 'c') {
+				_cpu.step();
+			}
 			client.send_packet("OK");
-
+		} else if(packet[0] == 'c') {
+			client.send_packet("OK");
 		} else if(packet.compare("qTStatus") == 0) {
 			client.send_packet("");
+		} else if(packet.compare("vCont?") == 0) {
+			client.send_packet("vCont;c;C;s;S;t");
+		} else if(packet.rfind("vCont", 0) == 0) {
+			client.send_packet("OK");
 		} else if(packet.compare("?") == 0) {
 			client.send_packet("S05");
 		} else if(packet.compare("qfThreadInfo") == 0) {
