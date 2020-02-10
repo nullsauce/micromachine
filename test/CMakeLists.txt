@@ -128,4 +128,5 @@ target_include_directories(all_tests PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include
 target_include_directories(all_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/framework)
 target_link_libraries(all_tests libgtest_main libgtest ${CMAKE_THREAD_LIBS_INIT} micromachine)
 add_test(all_tests all_tests)
+set_tests_properties(all_tests PROPERTIES LABELS cpuTests)
 
