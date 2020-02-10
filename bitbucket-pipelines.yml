@@ -25,7 +25,7 @@ pipelines:
           - cd build
           - cmake ..
           - make -j $(nproc) all_tests
-          - ctest -V
+          - ctest -V -L cpuTests
           - make -j $(nproc) sdk
 definitions:
   caches:
