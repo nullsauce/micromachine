@@ -17,20 +17,18 @@
 /* BKPT
    Encoding: 1011 1110 Imm:8 */
 /* NOTE: Simulator behaviour is good.  On real hardware, leads to multiple debug events: breakpoint & single step. */
-TEST_SIM_ONLY(bkpt, SmallestImmediate
-)
+TEST_SIM_ONLY(bkpt, SmallestImmediate)
 {
-code_gen().emit_ins16("10111110iiiiiiii", 0);
-setExpectedRegisterValue(PC, INITIAL_PC);
-setExpectedStepReturn(PINKYSIM_STEP_BKPT);
-pinkySimStep(&m_context);
+	code_gen().emit_ins16("10111110iiiiiiii", 0);
+	setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedStepReturn(PINKYSIM_STEP_BKPT);
+	pinkySimStep(&m_context);
 }
 
-TEST_SIM_ONLY(bkpt, LargestImmediate
-)
+TEST_SIM_ONLY(bkpt, LargestImmediate)
 {
-code_gen().emit_ins16("10111110iiiiiiii", 255);
-setExpectedRegisterValue(PC, INITIAL_PC);
-setExpectedStepReturn(PINKYSIM_STEP_BKPT);
-pinkySimStep(&m_context);
+	code_gen().emit_ins16("10111110iiiiiiii", 255);
+	setExpectedRegisterValue(PC, INITIAL_PC);
+	setExpectedStepReturn(PINKYSIM_STEP_BKPT);
+	pinkySimStep(&m_context);
 }

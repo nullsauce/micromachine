@@ -17,18 +17,18 @@
 /* DMB
    Encoding: 11110 0 111 01 1 (1)(1)(1)(1)
              10 (0) 0 (1)(1)(1)(1) 0101 option:4 */
-TEST_F(pinkySimBase, dmb_OptionSetTo15)
+TEST_F(CpuTestHarness, dmb_OptionSetTo15)
 {
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 15);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
-TEST_F(pinkySimBase, dmb_OptionSetTo0)
+TEST_F(CpuTestHarness, dmb_OptionSetTo0)
 {
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
-	pinkySimStep(&m_context);
+	step();
 }
 /*
 TEST_SIM_ONLY(dmb, UnpredictableBecauseOfBit1_0)
