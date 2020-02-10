@@ -30,7 +30,7 @@ INTERRUPT_DEFAULT_IMPL
 void _isr_hardfault(void) {
 	// peek the return addres from the stack into r0
 	register uint32_t stack asm("sp");
-	printf("HARDFAULT %08x\n", stack);
+	printf("ISR HARDFAULT %08x\n", stack);
 	breakpoint(0);
 }
 
