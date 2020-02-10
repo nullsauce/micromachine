@@ -26,8 +26,9 @@ void printf_putc(void* ptr, char c) {
 void _isr_systick() {
 	static uint32_t counter = 0;
 	printf("Systick interrupt %d\n", counter++);
-	if(counter == 10)
+	if(counter == 10) {
 		breakpoint(0xff);
+	}
 };
 
 void main() {
