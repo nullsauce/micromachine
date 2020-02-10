@@ -17,18 +17,18 @@
 /* ISB
    Encoding: 11110 0 111 01 1 (1)(1)(1)(1)
              10 (0) 0 (1)(1)(1)(1) 0110 option:4 */
-TEST_F(pinkySimBase, isb_OptionSetTo15)
+TEST_F(CpuTestHarness, isb_OptionSetTo15)
 {
 	code_gen().emit_ins32("1111001110111111", "100011110110oooo", 15);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
-	pinkySimStep(&m_context);
+	step();
 }
 
-TEST_F(pinkySimBase, isb_OptionSetTo0)
+TEST_F(CpuTestHarness, isb_OptionSetTo0)
 {
 	code_gen().emit_ins32("1111001110111111", "100011110110oooo", 0);
 	setExpectedRegisterValue(PC, INITIAL_PC + 4);
-	pinkySimStep(&m_context);
+	step();
 }
 /*
 TEST_SIM_ONLY(isb, UnpredictableBecauseOfBit1_0)

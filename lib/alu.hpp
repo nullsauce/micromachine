@@ -6,6 +6,8 @@
 #define MICROMACHINE_ALU_HPP_HPP
 
 #include "types.hpp"
+#include "binops.hpp"
+#include "bits.hpp"
 
 namespace alu {
 
