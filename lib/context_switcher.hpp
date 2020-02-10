@@ -120,9 +120,7 @@ public:
 	void exception_entry(exception_state& exception_state, uint32_t instruction_address, instruction_pair
 	current_instruction, uint32_t next_instruction_address) {
 
-		//TODO: I think return_address should be based on real next address.
-		// Otherwise, the return address might be wrong if a branch instruction is pre-empted
-		uint32_t return_address = next_instruction_address;
+		uint32_t return_address;
 
 		// 1. Compute the return address
 		switch(exception_state.number()) {
@@ -130,9 +128,8 @@ public:
 			case exception::Type::HARDFAULT: return_address = instruction_address; break;
 			case exception::Type::SVCALL: return_address = next_instruction_address; break;
 			case exception::Type::PENDSV: return_address = next_instruction_address; break;
-			default: break;
+			default: return_address = next_instruction_address;
 		}
-
 
 		// 2. Save context
 		push_stack(return_address);
