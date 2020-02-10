@@ -122,7 +122,7 @@ public:
 
 		//TODO: I think return_address should be based on real next address.
 		// Otherwise, the return address might be wrong if a branch instruction is pre-empted
-		uint32_t return_address = instruction_address + current_instruction.size();
+		uint32_t return_address = next_instruction_address;
 
 		// 1. Compute the return address
 		switch(exception_state.number()) {

@@ -33,8 +33,9 @@ void _isr_systick() {
 void main() {
 	init_printf(NULL, printf_putc);
 	NVIC_ST_CTRL_R = 0;			// disable SysTick during setup
-	NVIC_ST_RELOAD_R = 1000000;	// reload value
-	NVIC_ST_CURRENT_R = 0;		// any write to current clears it enable SysTick with core clock
+	NVIC_ST_RELOAD_R = 100000;	// reload value
+	NVIC_ST_CURRENT_R = 0;		// any write to current clears it
+	// enable SysTick with core clock
 	NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE + NVIC_ST_CTRL_CLK_SRC;
 	while(1) {}
 }
