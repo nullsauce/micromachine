@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 
 include(ExternalProject)
-include(env.cmake)
 
 project(micromachine_emu)
 enable_testing()
@@ -16,7 +15,6 @@ include(cotire)
 
 add_subdirectory(lib)
 add_subdirectory(run)
-#add_subdirectory(debugger)
 add_subdirectory(termdbg)
 add_subdirectory(test)
 add_subdirectory(benchmark)
