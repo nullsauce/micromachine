@@ -104,9 +104,9 @@ declare_pinksim_test(instructions/mrsInstrTest.cpp)
 declare_pinksim_test(instructions/msrInstrTest.cpp)
 
 # these tests have yet to be integrated
-#declare_pinksim_test(instructions/isbInstrTest.cpp)
-#declare_pinksim_test(instructions/dmbInstrTest.cpp)
-#declare_pinksim_test(instructions/dsbInstrTest.cpp)
+declare_pinksim_test(instructions/isbInstrTest.cpp)
+declare_pinksim_test(instructions/dmbInstrTest.cpp)
+declare_pinksim_test(instructions/dsbInstrTest.cpp)
 #declare_pinksim_test(instructions/bkptInstrTest.cpp)
 declare_pinksim_test(instructions/cpsInstrTest.cpp)
 #declare_pinksim_test(instructions/sevInstrTest.cpp)

@@ -470,7 +470,7 @@ TEST(AluTests, LSRCarry8)
 
 TEST(AluTests, ASRCarry32)
 {
-	word value = 0b10000000000000000000000010001001;
+	uint32_t value = 0b10000000000000000000000010001001;
 	bool carry = alu::asr(value, 3);
 	EXPECT_EQ(0b11110000000000000000000000010001, value);
 	EXPECT_EQ(false, carry);
@@ -478,7 +478,7 @@ TEST(AluTests, ASRCarry32)
 
 TEST(AluTests, RORCarry32)
 {
-	word value = 0b10110010100111010100110010010101;
+	uint32_t value = 0b10110010100111010100110010010101;
 	bool carry = alu::ror(value, 3);
 	EXPECT_EQ(0b10110110010100111010100110010010, value);
 	EXPECT_EQ(true, carry);
