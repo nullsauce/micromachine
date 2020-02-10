@@ -6,6 +6,7 @@ function(add_test_command)
 	add_test(NAME ${test_name}
 		COMMAND ${CMAKE_SOURCE_DIR}/test/test_caller.sh ${expected_stdout_file} ${MICROMACHINE_VM} ${test_executable}
 	)
+	set_tests_properties(${test_name} PROPERTIES LABELS sdkTests)
 endfunction()
 
 add_test_command(
