@@ -114,50 +114,50 @@ TEST_F(CpuTestHarness, addRegister_T2OverflowFromLowestNegativeValue)
 
 TEST_F(CpuTestHarness, addRegister_T2Add4ToSP)
 {
-	code_gen().emit_ins16("01000100dmmmmddd", SP, R1);
-	setRegisterValue(SP, INITIAL_SP - 4);
+	code_gen().emit_ins16("01000100dmmmmddd", registers::SP, R1);
+	setRegisterValue(registers::SP, INITIAL_SP - 4);
 	setRegisterValue(R1, 4);
-	setExpectedRegisterValue(SP, INITIAL_SP - 4 + 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4 + 4);
 	step();
 }
 
 TEST_F(CpuTestHarness, addRegister_T2Subtract4FromSP)
 {
-	code_gen().emit_ins16("01000100dmmmmddd", SP, R1);
+	code_gen().emit_ins16("01000100dmmmmddd", registers::SP, R1);
 	setRegisterValue(R1, -4);
-	setExpectedRegisterValue(SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4);
 	step();
 }
 
 TEST_F(CpuTestHarness, addRegister_T2Add1ToLR)
 {
-	code_gen().emit_ins16("01000100dmmmmddd", LR, R1);
+	code_gen().emit_ins16("01000100dmmmmddd", registers::LR, R1);
 	setRegisterValue(R1, 1);
-	setExpectedRegisterValue(LR, INITIAL_LR + 1);
+	setExpectedRegisterValue(registers::LR, INITIAL_LR + 1);
 	step();
 }
 
 TEST_F(CpuTestHarness, addRegister_T2Add1ToPCWhichWillBeOddAndRoundedDown)
 {
-	code_gen().emit_ins16("01000100dmmmmddd", PC, R1);
+	code_gen().emit_ins16("01000100dmmmmddd", registers::PC, R1);
 	setRegisterValue(R1, 1);
-	setExpectedRegisterValue(PC, (INITIAL_PC + 4 + 1) & 0xFFFFFFFE);
+	setExpectedRegisterValue(registers::PC, (INITIAL_PC + 4 + 1) & 0xFFFFFFFE);
 	step();
 }
 
 TEST_F(CpuTestHarness, addRegister_T2Add2ToPC)
 {
-	code_gen().emit_ins16("01000100dmmmmddd", PC, R1);
+	code_gen().emit_ins16("01000100dmmmmddd", registers::PC, R1);
 	setRegisterValue(R1, 2);
-	setExpectedRegisterValue(PC, (INITIAL_PC + 4 + 2) & 0xFFFFFFFE);
+	setExpectedRegisterValue(registers::PC, (INITIAL_PC + 4 + 2) & 0xFFFFFFFE);
 	step();
 }
 /*
 TEST_SIM_ONLY(addRegister, T2ItIsUnpredictableToHaveBothArgsBePC)
 {
-    code_gen().emit_ins16("01000100dmmmmddd", PC, PC);
+    code_gen().emit_ins16("01000100dmmmmddd", registers::PC, registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 */

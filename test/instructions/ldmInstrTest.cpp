@@ -82,7 +82,7 @@ TEST_SIM_ONLY(ldm, UnpredictableToPopNoRegisters)
 {
     code_gen().emit_ins16("11001nnnrrrrrrrr", 0, 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 */

@@ -111,9 +111,9 @@ void CpuTestHarness::initContext()
 	}
 
 	/* These defaults are values that would work on the LPC1768. */
-	setRegisterValue(SP, INITIAL_SP);
-	setRegisterValue(LR, INITIAL_LR);
-	setRegisterValue(PC, INITIAL_PC);
+	setRegisterValue(registers::SP, INITIAL_SP);
+	setRegisterValue(registers::LR, INITIAL_LR);
+	setRegisterValue(registers::PC, INITIAL_PC);
 }
 
 void CpuTestHarness::TearDown()
@@ -216,34 +216,35 @@ void CpuTestHarness::setExpectedIPSR(uint32_t expectedValue)
 	m_expectedIPSR = expectedValue;
 }
 
-void CpuTestHarness::setExpectedRegisterValue(int index, uint32_t expectedValue)
+void CpuTestHarness::setExpectedRegisterValue(reg_idx index, uint32_t expectedValue)
 {
-	assert (index >= 0 && index <= PC);
+	assert(index <= registers::PC);
 
-	if (index == PC)
+	if (index == registers::PC)
 		m_expectedPC = expectedValue;
-	else if (index == LR)
+	else if (index == registers::LR)
 		m_expectedLR = expectedValue;
-	else if (index == SP)
+	else if (index == registers::SP)
 		m_expectedSPmain = expectedValue;
 	else
 		m_expectedRegisterValues[index] = expectedValue;
 }
 
-void CpuTestHarness::setRegisterValue(int index, uint32_t value)
+void CpuTestHarness::setRegisterValue(reg_idx index, uint32_t value)
 {
-	assert (index >= 0 && index <= PC);
+	assert (index <= registers::PC);
 
 	setExpectedRegisterValue(index, value);
 	_cpu.regs().set(index, value);
 
-	if (index == PC) {
+	if (index == registers::PC) {
 		setExpectedRegisterValue(index, value + 2);
 	}
 }
 
 void CpuTestHarness::pinkySimStep()
 {
+	// TODO: why do we have a PRIMASK variable here ?
 	_cpu.regs().primask_register() = PRIMASK;
 	_cpu.step();
 	validateXPSR();

@@ -36,7 +36,7 @@ TEST_F(CpuTestHarness, adr_pcWillNeedToBeWordAlignedBeforeAdd)
 	code_gen().emit_ins16("1101111000000000");
 	// Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
 	code_gen().emit_ins16("10100dddiiiiiiii", R3, 0);
-	setRegisterValue(PC, INITIAL_PC + 2);
+	setRegisterValue(registers::PC, INITIAL_PC + 2);
 	setExpectedRegisterValue(R3, INITIAL_PC + 4);
 	step();
 }

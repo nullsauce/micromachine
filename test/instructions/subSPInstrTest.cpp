@@ -14,25 +14,25 @@
 #include "CpuTestHarness.hpp"
 
 
-/* SUB SP Minus Immediate
+/* SUB registers::SP Minus Immediate
    Encoding: 1011 0000 1 Imm:7 */
 TEST_F(CpuTestHarness, subSP_SmallestImmediate)
 {
 	code_gen().emit_ins16("101100001iiiiiii", 0);
-	setExpectedRegisterValue(SP, INITIAL_SP - 0);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 0);
 	step();
 }
 
 TEST_F(CpuTestHarness, subSP_LargestImmediate)
 {
 	code_gen().emit_ins16("101100001iiiiiii", 127);
-	setExpectedRegisterValue(SP, INITIAL_SP - 127 * 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 127 * 4);
 	step();
 }
 
 TEST_F(CpuTestHarness, subSP_UseIntermediateValues)
 {
 	code_gen().emit_ins16("101100001iiiiiii", 64);
-	setExpectedRegisterValue(SP, INITIAL_SP - 64 * 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 64 * 4);
 	step();
 }

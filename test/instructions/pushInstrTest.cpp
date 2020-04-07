@@ -19,7 +19,7 @@
 TEST_F(CpuTestHarness, push_JustPushLR)
 {
 	code_gen().emit_ins16("1011010Mrrrrrrrr", 1, 0);
-	setExpectedRegisterValue(SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4);
 	memory_write_32(INITIAL_SP - 4, 0x0);
 	step();
 	EXPECT_EQ(INITIAL_LR, memory_read_32(INITIAL_SP - 4));
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, push_JustPushLR)
 TEST_F(CpuTestHarness, push_JustPushR0)
 {
 	code_gen().emit_ins16("1011010Mrrrrrrrr", 0, 1);
-	setExpectedRegisterValue(SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4);
 	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
 	step();
 	EXPECT_EQ(0x0, memory_read_32(INITIAL_SP - 4));
@@ -37,7 +37,7 @@ TEST_F(CpuTestHarness, push_JustPushR0)
 TEST_F(CpuTestHarness, push_JustPushR7)
 {
 	code_gen().emit_ins16("1011010Mrrrrrrrr", 0, 1 << 7);
-	setExpectedRegisterValue(SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4);
 	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
 	step();
 	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_SP - 4));
@@ -46,7 +46,7 @@ TEST_F(CpuTestHarness, push_JustPushR7)
 TEST_F(CpuTestHarness, push_PushAll)
 {
 	code_gen().emit_ins16("1011010Mrrrrrrrr", 1, 0xFF);
-	setExpectedRegisterValue(SP, INITIAL_SP - 4 * 9);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4 * 9);
 	for (int i = 1; i <= 9; i++)
 		memory_write_32(INITIAL_SP - 4 * i, 0xFFFFFFFF);
 	step();
@@ -58,7 +58,7 @@ TEST_F(CpuTestHarness, push_PushAll)
 TEST_SIM_ONLY(push, HardFaultFromInvalidMemoryWrite)
 {
     code_gen().emit_ins16("1011010Mrrrrrrrr", 0, 1);
-    setRegisterValue(SP, 0xFFFFFFFC);
+    setRegisterValue(registers::SP, 0xFFFFFFFC);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     pinkySimStep(&m_context);
 }
