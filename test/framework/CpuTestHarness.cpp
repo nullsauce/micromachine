@@ -11,10 +11,12 @@ and/or distributed without the express permission of Flavio Roth.
 
 #define RETURN_TO_THREAD_FROM_SP_MAIN 0xFFFFFFF9
 
-static uint32_t interrupt_handler_address(uint32_t exception_number)
+uint32_t CpuTestHarness::interrupt_handler_address(uint32_t exception_number)
 {
-	uint32_t offset = exception_number * sizeof(uint32_t);
-	return (100U + offset);
+	uint32_t vector_table_offset = exception_number * sizeof(uint32_t);
+	// clears the thumb bit from the address
+	uint32_t address = _cpu.mem().read32(vector_table_offset) & ~1;
+	return address;
 }
 
 void CpuTestHarness::memory_write_32(uint32_t address, uint32_t value)
@@ -74,7 +76,7 @@ void CpuTestHarness::initContext()
 	// fake vector table
 	for (uint32_t i = 1; i < 32; i++) {
 		uint32_t vt_offset = i * sizeof(uint32_t);
-		_cpu.mem().write32(vt_offset, interrupt_handler_address(i) | 1);
+		_cpu.mem().write32(vt_offset, (0x1000 + (vt_offset * 32)) | 1);
 	}
 	_cpu.mem().write32(INITIAL_PC, 0);
 
@@ -127,13 +129,15 @@ void CpuTestHarness::setExpectedStackGrowthSinceBeginning(int growth)
 void CpuTestHarness::setExpectedExceptionTaken(int exceptionNumber)
 {
 	setExpectedXPSRflags("T");
-	setExpectedStepReturn(exceptionNumber);
 	setExpectedIPSR(exceptionNumber);
-	setExpectedStackGrowthSinceBeginning(
-		32); // taking an exception wil save context on the stack (32 words)
-	setExpectedRegisterValue(LR,
-							 RETURN_TO_THREAD_FROM_SP_MAIN); // return to thread using main stack
-	setExpectedRegisterValue(PC, interrupt_handler_address(exceptionNumber));
+	setExpectedStackGrowthSinceBeginning(32); // taking an exception wil save context on the stack (32 words)
+	setExpectedRegisterValue(registers::LR, RETURN_TO_THREAD_FROM_SP_MAIN); // return to thread using main stack
+	uint32_t handler_address = interrupt_handler_address(exceptionNumber);
+	setExpectedRegisterValue(registers::PC, handler_address);
+}
+
+void CpuTestHarness::setExpectNoExceptionTaken() {
+	setExpectedIPSR(0);
 }
 
 void CpuTestHarness::setExpectedStepReturn(int expectedStepReturn)
