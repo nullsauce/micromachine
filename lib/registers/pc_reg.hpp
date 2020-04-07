@@ -28,8 +28,7 @@ public:
 	}
 
 	void branch_interworking(uint32_t address) {
-		if(_exec_mode_reg.is_handler_mode() &&
-			0b1111 == bits<28,4>::of(address)) {
+		if(_exec_mode_reg.is_handler_mode() && 0b1111 == bits<28,4>::of(address)) {
 			uint32_t return_address = bits<0,28>::of(address);
 			_exception_return_handler.exception_return(return_address);
 		} else {
