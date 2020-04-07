@@ -22,7 +22,7 @@ TEST_F(CpuTestHarness,
 	code_gen().emit_ins16("010001110mmmm000", R0);
 	setExpectedXPSRflags("t");
 	setRegisterValue(R0, INITIAL_PC + 16);
-	setExpectedRegisterValue(PC, INITIAL_PC + 16);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
 	step();
 
 	const uint16_t NOP = 0xBF00;
@@ -33,17 +33,17 @@ TEST_F(CpuTestHarness,
 
 TEST_F(CpuTestHarness, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb)
 {
-	code_gen().emit_ins16("010001110mmmm000", LR);
-	setRegisterValue(LR, (INITIAL_PC + 16) | 1);
-	setExpectedRegisterValue(PC, INITIAL_PC + 16);
+	code_gen().emit_ins16("010001110mmmm000", registers::LR);
+	setRegisterValue(registers::LR, (INITIAL_PC + 16) | 1);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
 	step();
 }
 /*
 TEST_SIM_ONLY(bx, UnpredictableToUseR15)
 {
-    code_gen().emit_ins16("010001110mmmm000", PC);
+    code_gen().emit_ins16("010001110mmmm000", registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -51,7 +51,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit0ToBeHigh)
 {
     code_gen().emit_ins16("010001110mmmm001", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -59,7 +59,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit1ToBeHigh)
 {
     code_gen().emit_ins16("010001110mmmm010", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -67,7 +67,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit2ToBeHigh)
 {
     code_gen().emit_ins16("010001110mmmm100", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 */

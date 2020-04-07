@@ -19,9 +19,9 @@
 TEST_F(CpuTestHarness, pop_JustPopPC)
 {
 	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0);
-	setRegisterValue(SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(SP, INITIAL_SP);
-	setExpectedRegisterValue(PC, INITIAL_PC + 16);
+	setRegisterValue(registers::SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
 	memory_write_32(INITIAL_SP - 4, (INITIAL_PC + 16) | 1);
 	step();
 }
@@ -29,8 +29,8 @@ TEST_F(CpuTestHarness, pop_JustPopPC)
 TEST_F(CpuTestHarness, pop_JustPopR0)
 {
 	code_gen().emit_ins16("1011110Prrrrrrrr", 0, 1);
-	setRegisterValue(SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(SP, INITIAL_SP);
+	setRegisterValue(registers::SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP);
 	setExpectedRegisterValue(R0, 0xFFFFFFFF);
 	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
 	step();
@@ -39,8 +39,8 @@ TEST_F(CpuTestHarness, pop_JustPopR0)
 TEST_F(CpuTestHarness, pop_JustPopR7)
 {
 	code_gen().emit_ins16("1011110Prrrrrrrr", 0, (1 << 7));
-	setRegisterValue(SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(SP, INITIAL_SP);
+	setRegisterValue(registers::SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP);
 	setExpectedRegisterValue(R7, 0xFFFFFFFF);
 	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
 	step();
@@ -49,8 +49,8 @@ TEST_F(CpuTestHarness, pop_JustPopR7)
 TEST_F(CpuTestHarness, pop_PopAll)
 {
 	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0xFF);
-	setRegisterValue(SP, INITIAL_SP - 4 * 9);
-	setExpectedRegisterValue(SP, INITIAL_SP);
+	setRegisterValue(registers::SP, INITIAL_SP - 4 * 9);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP);
 	setExpectedRegisterValue(R0, 9);
 	setExpectedRegisterValue(R1, 8);
 	setExpectedRegisterValue(R2, 7);
@@ -59,7 +59,7 @@ TEST_F(CpuTestHarness, pop_PopAll)
 	setExpectedRegisterValue(R5, 4);
 	setExpectedRegisterValue(R6, 3);
 	setExpectedRegisterValue(R7, 2);
-	setExpectedRegisterValue(PC, 1 & ~1);
+	setExpectedRegisterValue(registers::PC, 1 & ~1);
 	for (int i = 1; i <= 9; i++)
 		memory_write_32(INITIAL_SP - 4 * i, i);
 	step();
@@ -69,9 +69,9 @@ TEST_F(CpuTestHarness, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 {
 	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0);
 	setExpectedXPSRflags("t");
-	setRegisterValue(SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(SP, INITIAL_SP);
-	setExpectedRegisterValue(PC, INITIAL_PC + 16);
+	setRegisterValue(registers::SP, INITIAL_SP - 4);
+	setExpectedRegisterValue(registers::SP, INITIAL_SP);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
 	memory_write_32(INITIAL_SP - 4, INITIAL_PC + 16);
 	step();
 
@@ -84,7 +84,7 @@ TEST_F(CpuTestHarness, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
 TEST_F(CpuTestHarness, pop_HardFaultFromInvalidMemoryRead)
 {
     code_gen().emit_ins16("1011110Prrrrrrrr", 0, 1);
-    setRegisterValue(SP, 0xFFFFFFFC);
+    setRegisterValue(registers::SP, 0xFFFFFFFC);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     step(&m_context);
 }*/
