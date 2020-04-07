@@ -133,12 +133,14 @@ protected:
 
 	void memory_write_32(uint32_t address, uint32_t value);
 	uint32_t memory_read_32(uint32_t address);
+	uint32_t interrupt_handler_address(uint32_t exception_number);
 	void step();
 	virtual void SetUp();
 	void initContext();
 	virtual void TearDown();
 	void setExpectedStackGrowthSinceBeginning(int growth);
 	void setExpectedExceptionTaken(int exceptionNumber);
+	void setExpectNoExceptionTaken();
 	void setExpectedStepReturn(int expectedStepReturn);
 	void setExpectedSPMain(uint32_t sp);
 	void setExpectedXPSRflags(const char *pExpectedFlags);
