@@ -769,37 +769,41 @@ static void exec(const cps instruction, registers& regs) {
 static void exec(const pop instruction, registers& regs, memory& mem) {
 	precond(instruction.pop_count() > 0, "must push at least one register");
 	const uint32_t frame_start = regs.get_sp(); // sp
-	uint32_t base = frame_start;
+	uint32_t sp_base = frame_start;
 	const uint32_t stored_size = 4 * instruction.pop_count();
 	//fprintf(stderr, "pop stack %08X - %08X\n", frame_start, frame_start + stored_size);
 	for (reg_idx rid = 0; rid < 8; rid++) {
 		if(instruction.is_set(rid)) {
-			regs.set(rid, mem.read32(base));
-			base += 4;
+			regs.set(rid, mem.read32(sp_base));
+			sp_base += 4;
 		}
 	}
 
 	// TODO: Check if this is indeed the correct behavior
-	// WARNING: The spec says that SP should be
-	// udpdated AFTER loading of SP (the code below)
+	// WARNING: The spec says that the stack should be incremented
+	// updated AFTER loading SP with the value present on the stack
 	// This is problematic upon exception return
 	// because the context will be restored by poping
-	// a 32bytes conext from the stack, relative to SP.
+	// a 32bytes context from the stack, relative to SP.
 	// If SP is not updated BEFORE, poping the context
 	// will start from an incorrect address.
 	// To fix this, the SP update has been moved BEFORE
 	// loading the SP.
+
+	// increment sp by stored_size (=pop the stack)
 	regs.set_sp(frame_start + stored_size);
 
-	// PC is always the last, so base value
-	// is what needs to be written.
+
+
 	if(instruction.is_set(registers::PC)) {
 
 		/* TODO: check whats going on with
 		 * thumb bit when popping PC from
 		 * a previous push LR where LR = 0
 		 */
-		uint32_t address = mem.read32(base);
+
+		// here sp base points to saved value of PC
+		uint32_t address = mem.read32(sp_base);
 		if(address == 0xFFFFFFF9) {
 			int k = 0;
 		}

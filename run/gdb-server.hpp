@@ -126,7 +126,7 @@ public:
 			// Creating socket file descriptor
 			int server_fd = 0;
 			if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-				throw "failed to create scoket";
+				throw "failed to create socket";
 		}
 
 		// Force to reuse address
