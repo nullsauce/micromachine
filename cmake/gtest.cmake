@@ -18,6 +18,7 @@ if(NOT TRY_FIND_GTEST)
 	message(WARNING "GTest library not found. Will download and install in ${GTEST_INSTALL_LOCATION}")
 	ExternalProject_Add(compile_googletest
 		GIT_REPOSITORY https://github.com/google/googletest
+		GIT_TAG release-1.8.1
 		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL_LOCATION}
 	)
 endif()
