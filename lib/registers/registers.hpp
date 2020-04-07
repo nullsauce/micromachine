@@ -32,7 +32,9 @@ struct registers {
 
 	}
 
-	static constexpr size_t NUM_GP_REGS = 13; // general purpose registers
+	// Number general purpose registers. Here 'general purpose' means
+	// the low registers R0 to R7 AND the high registers R8 to R12
+	static constexpr size_t NUM_GP_REGS = 13;
 	static constexpr size_t NUM_REGS = NUM_GP_REGS + 3;
 	static constexpr reg_idx SP = 13;
 	static constexpr reg_idx LR = 14;
