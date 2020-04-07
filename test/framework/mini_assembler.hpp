@@ -47,6 +47,11 @@ public:
 		return *this;
 	}
 
+	mini_assembler& emit_bx_lr() {
+		_code_gen.write(0b0100011101110000);
+		return *this;
+	}
+
 	mini_assembler& emit_pop_pc() {
 		_code_gen.write(0b1011110100000000);
 		return *this;
