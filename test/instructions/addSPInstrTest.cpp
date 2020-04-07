@@ -44,23 +44,23 @@ TEST_F(CpuTestHarness, addSP_T1UseIntermediateValues)
 TEST_F(CpuTestHarness, addSP_T2SmallestImmediate)
 {
 	code_gen().emit_ins16("101100000iiiiiii", 0);
-	setRegisterValue(SP, INITIAL_PC + 1024);
-	setExpectedRegisterValue(SP, INITIAL_PC + 1024 + 0);
+	setRegisterValue(registers::SP, INITIAL_PC + 1024);
+	setExpectedRegisterValue(registers::SP, INITIAL_PC + 1024 + 0);
 	step();
 }
 
 TEST_F(CpuTestHarness, addSP_T2LargestImmediate)
 {
 	code_gen().emit_ins16("101100000iiiiiii", 127);
-	setRegisterValue(SP, INITIAL_PC + 1024);
-	setExpectedRegisterValue(SP, INITIAL_PC + 1024 + 127 * 4);
+	setRegisterValue(registers::SP, INITIAL_PC + 1024);
+	setExpectedRegisterValue(registers::SP, INITIAL_PC + 1024 + 127 * 4);
 	step();
 }
 
 TEST_F(CpuTestHarness, addSP_T2IntermediateValues)
 {
 	code_gen().emit_ins16("101100000iiiiiii", 64);
-	setRegisterValue(SP, INITIAL_PC + 1024);
-	setExpectedRegisterValue(SP, INITIAL_PC + 1024 + 64 * 4);
+	setRegisterValue(registers::SP, INITIAL_PC + 1024);
+	setExpectedRegisterValue(registers::SP, INITIAL_PC + 1024 + 64 * 4);
 	step();
 }

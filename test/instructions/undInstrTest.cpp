@@ -16,7 +16,7 @@
 TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllZeroesForImmedaite)
 {
 	code_gen().emit_ins16("11011110iiiiiiii", 0);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
@@ -24,7 +24,7 @@ TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllZeroesForImmedaite)
 TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllOnesForImmedaite)
 {
 	code_gen().emit_ins16("11011110iiiiiiii", -1);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
@@ -32,7 +32,7 @@ TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllOnesForImmedaite)
 TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllZeroesForImmediate)
 {
 	code_gen().emit_ins32("111101111111iiii", "1010iiiiiiiiiiii", 0, 0);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }
@@ -40,7 +40,7 @@ TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllZeroesForImmediate)
 TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllOnesForImmediate)
 {
 	code_gen().emit_ins32("111101111111iiii", "1010iiiiiiiiiiii", -1, -1);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

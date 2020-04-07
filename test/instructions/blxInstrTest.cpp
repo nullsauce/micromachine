@@ -22,8 +22,8 @@ TEST_F(CpuTestHarness, blx_UseLowestRegisterToBranchToEvenAddressWhichClearsThum
 	code_gen().emit_ins16("010001111mmmm000", R0);
 	setExpectedXPSRflags("t");
 	setRegisterValue(R0, INITIAL_PC + 16);
-	setExpectedRegisterValue(PC, INITIAL_PC + 16);
-	setExpectedRegisterValue(LR, (INITIAL_PC + 2) | 1);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
+	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
 	step();
 
 	const uint16_t NOP = 0xBF00;
@@ -37,25 +37,25 @@ TEST_F(CpuTestHarness, blx_UseRegisterToBranchToOddAddressAsRequiredForThumb)
 {
 	code_gen().emit_ins16("010001111mmmm000", R2);
 	setRegisterValue(R2, (INITIAL_PC + 16) | 1);
-	setExpectedRegisterValue(PC, INITIAL_PC + 16);
-	setExpectedRegisterValue(LR, (INITIAL_PC + 2) | 1);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
+	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
 	step();
 }
 
 TEST_F(CpuTestHarness, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForThumb)
 {
-	code_gen().emit_ins16("010001111mmmm000", LR);
-	setRegisterValue(LR, (INITIAL_PC + 16) | 1);
-	setExpectedRegisterValue(PC, INITIAL_PC + 16);
-	setExpectedRegisterValue(LR, (INITIAL_PC + 2) | 1);
+	code_gen().emit_ins16("010001111mmmm000", registers::LR);
+	setRegisterValue(registers::LR, (INITIAL_PC + 16) | 1);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
+	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
 	step();
 }
 /*
 TEST_SIM_ONLY(blx, UnpredictableToUseR15)
 {
-    code_gen().emit_ins16("010001111mmmm000", PC);
+    code_gen().emit_ins16("010001111mmmm000", registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -63,7 +63,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit0ToBeHigh)
 {
     code_gen().emit_ins16("010001111mmmm001", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -71,7 +71,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit1ToBeHigh)
 {
     code_gen().emit_ins16("010001111mmmm010", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -79,7 +79,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit2ToBeHigh)
 {
     code_gen().emit_ins16("010001111mmmm100", R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 */

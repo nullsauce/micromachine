@@ -55,7 +55,7 @@ TEST_F(CpuTestHarness, ldrImmediate_T1AttemptLoadFromInvalidAddress)
 TEST_F(CpuTestHarness, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
 {
 	code_gen().emit_ins16("10011tttiiiiiiii", R7, 0);
-	setRegisterValue(SP, INITIAL_PC + 1024);
+	setRegisterValue(registers::SP, INITIAL_PC + 1024);
 	memory_write_32(INITIAL_PC + 1024, 0xBAADFEED);
 	setExpectedRegisterValue(R7, 0xBAADFEED);
 	step();
@@ -64,7 +64,7 @@ TEST_F(CpuTestHarness, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
 TEST_F(CpuTestHarness, ldrImmediate_T2UseLowestRegisterWithLargestOffset)
 {
 	code_gen().emit_ins16("10011tttiiiiiiii", R0, 255);
-	setRegisterValue(SP, INITIAL_PC + 1024);
+	setRegisterValue(registers::SP, INITIAL_PC + 1024);
 	memory_write_32(INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED);
 	setExpectedRegisterValue(R0, 0xBAADFEED);
 	step();
@@ -73,9 +73,9 @@ TEST_F(CpuTestHarness, ldrImmediate_T2UseLowestRegisterWithLargestOffset)
 TEST_SIM_ONLY(ldrImmediate, T2AttemptUnalignedLoad)
 {
     code_gen().emit_ins16("10011tttiiiiiiii", R2, 0);
-    setRegisterValue(SP, INITIAL_PC + 1026);
+    setRegisterValue(registers::SP, INITIAL_PC + 1026);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
     pinkySimStep(&m_context);
 }

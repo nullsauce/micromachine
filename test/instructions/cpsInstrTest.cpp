@@ -37,7 +37,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit0)
 {
     code_gen().emit_ins16("10110110011i0011", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 *//*
@@ -45,7 +45,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit1)
 {
     code_gen().emit_ins16("10110110011i0000", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 *//*
@@ -53,7 +53,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit2)
 {
     code_gen().emit_ins16("10110110011i0110", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 *//*
@@ -61,7 +61,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit3)
 {
     code_gen().emit_ins16("10110110011i1010", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 */

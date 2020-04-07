@@ -32,7 +32,7 @@ TEST_F(CpuTestHarness, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
 	code_gen().emit_ins16("01001tttiiiiiiii", R7, 0);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	// Move PC to point to second instruction.
-	setRegisterValue(PC, _cpu.regs().get_pc() + 2);
+	setRegisterValue(registers::PC, _cpu.regs().get_pc() + 2);
 	setExpectedRegisterValue(R7, 0xBAADFEED);
 	step();
 }
@@ -47,8 +47,8 @@ TEST_F(CpuTestHarness, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
 
 TEST_F(CpuTestHarness, ldrLiteral_AttemptToLoadFromInvalidAddress)
 {
-	setRegisterValue(PC, INITIAL_SP - 128);
-	setExpectedRegisterValue(PC, INITIAL_SP - 128);
+	setRegisterValue(registers::PC, INITIAL_SP - 128);
+	setExpectedRegisterValue(registers::PC, INITIAL_SP - 128);
 	memory_write_32(INITIAL_SP - 128, 0);
 	code_gen().set_write_address(INITIAL_SP - 128);
 	code_gen().emit_ins16("01001tttiiiiiiii", R0, 255);

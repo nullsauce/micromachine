@@ -25,7 +25,7 @@ TEST_F(CpuTestHarness, movRegister_UseLowestRegisterForAllArgs)
 
 TEST_F(CpuTestHarness, movRegister_UseHighRegisterForAllArgs)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", LR, LR);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::LR, registers::LR);
 	step();
 }
 
@@ -45,23 +45,23 @@ TEST_F(CpuTestHarness, movRegister_MoveLowRegisterToLHighRegister)
 
 TEST_F(CpuTestHarness, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", PC, R1);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, R1);
 	setRegisterValue(R1, INITIAL_PC + 1025);
-	setExpectedRegisterValue(PC, INITIAL_PC + 1024);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 1024);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MoveEvenAddressIntoPC)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", PC, R2);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, R2);
 	setRegisterValue(R2, INITIAL_PC + 1024);
-	setExpectedRegisterValue(PC, INITIAL_PC + 1024);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 1024);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MovePCintoOtherRegister)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", R3, PC);
+	code_gen().emit_ins16("01000110dmmmmddd", R3, registers::PC);
 	setExpectedRegisterValue(R3, INITIAL_PC + 4);
 	step();
 }

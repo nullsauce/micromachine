@@ -52,12 +52,12 @@ TEST_F(CpuTestHarness, strImmediate_T1AttemptStoreToInvalidAddress)
 
 
 
-/* STR - Immediate Encoding T2 (SP is base register)
+/* STR - Immediate Encoding T2 (registers::SP is base register)
    Encoding: 1001 0 Rt:3 Imm:8 */
 TEST_F(CpuTestHarness, strImmediate_T2HighestRegisterWithSmallestImmediateOffset)
 {
 	code_gen().emit_ins16("10010tttiiiiiiii", R7, 0);
-	setRegisterValue(SP, INITIAL_PC + 1024);
+	setRegisterValue(registers::SP, INITIAL_PC + 1024);
 	memory_write_32(INITIAL_PC + 1024, 0xBAADFEED);
 	step();
 	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_PC + 1024));
@@ -66,7 +66,7 @@ TEST_F(CpuTestHarness, strImmediate_T2HighestRegisterWithSmallestImmediateOffset
 TEST_F(CpuTestHarness, strImmediate_T2LowestRegisterWithLargestImmediateOffset)
 {
 	code_gen().emit_ins16("10010tttiiiiiiii", R0, 255);
-	setRegisterValue(SP, INITIAL_PC + 1024);
+	setRegisterValue(registers::SP, INITIAL_PC + 1024);
 	memory_write_32(INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED);
 	step();
 	EXPECT_EQ(0x00000000, memory_read_32(INITIAL_PC + 1024 + 255 * 4));
@@ -75,9 +75,9 @@ TEST_F(CpuTestHarness, strImmediate_T2LowestRegisterWithLargestImmediateOffset)
 TEST_SIM_ONLY(strImmediate, T2AttemptUnalignedStore)
 {
     code_gen().emit_ins16("10010tttiiiiiiii", R2, 0);
-    setRegisterValue(SP, INITIAL_PC + 1026);
+    setRegisterValue(registers::SP, INITIAL_PC + 1026);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_WRITE);
     step(&m_context);
 }
@@ -86,7 +86,7 @@ TEST_SIM_ONLY(strImmediate, T2AttemptUnalignedStore)
 TEST_SIM_ONLY(strImmediate, T2AttemptStoreToInvalidAddress)
 {
     code_gen().emit_ins16("10010tttiiiiiiii", R2, 0);
-    setRegisterValue(SP, 0xFFFFFFFC);
+    setRegisterValue(registers::SP, 0xFFFFFFFC);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     step(&m_context);
 }
