@@ -91,9 +91,7 @@
 #define R10 10
 #define R11 11
 #define R12 12
-#define SP  13
-#define LR  14
-#define PC  15
+
 
 
 /* Values that can be returned from the step() or run() function. */
@@ -145,8 +143,8 @@ protected:
 	void setExpectedSPMain(uint32_t sp);
 	void setExpectedXPSRflags(const char *pExpectedFlags);
 	void setExpectedIPSR(uint32_t expectedValue);
-	void setExpectedRegisterValue(int index, uint32_t expectedValue);
-	void setRegisterValue(int index, uint32_t value);
+	void setExpectedRegisterValue(reg_idx index, uint32_t expectedValue);
+	void setRegisterValue(reg_idx index, uint32_t value);
 	void pinkySimStep();
 	void validateSignaledException();
 	void validateXPSR();

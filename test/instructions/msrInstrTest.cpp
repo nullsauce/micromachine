@@ -20,7 +20,7 @@
 TEST_F(CpuTestHarness, msr_ToAPSR)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_APSR);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NZCV");
 	clearNegative();
 	clearZero();
@@ -33,7 +33,7 @@ TEST_F(CpuTestHarness, msr_ToAPSR)
 TEST_F(CpuTestHarness, msr_ToIAPSR)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_IAPSR);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NZCV");
 	clearNegative();
 	clearZero();
@@ -46,7 +46,7 @@ TEST_F(CpuTestHarness, msr_ToIAPSR)
 TEST_F(CpuTestHarness, msr_ToEAPSR)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_EAPSR);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NZCV");
 	clearNegative();
 	clearZero();
@@ -59,7 +59,7 @@ TEST_F(CpuTestHarness, msr_ToEAPSR)
 TEST_F(CpuTestHarness, msr_ToXPSR)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R0, SYS_XPSR);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setExpectedXPSRflags("NZCV");
 	clearNegative();
 	clearZero();
@@ -72,7 +72,7 @@ TEST_F(CpuTestHarness, msr_ToXPSR)
 TEST_F(CpuTestHarness, msr_ToIPSR)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_IPSR);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
@@ -80,7 +80,7 @@ TEST_F(CpuTestHarness, msr_ToIPSR)
 TEST_F(CpuTestHarness, msr_ToEPSR)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_EPSR);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
@@ -88,7 +88,7 @@ TEST_F(CpuTestHarness, msr_ToEPSR)
 TEST_F(CpuTestHarness, msr_ToIEPSR)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_IEPSR);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
@@ -96,16 +96,16 @@ TEST_F(CpuTestHarness, msr_ToIEPSR)
 TEST_F(CpuTestHarness, msr_ToMSP)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_MSP);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setRegisterValue(R12, INITIAL_PC + 1024 + 2);
-	setExpectedRegisterValue(SP, INITIAL_PC + 1024);
+	setExpectedRegisterValue(registers::SP, INITIAL_PC + 1024);
 	step();
 }
 
 TEST_F(CpuTestHarness, msr_ToPSP)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_PSP);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 }
@@ -113,7 +113,7 @@ TEST_F(CpuTestHarness, msr_ToPSP)
 TEST_F(CpuTestHarness, msr_PRIMASKto1)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFF);
 	step();
 	EXPECT_EQ(1, PRIMASK);
@@ -122,7 +122,7 @@ TEST_F(CpuTestHarness, msr_PRIMASKto1)
 TEST_F(CpuTestHarness, msr_PRIMASKto0)
 {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_PRIMASK);
-	setExpectedRegisterValue(PC, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
 	setRegisterValue(R12, 0xFFFFFFFE);
 	step();
 	EXPECT_EQ(0, PRIMASK);
@@ -131,7 +131,7 @@ TEST_F(CpuTestHarness, msr_PRIMASKto0)
 TEST_F(CpuTestHarness, msr_CONTROLIgnored)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R12, SYS_CONTROL);
-    setExpectedRegisterValue(PC, INITIAL_PC + 4);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
     setRegisterValue(R12, 0xFFFFFFFF);
     step(&m_context);
     EXPECT_EQ(0, CONTROL);
@@ -140,17 +140,17 @@ TEST_F(CpuTestHarness, msr_CONTROLIgnored)
 /*
 TEST_SIM_ONLY(msr, R13IsUnpredictable)
 {
-    code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", SP, SYS_XPSR);
+    code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::SP, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
 TEST_SIM_ONLY(msr, R15IsUnpredictable)
 {
-    code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", PC, SYS_XPSR);
+    code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::PC, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -170,7 +170,7 @@ TEST_SIM_ONLY(msr, UnpredictableSYSm)
             initContext();
             code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", R0, i);
             setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-            setExpectedRegisterValue(PC, INITIAL_PC);
+            setExpectedRegisterValue(registers::PC, INITIAL_PC);
             pinkySimStep(&m_context);
         }
     }
@@ -180,7 +180,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_8)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001001ssssssss", R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -188,7 +188,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_9)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001010ssssssss", R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -196,7 +196,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_10)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001100ssssssss", R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -204,7 +204,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_11)
 {
     code_gen().emit_ins32("111100111000nnnn", "10000000ssssssss", R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -212,7 +212,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_13)
 {
     code_gen().emit_ins32("111100111000nnnn", "10101000ssssssss", R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -220,7 +220,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit1_4)
 {
     code_gen().emit_ins32("111100111001nnnn", "10001000ssssssss", R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 */

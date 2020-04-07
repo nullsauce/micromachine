@@ -70,16 +70,16 @@ TEST_F(CpuTestHarness, cmpRegister_T1ForcePositiveOverflow)
    NOTE: At least one register must be high register, R8 - R14. */
 TEST_F(CpuTestHarness, cmpRegister_T2CompareLowestRegisterToHighestRegister)
 {
-	code_gen().emit_ins16("01000101nmmmmnnn", R0, LR);
-	setRegisterValue(LR, 0xEEEEEEEE);
+	code_gen().emit_ins16("01000101nmmmmnnn", R0, registers::LR);
+	setRegisterValue(registers::LR, 0xEEEEEEEE);
 	setExpectedXPSRflags("nzcv");
 	step();
 }
 
 TEST_F(CpuTestHarness, cmpRegister_T2CompareHighestRegisterToLowestRegister)
 {
-	code_gen().emit_ins16("01000101nmmmmnnn", LR, R0);
-	setRegisterValue(LR, 0xEEEEEEEE);
+	code_gen().emit_ins16("01000101nmmmmnnn", registers::LR, R0);
+	setRegisterValue(registers::LR, 0xEEEEEEEE);
 	setExpectedXPSRflags("NzCv");
 	step();
 }
@@ -113,23 +113,23 @@ TEST_SIM_ONLY(cmpRegister, T2UnpredictableForBothArgsToBeLowRegisters)
 {
     code_gen().emit_ins16("01000101nmmmmnnn", R6, R7);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRnToBeR15)
 {
-    code_gen().emit_ins16("01000101nmmmmnnn", PC, R8);
+    code_gen().emit_ins16("01000101nmmmmnnn", registers::PC, R8);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRmToBeR15)
 {
-    code_gen().emit_ins16("01000101nmmmmnnn", R8, PC);
+    code_gen().emit_ins16("01000101nmmmmnnn", R8, registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(PC, INITIAL_PC);
+    setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
 }
 */
