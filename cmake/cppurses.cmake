@@ -1,5 +1,6 @@
 include(FetchContent)
 
+
 # this requires a recent cmake
 FetchContent_Declare(
 	cppurses
@@ -9,6 +10,6 @@ FetchContent_Declare(
 
 FetchContent_GetProperties(cppurses)
 if(NOT cppurses_POPULATED)
-  FetchContent_Populate(cppurses)
-  add_subdirectory(${CMAKE_SOURCE_DIR}/external/cppurses  ${CMAKE_BINARY_DIR}/external/cppurses)
+	FetchContent_Populate(cppurses)
+	add_subdirectory(${cppurses_SOURCE_DIR}  ${cppurses_BINARY_DIR})
 endif()
