@@ -12,12 +12,16 @@ and/or distributed without the express permission of Flavio Roth.
 
 
 #include <cppurses/widget/layouts/vertical.hpp>
+#include <cppurses/cppurses.hpp>
 
 #include "BreakpointManager.hpp"
 #include "widgets/TopMenuView.hpp"
 #include "widgets/DisasmView.hpp"
 #include "widgets/BreakpointManagerView.hpp"
 #include "widgets/RegistersView.hpp"
+#include "widgets/MemoryBrowser.hpp"
+#include "widgets/FoldableWidgetHeader.hpp"
+#include "widgets/InterruptView.hpp"
 
 class MainWindow : public cppurses::layout::Vertical {
 private:
@@ -31,14 +35,15 @@ private:
 	DisasmView& _disasm_view;
 	BreakPointManagerView& _breakpoint_manager_view;
 	RegistersView& _registers_view;
-	//MemoryBrowser& _memory_browser;
+	MemoryBrowser& _memory_browser;
+	InterruptView& _interrupt_view;
 	bool _process_steps;
 
 
 public:
 	MainWindow(cpu& cpu)
 		: _cpu(cpu)
-		, _top_menu (this->make_child<TopMenuView>())
+		, _top_menu(this->make_child<TopMenuView>())
 		, _main_content_layout(this->make_child<cppurses::layout::Horizontal>())
 		, _left_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
 		, _mid_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
@@ -46,7 +51,8 @@ public:
 		, _disasm_view(_left_col_layout.make_child<DisasmView>(_cpu, _breakpoint_manager))
 		, _breakpoint_manager_view(_mid_col_layout.make_child<BreakPointManagerView>(_breakpoint_manager))
 		, _registers_view(_mid_col_layout.make_child<RegistersView>(_cpu))
-		//, _memory_browser(this->make_child<MemoryBrowser>(cpu))
+		, _memory_browser(_right_col_layout.make_child<MemoryBrowser>(cpu))
+		, _interrupt_view(_right_col_layout.make_child<InterruptView>(cpu.exceptions(), cpu.regs().interrupt_status_register()))
 		, _process_steps(false)
 	{
 
@@ -60,11 +66,10 @@ public:
 
 
 		//_left_col_layout.border.enable();
-		//_mid_col_layout.border.enable();
+		_mid_col_layout.width_policy.fixed(14);
 		//_right_col_layout.border.enable();
 
 		_disasm_view.focus_policy = cppurses::Focus_policy::Tab;
-		//_disasm_view.width_policy.fixed(50);
 		_disasm_view.border.enable();
 		_disasm_view.border.segments.disable_all();
 		_disasm_view.border.segments.east.enable();
@@ -72,7 +77,6 @@ public:
 		_disasm_view.border.segments.north.enable();
 
 		_breakpoint_manager_view.focus_policy = cppurses::Focus_policy::Tab;
-		//_breakpoint_manager_view.width_policy.fixed(25);
 		_breakpoint_manager_view.height_policy.fixed(8);
 		_breakpoint_manager_view.border.enable();
 		_breakpoint_manager_view.border.segments.disable_all();
@@ -81,13 +85,28 @@ public:
 		_breakpoint_manager_view.border.segments.north.enable();
 
 		_registers_view.focus_policy = cppurses::Focus_policy::Tab;
-		//_registers_view.width_policy.fixed(15);
-		_registers_view.height_policy.fixed(18);
+		_registers_view.height_policy.fixed(20);
 		_registers_view.border.enable();
 		_registers_view.border.segments.disable_all();
 		_registers_view.border.segments.east.enable();
 		_registers_view.border.segments.north_east.enable();
 		_registers_view.border.segments.north.enable();
+		_registers_view.border.segments.south.enable();
+
+		_memory_browser.focus_policy = cppurses::Focus_policy::Tab;
+		_memory_browser.height_policy.max_size(25);
+		_memory_browser.width_policy.fixed(46);
+		_memory_browser.border.enable();
+		_memory_browser.border.segments.disable_all();
+		_memory_browser.border.segments.north.enable();
+		_memory_browser.border.segments.south.enable();
+
+		_interrupt_view.focus_policy = cppurses::Focus_policy::Tab;
+		_interrupt_view.height_policy.max_size(25);
+		_interrupt_view.border.enable();
+		_interrupt_view.border.segments.disable_all();
+		_interrupt_view.border.segments.south.enable();
+
 
 		_cpu.set_io_callback([this](uint8_t op, uint8_t data){
 			static std::stringstream linebuf;
@@ -130,6 +149,7 @@ public:
 	bool step(size_t cpu_steps = 1) {
 		bool interrupted = false;
 		_breakpoint_manager.clear_reached_state();
+
 		for(size_t i = 0; i < cpu_steps; i++) {
 			_cpu.step();
 			uint32_t addr = _cpu.regs().get_pc();
@@ -161,7 +181,8 @@ public:
 		_disasm_view.update();
 		_registers_view.update();
 		_breakpoint_manager_view.update();
-		//_memory_browser.update();
+		_memory_browser.update();
+		_interrupt_view.update();
 		Widget::update();
 	}
 };

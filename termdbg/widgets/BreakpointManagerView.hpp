@@ -17,13 +17,13 @@ and/or distributed without the express permission of Flavio Roth.
 #include "BreakpointManager.hpp"
 #include "widgets/HideableElement.hpp"
 #include "widgets/AddressInput.hpp"
-#include "widgets/Header.hpp"
+#include "widgets/FoldableWidgetHeader.hpp"
 
 class BreakPointManagerView : public cppurses::layout::Vertical {
 private:
 	size_t _selected_index;
 	BreakpointManager& _breakpoint_manager;
-	Header& _header;
+	FoldableWidgetHeader& _header;
 	HidableElement<AddressInput> _new_breakpoint_address;
 	cppurses::Text_display& _breakpoint_list;
 	bool _active;
@@ -33,7 +33,7 @@ public:
 	BreakPointManagerView(BreakpointManager& breakpoint_manager)
 		: _selected_index(0)
 		, _breakpoint_manager(breakpoint_manager)
-		, _header(this->make_child<Header>("Breakpoints"))
+		, _header(this->make_child<FoldableWidgetHeader>("Breakpoints"))
 		, _new_breakpoint_address(this, 1, "address")
 		, _breakpoint_list(this->make_child<cppurses::Text_display>())
 		, _active(false)
@@ -119,14 +119,14 @@ public:
 
 	bool focus_in_event() override {
 		_active = true;
-		_header.focus();
+		_header.select();
 		update();
 		return Widget::focus_in_event();
 	}
 
 	bool focus_out_event() override {
 		_active = false;
-		_header.unfocus();
+		_header.unselect();
 		update();
 		return Widget::focus_out_event();
 	}
@@ -179,6 +179,18 @@ public:
 			uint32_t address = _breakpoint_manager.nth_breakpoint(_selected_index).address();
 			_breakpoint_manager.destroy_breakpoint_at(address);
 			_selected_index = std::max(0, (int)_selected_index-1);
+			update();
+			return true;
+
+		} else if(key == cppurses::Key::Code::Next_page) {
+			_header.maximize();
+			height_policy.expanding(0);
+			update();
+			return true;
+
+		} else if(key == cppurses::Key::Code::Previous_page) {
+			_header.minimize();
+			height_policy.fixed(2);
 			update();
 			return true;
 		}
