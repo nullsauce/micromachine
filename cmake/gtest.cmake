@@ -15,7 +15,7 @@ find_library(TRY_FIND_GTEST
 )
 
 if(NOT TRY_FIND_GTEST)
-	message(WARNING "GTest library not found. Will download and install in ${GTEST_INSTALL_LOCATION}")
+	message(STATUS "GTest library not found. Will download and install in ${GTEST_INSTALL_LOCATION}")
 	ExternalProject_Add(compile_googletest
 		GIT_REPOSITORY https://github.com/google/googletest
 		GIT_TAG release-1.8.1
