@@ -16,7 +16,7 @@ jobs:
       - name: configure
         working-directory: build
         run: |
-          cmake ..
+          cmake -DCMAKE_BUILD_TYPE=Release ..
       - name: build tests
         working-directory: build
         run: |
