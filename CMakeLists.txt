@@ -21,12 +21,15 @@ add_subdirectory(benchmark)
 
 ExternalProject_Add(micromachine_sdk_project
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/sdk
-	BINARY_DIR ${CMAKE_SOURCE_DIR}/sdk
-	CONFIGURE_COMMAND cmake -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/sdk/micromachine.toolchain
-	-DMICROMACHINE_VM=$<TARGET_FILE:run_micromachine>
-	BUILD_COMMAND make
+	BINARY_DIR ${CMAKE_BINARY_DIR}/sdk
+	BUILD_ALWAYS TRUE
+	CONFIGURE_COMMAND cmake
+		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/sdk/micromachine.toolchain
+		-DMICROMACHINE_VM=$<TARGET_FILE:run_micromachine>
+		${CMAKE_SOURCE_DIR}/sdk
 	INSTALL_COMMAND ""
 	TEST_COMMAND ctest -V
+	DEPENDS run_micromachine
 )
 
 add_custom_target(sdk ALL DEPENDS micromachine_sdk_project)
