@@ -33,16 +33,19 @@ TEST_F(ExceptionTestHarness, ExecutionPriorityChangesWhenExceptionIsTaken)
 	EXPECT_EQ(exception::HARDFAULT_PRIORITY, _cpu.current_execution_priority());
 }
 
-TEST_F(ExceptionTestHarness, ExecutionPriorityGoesBackToDefaultAfterExceptionIsTaken)
+TEST_F(ExceptionTestHarness, ExceptionPreAndPostState)
 {
-	// intitially in thread mode
+	// initially in thread mode
 	EXPECT_EQ(exception::THREAD_MODE_PRIORITY, _cpu.current_execution_priority());
 
+	// we are creating a fake exception handler at this address
 	const uint32_t exception_handler_stub = 0x2000;
 
-	// handle hardfaults at 0x2000 with a stub
+	// hardfault handler points to this address now
 	install_handler(exception::Type::HARDFAULT, exception_handler_stub | 1);
 
+	// write a simple empty function in the hardfault handler.
+	// the function simply returns using BX LR
 	_assembler.seek_to(exception_handler_stub).emit_bx_lr();
 
 	// raise hardfault
