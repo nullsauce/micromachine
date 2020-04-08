@@ -302,35 +302,28 @@ public:
 	}
 
 	template<exception::Type Ex>
-	exception_state& interrupt_state()
-	{
+	exception_state& interrupt_state() {
 		return _indexed[Ex];
 	}
 
 	template<exception::Type Ex>
-	const exception_state& interrupt_state() const
-	{
+	const exception_state& interrupt_state() const {
 		return _indexed[Ex];
 	}
 
-	exception_state& interrupt_state(exception::Type t)
-	{
-		exception_state& s = _indexed[t];
-		return s;
+	exception_state& interrupt_state(exception::Type t) {
+		return _indexed.at(t);
 	}
 
-	const exception_state& interrupt_state(exception::Type t) const
-	{
-		return _indexed[t];
+	const exception_state& interrupt_state(exception::Type t) const {
+		return _indexed.at(t);
 	}
 
-	exception_state& interrupt_state(uint32_t number)
-	{
+	exception_state& interrupt_state(uint32_t number) {
 		return interrupt_state(static_cast<exception::Type>(number));
 	}
 
-	const exception_state& interrupt_state(uint32_t number) const
-	{
+	const exception_state& interrupt_state(uint32_t number) const {
 		return interrupt_state(static_cast<exception::Type>(number));
 	}
 
