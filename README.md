@@ -1,5 +1,7 @@
 # Project
 
+![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg)
+
 micromachine aims to be an armv6-m emulator that can be used to simulate
 microcontrollers at the application level.
 
