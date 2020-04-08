@@ -19,7 +19,7 @@
 
 
 #define memory_hardfault(reason_fmt,...)\
-	fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__); \
+	/*fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__);*/ \
 	_interrupter.raise_memory_hardfault();
 
 class memory {
