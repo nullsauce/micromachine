@@ -5,9 +5,7 @@
 #include <gtest/gtest.h>
 #include "nvic.hpp"
 #include "disasm.hpp"
-#include <iostream>
 #include <fstream>
-
 
 
 TEST(Disasm, DisamRegressionOf16bitInstructions)
