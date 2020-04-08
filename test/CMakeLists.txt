@@ -38,7 +38,7 @@ macro(declare_test test_src_file)
 	list(APPEND ALL_TEST_OBJS $<TARGET_OBJECTS:${test_lib_name}>)
 
 	# An executable that will run only this test
-	add_executable(${test_executable_name} $<TARGET_OBJECTS:${test_lib_name}> $<TARGET_OBJECTS:test_common>)
+	add_executable(${test_executable_name} $<TARGET_OBJECTS:${test_lib_name}>)
 	# Link test_common so that the appropriate link dependecies are set.
 	# Additionally link libgtest_main to allow the test to run
 	target_link_libraries(${test_executable_name} test_common libgtest_main ${CMAKE_THREAD_LIBS_INIT})
