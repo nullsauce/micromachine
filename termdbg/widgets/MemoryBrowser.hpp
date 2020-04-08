@@ -25,6 +25,7 @@ and/or distributed without the express permission of Flavio Roth.
 class MemoryBrowser : public cppurses::layout::Vertical {
 public:
 	cpu& _cpu;
+	FoldableWidgetHeader& _header;
 	HidableElement<CommandInput> _menu;
 	HidableElement<MemorySegmentList> _memory_segments;
 	MemorySegmentInfo& _segment_info;
@@ -33,8 +34,9 @@ public:
 
 	MemoryBrowser(cpu& cpu)
 	 : _cpu(cpu)
-	 , _menu(this, 0, cppurses::Glyph_string("command..."))
-	 , _memory_segments(this, 0, cpu.mem())
+	 , _header(this->make_child<FoldableWidgetHeader>("Memory"))
+	 , _menu(this, 1, cppurses::Glyph_string("command..."))
+	 , _memory_segments(this, 2, cpu.mem())
 	 , _segment_info(make_child<MemorySegmentInfo>())
  	 , _memview(make_child<MemoryView>()) {
 		_info_table.height_policy.fixed(6);
@@ -144,6 +146,7 @@ public:
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
 		auto key = keyboard.key;
+
 		if(key == cppurses::Key::Code::o) {
 			_menu.show();
 			update();
@@ -172,24 +175,30 @@ public:
 			_memview.move_cursor_right();
 			update();
 			return true;
-		} else if(key == 337) {
+		} else if(key == cppurses::Key::Code::Next_page) {
 			//_view.scroll_page_down();
+			height_policy.expanding(0);
+			_header.maximize();
+			update();
 			return true;
-		} else if(key == 336) {
+		} else if(key == cppurses::Key::Code::Previous_page) {
 			//_view.scroll_page_up();
+			height_policy.fixed(3);
+			_header.minimize();
+			update();
 			return true;
 		}
 		return _memview.key_press_event(keyboard);
 	}
 
 	bool focus_in_event() override {
-		helpers::set_foreground(border, cppurses::Color::Yellow);
+		_header.select();
 		this->update();
 		return Widget::focus_in_event();
 	}
 
 	bool focus_out_event() override {
-		helpers::set_foreground(border, cppurses::Color::White);
+		_header.unselect();
 		this->update();
 		return Widget::focus_out_event();
 	}

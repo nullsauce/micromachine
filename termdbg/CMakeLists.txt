@@ -3,7 +3,7 @@
 set(SOURCE_FILES
 	main.cpp
 	BreakpointManager.hpp
-	widgets/Header.hpp
+	widgets/FoldableWidgetHeader.hpp
 	widgets/Helpers.hpp
 	widgets/RegistersView.hpp
 	widgets/DisasmView.hpp
@@ -23,6 +23,7 @@ set(SOURCE_FILES
 	widgets/BreakpointManagerView.hpp
 	widgets/TopMenuView.hpp
 	widgets/MainWindow.hpp
+	widgets/InterruptView.hpp
 )
 # CPPurses is cloned into a directory named external/
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/cppurses ${CMAKE_BINARY_DIR}/external/cppurses)
