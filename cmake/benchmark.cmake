@@ -15,7 +15,7 @@ find_library(TRY_FIND_BENCHMARK
 )
 
 if(NOT TRY_FIND_BENCHMARK)
-	message(WARNING "Benchmark library not found. Will download and install in ${BENCHMARK_INSTALL_LOCATION}")
+	message(STATUS "Benchmark library not found. Will download and install in ${BENCHMARK_INSTALL_LOCATION}")
 	ExternalProject_Add(compile_benchmark
 		GIT_REPOSITORY https://github.com/google/benchmark
 		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${BENCHMARK_INSTALL_LOCATION} -DBENCHMARK_ENABLE_TESTING=FALSE
