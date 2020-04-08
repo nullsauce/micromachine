@@ -13,7 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cpu.hpp>
 
-#include "widgets/Header.hpp"
+#include "widgets/FoldableWidgetHeader.hpp"
 #include "BreakpointManager.hpp"
 
 class DisasmView : public cppurses::layout::Vertical {
@@ -23,7 +23,7 @@ private:
 	uint32_t _page_address;
 	uint32_t _page_end;
 	uint32_t _cursor_address;
-	Header& _header{this->make_child<Header>("Disassembly")};
+	FoldableWidgetHeader& _header{this->make_child<FoldableWidgetHeader>("Disassembly")};
 	cppurses::Text_display& _text{this->make_child<cppurses::Text_display>()};
 
 public:
@@ -45,12 +45,12 @@ public:
 	}
 
 	bool focus_in_event() override {
-		_header.focus();
+		_header.select();
 		return Widget::focus_in_event();
 	}
 
 	bool focus_out_event() override {
-		_header.unfocus();
+		_header.unselect();
 		return Widget::focus_out_event();
 	}
 

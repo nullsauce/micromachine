@@ -28,7 +28,8 @@ public:
 		border.enable();
 		border.segments.disable_all();
 		border.segments.south.enable();
-		height_policy.fixed(2);
+		height_policy.fixed(3);
+
 		_segment_name.set_alignment(cppurses::Alignment::Left);
 		_segment_size.set_alignment(cppurses::Alignment::Right);
 		_segment_start.set_alignment(cppurses::Alignment::Right);
@@ -61,16 +62,17 @@ public:
 
 	void render() {
 		if(nullptr == _segment) return;
-		char buf[32];
-		_segment_name.set_contents(_segment->name());
+		char buf[64];
+		snprintf(buf, sizeof(buf), "segment\n%s", _segment->name().c_str());
+		_segment_name.set_contents(buf);
 
-		snprintf(buf, 32, "size: %08x", _segment->size());
+		snprintf(buf, sizeof(buf), "size\n%08x", _segment->size());
 		_segment_size.set_contents(buf);
 
-		snprintf(buf, 32, "beg: %08x", _segment->start());
+		snprintf(buf, sizeof(buf), "start\n%08x", _segment->start());
 		_segment_start.set_contents(buf);
 
-		snprintf(buf, 32, "end: %08x", _segment->end());
+		snprintf(buf, sizeof(buf), "end\n%08x", _segment->end());
 		_segment_end.set_contents(buf);
 	}
 
