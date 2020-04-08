@@ -1,12 +1,17 @@
 
 project(micromachine-sdk)
 enable_testing()
-set(MICROMACHINE_VM CACHE STRING "" )
+set(MICROMACHINE_VM CACHE STRING "MICROMACHINE_VM-NOTFOUND")
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_BINARY_DIR}/micromachine.toolchain")
 cmake_minimum_required(VERSION 3.2)
 
-
-
+if(MICROMACHINE_VM)
+	message(INFO "MICROMACHINE_VM=${MICROMACHINE_VM}")
+else()
+	message(FATAL_ERROR "${MICROMACHINE_VM} MICROMACHINE_VM not found. You must pass the path to the run_micromachine
+	 executable for
+	tests to be run.")
+endif()
 
 function(add_micromachine_executable)
 	set_property(TARGET ${ARGV0} PROPERTY C_STANDARD 11)
