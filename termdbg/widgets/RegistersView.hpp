@@ -17,11 +17,11 @@ and/or distributed without the express permission of Flavio Roth.
 #include <cpu.hpp>
 #include <cstring>
 
-#include "widgets/Header.hpp"
+#include "widgets/FoldableWidgetHeader.hpp"
 
 class RegistersView : public cppurses::layout::Vertical {
 private:
-	Header& _header;
+	FoldableWidgetHeader& _header;
 	cpu& _cpu;
 	uint32_t _previous_values[16];
 	const char* const register_names[16] = {
@@ -36,7 +36,7 @@ public:
 	cppurses::Text_display& regs_text{this->make_child<cppurses::Text_display>()};
 
 	RegistersView(cpu& cpu)
-		: _header(make_child<Header>("Registers"))
+		: _header(make_child<FoldableWidgetHeader>("Registers"))
 		, _cpu(cpu) {
 		memset(_previous_values, 0, 16);
 		regs_text.set_alignment(cppurses::Alignment::Left);
@@ -68,13 +68,13 @@ public:
 	}
 
 	bool focus_in_event() override {
-		_header.focus();
+		_header.select();
 		this->update();
 		return Widget::focus_in_event();
 	}
 
 	bool focus_out_event() override {
-		_header.unfocus();
+		_header.unselect();
 		this->update();
 		return Widget::focus_out_event();
 	}
