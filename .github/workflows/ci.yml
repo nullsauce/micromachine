@@ -1,0 +1,31 @@
+name: C/C++ CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
+      - name: prepare
+        run: |
+          mkdir -p build
+          cd build
+      - name: configure
+        working-directory: build
+        run: |
+          cmake ..
+      - name: build tests
+        working-directory: build
+        run: |
+          make -j $(nproc) all_tests
+      - name: run tests
+        working-directory: build
+        run: |
+          ctest -V -L cpuTests
+      - name: build and test sdk
+        working-directory: build
+        run: |
+          make -j $(nproc) sdk
