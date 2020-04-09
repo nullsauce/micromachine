@@ -228,6 +228,29 @@ struct standard_rdn_rm_dm : public layout_16_03_34_71 {
 
 };
 
+// This layout is similar to standard_rdn_rm_dm
+// Except from the fact that the last field is named
+// 'dn' instead of 'dm'.
+struct standard_rdn_rm_dn : public layout_16_03_34_71 {
+	using layout_16_03_34_71::layout_16_03_34_71;
+
+	define_instruction_field(rdn, 0);
+	define_instruction_field(rm, 1);
+	define_instruction_field(dn, 2);
+
+	// returns the possibly high register index
+	reg_idx high_rd() const {
+		// rdn can be a high register if dm is set
+		return ((bool)dn() * 8U) + (reg_idx)rdn();
+	}
+
+	// returns the possibly high register index
+	reg_idx high_rm() const {
+		return rm();
+	}
+
+};
+
 struct standard_rn_rm_dm : public layout_16_03_34_71 {
 	using layout_16_03_34_71::layout_16_03_34_71;
 
@@ -429,10 +452,9 @@ struct add_reg : public standard_rd_rn_rm {
 
 };
 
-// TODO: should herit fromstandard_rdn_rm_dN
-struct add_highreg : public standard_rdn_rm_dm {
+struct add_highreg : public standard_rdn_rm_dn {
 	// Note: encoding t2 of add reg
-	using standard_rdn_rm_dm::standard_rdn_rm_dm;
+	using standard_rdn_rm_dn::standard_rdn_rm_dn;
 };
 
 struct add_sp_imm : public standard_imm8_rd {
