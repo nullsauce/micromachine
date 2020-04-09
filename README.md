@@ -6,7 +6,7 @@ microcontrollers at the application level.
 
 ### Build status
 
-`master` ![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=master)
+![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=master) `master`
 
 
 
