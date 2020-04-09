@@ -15,25 +15,25 @@ microcontrollers at the application level.
 `micromachine` contains the emulation code. The most part of it is coded in headers
  in order to minimize the number of compilation unit and allow optimizations to take place.
 
-`test` contains all emulation code tests.
+* :file_folder: `test` contains all emulation code tests.
 
-`termdbg` contains a rudimentary terminal UI application used for
+* :file_folder: `termdbg` contains a rudimentary terminal UI application used for
 developing and debugging the emulator.
 
-`vm` contains the command-line app (vm) that can execute armv6-m ELF binaries
+* :file_folder: `vm` contains the command-line app (vm) that can execute armv6-m ELF binaries
 
-`sdk` contains a standalone cmake project which acts as a poor man's
+* :file_folder: `sdk` contains a standalone cmake project which acts as a poor man's
 toolchain for now. Note that the sdk contains its own integration tests.
 
 ### Build targets
 
 The CMake project will generate a lot of not-so-useful targets. Here's a list of targets that are important to know:
 
-* `all_tests` Runs all the emulation code tests. Note that this target will appear as a unit test in CLion.
+* :hammer: `all_tests` Runs all the emulation code tests. Note that this target will appear as a unit test in CLion.
 
-* `sdk` Builds the SDK and examples and runs the integration tests.
+* :hammer: `sdk` Builds the SDK and examples and runs the integration tests.
 
-* `termdbg` Builds the terminal UI based debugger. The debugger takes a micromachine ELF binary as argument.
+* :hammer: `termdbg` Builds the terminal UI based debugger. The debugger takes a micromachine ELF binary as argument.
 
 
 ### Using CLion
