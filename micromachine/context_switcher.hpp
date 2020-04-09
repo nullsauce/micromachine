@@ -39,7 +39,14 @@ public:
 
 		exception::Type exception_returning_from = _regs.interrupt_status_register().exception_num();
 
-		if(!_exception_vector.interrupt_state(exception_returning_from).is_active()) {
+		// The maximum theoretical value of exception_num from IPSR is 63
+		// This implementation might not support that many exceptions.
+		// Check that the exception number is within accepted range.
+		if(exception_returning_from >= _exception_state_vector.highest_accepted_exception_number()) {
+			fprintf(stderr, "unpredictable.\n");
+		}
+
+		if(!_exception_state_vector.interrupt_state(exception_returning_from).is_active()) {
 			// unpredictable
 			fprintf(stderr, "return from an inactive handler\n");
 		}
