@@ -206,10 +206,9 @@ public:
 
 		_regs.set_sp(frame_ptr);
 
-		uint32_t xpsr_status = 0;
-		// TODO: Use cleaner bits copying primitives
-		bits<10,22>::of(xpsr_status) = bits<10,22>::of(_regs.xpsr_register());
-		bits<0,8>::of(xpsr_status) = bits<0,8>::of(_regs.xpsr_register());
+		// the 9th bit of XPSR status is set with the stack alignment indicator.
+		// We copy its value and overwrite the bit at index 8.
+		uint32_t xpsr_status = _regs.xpsr_register();
 		bits<8>::of(xpsr_status) = (bool)(frame_ptr_align & 1);
 
 		_mem.write32(frame_ptr+0,  _regs.get(0));
