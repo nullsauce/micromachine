@@ -165,8 +165,8 @@ public:
 		_regs.set(12, _mem.read32(frame_ptr+16));
 		_regs.set_lr(_mem.read32(frame_ptr+20));
 		_regs.set_pc(_mem.read32(frame_ptr+24));
-		uint32_t psr_bits = _mem.read32(frame_ptr+28);
-		uint32_t stack_align = bits<8>::of(psr_bits) << 2;
+		uint32_t xpsr_status = _mem.read32(frame_ptr + 28);
+		uint32_t stack_align = bits<8>::of(xpsr_status) << 2;
 
 		switch((uint8_t)bits<0,4>::of(return_address).extract()) {
 			case 0b0001: /* return to handler */
@@ -183,15 +183,16 @@ public:
 				break;
 			}
 		}
-		// TODO: get rid of copy bits
-		_regs.app_status_register().copy_bits(bits<28,4>::of(psr_bits));
+		// Restore the APSR bits
+		_regs.app_status_register().flags() = apsr_reg::flags_bits::of(xpsr_status);
+
 		bool force_thread = _regs.exec_mode_register().is_thread_mode() && _regs.control_register().n_priv();
 		if(force_thread) {
 			_regs.interrupt_status_register().set_exception_number(exception::from_number(0));
 		} else {
-			_regs.interrupt_status_register().set_exception_number(exception::from_number(bits<0,6>::of(psr_bits)));
+			_regs.interrupt_status_register().set_exception_number(exception::from_number(bits<0,6>::of(xpsr_status)));
 		}
-		_regs.execution_status_register().set_thumb_bit(bits<epsr_reg::THUMB_BIT>::of(psr_bits));
+		_regs.execution_status_register().set_thumb_bit(bits<epsr_reg::THUMB_BIT>::of(xpsr_status));
 	}
 
 	void push_stack(uint32_t return_address) {

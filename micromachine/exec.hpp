@@ -960,7 +960,12 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 		case msr::SpecialRegister::IAPSR:
 		case msr::SpecialRegister::EAPSR:
 		case msr::SpecialRegister::XPSR: {
-			apsr.copy_bits(bits<0,5>::of(regs.get(instruction.rn)));
+			// Note that the documentation says that the bits 27 to 31 should be copied.
+			// However, the bit 27 is part of the reserved area of the APSR (and XPSR by
+			// extension).
+			// I suppose this is a documentation mistake and copy only the 4
+			// APSR bits 28 to 31.
+			apsr.flags() = apsr_reg::flags_bits::of(regs.get(instruction.rn));
 		} break;
 		case msr::SpecialRegister::MSP: {
 			// TODO: Should fail if not in privileged mode
