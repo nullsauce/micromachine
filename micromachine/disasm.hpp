@@ -250,7 +250,7 @@ private:
 	}
 	void dispatch(const add_highreg instruction) override {
 		// variants of add SP plus register
-		if(instruction.dm() && (instruction.high_rm() == 13)) {
+		if(instruction.dn() && (instruction.high_rm() == 13)) {
 			format("add %s, sp, %s", R(instruction.rdn()));
 		} else if(instruction.high_rd() == 13) {
 			format("add sp, %s", R(instruction.high_rm()));
