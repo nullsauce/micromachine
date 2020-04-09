@@ -5,11 +5,8 @@
 #include "cpu.hpp"
 #include "programmer.hpp"
 
-#include "gdb-server.hpp"
 
 int main(int argc, const char** argv) {
-
-
 
 	if(argc < 2) {
 		fprintf(stderr, "usage: %s <elf-executable>\n", argv[0]);
