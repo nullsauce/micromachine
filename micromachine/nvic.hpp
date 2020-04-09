@@ -63,8 +63,8 @@ private:
 };
 
 /*
- * On write 0: no effect
- * On write 1: disable to associated bit
+ * On write a 0 bit: no effect
+ * On write a 1 bit: disable the associated bit
  */
 class nvic_disable_on_write_reg : public nvic_status_reg {
 public:
@@ -120,15 +120,53 @@ public:
 };
 
 class nvic {
+private:
+	// Interrupt Priority Registers (NVIC_IPR[0-7])
+	// Holds the 2-bit priority value of each of the 32 interrupts.
+	// Expressed as an array of 8 NVIC_IPR registers holding 4 priority values each
+	std::array<nvic_ipr_reg, 8> _priority_regs;
+
+	// The actual data word used to store the state that can be accessed by iser and icer.
+	// Holds the enable flag of each the 32 interrupts
+	uint32_t _interrupt_enable_statuses;
+
+	// The actual data word used to store the state of ispr and icpr
+	// Holds the pending flag of each of the 32 interrupts
+	uint32_t _interrupt_pending_statuses;
+
+	// Interrupt set-enable register accessor
+	nvic_iser_reg _iser_reg;
+
+	// Interrupt clear enable register accessor
+	nvic_icer_reg _icer_reg;
+
+	// Interrupt set-pending register accessor
+	nvic_ispr_reg _ispr_reg;
+
+	// Interrupt clear-pending register accessor
+	nvic_icpr_reg _icpr_reg;
+
+	nvic(uint32_t interrupt_enable_status, uint32_t interrupt_pending_status)
+		: _interrupt_enable_statuses(interrupt_enable_status)
+		, _interrupt_pending_statuses(interrupt_pending_status)
+		, _iser_reg(_interrupt_enable_statuses)
+		, _icer_reg(_interrupt_enable_statuses)
+		, _ispr_reg(_interrupt_pending_statuses)
+		, _icpr_reg(_interrupt_pending_statuses)
+	{}
+
 public:
 
+	nvic() : nvic(0U, 0U) {}
 
-	nvic()
-		: _iser_reg(_enable_status)
-		, _icer_reg(_enable_status)
-		, _ispr_reg(_pending_status)
-		, _icpr_reg(_pending_status) {
+	// This is used for testing purposes
+	static nvic with_enable_statuses(uint32_t statuses) {
+		return nvic(statuses, 0U);
+	}
 
+	// This is used for testing purposes
+	static nvic with_pending_statuses(uint32_t statuses) {
+		return nvic(0U, statuses);
 	}
 
 	void reset() {
@@ -139,6 +177,22 @@ public:
 		for(auto& reg : _priority_regs) {
 			reg.reset();
 		}
+	}
+
+	nvic_iser_reg& iser_reg() {
+		return _iser_reg;
+	}
+
+	nvic_icer_reg& icer_reg() {
+		return _icer_reg;
+	}
+
+	nvic_ispr_reg& ispr_reg() {
+		return _ispr_reg;
+	}
+
+	nvic_icpr_reg& icpr_reg() {
+		return _icpr_reg;
 	}
 
 	/// Gets a mutable reference to the two priority bits for a given external interrupt
@@ -173,31 +227,9 @@ public:
 		return _priority_regs[index];
 	}
 
-// TODO: make this protected or private
-public:
-	nvic_iser_reg _iser_reg;
-	nvic_icer_reg _icer_reg;
-	nvic_ispr_reg _ispr_reg;
-	nvic_icpr_reg _icpr_reg;
-	std::array<nvic_ipr_reg, 8> _priority_regs;
-
-	// used for unit tests
-	class tester {
-	public:
-		tester(nvic* nvic) : _nvic(nvic) {}
-		uint32_t& enable_status() {
-			return _nvic->_enable_status;
-		}
-		uint32_t& pending_status() {
-			return _nvic->_pending_status;
-		}
-	private:
-		nvic* _nvic;
-	};
 
 private:
-	uint32_t _enable_status;
-	uint32_t _pending_status;
+
 };
 
 #endif //MICROMACHINE_EMU_NVIC_HPP
