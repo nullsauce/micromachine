@@ -14,7 +14,7 @@ find_package(Threads)
 include(cotire)
 
 add_subdirectory(lib)
-add_subdirectory(run)
+add_subdirectory(vm)
 add_subdirectory(termdbg)
 add_subdirectory(test)
 add_subdirectory(benchmark)
@@ -25,11 +25,11 @@ ExternalProject_Add(micromachine_sdk_project
 	BUILD_ALWAYS TRUE
 	CONFIGURE_COMMAND cmake
 		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/sdk/micromachine.toolchain
-		-DMICROMACHINE_VM=$<TARGET_FILE:run_micromachine>
+		-DMICROMACHINE_VM=$<TARGET_FILE:micromachine_vm>
 		${CMAKE_SOURCE_DIR}/sdk
 	INSTALL_COMMAND ""
 	TEST_COMMAND ctest -V
-	DEPENDS run_micromachine
+	DEPENDS micromachine_vm
 )
 
 add_custom_target(sdk ALL DEPENDS micromachine_sdk_project)
