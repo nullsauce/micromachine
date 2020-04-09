@@ -231,6 +231,11 @@ struct bits {
 		return integer_slice<integer_type>(integer);
 	}
 
+	template<typename integer_type>
+	static integer_type as_mask() {
+		return binops::make_mask<integer_type>(len) << offset;
+	}
+
 	template<typename integer_type, size_t slice_offset, size_t slice_len>
 	static slice<offset + slice_offset, len, integer_type>
 	of(slice<slice_offset, slice_len, integer_type> existing_slice) {
