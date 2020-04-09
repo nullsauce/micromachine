@@ -18,14 +18,14 @@ class context_switcher : public exception_return_handler {
 private:
 	registers& _regs;
 	memory& _mem;
-	exception_state_vector& _exception_vector;
+	exception_state_vector& _exception_state_vector;
 
 public:
 
 	context_switcher(registers& regs, memory& mem, exception_state_vector& exception_vector)
 		: _regs(regs)
 		, _mem(mem)
-		, _exception_vector(exception_vector)
+		, _exception_state_vector(exception_vector)
 	{}
 
 	void exception_return(uint32_t ret_address) override {
@@ -48,7 +48,7 @@ public:
 		const uint8_t ret_bits = (uint8_t)bits<0,4>::of(ret_address).extract();
 		switch(ret_bits) {
 			case 0b0001: /* return to handler EXC_RETURN=0xFFFFFFF1 */ {
-				if(_exception_vector.active_count() == 1) {
+				if(_exception_state_vector.active_count() == 1) {
 					// unpredictable
 					// exception mismatch
 					fprintf(stderr, "exception mismatch\n");
@@ -60,7 +60,7 @@ public:
 				break;
 			}
 			case 0b1001: /* return to thread using main stack EXC_RETURN=0xFFFFFFF9  */ {
-				if(_exception_vector.active_count() != 1) {
+				if(_exception_state_vector.active_count() != 1) {
 					// unpredictable
 					// return to thread exception mismatch
 					fprintf(stderr, "return to thread exception mismatch\n");
@@ -72,7 +72,7 @@ public:
 				break;
 			}
 			case 0b1101: /* return to thread using process stack EXC_RETURN=0xFFFFFFFD*/ {
-				if(_exception_vector.active_count() != 1) {
+				if(_exception_state_vector.active_count() != 1) {
 					// unpredictable
 					// return to thread exception mismatch
 					fprintf(stderr, "return to thread exception mismatch\n");
@@ -91,7 +91,7 @@ public:
 			}
 		}
 
-		_exception_vector.interrupt_state(exception_returning_from).deactivate();
+		_exception_state_vector.interrupt_state(exception_returning_from).deactivate();
 		//_active_exception_count--;
 		pop_stack(frame_ptr, ret_address);
 
@@ -183,16 +183,26 @@ public:
 				break;
 			}
 		}
-		// Restore the APSR bits
-		_regs.app_status_register().flags() = apsr_reg::flags_bits::of(xpsr_status);
+
+		// Restore the APSR, IPSR and EPSR bits of XPSR
+		// This is done by first copying the pop'd XPSR value into the
+		// XPSR register but with the reserved bits ignored.
+		// (ESPR stack alignment is also considered reserved and is therefore ignored too)
+		// And secondly, optionally zeroing the IPSR exception number.
+		const uint32_t reserved_bits_mask = apsr_reg::flags_bits::as_mask<uint32_t>() |
+											ipsr_reg::ipsr_bits::as_mask<uint32_t>() |
+											epsr_reg::thumb_bit::as_mask<uint32_t>() |
+											epsr_reg::stack_align_bit::as_mask<uint32_t>();
+		// Zero out reserved bits for good measure.
+		// Note that the stack alignment value is ignored.
+		_regs.xpsr_register() = xpsr_status & reserved_bits_mask;
 
 		bool force_thread = _regs.exec_mode_register().is_thread_mode() && _regs.control_register().n_priv();
+		// If force_thread is true, the IPSR (interrupt status register)
+		// exception number is zeroed.
 		if(force_thread) {
 			_regs.interrupt_status_register().set_exception_number(exception::from_number(0));
-		} else {
-			_regs.interrupt_status_register().set_exception_number(exception::from_number(bits<0,6>::of(xpsr_status)));
 		}
-		_regs.execution_status_register().set_thumb_bit(bits<epsr_reg::THUMB_BIT>::of(xpsr_status));
 	}
 
 	void push_stack(uint32_t return_address) {
