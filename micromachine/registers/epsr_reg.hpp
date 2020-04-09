@@ -10,14 +10,16 @@ struct epsr_reg : public xpsr_reg {
 	static const size_t STACK_ALIGNMENT = 9;
 
 	using xpsr_reg::xpsr_reg;
-	
+
+	using thumb_bit = bits<24>;
+	using stack_align_bit = bits<9>;
+
 	bool thumb_bit_set() const {
-		bool set = bit(THUMB_BIT);
-		return set;
+		return bits<24>::of(_xpsr);
 	}
 
 	void set_thumb_bit(bool set) {
-		write_bit(THUMB_BIT, set);
+		bits<24>::of(_xpsr) = set;
 	}
 
 	bool stack_alignment() const {
