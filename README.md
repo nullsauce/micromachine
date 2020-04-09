@@ -1,6 +1,9 @@
 # Project
 
-![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg)
+## Build status
+
+`master` ![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=master)
+`develop` ![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=develop)
 
 micromachine aims to be an armv6-m emulator that can be used to simulate
 microcontrollers at the application level.
@@ -24,28 +27,11 @@ toolchain for now.
 
 ## Using an IDE
 
-### Qt Creator
-
-1) Download and install Qt 5.9 or higher
-2) In Qt Creator:
-    1) File -> Open File or Project -> Select the root CMakeLists.txt file
-
-    2) If you're only interested in building the graphical UI, click on
-       Projects Icon -> in Build section, scroll down to **Build Steps**,
-       expand *details* uncheck everything except `visual_debugger`.
-
-       Then on Building icon (the one with the computer monitor) make sure
-       `visual_debuger` is selected under *Run*.
-
 ### CLion
 
+1) Open the project as usual with CLion by selecting the root CMakeLists.txt
 1) Import the code style settings located in `.idea/codeStyleSettings.xml`
-2) See [Using the command line](#using-the-command-line)
 
-### Using the command line
 
-1) Download and install Qt 5.9 or higher
-2) Update `env.cmake` with your Qt path.
-2) Invoke cmake as usually.
 
 
