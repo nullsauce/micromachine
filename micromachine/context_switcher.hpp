@@ -30,18 +30,17 @@ public:
 
 	void exception_return(uint32_t ret_address) override {
 		assert(_regs.exec_mode_register().is_handler_mode());
-		//fprintf(stderr,"exception_return from address %08x\n", ret_address);
-		// bits 4 to 24 are all ones
-		// TODO: make a nice function
+
+		// Ensure that bits 4 to 24 are set
 		if((uint32_t)binops::make_mask<24>() != (uint32_t)bits<4,24>::of(ret_address)) {
-			// unpredicatable
-			fprintf(stderr, "unpredicatable.\n");
+			// unpredictable
+			fprintf(stderr, "unpredictable.\n");
 		}
 
 		exception::Type exception_returning_from = _regs.interrupt_status_register().exception_num();
 
 		if(!_exception_vector.interrupt_state(exception_returning_from).is_active()) {
-			// unpredicatable
+			// unpredictable
 			fprintf(stderr, "return from an inactive handler\n");
 		}
 
