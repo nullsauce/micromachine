@@ -47,6 +47,11 @@ This project is a standard CMake project and should work fine using the command-
 See the CI scripts for examples.
 
 
+### Documentation resources
+
+* [ARM® v6-M Architecture Reference Manual](https://static.docs.arm.com/ddi0419/d/DDI0419D_armv6m_arm.pdf)
+* [ARM Infocenter](http://infocenter.arm.com/help/index.jsp)
+
 
 
 
