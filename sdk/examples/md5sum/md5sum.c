@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <tinyprintf.h>
 #include <control_registers.h>
+#include <system.h>
+
 #include "md5.h"
 
-
-extern char _heap_start;
 
 void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
 	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
@@ -38,9 +38,9 @@ void main() {
 	MD5_Init(&ctx);
 	const char* data = "md5";
 	MD5_Update(&ctx, data, 3);
-	MD5_Final(&_heap_start, &ctx);
+	MD5_Final(_system_heap_start, &ctx);
 	printf("md5 of '%s' is '", data);
-	print_hex(&_heap_start, 16);
+	print_hex(_system_heap_start, 16);
 	printf("'\n");
 }
 
