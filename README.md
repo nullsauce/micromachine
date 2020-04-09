@@ -13,7 +13,7 @@ c++ library containing all the emulation logic.
 `termdbg` contains a terminal UI application used for
 developing and debugging the cpu implementation.
 
-`run` contains the command-line app (vm) that can execute armv6-m executables
+`vm` contains the command-line app (vm) that can execute armv6-m executables
 
 `sdk` contains a standalone cmake project which acts as a poor man
 toolchain for now.

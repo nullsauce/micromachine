@@ -8,9 +8,8 @@ cmake_minimum_required(VERSION 3.2)
 if(MICROMACHINE_VM)
 	message(INFO "MICROMACHINE_VM=${MICROMACHINE_VM}")
 else()
-	message(FATAL_ERROR "${MICROMACHINE_VM} MICROMACHINE_VM not found. You must pass the path to the run_micromachine
-	 executable for
-	tests to be run.")
+	message(FATAL_ERROR "${MICROMACHINE_VM} MICROMACHINE_VM not found. You must pass the path to the micromachine vm
+	executable. It is used for running tests")
 endif()
 
 function(add_micromachine_executable)
