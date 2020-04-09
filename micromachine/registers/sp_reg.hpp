@@ -44,7 +44,7 @@ private:
 		// these two bits should always be zero, or UNPREDICTABLE
 		//fprintf(stderr, "SET SP=%08x\n", word);
 		if(word & MASK) {
-			// unpredicatable
+			// unpredictable
 		}
 		banked() = word;
 	}

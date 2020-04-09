@@ -130,7 +130,6 @@ private:
 	bool write(uint32_t address, access_t value) {
 		// Only check if this is a system control register
 		// access when access_t is uint32_t
-		// TODO: use static_if
 		if(std::is_same<uint32_t, access_t>::value) {
 			if(address >= 0xE0000000) {
 				auto reg_it = _system_control_registers.find(address);
