@@ -13,7 +13,7 @@ find_package(Threads)
 
 include(cotire)
 
-add_subdirectory(lib)
+add_subdirectory(micromachine)
 add_subdirectory(vm)
 add_subdirectory(termdbg)
 add_subdirectory(test)
