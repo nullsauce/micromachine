@@ -14,8 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
       - name: prepare
         run: |
           mkdir -p build
@@ -32,6 +30,8 @@ jobs:
         working-directory: build
         run: |
           ctest -V -L cpuTests
+      - name: Install SDK dependencies
+        run: sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
       - name: build and test sdk
         working-directory: build
         run: |
