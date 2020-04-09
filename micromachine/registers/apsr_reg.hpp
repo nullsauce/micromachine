@@ -21,10 +21,8 @@ struct apsr_reg : public xpsr_reg {
 		fprintf(stderr, "Z:%d, N:%d, C:%d, V:%d\n", zero_flag(), neg_flag(), carry_flag(), overflow_flag());
 	}
 
-	void copy_bits(uint32_t val) {
-		// TODO: Check why we must copy a reserved bit (No 27) instead of only 28-31
-		//_xpsr.write_bits(27, 0, val, 4);
-		flags_bits::of(_xpsr) = bits<0,4>::of(val);
+	flags_bits::integer_slice<uint32_t> flags() {
+		return flags_bits::of(_xpsr);
 	}
 
 	void reset() {
