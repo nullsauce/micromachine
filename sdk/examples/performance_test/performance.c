@@ -15,7 +15,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <tinyprintf.h>
 #include <entrypoint.h>
 #include <random.h>
-extern char _heap_start;
+#include <system.h>
 
 
 int fib(int n){
@@ -29,7 +29,7 @@ int fib(int n){
 }
 
 void main() {
-	volatile uint32_t* heap = (uint32_t*)&_heap_start;
+	volatile uint32_t* heap = (uint32_t*)_system_heap_start;
 	for(uint32_t i = 0; i < 10240; i++) {
 		heap[rand32() % 16] %= fib(rand32() % 16);
 		heap[rand32() % 16] ^= heap[rand32() % 16];
