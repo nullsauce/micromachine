@@ -355,8 +355,8 @@ struct standard_push_register_list : public generic_instruction<uint16_t> {
 		return binops::get_bit(_word, reg);
 	}
 
-	// TODO: rename to push_count
-	uint32_t pop_count() const {
+	uint32_t pushed_registers_count() const {
+		// Here popcount stands for population count. (nothing to do with push/pop)
 		return __builtin_popcount(_word);
 	}
 };
