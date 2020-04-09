@@ -259,6 +259,10 @@ public:
 		}}
 	{}
 
+	size_t highest_accepted_exception_number() {
+		return _indexed.size() - 1;
+	}
+
 private:
 	non_implemented_exception_state _used_for_sp;
 	fixed_priority_exception_state<-3> _reset;
@@ -276,6 +280,7 @@ private:
 	non_implemented_exception_state _reserved_8;
 	pri14_exception_state _pend_sv;
 	pri15_exception_state _sys_tick;
+	// TODO: Map the 16 remaining NVIC interrupts (NVIC 16-31) for a total of 48 exception states
 	nvic_based_exception_state<0> _ext_interrupt_0;
 	nvic_based_exception_state<1> _ext_interrupt_1;
 	nvic_based_exception_state<2> _ext_interrupt_2;
