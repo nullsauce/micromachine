@@ -6,7 +6,7 @@ micromachine aims to be an armv6-m emulator that can be used to simulate
 microcontrollers at the application level.
 
 ### Files
-`lib` contains the cpu emulation code. Most of it is header-only at the
+`micromachine` contains the cpu emulation code. Most of it is header-only at the
 moment. This might change in the future. This subproject generates a static
 c++ library containing all the emulation logic.
 
