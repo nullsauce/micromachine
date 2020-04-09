@@ -162,8 +162,7 @@ private:
 	template <typename access_t>
 	access_t read(uint32_t address, bool& ok) const {
 		// Only check if this is a system control register
-		// access when access_t is uint32_t
-		// TODO: use static_if
+		// on 32-bit memory accesses
 		if(std::is_same<uint32_t, access_t>::value) {
 			if(address >= 0xE0000000) {
 				auto reg_it = _system_control_registers.find(address);
