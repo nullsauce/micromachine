@@ -8,9 +8,9 @@ MEMORY
 
 /* define stack size and heap size here */
 
-heap_size = 8*1024;
+__heap_size = 8 * 1024;
 
-ENTRY(_isr_reset)
+ENTRY(_startup)
 
 /* Define output sections */
 SECTIONS
@@ -79,18 +79,20 @@ SECTIONS
         __bss_end__ = _ebss;
     } > RAM
 
+    __bss_size__ = __bss_end__ - __bss_start__;
+
     . = ALIGN(4);
     .heap (NOLOAD) :
     {
-       _heap_start = .;
-       . = . + heap_size;
-       _heap_end = .;
+       __heap_start = .;
+       . = . + __heap_size;
+       __heap_end = .;
     } > RAM
 
     . = ALIGN(4);
 
     _ram_end_ = ORIGIN(RAM) + LENGTH(RAM);
-    _stack_size = _ram_end_ - _heap_end;
+    _stack_size = _ram_end_ - __heap_end;
 
     .stack (NOLOAD) :
     {
