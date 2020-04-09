@@ -3,7 +3,6 @@
 ## Build status
 
 `master` ![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=master)
-`develop` ![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=develop)
 
 micromachine aims to be an armv6-m emulator that can be used to simulate
 microcontrollers at the application level.
