@@ -38,7 +38,7 @@ public:
 	RegistersView(cpu& cpu)
 		: _header(make_child<FoldableWidgetHeader>("Registers"))
 		, _cpu(cpu) {
-		memset(_previous_values, 0, 16);
+		memset(_previous_values, 0, sizeof(_previous_values));
 		regs_text.set_alignment(cppurses::Alignment::Left);
 		regs_text.clear();
 	}
