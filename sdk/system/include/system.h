@@ -20,4 +20,9 @@ extern void* _system_bss_start;
 extern void* _system_bss_end;
 extern uint32_t _system_bss_size;
 
+extern void* _system_data_start;
+extern void* _system_data_end;
+extern uint32_t _system_data_size;
+
+
 #endif //MICROMACHINE_SYSTEM_H
