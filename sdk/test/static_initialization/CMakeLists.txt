@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.2)
+project(static_initialization_test)
+
+add_executable(initialized_data_value
+	initialized_data_value.c
+)
+add_micromachine_executable(initialized_data_value)
+generate_dissasembly(initialized_data_value)
+
+add_executable(bss_is_zeroed
+	bss_is_zeroed.c
+)
+add_micromachine_executable(bss_is_zeroed)
+generate_dissasembly(bss_is_zeroed)
