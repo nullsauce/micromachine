@@ -1,6 +1,7 @@
 add_subdirectory(md5sum_test)
 add_subdirectory(timer_test)
 add_subdirectory(arithmetic_test)
+add_subdirectory(static_initialization)
 
 function(add_test_command)
 	set(test_name "${ARGV0}")
@@ -28,6 +29,18 @@ add_test_command(
 	arithmetic_test
 	${CMAKE_CURRENT_BINARY_DIR}/arithmetic_test/arithmetic_test
 	${CMAKE_CURRENT_SOURCE_DIR}/arithmetic_test/expected_stdout.txt
+)
+
+add_test_command(
+	data_nonzero_initialization
+	${CMAKE_CURRENT_BINARY_DIR}/static_initialization/initialized_data_value
+	${CMAKE_CURRENT_SOURCE_DIR}/static_initialization/initialized_data_value_expected_stdout.txt
+)
+
+add_test_command(
+	bss_zero_initialization
+	${CMAKE_CURRENT_BINARY_DIR}/static_initialization/bss_is_zeroed
+	${CMAKE_CURRENT_SOURCE_DIR}/static_initialization/bss_is_zeroed_expected_stdout.txt
 )
 
 
