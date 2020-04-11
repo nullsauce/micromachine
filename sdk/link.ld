@@ -56,12 +56,16 @@ SECTIONS
     {
         . = ALIGN(4);
         _sdata = .;        /* create a global symbol at data start */
+        __data_start__ = _sdata;
         *(.data)           /* .data sections */
         *(.data*)          /* .data* sections */
 
         . = ALIGN(4);
         _edata = .;        /* define a global symbol at data end */
+        __data_end__ = _edata;
     } >RAM
+
+    __data_size__ = __data_end__ - __data_start__;
 
     /* Uninitialized data section */
     . = ALIGN(4);
