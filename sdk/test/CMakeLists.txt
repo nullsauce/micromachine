@@ -1,6 +1,6 @@
 add_subdirectory(md5sum_test)
 add_subdirectory(timer_test)
-add_subdirectory(performance_test)
+add_subdirectory(arithmetic_test)
 
 function(add_test_command)
 	set(test_name "${ARGV0}")
@@ -22,6 +22,12 @@ add_test_command(
 	timer_test
 	${CMAKE_CURRENT_BINARY_DIR}/timer_test/timer_test
 	${CMAKE_CURRENT_SOURCE_DIR}/timer_test/expected_stdout.txt
+)
+
+add_test_command(
+	arithmetic_test
+	${CMAKE_CURRENT_BINARY_DIR}/arithmetic_test/arithmetic_test
+	${CMAKE_CURRENT_SOURCE_DIR}/arithmetic_test/expected_stdout.txt
 )
 
 

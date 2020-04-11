@@ -17,6 +17,13 @@ and/or distributed without the express permission of Flavio Roth.
 #include <random.h>
 #include <system.h>
 
+void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
+	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
+}
+
+void printf_putc(void* ptr, char c) {
+	io_call(0, c, 0, 0);
+}
 
 int fib(int n){
 	if ( n == 0 ) {
@@ -28,15 +35,35 @@ int fib(int n){
 	}
 }
 
+#define MAX_FIB_DEPTH 8
+#define NUM_ITERATIONS 256
+
 void main() {
+	init_printf(NULL, printf_putc);
+
 	volatile uint32_t* heap = (uint32_t*)_system_heap_start;
-	for(uint32_t i = 0; i < 10240; i++) {
-		heap[rand32() % 16] %= fib(rand32() % 16);
+
+	for(int i = 0; i < 16; i++) {
+		heap[i] = rand32();
+	}
+
+	for(int i = 0; i < 16; i++) {
+		printf("%08x\n", heap[i]);
+	}
+
+	printf("--------\n");
+	for(uint32_t i = 0; i < NUM_ITERATIONS; i++) {
 		heap[rand32() % 16] ^= heap[rand32() % 16];
-		heap[rand32() % 16] *= heap[rand32() % 16];
+		heap[rand32() % 16] /= 1 + fib(rand32() % MAX_FIB_DEPTH);
+		heap[rand32() % 16] *= fib(rand32() % MAX_FIB_DEPTH);
+		heap[rand32() % 16] += (fib(rand32() % MAX_FIB_DEPTH) * 0xff) % (1+fib(rand32() % MAX_FIB_DEPTH));
 		heap[rand32() % 16] -= heap[rand32() % 16];
 		heap[rand32() % 16] += heap[rand32() % 16];
-		heap[rand32() % 16] /= (rand32() % 4);
+		heap[rand32() % 16] += fib(heap[rand32() % MAX_FIB_DEPTH] % 16);
+	}
+
+	for(int i = 0; i < 16; i++) {
+		printf("%08x\n", heap[i]);
 	}
 }
 
