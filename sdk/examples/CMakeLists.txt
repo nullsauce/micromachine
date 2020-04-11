@@ -1,5 +1,3 @@
-add_subdirectory(performance_test)
-add_subdirectory(md5sum)
-add_subdirectory(timer_test)
+
 add_subdirectory(fault)
 add_subdirectory(hello_world)
