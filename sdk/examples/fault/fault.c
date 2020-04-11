@@ -16,8 +16,10 @@ and/or distributed without the express permission of Flavio Roth.
 #include <entrypoint.h>
 #include <random.h>
 
+#include "alib.h"
+
 void main() {
-	volatile uint32_t* bad = 0xffffffff;
+	volatile uint32_t* bad = a_lib_value;
 	while(1) *bad++;
 }
 

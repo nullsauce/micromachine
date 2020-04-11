@@ -3,8 +3,9 @@ project(fault_test)
 
 add_executable(fault
 	fault.c
-	$<TARGET_OBJECTS:system>
-	$<TARGET_OBJECTS:libaeabi>
 )
+
+add_library(alib alib.c alib.h)
 add_micromachine_executable(fault)
+target_link_libraries(fault PUBLIC alib)
 generate_dissasembly(fault)
