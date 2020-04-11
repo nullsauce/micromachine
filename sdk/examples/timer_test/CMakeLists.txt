@@ -3,8 +3,6 @@ project(timer_test)
 
 add_executable(timer_test
 	timer.c
-	$<TARGET_OBJECTS:system>
-	$<TARGET_OBJECTS:libaeabi>
 )
 add_micromachine_executable(timer_test)
 generate_dissasembly(timer_test)

@@ -16,6 +16,13 @@ function(add_micromachine_executable)
 	set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/link.ld)
 	set_target_properties(${ARGV0} PROPERTIES LINK_FLAGS "-T ${LINKER_SCRIPT}")
 	set_target_properties(${ARGV0} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
+
+	# appends the boot object sources to the target
+	target_sources(${ARGV0} PRIVATE $<TARGET_OBJECTS:boot>)
+
+	# appends the system library to the target
+	target_link_libraries(${ARGV0} PRIVATE system)
+
 endfunction()
 
 function(generate_dissasembly)
@@ -38,6 +45,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+add_subdirectory(boot)
 add_subdirectory(runtime-abi)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/system/include)
 add_subdirectory(system)
