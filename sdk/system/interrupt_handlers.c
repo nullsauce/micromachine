@@ -24,7 +24,7 @@ void _isr_nmi(void) {
 INTERRUPT_DEFAULT_IMPL
 void _isr_hardfault(void) {
 	// peek the return addres from the stack into r0
-	register uint32_t stack asm("sp");
+	register uint32_t stack __asm__("sp");
 	printf("ISR HARDFAULT %08x\n", stack);
 	breakpoint(0);
 }

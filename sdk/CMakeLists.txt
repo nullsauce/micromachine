@@ -12,7 +12,6 @@ else()
 endif()
 
 function(add_micromachine_executable)
-	set_property(TARGET ${ARGV0} PROPERTY C_STANDARD 11)
 	set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/link.ld)
 	set_target_properties(${ARGV0} PROPERTIES LINK_FLAGS "-T ${LINKER_SCRIPT}")
 	set_target_properties(${ARGV0} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})

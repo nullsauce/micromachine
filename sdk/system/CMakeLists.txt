@@ -21,4 +21,3 @@ set(HEADERS
 	include/system.h
 )
 add_library(system STATIC  ${HEADERS} ${SRCS})
-target_compile_features(system PRIVATE c_std_11)

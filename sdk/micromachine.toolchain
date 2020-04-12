@@ -16,21 +16,17 @@ set(CMAKE_ASM_COMPILER "${TARGET_PREFIX}as")
 
 UNSET(CMAKE_C_FLAGS CACHE)
 UNSET(CMAKE_CXX_FLAGS CACHE)
-set(CMAKE_C_FLAGS "-c -g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m"
-    CACHE STRING "" FORCE)
+set(COMMON_CFLAGS "-ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m")
+set(CMAKE_C_FLAGS "${COMMON_CFLAGS} -std=c11")
 # note that to avoid undefined reference to `__cxa_guard_acquire' the threadsafe static initialization of c++11 is
 # disabled
 # note that to avoid undefined reference to  `__dso_handle and `__aeabi_atexit the option -fno-use-cxa-atexit is added
-set(CMAKE_CXX_FLAGS "-g -std=c99 -ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions -march=armv6s-m" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "${COMMON_CFLAGS} -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions -march=armv6s-m")
 
 set(CUSTOM_LD_FLAGS "-nostdlib -nodefaultlibs -nostartfiles")
 
 set(CMAKE_C_LINK_FLAGS "${CUSTOM_LD_FLAGS}")
 set(CMAKE_CXX_LINK_FLAGS "${CUSTOM_LD_FLAGS}")
-
-set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
-set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINKER} <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
-
 
 # where is the target environment
 SET(CMAKE_FIND_ROOT_PATH ${CMAKE_SOURCE_DIR})
