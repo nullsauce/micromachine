@@ -5,10 +5,13 @@ add_executable(initialized_data_value
 	initialized_data_value.c
 )
 add_micromachine_executable(initialized_data_value)
-generate_dissasembly(initialized_data_value)
 
 add_executable(bss_is_zeroed
 	bss_is_zeroed.c
 )
 add_micromachine_executable(bss_is_zeroed)
-generate_dissasembly(bss_is_zeroed)
+
+add_executable(re_initialized_data_value
+	re_initialized_data_value.c
+)
+add_micromachine_executable(re_initialized_data_value)

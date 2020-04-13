@@ -6,7 +6,7 @@ set(SRCS
 	tinyprintf.c
 	random.c
 	mem.c
-	system.c
+	io.c
 	$<TARGET_OBJECTS:libaeabi>
 )
 set(HEADERS
@@ -19,5 +19,6 @@ set(HEADERS
 	include/tinyprintf.h
 	include/mem.h
 	include/system.h
+	include/io.h
 )
 add_library(system STATIC  ${HEADERS} ${SRCS})
