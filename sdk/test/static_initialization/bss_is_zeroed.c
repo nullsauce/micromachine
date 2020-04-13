@@ -17,16 +17,8 @@ and/or distributed without the express permission of Flavio Roth.
 #include <entrypoint.h>
 #include <random.h>
 #include <system.h>
-
-void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
-	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
-}
-
-void printf_putc(void* ptr, char c) {
-	io_call(0, c, 0, 0);
-}
-
-#define IS_IN_BSS(var) (((char*)&var) >= _system_bss_start && ((char*)&var) < _system_bss_end)
+#include <io.h>
+#include <startup.h>
 
 uint32_t test_variable_1;
 
@@ -35,8 +27,7 @@ static uint32_t test_variable_2;
 
 void main() {
 	static uint32_t test_variable_3;
-	init_printf(NULL, printf_putc);
-	printf("%08x %i\n", test_variable_1, IS_IN_BSS(test_variable_1));
-	printf("%08x %i\n", test_variable_2, IS_IN_BSS(test_variable_2));
-	printf("%08x %i\n", test_variable_3, IS_IN_BSS(test_variable_3));
+	printf("%08x %i\n", test_variable_1, _section_bss_contains(&test_variable_1));
+	printf("%08x %i\n", test_variable_2, _section_bss_contains(&test_variable_2));
+	printf("%08x %i\n", test_variable_3, _section_bss_contains(&test_variable_3));
 }
