@@ -9,17 +9,44 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "include/startup.h"
 #include "include/system.h"
+#include "include/io.h"
 #include "include/entrypoint.h"
 #include "include/instructions.h"
 
 #include <stdint.h>
 
+uint32_t _initial_size;
+
+static
+void _init_memory() {
+
+	for(uint32_t i = 0; i < _section_bss_size; i++) {
+		((uint8_t*)_section_bss_start)[i] = 0;
+	}
+
+	const uint8_t* init_data_ptr = (uint8_t*)_section_init_data_start;
+	const uint8_t* init_data_end = (uint8_t*)_section_init_data_end;
+	uint8_t* data_ptr = (uint8_t*)_section_data_start;
+	// for some reason, a standard loop with array access similar to
+	// the one used in the bss zeroing wont work as expected here and
+	// will run even when not expected to do so.
+	for(; init_data_ptr < init_data_end; init_data_ptr++, data_ptr++) {
+		*data_ptr = *init_data_ptr;
+	}
+}
+
+void _init() {
+	_init_memory();
+	_init_io();
+}
+
+
 void _startup() {
 
-	// zero out the bss
-	for (uint8_t* dst = (uint8_t*)_system_bss_start; dst < (uint8_t*)_system_bss_end; dst++) {
-		*dst = 0;
-	}
+
+	// init memory and io subsystems
+	_init();
+
 
 	// call main
 	main();

@@ -12,17 +12,49 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <stdint.h>
 
-extern void* _system_heap_start;
-extern void* _system_heap_end;
-extern uint32_t _system_heap_size;
 
-extern void* _system_bss_start;
-extern void* _system_bss_end;
-extern uint32_t _system_bss_size;
+// .data section properties
+extern char __data_start__;
+extern char __data_end__;
+extern char __data_size__;
 
-extern void* _system_data_start;
-extern void* _system_data_end;
-extern uint32_t _system_data_size;
+#define _section_data_start ((void*)&__data_start__)
+#define _section_data_end ((void*)&__data_end__)
+#define _section_data_size ((uint32_t)&__data_size__)
+#define _section_data_contains(address) (((uint8_t*)address >= (uint8_t*)_section_data_start) && ((uint8_t*)address < (uint8_t*)_section_data_end))
+
+
+// initialization for .data section properties
+extern char __init_data_start__;
+extern char __init_data_end__;
+extern char __init_data_size__;
+
+#define _section_init_data_start ((void*)&__init_data_start__)
+#define _section_init_data_end ((void*)&__init_data_end__)
+#define _section_init_data_size ((uint32_t)&__init_data_size__)
+#define _section_init_data_contains(address) (((uint8_t*)address >= (uint8_t*)_section_init_data_start) && ((uint8_t*)address < (uint8_t*)_section_init_data_end))
+
+
+// .bss section properties
+extern char __bss_start__;
+extern char __bss_end__;
+extern char __bss_size__;
+
+#define _section_bss_start ((void*)&__bss_start__)
+#define _section_bss_end ((void*)&__bss_end__)
+#define _section_bss_size ((uint32_t)&__bss_size__)
+#define _section_bss_contains(address) (((uint8_t*)address >= (uint8_t*)_section_bss_start) && ((uint8_t*)address < (uint8_t*)_section_bss_end))
+
+
+// .data section properties
+extern char __heap_start__;
+extern char __heap_end__;
+extern char __heap_size__;
+
+#define _section_heap_start ((void*)&__heap_start__)
+#define _section_heap_end ((void*)&__heap_end__)
+#define _section_heap_size ((uint32_t)&__heap_size__)
+#define _section_heap_contains(address) (((uint8_t*)address >= (uint8_t*)_section_heap_start) && ((uint8_t*)address < (uint8_t*)_section_heap_end))
 
 
 #endif //MICROMACHINE_SYSTEM_H

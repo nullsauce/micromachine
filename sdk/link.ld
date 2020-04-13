@@ -2,36 +2,41 @@
 /* Specify the memory areas */
 MEMORY
 {
-    FLASH (rx)      : ORIGIN = 0x00000000, LENGTH = 0x10000 /*64K*/
-    RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 0x04000 /*16K*/
+    ROM (rx)        : ORIGIN = 0x00000000, LENGTH = 0x10000 /*64K*/
+    RAM (rwx)       : ORIGIN = 0x20000000, LENGTH = 0x04000 /*16K*/
 }
 
-/* define stack size and heap size here */
+/* Specify the segments */
 
-__heap_size = 8 * 1024;
 
+/* Define stack size and heap size here */
+__heap_size__ = 0x1000;
+__stack_size = 0x2000;
+
+/* Specify the entry point */
 ENTRY(_startup)
 
 /* Define output sections */
 SECTIONS
 {
-    /* The startup code goes first into FLASH */
+    /* The startup code goes first into ROM */
     .isr_vector :
     {
         . = ALIGN(4);
-        _isr_vector_start = .;
+        __isr_vector_start = .;
         KEEP(*(.isr_vector)) /* without 'KEEP' the garbage collector discards this section */
-        ASSERT(. != _isr_vector_start, "The .isr_vector section is empty");
-        _isr_vector_end = .;
+        ASSERT(. != __isr_vector_start, "The .isr_vector section is empty");
+        __isr_vector_end = .;
         . = ALIGN(4);
-    } > FLASH
+    } > ROM
 
-    /* The program code and other data goes into FLASH */
+    /* The program code and other data goes into ROM */
     .text :
     {
         . = ALIGN(4);
         _stext = .;
         *(.text)           /* .text sections (code) */
+        *(.text.startup)   /* .text.startup (is used for static constructors and main()) */
         *(.text*)          /* .text* sections (code) */
         *(.rodata)         /* .rodata sections (constants, strings, etc.) */
         *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
@@ -39,48 +44,42 @@ SECTIONS
         *(.glue_7t)        /* glue thumb to arm code */
         . = ALIGN(4);
         _etext = .;        /* define a global symbols at end of code */
-    } > FLASH
-
-    .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
-    .ARM : {
-        __exidx_start = .;
-         *(.ARM.exidx*)
-         __exidx_end = .;
-    } > FLASH
+    } > ROM
 
     /* used by the startup to initialize data */
-    _sidata = .;
+    __init_data_start__ = LOADADDR(.data);
+
 
     /* Initialized data sections goes into RAM, load LMA copy after code */
-    .data : AT ( _sidata )
+    /* Aligned to 32 bit so that copy can be done with 32 bit words */
+    .data :
     {
         . = ALIGN(4);
-        _sdata = .;        /* create a global symbol at data start */
-        __data_start__ = _sdata;
-        *(.data)           /* .data sections */
-        *(.data*)          /* .data* sections */
-
+        __data_start__ = .; /* create a global symbol at data start */
+        *(.data)            /* .data sections */
+        *(.data*)           /* .data* sections */
         . = ALIGN(4);
-        _edata = .;        /* define a global symbol at data end */
-        __data_end__ = _edata;
-    } >RAM
+        __data_end__ = .;   /* define a global symbol at data end */
 
+    } > RAM AT >ROM
+
+    /* Compute size and end of section */
     __data_size__ = __data_end__ - __data_start__;
+    __init_data_size__ = __data_size__;
+    __init_data_end__ = __init_data_start__ + __init_data_size__;
 
     /* Uninitialized data section */
+    /* Aligned to 32 bit so that copy can be done with 32 bit words */
     . = ALIGN(4);
-    .bss :
+    .bss (NOLOAD) :
     {
         /*  Used by the startup in order to initialize the .bss secion */
-        _sbss = .;         /* define a global symbol at bss start */
-        __bss_start__ = _sbss;
+        __bss_start__ = .;  /* define a global symbol at bss start */
         *(.bss)
         *(.bss*)
         *(COMMON)
-
         . = ALIGN(4);
-        _ebss = .;         /* define a global symbol at bss end */
-        __bss_end__ = _ebss;
+        __bss_end__ = .;    /* define a global symbol at bss end */
     } > RAM
 
     __bss_size__ = __bss_end__ - __bss_start__;
@@ -88,26 +87,24 @@ SECTIONS
     . = ALIGN(4);
     .heap (NOLOAD) :
     {
-       __heap_start = .;
-       . = . + __heap_size;
-       __heap_end = .;
+       __heap_start__ = .;
+       . = . + __heap_size__;
+       __heap_end__ = .;
     } > RAM
 
     . = ALIGN(4);
 
     _ram_end_ = ORIGIN(RAM) + LENGTH(RAM);
-    _stack_size = _ram_end_ - __heap_end;
 
+    /* stack with a fixed size */
     .stack (NOLOAD) :
     {
         . = ALIGN(4);
         _stack_start = .;
-        . = . + _stack_size;
+        . = . + __stack_size;
         . = ALIGN(4);
         _stack_end = .;
     } > RAM
 
     _stack_bottom = _stack_end - 1;
-    .ARM.attributes 0 : { *(.ARM.attributes) }
-
-    }
+}

@@ -43,5 +43,11 @@ add_test_command(
 	${CMAKE_CURRENT_SOURCE_DIR}/static_initialization/bss_is_zeroed_expected_stdout.txt
 )
 
+add_test_command(
+	data_re_initialization
+	${CMAKE_CURRENT_BINARY_DIR}/static_initialization/re_initialized_data_value
+	${CMAKE_CURRENT_SOURCE_DIR}/static_initialization/re_initialized_data_value_expected_stdout.txt
+)
+
 
 

@@ -7,16 +7,13 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_STARTUP_H
-#define MICROMACHINE_STARTUP_H
+#ifndef MICROMACHINE_STDIO_H
+#define MICROMACHINE_STDIO_H
 
-#include <stdint.h>
+#include <tinyprintf.h>
 
-void _startup();
+void _putc();
+void _printf(char *fmt, ...);
+void _init_io();
 
-extern uint32_t _initial_size;
-
-void _init();
-
-
-#endif //MICROMACHINE_STARTUP_H
+#endif //MICROMACHINE_STDIO_H

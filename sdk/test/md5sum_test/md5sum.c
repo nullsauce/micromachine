@@ -8,18 +8,9 @@
 #include <tinyprintf.h>
 #include <control_registers.h>
 #include <system.h>
+#include <io.h>
 
 #include "md5.h"
-
-
-void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
-	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
-}
-
-void printf_putc(void* ptr, char c) {
-	io_call(0, c, 0, 0);
-}
-
 
 void print_hex(uint8_t* buffer, size_t size) {
 	const char* hex = "0123456789abcdef";
@@ -27,20 +18,19 @@ void print_hex(uint8_t* buffer, size_t size) {
 		uint8_t byte = buffer[i];
 		char lo = hex[(byte >> 0) & 0xf];
 		char hi = hex[(byte >> 4) & 0xf];
-		printf_putc(0, hi);
-		printf_putc(0, lo);
+		_putc(hi);
+		_putc(lo);
 	}
 }
 
 void main() {
 	MD5_CTX ctx = {0};
-	init_printf(NULL, printf_putc);
 	MD5_Init(&ctx);
 	const char* data = "md5";
 	MD5_Update(&ctx, data, 3);
-	MD5_Final(_system_heap_start, &ctx);
+	MD5_Final(_section_heap_start, &ctx);
 	printf("md5 of '%s' is '", data);
-	print_hex(_system_heap_start, 16);
+	print_hex(_section_heap_start, 16);
 	printf("'\n");
 }
 
