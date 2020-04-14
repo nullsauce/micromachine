@@ -48,7 +48,9 @@ The CMake project will generate a lot of not-so-useful targets. Here's a list of
 
 **termdbg** wont diplay properly in CLion's terminal. A possible workaround is to edit the target launch options so that your terminal of choice is launched instead.
 
-In the `Program arguments` input, insert:
+In the `Executable` input, choose `Select other...` and enter the full path of oyur gnome terminal (usually `/usr/bin/gnome-terminal`)
+
+In the `Program arguments` input, enter:
 
     --geometry 120x80 -- $CMakeCurrentProductFile$ $CMakeCurrentGenerationDir$/sdk/examples/hello_world/hello_world
 

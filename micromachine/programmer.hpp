@@ -27,19 +27,19 @@ public:
 
 		// memory will be filled with debug bytes
 		// if debug is enabled.
-		const bool _debug_enabled;
+		const bool _non_zero_fill;
 
 
 	public:
 		using ptr = std::shared_ptr<program>;
 		using memory_segment = std::vector<uint8_t>;
 
-		program(bool debug_enabled)
-			: _debug_enabled(debug_enabled)
+		program(bool non_zero_fill)
+			: _non_zero_fill(non_zero_fill)
 		{}
 
 		memory_segment& allocate_segment(size_t size) {
-			_memory.emplace_back(size, _debug_enabled ? DEBUG_FILL_BYTE : 0);
+			_memory.emplace_back(size, _non_zero_fill ? DEBUG_FILL_BYTE : 0);
 			return _memory.at(_memory.size()-1);
 		}
 
@@ -69,7 +69,7 @@ public:
 	};
 
 
-	static program::ptr load_elf(const std::string &path, memory& mem) {
+	static program::ptr load_elf(const std::string &path, memory& mem, bool testing_enabled) {
 
 		std::ifstream ifs(path, std::ios::binary);
 		if(!ifs) {
@@ -77,7 +77,7 @@ public:
 			return nullptr;
 		}
 
-		program::ptr prog = std::make_shared<program>(false);
+		program::ptr prog = std::make_shared<program>(testing_enabled);
 		prog->set_path(path);
 
 		ELFIO::elfio elfReader;
