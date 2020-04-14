@@ -28,8 +28,16 @@ ExternalProject_Add(micromachine_sdk_project
 		-DMICROMACHINE_VM=$<TARGET_FILE:micromachine_vm>
 		${CMAKE_SOURCE_DIR}/sdk
 	INSTALL_COMMAND ""
-	TEST_COMMAND ${CMAKE_CTEST_COMMAND} -V
 	DEPENDS micromachine_vm
 )
 
 add_custom_target(sdk ALL DEPENDS micromachine_sdk_project)
+
+add_custom_target(sdk_tests DEPENDS sdk)
+
+add_custom_command(
+	TARGET sdk_tests
+	COMMENT "Run SDK tests"
+	POST_BUILD COMMAND ${CMAKE_CTEST_COMMAND} ARGS -V
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/sdk/test
+)
