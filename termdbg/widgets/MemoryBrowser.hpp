@@ -21,21 +21,42 @@ and/or distributed without the express permission of Flavio Roth.
 #include "widgets/MemoryView.hpp"
 #include "widgets/InfoTable.hpp"
 #include "widgets/Helpers.hpp"
+#include "FormatedText.hpp"
 
 class MemoryBrowser : public cppurses::layout::Vertical {
 public:
 	cpu& _cpu;
 	FoldableWidgetHeader& _header;
-	HidableElement<CommandInput> _menu;
+	HidableElement<AddressInput> _goto_input;
 	HidableElement<MemorySegmentList> _memory_segments;
 	MemorySegmentInfo& _segment_info;
 	MemoryView& _memview;
 	InfoTable& _info_table {make_child<InfoTable>(4)};
+	const cppurses::Glyph_string _help_content = FormatedText()
+		.write("Goto address").write_color_f("................ ", cppurses::Color::Dark_gray)
+		.write_color_fb("G", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Browse segments").write_color_f("............. ", cppurses::Color::Dark_gray)
+		.write_color_fb("S", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Move cursor").write_color_f("................. ", cppurses::Color::Dark_gray)
+		.write_color_fb("Arrows", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Cancel text input").write_color_f("........... ", cppurses::Color::Dark_gray)
+		.write_color_fb("Esc", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Hide").write_color_f("........................ ", cppurses::Color::Dark_gray)
+		.write_color_fb("PageUp", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Show").write_color_f("........................ ", cppurses::Color::Dark_gray)
+		.write_color_fb("PageDown", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.str();
+
 
 	MemoryBrowser(cpu& cpu)
 	 : _cpu(cpu)
 	 , _header(this->make_child<FoldableWidgetHeader>("Memory"))
-	 , _menu(this, 1, cppurses::Glyph_string("command..."))
+	 , _goto_input(this, 1)
 	 , _memory_segments(this, 2, cpu.mem())
 	 , _segment_info(make_child<MemorySegmentInfo>())
  	 , _memview(make_child<MemoryView>()) {
@@ -62,22 +83,27 @@ public:
 		_info_table.make_cell<RightAlignedText>("i32");
 
 
-		_menu.getWidget().register_command("goto", std::regex("(goto) ([a-f0-9]+)"));
-		_menu.getWidget().command_parsed.connect([this](const std::string& command, const std::vector<std::string>& args){
-			if(process_command(command, args)) {
-				close_menu();
-			}
+
+		_goto_input.getWidget().input_aborted.connect([this](){
+			_goto_input.hide();
+			cppurses::Focus::set_focus_to(*this);
 		});
 
-		_menu.getWidget().input_aborted.connect([this](){
-			close_menu();
+		_goto_input.getWidget().validated.connect([this](){
+			if(_goto_input.getWidget().parse_success()) {
+				uint32_t address = _goto_input.getWidget().address();
+				if(goto_address(address)) {
+					_goto_input.hide();
+					cppurses::Focus::set_focus_to(*this);
+				} else {
+					_goto_input.getWidget().mark_invalid();
+				}
+			}
+			update();
 		});
 
-		key_pressed.connect([this](cppurses::Key::Code key){
-			if(key == cppurses::Key::o) {
-				open_menu();
-			}
-		});
+
+		_memory_segments.getWidget().height_policy.min_size(_cpu.mem().regions().size() + 2);
 
 		_memory_segments.getWidget().segment_selected.connect([this](size_t segment_index){
 			_memory_segments.hide();
@@ -85,10 +111,12 @@ public:
 			_memview.set_segment(segment);
 			_segment_info.set_segment(segment);
 			_info_table.set_segment(segment);
+			cppurses::Focus::set_focus_to(*this);
 		});
 
 		_memory_segments.getWidget().input_cancelled.connect([this](){
 			_memory_segments.hide();
+			cppurses::Focus::set_focus_to(*this);
 		});
 
 		if(!_cpu.mem().regions().empty()) {
@@ -99,38 +127,16 @@ public:
 		}
 	}
 
-	void close_menu() {
-		_menu.hide();
-	}
-
-	void open_menu() {
-		_menu.show();
+	const cppurses::Glyph_string& help_content() const {
+		return _help_content;
 	}
 
 	void update() override {
 		_info_table.set_segment_offset(_memview.cursor_offset());
 		_memview.update();
 		_info_table.update();
-		return cppurses::layout::Vertical::update();
-	}
 
-	bool process_command(const std::string& command, const std::vector<std::string>& args) {
-		if(command == "goto" && args.size() > 0) {
-			uint32_t address = 0;
-			if(1 == sscanf(args[0].data(), "%x", &address)) {
-				const memory_mapping* segment = _cpu.mem().find_const_region(address);
-				if(segment) {
-					_memview.set_segment(segment);
-					_segment_info.set_segment(segment);
-					_info_table.set_segment(segment);
-					_memview.navigate_to_address(address);
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
-		return true;
+		return cppurses::layout::Vertical::update();
 	}
 
 	bool paint_event() override {
@@ -139,7 +145,7 @@ public:
 	}
 
 	void render() {
-		char buff[32];
+		static char buff[32];
 		snprintf(buff, 32, "%08x", _memview.cursor_offset());
 		_info_table.get_cell_at<RightAlignedText>(0,0).set_contents(buff);
 	}
@@ -147,11 +153,11 @@ public:
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
 		auto key = keyboard.key;
 
-		if(key == cppurses::Key::Code::o) {
-			_menu.show();
+		if(key == cppurses::Key::Code::g) {
+			_goto_input.show();
 			update();
 			return true;
-		} if(key == cppurses::Key::Code::m) {
+		} if(key == cppurses::Key::Code::s) {
 			_memory_segments.show();
 			update();
 			return true;
@@ -201,6 +207,19 @@ public:
 		_header.unselect();
 		this->update();
 		return Widget::focus_out_event();
+	}
+
+	bool goto_address(uint32_t address) {
+		const memory_mapping* segment = _cpu.mem().find_const_region(address);
+		if(segment) {
+			_memview.set_segment(segment);
+			_segment_info.set_segment(segment);
+			_info_table.set_segment(segment);
+			_memview.navigate_to_address(address);
+			return true;
+		} else {
+			return false;
+		}
 	}
 };
 

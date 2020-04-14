@@ -817,7 +817,7 @@ static void exec(const pop instruction, registers& regs, memory& mem) {
 
 static void exec(const bkpt instruction, bool& break_signal) {
 	break_signal = true;
-	fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8().extract());
+	//fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8().extract());
 }
 
 static void exec(const rev_word instruction, registers& regs) {

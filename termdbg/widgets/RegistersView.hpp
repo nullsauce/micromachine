@@ -30,7 +30,7 @@ private:
 		"R8 ","R9 ","R10","R11",
 		"R12","SP ","LR ","PC "
 	};
-
+	char _line_buffer[64] = {0};
 public:
 
 	cppurses::Text_display& regs_text{this->make_child<cppurses::Text_display>()};
@@ -51,18 +51,18 @@ public:
 	void render() {
 		regs_text.clear();
 		for(int i = 0; i < 16; i++) {
-			char line[64] = {0};
+
 			uint32_t actual_reg_value = _cpu.regs().get(i);
 			uint32_t previous_reg_value = _previous_values[i];
 			bool changed = previous_reg_value != actual_reg_value;
 			_previous_values[i] = actual_reg_value;
-			sprintf(line, "%s %08x\n", register_names[i], actual_reg_value);
+			sprintf(_line_buffer, "%s %08x\n", register_names[i], actual_reg_value);
 			if(changed) {
 				regs_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
-				regs_text.append(line);
+				regs_text.append(_line_buffer);
 				regs_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
 			} else {
-				regs_text.append(line);
+				regs_text.append(_line_buffer);
 			}
 		}
 	}

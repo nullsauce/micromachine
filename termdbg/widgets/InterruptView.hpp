@@ -32,22 +32,22 @@ namespace {
 			"reserved_8",
 			"Pend SV",
 			"Systick",
-			"External Interrupt 0",
-			"External Interrupt 1",
-			"External Interrupt 2",
-			"External Interrupt 3",
-			"External Interrupt 4",
-			"External Interrupt 5",
-			"External Interrupt 6",
-			"External Interrupt 7",
-			"External Interrupt 8",
-			"External Interrupt 9",
-			"External Interrupt 10",
-			"External Interrupt 11",
-			"External Interrupt 12",
-			"External Interrupt 13",
-			"External Interrupt 14",
-			"External Interrupt 15"
+			"EXTI 0",
+			"EXTI 1",
+			"EXTI 2",
+			"EXTI 3",
+			"EXTI 4",
+			"EXTI 5",
+			"EXTI 6",
+			"EXTI 7",
+			"EXTI 8",
+			"EXTI 9",
+			"EXTI 10",
+			"EXTI 11",
+			"EXTI 12",
+			"EXTI 13",
+			"EXTI 14",
+			"EXTI 15"
 
 	};
 
@@ -64,15 +64,14 @@ namespace {
 
 class InterruptView : public cppurses::layout::Vertical {
 private:
-	const exception_state_vector& _exception_state;
-	const ipsr_reg& _ipsr_reg;
+	cpu& _cpu;
 	FoldableWidgetHeader& _header;
 	cppurses::Text_display& _interrupt_list;
+	wchar_t _line_buffer[128] = {};
 
 public:
-	InterruptView(const exception_state_vector& exception_state, const ipsr_reg& ipsr_reg)
-		: _exception_state(exception_state)
-		, _ipsr_reg(ipsr_reg)
+	InterruptView(cpu& cpu)
+		: _cpu(cpu)
 		, _header(make_child<FoldableWidgetHeader>("Interrupts"))
 		, _interrupt_list(make_child<cppurses::Text_display>())
 		{}
@@ -85,22 +84,25 @@ public:
 
 	void render() {
 		_interrupt_list.clear();
-		wchar_t line[128];
+
 
 		for(size_t interrupt_number : interrupts_of_interest) {
-			const exception::Type current_active = _ipsr_reg.exception_num();
-			const exception_state& state = _exception_state.at(interrupt_number);
+			const exception::Type current_active = _cpu.regs().interrupt_status_register().exception_num();
+			const exception_state& state = _cpu.exceptions().at(interrupt_number);
+			uint32_t vector_table_offset = sizeof(uint32_t) * state.number();
+			uint32_t handler_address = _cpu.mem().read32(vector_table_offset) & ~1;
 			const char* name = interrupt_names[interrupt_number];
 			wchar_t symbol = state.is_active() ? L'⎆' : state.is_pending() ? L'⚑' : ' ';
-			swprintf(line, sizeof(line), L"%02i %lc %s\n"
+			swprintf(_line_buffer, sizeof(_line_buffer), L"%02i %lc %08x %s\n"
 				, interrupt_number
 				, symbol
+				, handler_address
 				, name
 			);
 			if(interrupt_number == current_active) {
 				_interrupt_list.insert_brush.add_attributes(cppurses::Attribute::Standout);
 			}
-			_interrupt_list.append(line);
+			_interrupt_list.append(_line_buffer);
 			_interrupt_list.insert_brush.clear_attributes();
 		}
 

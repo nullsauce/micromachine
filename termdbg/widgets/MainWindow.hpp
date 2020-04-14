@@ -15,6 +15,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <cppurses/cppurses.hpp>
 
 #include "BreakpointManager.hpp"
+#include "ExecutionController.hpp"
 #include "widgets/TopMenuView.hpp"
 #include "widgets/DisasmView.hpp"
 #include "widgets/BreakpointManagerView.hpp"
@@ -27,36 +28,35 @@ class MainWindow : public cppurses::layout::Vertical {
 private:
 	cpu& _cpu;
 	BreakpointManager _breakpoint_manager;
+	ExecutionController _execution_controller;
 	TopMenuView& _top_menu;
 	cppurses::layout::Horizontal& _main_content_layout;
 	cppurses::layout::Vertical& _left_col_layout;
 	cppurses::layout::Vertical& _mid_col_layout;
 	cppurses::layout::Vertical& _right_col_layout;
 	DisasmView& _disasm_view;
-	BreakPointManagerView& _breakpoint_manager_view;
+	cppurses::Text_display& _help;
 	RegistersView& _registers_view;
+	BreakPointManagerView& _breakpoint_manager_view;
 	MemoryBrowser& _memory_browser;
 	InterruptView& _interrupt_view;
-	bool _process_steps;
-
 
 public:
 	MainWindow(cpu& cpu)
 		: _cpu(cpu)
+		, _execution_controller(_cpu, _breakpoint_manager)
 		, _top_menu(this->make_child<TopMenuView>())
 		, _main_content_layout(this->make_child<cppurses::layout::Horizontal>())
 		, _left_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
 		, _mid_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
 		, _right_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
-		, _disasm_view(_left_col_layout.make_child<DisasmView>(_cpu, _breakpoint_manager))
-		, _breakpoint_manager_view(_mid_col_layout.make_child<BreakPointManagerView>(_breakpoint_manager))
+		, _disasm_view(_left_col_layout.make_child<DisasmView>(_cpu, _breakpoint_manager, _execution_controller))
+		, _help(_left_col_layout.make_child<cppurses::Text_display>())
 		, _registers_view(_mid_col_layout.make_child<RegistersView>(_cpu))
+		, _breakpoint_manager_view(_mid_col_layout.make_child<BreakPointManagerView>(_breakpoint_manager))
 		, _memory_browser(_right_col_layout.make_child<MemoryBrowser>(cpu))
-		, _interrupt_view(_right_col_layout.make_child<InterruptView>(cpu.exceptions(), cpu.regs().interrupt_status_register()))
-		, _process_steps(false)
+		, _interrupt_view(_right_col_layout.make_child<InterruptView>(cpu))
 	{
-
-		focus_policy = cppurses::Focus_policy::Tab;
 
 		_top_menu.height_policy.fixed(1);
 
@@ -64,48 +64,45 @@ public:
 		_main_content_layout.height_policy.expanding(1000);
 		_main_content_layout.border.disable();
 
+		_left_col_layout.width_policy.fixed(40);
 
-		//_left_col_layout.border.enable();
-		_mid_col_layout.width_policy.fixed(14);
-		//_right_col_layout.border.enable();
+		_mid_col_layout.border.enable();
+		_mid_col_layout.border.segments.disable_all();
+		_mid_col_layout.border.segments.east.enable();
+		_mid_col_layout.border.segments.west.enable();
+		_mid_col_layout.width_policy.fixed(16);
+
+		_help.height_policy.fixed(10);
+		_help.border.enable();
 
 		_disasm_view.focus_policy = cppurses::Focus_policy::Tab;
 		_disasm_view.border.enable();
 		_disasm_view.border.segments.disable_all();
-		_disasm_view.border.segments.east.enable();
-		_disasm_view.border.segments.north_east.enable();
 		_disasm_view.border.segments.north.enable();
 
-		_breakpoint_manager_view.focus_policy = cppurses::Focus_policy::Tab;
-		_breakpoint_manager_view.height_policy.fixed(8);
-		_breakpoint_manager_view.border.enable();
-		_breakpoint_manager_view.border.segments.disable_all();
-		_breakpoint_manager_view.border.segments.east.enable();
-		_breakpoint_manager_view.border.segments.north_east.enable();
-		_breakpoint_manager_view.border.segments.north.enable();
-
-		_registers_view.focus_policy = cppurses::Focus_policy::Tab;
+		_registers_view.focus_policy = cppurses::Focus_policy::None;
 		_registers_view.height_policy.fixed(20);
 		_registers_view.border.enable();
 		_registers_view.border.segments.disable_all();
-		_registers_view.border.segments.east.enable();
-		_registers_view.border.segments.north_east.enable();
 		_registers_view.border.segments.north.enable();
-		_registers_view.border.segments.south.enable();
+
+		_breakpoint_manager_view.focus_policy = cppurses::Focus_policy::Tab;
+		_breakpoint_manager_view.border.enable();
+		_breakpoint_manager_view.border.segments.disable_all();
+		_breakpoint_manager_view.border.segments.north.enable();
 
 		_memory_browser.focus_policy = cppurses::Focus_policy::Tab;
 		_memory_browser.height_policy.max_size(25);
-		_memory_browser.width_policy.fixed(46);
+		_memory_browser.width_policy.fixed(58);
 		_memory_browser.border.enable();
 		_memory_browser.border.segments.disable_all();
 		_memory_browser.border.segments.north.enable();
-		_memory_browser.border.segments.south.enable();
 
-		_interrupt_view.focus_policy = cppurses::Focus_policy::Tab;
+		_interrupt_view.focus_policy = cppurses::Focus_policy::None;
 		_interrupt_view.height_policy.max_size(25);
 		_interrupt_view.border.enable();
 		_interrupt_view.border.segments.disable_all();
-		_interrupt_view.border.segments.south.enable();
+		_interrupt_view.border.segments.north.enable();
 
 
 		_cpu.set_io_callback([this](uint8_t op, uint8_t data){
@@ -117,66 +114,39 @@ public:
 			}
 		});
 
+		_execution_controller.update_required.connect([this](){
+			update();
+		});
+
 		enable_animation(std::chrono::milliseconds(10));
+
+		_disasm_view.focused_in.connect([this]{ _help.set_contents(_disasm_view.help_content()); });
+		_breakpoint_manager_view.focused_in.connect([this]{ _help.set_contents(_breakpoint_manager_view.help_content()); });
+		_memory_browser.focused_in.connect([this]{ _help.set_contents(_memory_browser.help_content()); });
+
+		focus_policy = cppurses::Focus_policy::None;
+
 	}
 
-	bool key_press_event(const cppurses::Key::State& keyboard) override {
-		if(paused() && keyboard.key == cppurses::Key::s) {
-			step();
-			return true;
-		} else if(paused() && keyboard.key == cppurses::Key::r) {
-			resume();
-			return true;
-		} else if(!paused() && keyboard.key == cppurses::Key::p) {
-			pause();
-			return true;
-		}
-		return false;
-	}
-
-	void resume() {
-		_process_steps = true;
-	}
-
-	void pause() {
-		_process_steps = false;
-	}
-
-	bool paused() const {
-		return !_process_steps;
-	}
-
-	bool step(size_t cpu_steps = 1) {
-		bool interrupted = false;
-		_breakpoint_manager.clear_reached_state();
-
-		for(size_t i = 0; i < cpu_steps; i++) {
-			_cpu.step();
-			uint32_t addr = _cpu.regs().get_pc();
-			BreakpointManager::MaybeBreakpoint bp = _breakpoint_manager.breakpoint_at(addr);
-			bool breakpoint_found = bp.second;
-			auto& breakpoint = bp.first->second;
-			if(breakpoint_found && breakpoint.enabled()) {
-				breakpoint.set_reached(true);
-				interrupted = true;
-				break;
-			}
-		}
-		update();
-		return interrupted;
+	DisasmView& disasm_view() {
+		return _disasm_view;
 	}
 
 	bool timer_event() override {
-		if(paused()) return false;
-		if(step(100)) {
-			pause();
-		} else {
-			resume();
+		static bool initial_update_done = false;
+
+		if(!initial_update_done) {
+			for(auto w : children.get_descendants()) {
+				w->update();
+			}
+			initial_update_done = true;
 		}
+
+		_execution_controller.run_multi_steps();
 		return Widget::timer_event();
 	}
 
-	void update() override  {
+	void update() override {
 		_main_content_layout.update();
 		_disasm_view.update();
 		_registers_view.update();

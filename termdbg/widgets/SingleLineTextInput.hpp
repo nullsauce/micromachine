@@ -28,7 +28,7 @@ public:
 		enable_placeholder();
 		height_policy.fixed(3);
 		border.enable();
-
+		disable_word_wrap();
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) override {
@@ -45,6 +45,7 @@ public:
 			if(_placeholder_is_set) {
 				disable_placeholder();
 			}
+
 			bool res = Textbox::key_press_event(keyboard);
 			text_changed(this->contents());
 			return res;
