@@ -84,15 +84,19 @@ This project is a standard CMake project and should work fine using the command-
 See the CI scripts for examples.
 
 
-
-
-
 ### Documentation resources
 
 * [ARM® v6-M Architecture Reference Manual](https://static.docs.arm.com/ddi0419/d/DDI0419D_armv6m_arm.pdf)
 * [ARM Infocenter](http://infocenter.arm.com/help/index.jsp)
 
 
-
+### We use their code
+* [cotire](https://github.com/sakra/cotire) by Sascha Kratky
+* [CPPurses](https://github.com/a-n-t-h-o-n-y/CPPurses) by a-n-t-h-o-n-y
+* [ELFIO](https://github.com/serge1/ELFIO) by Serge Lamikhov
+* [libaeabi-cortexm0](https://github.com/bobbl/libaeabi-cortexm0) by
+  Jörg Mische
+* [googletest](https://github.com/google/googletest) by Google
+* [cxxopts](https://github.com/jarro2783/cxxopts) by Jarryd Beck
 
 
