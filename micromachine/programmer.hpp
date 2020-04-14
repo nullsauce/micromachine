@@ -13,59 +13,33 @@ and/or distributed without the express permission of Flavio Roth.
 #include "memory/memory.hpp"
 #include "elfio/elfio.hpp"
 
-namespace {
-
-void hexdump(const void* ptr, int buflen) {
-	unsigned char *buf = (unsigned char*)ptr;
-	int i, j;
-	fprintf(stdout,"\npacket of %d bytes\n", buflen);
-	for (i=0; i<buflen; i+=16) {
-		fprintf(stdout, "%06x: ", i);
-		for (j=0; j<16; j++) {
-			if (i+j < buflen) {
-				fprintf(stdout, "%02x ", buf[i+j]);
-			} else {
-				fprintf(stdout, "   ");
-			}
-		}
-		printf(" ");
-		for (j=0; j<16; j++) {
-			if (i+j < buflen) {
-				fprintf(stdout, "%c", isprint(buf[i+j]) ? buf[i+j] : '.');
-			}
-		}
-		fprintf(stdout, "\n");
-	}
-}
-
-}
 
 class programmer {
 private:
-	struct membuf : std::streambuf {
-		membuf(char* begin, char* end) {
-			this->setg(begin, begin, end);
-		}
-	};
+	// the byte used in lieu of zeroes when allocating segments
+	static constexpr uint8_t DEBUG_FILL_BYTE = 0xCD;
 
 public:
 
+
 	class program {
 	private:
-		uint8_t* const _data;
-		const  size_t _size;
+
+		// memory will be filled with debug bytes
+		// if debug is enabled.
+		const bool _debug_enabled;
+
 
 	public:
 		using ptr = std::shared_ptr<program>;
 		using memory_segment = std::vector<uint8_t>;
 
-		program(size_t size)
-			: _data((uint8_t*)calloc(1, size))
-			, _size(size)
+		program(bool debug_enabled)
+			: _debug_enabled(debug_enabled)
 		{}
 
 		memory_segment& allocate_segment(size_t size) {
-			_memory.emplace_back(size, (uint8_t)0);
+			_memory.emplace_back(size, _debug_enabled ? DEBUG_FILL_BYTE : 0);
 			return _memory.at(_memory.size()-1);
 		}
 
@@ -88,22 +62,6 @@ public:
 			_path = path;
 		}
 
-		uint8_t* data() {
-			return _data;
-		}
-
-		const uint8_t* data() const {
-			return _data;
-		}
-
-		size_t size() const {
-			return _size;
-		}
-
-		membuf memory_buffer() const {
-			return membuf((char*)data(), (char*)data() + size());
-		}
-
 	private:
 		std::vector<memory_segment> _memory;
 		uint32_t _entry_point = 0;
@@ -113,26 +71,17 @@ public:
 
 	static program::ptr load_elf(const std::string &path, memory& mem) {
 
-		std::ifstream ifs(path, std::ios::binary|std::ios::ate);
+		std::ifstream ifs(path, std::ios::binary);
 		if(!ifs) {
 			fprintf(stderr, "Failed to open file path=%s\n", path.c_str());
 			return nullptr;
 		}
 
-		std::ifstream::pos_type size = ifs.tellg();
-		program::ptr prog = std::make_shared<program>(size);
+		program::ptr prog = std::make_shared<program>(false);
 		prog->set_path(path);
 
-		ifs.seekg(0, std::ios::beg);
-		ifs.read((char*)prog->data(), prog->size());
-
-		//membuf memory = prog->memory_buffer();
-		//std::istream memory_stream(&memory);
-		std::istringstream ss;
-		ss.rdbuf()->pubsetbuf((char*)prog->data(),prog->size());
-
 		ELFIO::elfio elfReader;
-		if (!elfReader.load(ss)) {
+		if (!elfReader.load(ifs)) {
 			return prog;
 		}
 
