@@ -42,9 +42,9 @@ private:
 	InterruptView& _interrupt_view;
 
 public:
-	MainWindow(cpu& cpu)
+	MainWindow(cpu& cpu, uint32_t entry_point)
 		: _cpu(cpu)
-		, _execution_controller(_cpu, _breakpoint_manager)
+		, _execution_controller(_cpu, entry_point, _breakpoint_manager)
 		, _top_menu(this->make_child<TopMenuView>())
 		, _main_content_layout(this->make_child<cppurses::layout::Horizontal>())
 		, _left_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
