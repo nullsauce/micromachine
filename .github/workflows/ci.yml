@@ -14,25 +14,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: prepare
+      - name: Prepare environment
         run: |
           mkdir -p build
           cd build
-      - name: configure
+      - name: Configure
         working-directory: build
         run: |
           cmake -DCMAKE_BUILD_TYPE=Release ..
-      - name: build tests
+      - name: Build micromachine tests
         working-directory: build
         run: |
           make -j $(nproc) all_tests
-      - name: run tests
-        working-directory: build
+      - name: Run micromachine tests
+        working-directory: build/test
         run: |
-          ctest -V -L cpuTests
+          ctest -V
       - name: Install SDK dependencies
         run: sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
-      - name: build and test sdk
+      - name: Build micromachine SDK
         working-directory: build
         run: |
           make -j $(nproc) sdk
+      - name: Run micromachine SDK tests
+        working-directory: build/sdk/test
+        run: |
+           ctest -V
