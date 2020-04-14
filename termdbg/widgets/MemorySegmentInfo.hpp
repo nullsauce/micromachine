@@ -21,7 +21,7 @@ private:
 	cppurses::Text_display& _segment_size {make_child<cppurses::Text_display>("")};
 	cppurses::Text_display& _segment_start {make_child<cppurses::Text_display>("")};
 	cppurses::Text_display& _segment_end {make_child<cppurses::Text_display>("")};
-
+	char _line_buffer[64] = {0};
 public:
 
 	MemorySegmentInfo() {
@@ -62,18 +62,18 @@ public:
 
 	void render() {
 		if(nullptr == _segment) return;
-		char buf[64];
-		snprintf(buf, sizeof(buf), "segment\n%s", _segment->name().c_str());
-		_segment_name.set_contents(buf);
 
-		snprintf(buf, sizeof(buf), "size\n%08x", _segment->size());
-		_segment_size.set_contents(buf);
+		snprintf(_line_buffer, sizeof(_line_buffer), "segment\n%s", _segment->name().c_str());
+		_segment_name.set_contents(_line_buffer);
 
-		snprintf(buf, sizeof(buf), "start\n%08x", _segment->start());
-		_segment_start.set_contents(buf);
+		snprintf(_line_buffer, sizeof(_line_buffer), "size\n%08x", _segment->size());
+		_segment_size.set_contents(_line_buffer);
 
-		snprintf(buf, sizeof(buf), "end\n%08x", _segment->end());
-		_segment_end.set_contents(buf);
+		snprintf(_line_buffer, sizeof(_line_buffer), "start\n%08x", _segment->start());
+		_segment_start.set_contents(_line_buffer);
+
+		snprintf(_line_buffer, sizeof(_line_buffer), "end\n%08x", _segment->end());
+		_segment_end.set_contents(_line_buffer);
 	}
 
 };

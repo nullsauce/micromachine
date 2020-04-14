@@ -28,24 +28,34 @@ private:
 	cppurses::Text_display& _breakpoint_list;
 	bool _active;
 	size_t _scroll_offset;
+	const cppurses::Glyph_string _help_content = FormatedText()
+		.write("Add a new breakpoint").write_color_f("........ ", cppurses::Color::Dark_gray)
+		.write_color_fb("N", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Toggle breakpoint").write_color_f("........... ", cppurses::Color::Dark_gray)
+		.write_color_fb("Space", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Delete breakpoint").write_color_f("........... ", cppurses::Color::Dark_gray)
+		.write_color_fb("Del", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Navigate the list with").write_color_f("...... ", cppurses::Color::Dark_gray)
+		.write_color_fb("Up/Down", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Cancel text input").write_color_f("........... ", cppurses::Color::Dark_gray)
+		.write_color_fb("Esc", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.str();
+	wchar_t _line_buffer[128] = {0};
 
 public:
 	BreakPointManagerView(BreakpointManager& breakpoint_manager)
 		: _selected_index(0)
 		, _breakpoint_manager(breakpoint_manager)
 		, _header(this->make_child<FoldableWidgetHeader>("Breakpoints"))
-		, _new_breakpoint_address(this, 1, "address")
+		, _new_breakpoint_address(this, 1)
 		, _breakpoint_list(this->make_child<cppurses::Text_display>())
 		, _active(false)
 		, _scroll_offset(0)
 	{
-		_breakpoint_manager.create_breakpoint_at(0xca);
-		_breakpoint_manager.create_breakpoint_at(0xce);
-		_breakpoint_manager.create_breakpoint_at(0xc8);
-		_breakpoint_manager.toggle_breakpoint_at(0xc8);
-		_breakpoint_manager.create_breakpoint_at(0x1234);
-		_breakpoint_manager.create_breakpoint_at(0x4000);
-		_breakpoint_manager.create_breakpoint_at(0x0);
 
 		_new_breakpoint_address.getWidget().input_aborted.connect([this](){
 			_new_breakpoint_address.hide();
@@ -64,6 +74,10 @@ public:
 
 	}
 
+	const cppurses::Glyph_string& help_content() const {
+		return _help_content;
+	}
+
 	bool paint_event() override {
 		render();
 		return Widget::paint_event();
@@ -80,7 +94,7 @@ public:
 			_breakpoint_list.brush.set_foreground(cppurses::Color::White);
 			_breakpoint_list.set_alignment(cppurses::Alignment::Left);
 
-			wchar_t line[128] = {0};
+
 
 			size_t index = _scroll_offset;
 			auto it = _breakpoint_manager.begin();
@@ -103,12 +117,12 @@ public:
 				}
 				wchar_t indicator = breakpoint.second.reached() ? L'\x1f846' : breakpoint.second.enabled() ? L'✓' :
 				L'✗';
-				swprintf(line, sizeof(line), L"%lc %08x %lc\n"
+				swprintf(_line_buffer, sizeof(_line_buffer), L"%lc %08x %lc\n"
 					, indicator
 					, breakpoint.first
 					, is_selected_breakpoint ? L'◄' : L' '
 				);
-				_breakpoint_list.append(line);
+				_breakpoint_list.append(_line_buffer);
 				_breakpoint_list.insert_brush.clear_attributes();
 
 				std::advance(bp_it, 1);

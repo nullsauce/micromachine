@@ -34,9 +34,10 @@ int main(int argc, const char** argv) {
 	cpu_instance.reset(program->entry_point());
 
 	cppurses::System sys;
-	MainWindow demo_menu(cpu_instance);
-	demo_menu.width_policy.min_size(100);
-	cppurses::System::set_initial_focus(&demo_menu);
 
-	return sys.run(demo_menu);
+	MainWindow main_window(cpu_instance);
+	main_window.width_policy.min_size(100);
+	cppurses::System::set_initial_focus(&main_window.disasm_view());
+
+	return sys.run(main_window);
 }

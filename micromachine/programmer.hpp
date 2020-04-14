@@ -180,6 +180,7 @@ public:
 			const uint32_t segment_index = elf_segment->get_index();
 			const bool has_progbits = progbits_size != 0;
 			const bool requires_relocation = has_progbits && virtual_address != physical_address;
+			const std::string segment_name = std::string("seg."+ std::to_string(segment_index));
 
 			fprintf(stderr, "segment [%02i] : virtual=%08x physical=%08x map=%s size=%08x progbits=%s "
 				   "relocation=%s\n"
@@ -218,7 +219,7 @@ public:
 					segment.data(),
 					physical_address,
 					progbits_size, // only the progbits part is mapped
-					std::string("segment "+ std::to_string(elf_segment->get_index()))
+					segment_name
 				);
 
 				// Allocate a new empty segment
@@ -228,7 +229,8 @@ public:
 				mem.map(
 					relocation_segment.data(),
 					virtual_address,
-					memory_size // the 'full' memory size is used here
+					memory_size, // the 'full' memory size is used here
+					std::string("reloc of " + segment_name)
 				);
 
 			} else {
@@ -238,7 +240,7 @@ public:
 					segment.data(),
 					virtual_address,
 					memory_size,
-					std::string("segment "+ std::to_string(elf_segment->get_index()))
+					std::string(segment_name)
 				);
 			}
 		}

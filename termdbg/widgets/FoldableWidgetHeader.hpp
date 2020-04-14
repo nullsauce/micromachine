@@ -25,9 +25,9 @@ public:
 	FoldableWidgetHeader(cppurses::Glyph_string title)
 		: _title(std::move(title))
 		, _maximized(true)
-		, _title_label{this->make_child<cppurses::Label>(_title)} {
+		, _title_label{this->make_child<cppurses::Label>()} {
 		_line_break.wallpaper = L'─';
-		_title_label.brush.add_attributes(cppurses::Attribute::Bold);
+
 		_line_break.brush.set_foreground(cppurses::Color::Dark_gray);
 		maximize();
 	}

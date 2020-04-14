@@ -1,8 +1,12 @@
+#incldue gtest here so our depenendies find it
+include(gtest)
+
 include(cppurses)
 
 set(SOURCE_FILES
 	main.cpp
 	BreakpointManager.hpp
+	FormatedText.hpp
 	widgets/FoldableWidgetHeader.hpp
 	widgets/Helpers.hpp
 	widgets/RegistersView.hpp
