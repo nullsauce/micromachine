@@ -7,6 +7,8 @@ add_subdirectory(static_initialization)
 # such as filling uninitialized memory with non-zero values
 set(MICROMACHINE_VM_OPTS "--testing")
 
+enable_testing()
+
 function(add_test_command)
 	set(test_name "${ARGV0}")
 	set(test_executable "${ARGV1}")
