@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 		testing_enabled = result["testing"].as<bool>();
 		executable_path = result["executable"].as<std::string>();
 
-	} catch (cxxopts::OptionParseException e) {
+	} catch (const cxxopts::OptionParseException& e) {
 		fprintf(stderr, "%s\n", e.what());
 		std::cout << options.help() << std::endl;
 		return EXIT_FAILURE;
