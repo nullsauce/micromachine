@@ -22,6 +22,7 @@ protected:
 	uint32_t _cursor_y;
 	cppurses::Text_display& _text;
 	const memory_mapping* _segment;
+	std::vector<char> _line_buffer;
 
 public:
 	MemoryView()
@@ -180,8 +181,8 @@ public:
 		_text.clear();
 		if(nullptr == _segment) return;
 		const uint8_t* segment_base = _segment->host_mem();
-		static std::vector<char> buff;
-		buff.reserve(16 + (displayable_clomuns() * 3));
+
+		_line_buffer.reserve(16 + (displayable_clomuns() * 3));
 		std::stringstream ss;
 		for(size_t l = 0; l < displayable_lines(); l++) {
 			const uint32_t line_offset = _segment_offset + (l * displayable_clomuns());
@@ -189,20 +190,20 @@ public:
 				break;
 			}
 
-			std::sprintf(buff.data(), "%08x│", (uint32_t)line_offset + _segment->start());
-			_text.append(buff.data());
+			std::sprintf(_line_buffer.data(), "%08x│", (uint32_t)line_offset + _segment->start());
+			_text.append(_line_buffer.data());
 			for(size_t c = 0; c < displayable_clomuns(); c++) {
 				uint32_t byte_offset = line_offset + c;
 				if(!is_valid_segment_offset(byte_offset)) {
 					break;
 				}
-				std::sprintf(buff.data(), "%02x ", segment_base[byte_offset]);
+				std::sprintf(_line_buffer.data(), "%02x ", segment_base[byte_offset]);
 				if(cursor_offset() == byte_offset) {
 					_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
-					_text.append(buff.data());
+					_text.append(_line_buffer.data());
 					_text.insert_brush.remove_attributes(cppurses::Attribute::Standout);
 				} else {
-					_text.append(buff.data());
+					_text.append(_line_buffer.data());
 				}
 
 			}

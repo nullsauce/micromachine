@@ -1,4 +1,4 @@
-# Micromachine
+# <img src="docs/images/micromachine-logo.png" width="640" height="320" />
 
 Micromachine aims to be an cycle-**innacurate** armv6-m emulator that can be used to simulate
 microcontrollers at the application level.
@@ -40,12 +40,49 @@ The CMake project will generate a lot of not-so-useful targets. Here's a list of
 ### Using CLion
 
 1) Open the project as usual with CLion by selecting the root CMakeLists.txt
-1) Import the code style settings located in `.idea/codeStyleSettings.xml`
+2) Import the code style settings located in `.idea/codeStyleSettings.xml`
+
+#### Working on termdbg from CLion
+
+##### Launching from CLion
+
+**termdbg** wont diplay properly in CLion's terminal. A possible workaround is to edit the target launch options so that your terminal of choice is launched instead.
+
+In the `Program arguments` input, insert:
+
+    --geometry 120x80 -- $CMakeCurrentProductFile$ $CMakeCurrentGenerationDir$/sdk/examples/hello_world/hello_world
+
+* `$CMakeCurrentProductFile$` points to the **termdbg** binary being built.
+* `$CMakeCurrentGenerationDir$` points to the current cmake binary dir (`cmake-build-*`)
+
+This will launch **termdbg** in a gnome-terminal when you run the target from CLion, but won't work when debugging.
+
+##### Debugging from CLion
+
+Launch a debug build of **termdbg** with the CLion target as normal then manually attach the debugger to the termdbg manually via the `Run` menu.
+
+You might get a **`Operation not permitted`** caused by a lack of ptrace permission. This can be resolved by running the following command:
+
+    sudo echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+
+For more info about Yama see https://www.kernel.org/doc/Documentation/security/Yama.txt
+
+
+##### Debugging with termdbg
+
+TODO
+
+<a href="https://asciinema.org/a/319983">
+<img src="https://asciinema.org/a/319983.png" width="269" height="180" />
+</a>
 
 ### Command-line
 
 This project is a standard CMake project and should work fine using the command-line only.
 See the CI scripts for examples.
+
+
+
 
 
 ### Documentation resources

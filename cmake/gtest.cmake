@@ -14,7 +14,7 @@ find_library(TRY_FIND_GTEST
 	NO_DEFAULT_PATH
 )
 
-if(NOT TRY_FIND_GTEST)
+if(NOT TRY_FIND_GTEST AND NOT TARGET compile_googletest)
 	message(STATUS "GTest library not found. Will download and install in ${GTEST_INSTALL_LOCATION}")
 	ExternalProject_Add(compile_googletest
 		GIT_REPOSITORY https://github.com/google/googletest
@@ -29,20 +29,34 @@ endif()
 # this directory has to exist for INTERFACE_INCLUDE_DIRECTORIES to work
 file(MAKE_DIRECTORY ${GTEST_INCLUDE_PATH})
 
+# This allows
+set(GTEST_LIBRARY "${GTEST_LIB_PATH}/libgtest.a")
+set(GTEST_MAIN_LIBRARY "${GTEST_LIB_PATH}/libgtest_main.a")
+set(GTEST_INCLUDE_DIR "${GTEST_INCLUDE_PATH}")
+
 # defines the libgtest library
-add_library(libgtest IMPORTED STATIC GLOBAL)
-add_dependencies(libgtest compile_googletest)
-set_target_properties(libgtest PROPERTIES
-    "IMPORTED_LOCATION" ${GTEST_LIB_PATH}/libgtest.a
-    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-    "INTERFACE_INCLUDE_DIRECTORIES" ${GTEST_INCLUDE_PATH}
-)
+if(NOT TARGET libgtest)
+	add_library(libgtest IMPORTED STATIC GLOBAL)
+	add_dependencies(libgtest compile_googletest)
+
+	set_target_properties(libgtest PROPERTIES
+		"IMPORTED_LOCATION" ${GTEST_LIBRARY}
+		"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+		"INTERFACE_INCLUDE_DIRECTORIES" ${GTEST_INCLUDE_DIR}
+	)
+endif()
 
 # defines the libgtest_main library
-add_library(libgtest_main IMPORTED STATIC GLOBAL)
-add_dependencies(libgtest_main compile_googletest)
-set_target_properties(libgtest_main PROPERTIES
-    "IMPORTED_LOCATION" ${GTEST_LIB_PATH}/libgtest_main.a
-    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-    "INTERFACE_INCLUDE_DIRECTORIES" ${GTEST_INCLUDE_PATH}
-)
+if(NOT TARGET libgtest_main)
+	add_library(libgtest_main IMPORTED STATIC GLOBAL)
+	add_dependencies(libgtest_main compile_googletest)
+
+	set_target_properties(libgtest_main PROPERTIES
+		"IMPORTED_LOCATION" ${GTEST_MAIN_LIBRARY}
+		"IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+		"INTERFACE_INCLUDE_DIRECTORIES" ${GTEST_INCLUDE_DIR}
+	)
+endif()
+
+
+

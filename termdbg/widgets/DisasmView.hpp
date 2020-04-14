@@ -20,20 +20,34 @@ class DisasmView : public cppurses::layout::Vertical {
 private:
 	cpu& _cpu;
 	BreakpointManager& _breakpoint_manager;
+	ExecutionController& _execution_controller;
 	uint32_t _page_address;
 	uint32_t _page_end;
 	uint32_t _cursor_address;
 	FoldableWidgetHeader& _header{this->make_child<FoldableWidgetHeader>("Disassembly")};
 	cppurses::Text_display& _text{this->make_child<cppurses::Text_display>()};
+	const cppurses::Glyph_string _help_content = FormatedText()
+		.write("Resume execution").write_color_f("............ ", cppurses::Color::Dark_gray)
+		.write_color_fb("R", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Pause execution").write_color_f("............. ", cppurses::Color::Dark_gray)
+		.write_color_fb("P", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write("\n")
+		.write("Single step").write_color_f("................. ", cppurses::Color::Dark_gray)
+		.write_color_fb("S", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.str();
+	wchar_t _line_buffer[256] = {0};
 
 public:
-	DisasmView(cpu& cpu, BreakpointManager& breakpoint_manager)
+	DisasmView(cpu& cpu, BreakpointManager& breakpoint_manager, ExecutionController& _execution_controller)
 		: _cpu(cpu)
 		, _breakpoint_manager(breakpoint_manager)
+		, _execution_controller(_execution_controller)
 		, _page_address(0)
 		, _page_end(0)
 		, _cursor_address(0) {
 
+		_text.disable_word_wrap();
 		_text.set_alignment(cppurses::Alignment::Left);
 		_text.clear();
 
@@ -42,6 +56,11 @@ public:
 		_breakpoint_manager.changed.connect([this](){
 			update();
 		});
+
+	}
+
+	const cppurses::Glyph_string& help_content() const {
+		return _help_content;
 	}
 
 	bool focus_in_event() override {
@@ -55,9 +74,15 @@ public:
 	}
 
 	bool paint_event() override {
-		//_cursor_address = _cpu.regs().get_pc();
 		render();
 		return Widget::paint_event();
+	}
+
+	void update() override {
+		for(auto w : children.get_descendants()) {
+			w->update();
+		}
+		Widget::update();
 	}
 
 private:
@@ -119,13 +144,12 @@ private:
 			move_cursor_up();
 			return true;
 		} else {
-			return cppurses::layout::Vertical::key_press_event(keyboard);
+			return _execution_controller.key_press_event(keyboard);
 		}
 	}
 
 	void render() {
 
-		static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> str_converter;
 		_text.clear();
 		const uint32_t lines_per_page = _text.height();
 		uint32_t pc = _cpu.regs().get_pc();
@@ -135,27 +159,28 @@ private:
 		} else {
 			address = _page_address;
 		}
-		wchar_t line[128] = {0};
 
 		for(size_t i = 0; i < lines_per_page; i++) {
+
 			auto instruction = _cpu.fetch_instruction(address);
 			std::string disasm = disasm::disassemble_instruction(instruction, address);
-			swprintf(line, sizeof(line), L" %08x│ %s\n", address, disasm.c_str());
 			auto maybe_breakpoint = _breakpoint_manager.breakpoint_at(address);
 			bool breakpoint_present = maybe_breakpoint.second;
+			wchar_t breakpoint_symbol = L' ';
 			if(breakpoint_present) {
-				//_text.insert_brush.add_attributes(cppurses::Attribute::Underline);
-				if(maybe_breakpoint.first->second.enabled()) {
-					line[0] = L'•';
-				} else {
-					line[0] = L'◦';
-				}
+				breakpoint_symbol = maybe_breakpoint.first->second.enabled() ? L'•' : L'◦';
 			}
+
+			std::swprintf(_line_buffer, sizeof(_line_buffer), L"%lc %08x│ %s\n"
+				, breakpoint_symbol
+				, address
+				, disasm.c_str()
+			);
 			if(address == pc) {
 				_text.insert_brush.add_attributes(cppurses::Attribute::Standout);
-				_text.append(line);
+				_text.append(_line_buffer);
 			} else {
-				_text.append(line);
+				_text.append(_line_buffer);
 			}
 			_text.insert_brush.clear_attributes();
 			address += instruction.size();
