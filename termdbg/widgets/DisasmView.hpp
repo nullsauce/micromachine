@@ -37,7 +37,7 @@ private:
 		.write_color_fb("S", cppurses::Color::Yellow, cppurses::Color::Blue)
 		.write("\n")
 		.write("Reset").write_color_f("....................... ", cppurses::Color::Dark_gray)
-		.write_color_fb("Ctrl + R", cppurses::Color::Yellow, cppurses::Color::Blue)
+		.write_color_fb("Ctrl+R", cppurses::Color::Yellow, cppurses::Color::Blue)
 		.str();
 	wchar_t _line_buffer[256] = {0};
 
