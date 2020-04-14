@@ -16,6 +16,7 @@ and/or distributed without the express permission of Flavio Roth.
 class ExecutionController {
 private:
 	cpu& _cpu;
+	uint32_t _entry_point;
 	BreakpointManager& _breakpoint_manager;
 	bool _process_steps;
 	size_t _step_size;
@@ -23,8 +24,9 @@ private:
 public:
 	sig::Signal<void()> update_required;
 
-	ExecutionController(cpu& cpu, BreakpointManager& breakpoint_manager)
+	ExecutionController(cpu& cpu, uint32_t entry_point, BreakpointManager& breakpoint_manager)
 		: _cpu(cpu)
+		, _entry_point(entry_point)
 		, _breakpoint_manager(breakpoint_manager)
 		, _process_steps(false)
 		, _step_size(1000)
@@ -46,6 +48,10 @@ public:
 		return !_process_steps;
 	}
 
+	void reset() {
+		_cpu.reset(_entry_point);
+	}
+
 	bool key_press_event(const cppurses::Key::State& keyboard) {
 		bool consumed = false;
 		if(paused() && keyboard.key == cppurses::Key::s) {
@@ -57,7 +63,11 @@ public:
 		} else if(!paused() && keyboard.key == cppurses::Key::p) {
 			pause();
 			consumed = true;
+		} else if(paused() && keyboard.key == cppurses::Key::Ctrl_r) {
+			reset();
+			consumed = true;
 		}
+
 		if(consumed) {
 			update_required();
 		}

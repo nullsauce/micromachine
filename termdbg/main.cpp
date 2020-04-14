@@ -35,7 +35,7 @@ int main(int argc, const char** argv) {
 
 	cppurses::System sys;
 
-	MainWindow main_window(cpu_instance);
+	MainWindow main_window(cpu_instance, program->entry_point());
 	main_window.width_policy.min_size(100);
 	cppurses::System::set_initial_focus(&main_window.disasm_view());
 
