@@ -86,7 +86,12 @@ public:
 		_breakpoint_manager.clear_reached_state();
 
 		for(size_t i = 0; i < cpu_steps; i++) {
-			_cpu.step();
+
+			cpu::State state = _cpu.step();
+			if(state == cpu::State::BREAK || state == cpu::State::FAULT) {
+				break;
+			}
+
 			uint32_t addr = _cpu.regs().get_pc();
 			BreakpointManager::MaybeBreakpoint bp = _breakpoint_manager.breakpoint_at(addr);
 			bool breakpoint_found = bp.second;
