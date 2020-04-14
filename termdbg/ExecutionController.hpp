@@ -99,6 +99,7 @@ public:
 
 			cpu::State state = _cpu.step();
 			if(state == cpu::State::BREAK || state == cpu::State::FAULT) {
+				interrupted = true;
 				break;
 			}
 
