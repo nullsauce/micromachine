@@ -18,10 +18,17 @@ jobs:
         run: |
           mkdir -p build
           cd build
+      - name: Install termdbg dependencies
+        run: |
+          sudo apt-get install -y libncursesw5-dev
       - name: Configure
         working-directory: build
         run: |
           cmake -DCMAKE_BUILD_TYPE=Release ..
+      - name: Build termdbg
+        working-directory: build
+        run: |
+            make -j $(nproc) termdbg
       - name: Build micromachine tests
         working-directory: build
         run: |
@@ -31,7 +38,8 @@ jobs:
         run: |
           ctest -V
       - name: Install SDK dependencies
-        run: sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
+        run: |
+          sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
       - name: Build micromachine SDK
         working-directory: build
         run: |
