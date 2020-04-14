@@ -23,6 +23,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "widgets/MemoryBrowser.hpp"
 #include "widgets/FoldableWidgetHeader.hpp"
 #include "widgets/InterruptView.hpp"
+#include "widgets/LogView.hpp"
 
 class MainWindow : public cppurses::layout::Vertical {
 private:
@@ -31,15 +32,17 @@ private:
 	ExecutionController _execution_controller;
 	TopMenuView& _top_menu;
 	cppurses::layout::Horizontal& _main_content_layout;
-	cppurses::layout::Vertical& _left_col_layout;
-	cppurses::layout::Vertical& _mid_col_layout;
-	cppurses::layout::Vertical& _right_col_layout;
+	cppurses::layout::Vertical& _first_col_layout;
+	cppurses::layout::Vertical& _second_col_layout;
+	cppurses::layout::Vertical& _third_col_layout;
+	cppurses::layout::Vertical& _fourth_col_layout;
 	DisasmView& _disasm_view;
 	cppurses::Text_display& _help;
 	RegistersView& _registers_view;
 	BreakPointManagerView& _breakpoint_manager_view;
 	MemoryBrowser& _memory_browser;
 	InterruptView& _interrupt_view;
+	LogView& _output_view;
 
 public:
 	MainWindow(cpu& cpu, uint32_t entry_point)
@@ -47,15 +50,17 @@ public:
 		, _execution_controller(_cpu, entry_point, _breakpoint_manager)
 		, _top_menu(this->make_child<TopMenuView>())
 		, _main_content_layout(this->make_child<cppurses::layout::Horizontal>())
-		, _left_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
-		, _mid_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
-		, _right_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
-		, _disasm_view(_left_col_layout.make_child<DisasmView>(_cpu, _breakpoint_manager, _execution_controller))
-		, _help(_left_col_layout.make_child<cppurses::Text_display>())
-		, _registers_view(_mid_col_layout.make_child<RegistersView>(_cpu))
-		, _breakpoint_manager_view(_mid_col_layout.make_child<BreakPointManagerView>(_breakpoint_manager))
-		, _memory_browser(_right_col_layout.make_child<MemoryBrowser>(cpu))
-		, _interrupt_view(_right_col_layout.make_child<InterruptView>(cpu))
+		, _first_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
+		, _second_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
+		, _third_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
+		, _fourth_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
+		, _disasm_view(_first_col_layout.make_child<DisasmView>(_cpu, _breakpoint_manager, _execution_controller))
+		, _help(_first_col_layout.make_child<cppurses::Text_display>())
+		, _registers_view(_second_col_layout.make_child<RegistersView>(_cpu))
+		, _breakpoint_manager_view(_second_col_layout.make_child<BreakPointManagerView>(_breakpoint_manager))
+		, _memory_browser(_third_col_layout.make_child<MemoryBrowser>(cpu))
+		, _interrupt_view(_third_col_layout.make_child<InterruptView>(cpu))
+		, _output_view(_fourth_col_layout.make_child<LogView>())
 	{
 
 		_top_menu.height_policy.fixed(1);
@@ -64,13 +69,20 @@ public:
 		_main_content_layout.height_policy.expanding(1000);
 		_main_content_layout.border.disable();
 
-		_left_col_layout.width_policy.fixed(40);
+		_first_col_layout.width_policy.fixed(41);
+		_first_col_layout.border.enable();
+		_first_col_layout.border.segments.disable_all();
+		_first_col_layout.border.segments.east.enable();
 
-		_mid_col_layout.border.enable();
-		_mid_col_layout.border.segments.disable_all();
-		_mid_col_layout.border.segments.east.enable();
-		_mid_col_layout.border.segments.west.enable();
-		_mid_col_layout.width_policy.fixed(16);
+		_second_col_layout.border.enable();
+		_second_col_layout.border.segments.disable_all();
+		_second_col_layout.border.segments.east.enable();
+		_second_col_layout.width_policy.fixed(16);
+
+		_third_col_layout.width_policy.fixed(59);
+		_third_col_layout.border.enable();
+		_third_col_layout.border.segments.disable_all();
+		_third_col_layout.border.segments.east.enable();
 
 		_help.height_policy.fixed(10);
 		_help.border.enable();
@@ -105,13 +117,13 @@ public:
 		_interrupt_view.border.segments.north.enable();
 
 
+		_output_view.focus_policy = cppurses::Focus_policy::None;
+		_output_view.border.enable();
+		_output_view.border.segments.disable_all();
+		_output_view.border.segments.north.enable();
+
 		_cpu.set_io_callback([this](uint8_t op, uint8_t data){
-			static std::stringstream linebuf;
-			linebuf.put(data);
-			if(data == '\n') {
-				//_memory_browser.append_line(linebuf.str());
-				linebuf.clear();
-			}
+			_output_view.append_char((char)data);
 		});
 
 		_execution_controller.update_required.connect([this](){

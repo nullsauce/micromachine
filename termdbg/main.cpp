@@ -24,7 +24,7 @@ int main(int argc, const char** argv) {
 
 	cpu cpu_instance;
 
-	programmer::program::ptr program = programmer::load_elf(argv[1], cpu_instance.mem());
+	programmer::program::ptr program = programmer::load_elf(argv[1], cpu_instance.mem(), false);
 
 	if(program->is_null()) {
 		fprintf(stderr, "Error: Failed to load the given ELF file %s\n", argv[0]);

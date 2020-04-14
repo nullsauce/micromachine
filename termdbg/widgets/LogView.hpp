@@ -12,33 +12,33 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/widgets/text_display.hpp>
+
+#include "widgets/FoldableWidgetHeader.hpp"
 #include "widgets/Helpers.hpp"
+
+#include <deque>
 
 class LogView : public cppurses::layout::Vertical  {
 private:
-	std::deque<std::string> _lines;
+	FoldableWidgetHeader& _header;
+	cppurses::Text_display& _text;
 
 public:
-	cppurses::Text_display& _text{this->make_child<cppurses::Text_display>()};
+	LogView()
+		: _header(make_child<FoldableWidgetHeader>("Output"))
+		, _text(make_child<cppurses::Text_display>()) {
 
-	bool paint_event() override {
-		render();
-		return Widget::paint_event();
+		_text.disable_word_wrap();
 	}
 
-	void append_line(const std::string& txt) {
-		_lines.push_back(txt + "\n");
-		update();
-	}
+	void append_char(char c) {
+		_text.append(c);
 
-	void render() {
-		_text.clear();
-		size_t displayable_lines = _text.height();
-		auto start = std::prev(_lines.end(), std::min(displayable_lines, _lines.size()));
-		while(start != _lines.end()) {
-			_text.append(*start);
-			start++;
+		if(_text.display_height() == _text.height()) {
+			// text is full
+			_text.scroll_down();
 		}
+		update();
 	}
 
 	bool focus_in_event() override {
