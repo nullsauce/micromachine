@@ -26,7 +26,6 @@ set(SRCS
     nvic.hpp
     string_format.hpp
     exec_dispatcher.hpp
-    exception_defs.cpp
     exception_defs.hpp
     interrupter.hpp
     interrupter.cpp
