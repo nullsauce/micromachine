@@ -40,7 +40,6 @@ cpu::cpu()
 	, _break_signal(false)
 	, _exec_dispatcher(_regs, _mem, _interrupter, _break_signal)
 	, _ctx_switcher(_regs, _mem, _exception_vector)
-//	, _interrupt_manager(_mem, _nvic, _sphr2_reg, _sphr3_reg)
 	, _debug_instruction_counter(0)
 {
 #ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
@@ -68,35 +67,6 @@ void cpu::reset(uint32_t initial_pc) {
 	_shpr2_reg.reset();
 	_shpr3_reg.reset();
 
-	// set sp to vector+0
-	/*
-	uint32_t stack_pointer = _mem.read32(0);
-	_regs.set_sp(stack_pointer);
-	fprintf(stderr, "reset handler : %08x\n", stack_pointer);
-
-	// branch to entry point
-	word reset_handler = _mem.read32(4);
-	fprintf(stderr, "reset handler : %08x\n", reset_handler);
-	_regs.branch_link_interworking(reset_handler);*/
-
-
-	/*
-	SP_main = MemA[vectortable,4] & 0xFFFFFFFC;
-	SP_process = ((bits(30) UNKNOWN):’00’);
-	LR = bits(32) UNKNOWN; // Value must be initialised by software
-	CurrentMode = Mode_Thread;
-	APSR = bits(32) UNKNOWN; // Flags UNPREDICTABLE from reset
-	IPSR<5:0> = 0x0; // exception number clearedat reset
-	PRIMASK.PM = '0'; // Priority mask cleared at reset
-	CONTROL.SPSEL = '0'; // Current stack is Main
-	CONTROL.nPRIV = '0'; // Thread is privileged
-	ResetSCSRegs(); // Catch-all function for System Control Space reset
-	ExceptionActive[*] = '0'; // All exceptions Inactive
-	ClearEventRegister(); // See WFE instruction for more information
-	start = MemA[vectortable+4,4]; // Load address of reset routine
-	BLXWritePC(start); // Start execution of reset routin
-
- */
 }
 
 instruction_pair cpu::fetch_instruction(uint32_t address) const {
@@ -115,12 +85,6 @@ cpu::State cpu::step() {
 
 	const uint32_t cur_instruction_address = _regs.get_pc();
 	instruction_pair cur_intruction = fetch_instruction(cur_instruction_address);
-
-	/*
-	fprintf(stderr, "S %08x: %s\n",
-		cur_instruction_address,
-		disasm::disassemble_instruction(cur_intruction, cur_instruction_address).c_str()
-	);*/
 
 	if(!_regs.execution_status_register().thumb_bit_set()) {
 		// Thumb bit not set
