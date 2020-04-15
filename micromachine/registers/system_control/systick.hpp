@@ -7,6 +7,12 @@
 
 class systick_control_reg : public word_reg {
 public:
+
+	static constexpr uint32_t SYST_CSR = 0xE000E010;
+	static constexpr uint32_t SYST_RVR = 0xE000E014;
+	static constexpr uint32_t SYST_CVR = 0xE000E018;
+	static constexpr uint32_t SYST_CALIB = 0xE000E01C;
+
 	using word_reg::operator=;
 	static constexpr size_t COUNTFLAG_BIT = 16;
 	static constexpr size_t CLKSOURCE_BIT = 2;
