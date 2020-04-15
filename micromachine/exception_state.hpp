@@ -280,6 +280,7 @@ private:
 	non_implemented_exception_state _reserved_8;
 	pri14_exception_state _pend_sv;
 	pri15_exception_state _sys_tick;
+
 	// TODO: Map the 16 remaining NVIC interrupts (NVIC 16-31) for a total of 48 exception states
 	nvic_based_exception_state<0> _ext_interrupt_0;
 	nvic_based_exception_state<1> _ext_interrupt_1;
