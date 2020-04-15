@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #ifndef MICROMACHINE_EMU_BITS_HPP
 #define MICROMACHINE_EMU_BITS_HPP
-#define EMU_BITS_STRINGIFY(s) #s
+
 #include <functional>
 #include "binops.hpp"
 
@@ -18,6 +18,7 @@ struct slice {
 
 	slice(integer_type& val)
 		: _val(val) {}
+
 
 	static_assert(len > 0,
 				  "cannot declare a bit slice of length 0");
@@ -61,6 +62,9 @@ struct slice {
 		write_bits(_val, offset, other.val(), offset, len);
 		return *this;
 	}
+
+	// A copy constructor must be declared explicitly
+	slice(const same_type& other) : _val(other._val.get()) {}
 
 	// Operator for assignment of same slice  length and offset but different constness of integer type
 	// bits<4,2> of A = bits<4,2> of (0xdeabeef)
@@ -113,39 +117,6 @@ struct slice {
 		return extract();
 	}
 
-	// Allow assignment from bool if length equals 1
-	/*
-	template<size_t num_bits = len>
-	typename std::enable_if<num_bits == 1, same_type>::type& operator=(bool other) {
-		write_val(other);
-		return *this;
-	}*/
-	/*
-	// Allow conversion to uint8 if length is smaller or equal to 8
-	template<size_t num_bits = len>
-	operator typename std::enable_if<num_bits <= 8, uint8_t>::type() const {
-		return extract();
-	}
-
-	// Allow conversion to uint16 if length is smaller or equal to 16
-	template<size_t num_bits = len>
-	operator typename std::enable_if<num_bits <= 16, uint16_t>::type() const {
-		return extract();
-	}
-
-	// Allow conversion to uint32_t if length is smaller or equal to 32
-	template<size_t num_bits = len>
-	operator typename std::enable_if<num_bits <= 32, uint32_t>::type() const {
-		return extract();
-	}
-
-	// Allow conversion to uint64_t if length is smaller or equal to 64
-	template<size_t num_bits = len>
-	operator typename std::enable_if<num_bits <= 64, uint64_t>::type() const {
-		return extract();
-	}
-	*/
-
 	// conversion always coalesced to smallest integer type
 	operator smallest_std_integer() const {
 		return extract();
@@ -167,11 +138,11 @@ struct slice {
 		return *this;
 	}
 
-	std::reference_wrapper<integer_type> val() {
+	integer_type& val() {
 		return _val;
 	}
 
-	const std::reference_wrapper<integer_type> val() const {
+	const integer_type& val() const {
 		return _val;
 	}
 

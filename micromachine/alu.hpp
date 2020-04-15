@@ -11,9 +11,9 @@
 
 namespace alu {
 
-	template <typename u_type>
+	template<typename u_type>
 	bool lsl_c(u_type& value, uint32_t offset, bool carry_in) {
-		if(0 == offset) return carry_in;
+		if(0 == offset) { return carry_in; }
 		// If n is 32 or more, then all the bits in the result are cleared to 0.
 		// If n is 33 or more and the carry flag is updated, it is updated to 0.
 		//printf("Warning: lsl_c offset is > 32 : %d\n", offset);
@@ -38,14 +38,17 @@ namespace alu {
 		return carry;
 	}
 
-	template <typename u_type>
-	bool lsl(u_type& value, uint32_t offset) {
-		return lsl_c(value, offset, false);
-	}
-
-	template <typename u_type>
+	/**
+	 * Left shift with carry
+	 * @tparam u_type
+	 * @param value
+	 * @param offset
+	 * @param carry_in
+	 * @return
+	 */
+	template<typename u_type>
 	bool lsr_c(u_type& value, uint32_t offset, bool carry_in) {
-		if(0 == offset) return carry_in;
+		if(0 == offset) { return carry_in; }
 
 		precond(offset > 0, "shift offset must be greater than 0");
 
@@ -69,14 +72,17 @@ namespace alu {
 		return carry;
 	}
 
-	template <typename u_type>
-	bool lsr(u_type& value, uint32_t offset) {
-		return lsr_c(value, offset, false);
-	}
-
-	template <typename u_type>
+	/**
+	 * Right shift with carry
+	 * @tparam u_type
+	 * @param value
+	 * @param offset
+	 * @param carry_in
+	 * @return
+	 */
+	template<typename u_type>
 	bool asr_c(u_type& value, uint32_t offset, bool carry_in) {
-		if(0 == offset) return carry_in;
+		if(0 == offset) { return carry_in; }
 
 		precond(offset > 0, "shift offset must be greater than 0");
 		const size_t binsize = binops::binsize(value);
@@ -105,24 +111,23 @@ namespace alu {
 			value = value | leftmost_copy;
 		}
 
-
-
-
-
 		return carry;
 	}
 
-	template <typename u_type>
-	bool asr(u_type& value, uint32_t offset) {
-		return asr_c(value, offset, false);
-	}
-
-	template <typename u_type>
+	/**
+	 * Rotate right with carry
+	 * @tparam u_type
+	 * @param value
+	 * @param offset
+	 * @param carry_in
+	 * @return
+	 */
+	template<typename u_type>
 	bool ror_c(u_type& value, uint32_t offset, bool carry_in) {
-		if(0 == offset) return carry_in;
+		if(0 == offset) { return carry_in; }
 		const size_t binsize = binops::binsize(value);
 
-		const uint8_t offsetLower5bits = bits<0,5>::of(offset);
+		const uint8_t offsetLower5bits = bits<0, 5>::of(offset);
 		const bool msb = binops::get_bit(value, binsize - 1U);
 
 		bool carry = msb;
@@ -135,41 +140,65 @@ namespace alu {
 		return carry;
 	}
 
-	template <typename u_type>
+	/**
+	 * Rotate right without carry
+	 * @tparam u_type
+	 * @param value
+	 * @param offset
+	 * @return
+	 */
+	template<typename u_type>
 	bool ror(u_type& value, uint32_t offset) {
 		return ror_c(value, offset, false);
 	}
 
-	static inline uint32_t add_with_carry(
-			const uint32_t& a,
-			const uint32_t& b,
-			const bool& carry_in,
-			bool& carry_out,
-			bool& overflow_out) {
+	/**
+	 * Low-level adder-like function that takes a carry in and
+	 * produces a carry and an overflow flag
+	 * @param a
+	 * @param b
+	 * @param carry_in
+	 * @param carry_out
+	 * @param overflow_out
+	 * @return
+	 */
+	static uint32_t add_with_carry(const uint32_t& a,
+								   const uint32_t& b,
+								   const bool& carry_in,
+								   bool& carry_out,
+								   bool& overflow_out) {
 
 		const uint64_t bigval = (uint64_t)a + (uint64_t)b + (uint64_t)carry_in;
 		const uint32_t lower32bits = binops::make_mask<uint32_t>(binops::binsize<uint32_t>());
 		const uint32_t res = (uint32_t)(bigval & lower32bits);
 
-		const uint32_t ab = a ^ b;
-		const uint32_t ares = a ^ res;
+		const uint32_t a_xor_b = a ^b;
+		const uint32_t a_xor_res = a ^res;
 
 		carry_out = (bigval >> 32) & 1U;
 
-
-		overflow_out = !binops::get_sign_bit(ab) && binops::get_sign_bit(ares);
+		overflow_out = !binops::get_sign_bit(a_xor_b) && binops::get_sign_bit(a_xor_res);
 
 		return res;
 	}
 
-	static inline uint32_t add_with_carry(
-			const uint32_t& a,
-			const uint32_t& b,
-			const bool& carry_in) {
+	/**
+	 * Overload of the loe-level adder function that takes a carry flag
+	 * but don't produce any carry or overflow flags
+	 * @param a
+	 * @param b
+	 * @param carry_in
+	 * @return
+	 */
+	static uint32_t add_with_carry(const uint32_t& a,
+								   const uint32_t& b,
+								   const bool& carry_in) {
 		bool ignored_carry;
 		bool ignored_overflow;
 		return add_with_carry(a, b, carry_in, ignored_carry, ignored_overflow);
 	}
+
+
 }
 
 

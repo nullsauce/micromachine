@@ -6,6 +6,8 @@
 #define MICROMACHINE_CPU_HPP
 
 
+#include <utility>
+
 #include "types.hpp"
 #include "exec.hpp"
 #include "instructions.hpp"
@@ -38,7 +40,6 @@ public:
 
 	void reset(uint32_t initial_pc);
 	instruction_pair fetch_instruction(uint32_t address) const;
-	instruction_pair fetch_instruction_debug(uint32_t address) const;
 	State step();
 	const exception_state_vector& exceptions() const;
 	memory& mem();
@@ -51,7 +52,7 @@ public:
 	}
 
 	void set_io_callback(generic_io_reg::callback_t callback) {
-		_io_reg_callback = callback;
+		_io_reg_callback = std::move(callback);
 	}
 
 	interrupter& interrupt() {
@@ -106,7 +107,7 @@ private:
 		return nullptr;
 	}
 
-	void execute(const instruction_pair instr);
+	void execute(instruction_pair instr);
 
 	uint32_t get_next_instruction_address(uint32_t instr_addr, instruction_pair instruction) const;
 
@@ -123,8 +124,6 @@ private:
 	bool				_break_signal;
 	exec_dispatcher 	_exec_dispatcher;
 	context_switcher 	_ctx_switcher;
-	//interrupt_manager _interrupt_manager;
-
 
 	// TODO: this is not needed here
 	uint64_t _debug_instruction_counter;
