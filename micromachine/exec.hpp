@@ -16,8 +16,6 @@ static void unpredictable() {
 	std::abort();
 }
 
-
-
 static void exec(const lsl_imm instruction, registers& regs, apsr_reg& status_reg) {
 	uint32_t rm = regs.get(instruction.rm());
 	const bool carry = alu::lsl_c(rm, instruction.shift_offset(), status_reg.carry_flag());
@@ -417,14 +415,13 @@ static void exec(const add_highreg instruction, registers& regs) {
 	 *	if n == 15 && m == 15 then UNPREDICTABLE;
 	 */
 
-
 	uint32_t rn = regs.get(instruction.high_rd());
 	uint32_t rm = regs.get(instruction.high_rm());
+
 	// left shift of zero is omitted here
 	bool carry = false;
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, rm, false, carry, overflow);
-
 
 	if(registers::PC == instruction.high_rd()) {
 		regs.branch_alu(result);
@@ -433,8 +430,6 @@ static void exec(const add_highreg instruction, registers& regs) {
 	}
 
 	// Do not update flags
-
-
 }
 
 static void exec(const cmp_highreg instruction, const registers& regs, apsr_reg& status_reg) {
@@ -613,7 +608,7 @@ static void exec(const ldrsh_reg instruction, registers& regs, const memory& mem
 
 
 static void exec(const str_imm instruction, const registers& regs, memory& mem) {
-	uint32_t offset = instruction.imm5() << 2;
+	uint32_t offset = instruction.imm5() << 2U;
 	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	uint32_t value 	=  regs.get(instruction.rt());
@@ -652,7 +647,7 @@ static void exec(const ldrb_imm instruction, registers& regs, const memory& mem)
 }
 
 static void exec(const strh_imm instruction, const registers& regs, memory& mem) {
-	uint32_t offset = instruction.imm5() << 1;
+	uint32_t offset = instruction.imm5() << 1U;
 	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	uint32_t value 	=  regs.get(instruction.rt());
@@ -660,7 +655,7 @@ static void exec(const strh_imm instruction, const registers& regs, memory& mem)
 }
 
 static void exec(const ldrh_imm instruction, registers& regs, const memory& mem) {
-	uint32_t offset = instruction.imm5() << 1;
+	uint32_t offset = instruction.imm5() << 1U;
 	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
 	bool ok = false;
@@ -679,7 +674,7 @@ static void exec(const str_sp_imm instruction, const registers& regs, memory& me
 }
 
 static void exec(const ldr_sp_imm instruction, registers& regs, const memory& mem) {
-	uint32_t offset = instruction.imm8() << 2;
+	uint32_t offset = instruction.imm8() << 2U;
 	uint32_t base 	= regs.get_sp(); // SP
 	uint32_t address = base + offset;
 	uint32_t value = mem.read32(address);
@@ -828,10 +823,10 @@ static void exec(const rev16 instruction, registers& regs) {
 
 	const uint32_t rm = regs.get(instruction.rm());
 
-	uint32_t res =  bits<16,8>::of((rm)) << 24 |
-				bits<24,8>::of((rm)) << 16 |
-				bits<0,8>::of((rm)) << 8   |
-				bits<8,8>::of((rm)) << 0;
+	uint32_t res =  bits<16,8>::of((rm)) << 24U |
+					bits<24,8>::of((rm)) << 16U |
+					bits<0,8>::of((rm)) << 8U |
+					bits<8,8>::of((rm)) << 0U;
 
 	regs.set(instruction.rd(), res);
 }
@@ -840,7 +835,7 @@ static void exec(const revsh instruction, registers& regs) {
 
 	const uint32_t rm = regs.get(instruction.rm());
 
-	uint32_t swapped_low16 = (bits<0,8>::of(rm) << 8) | bits<8,8>::of(rm);
+	uint32_t swapped_low16 = (bits<0,8>::of(rm) << 8U) | bits<8,8>::of(rm);
 	uint32_t res = binops::sign(swapped_low16, 16);
 
 	regs.set(instruction.rd(), res);
