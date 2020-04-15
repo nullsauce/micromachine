@@ -194,42 +194,6 @@ public:
 			}
 		}
 
-		/*
-		for (int i = 0; i < sec_num; ++i) {
-			ELFIO::section *section = elfReader.sections[i];
-
-			if(section->get_flags() & (SHF_ALLOC | SHF_EXECINSTR)) {
-
-				if(0 == section->get_size()) {
-					fprintf(stderr, "Skipping empty section %s\n", section->get_name().c_str());
-					continue;
-				}
-
-				fprintf(stderr, "Creating memory section for %s\n", section->get_name().c_str());
-
-				program::memory_segment& chunk = prog->allocate_segment(section->get_size());
-
-				// should we copy data to this section ?
-				if(section->get_type() & SHT_PROGBITS) {
-					fprintf(stderr, "Loading %zu bytes into section %s\n"
-						, section->get_size()
-						, section->get_name().c_str()
-					);
-					memcpy(chunk.data(), section->get_data(), section->get_size());
-				}
-
-				fprintf(stderr, "Mapping section %s to %08lx (size = %08lx)\n"
-					, section->get_name().c_str()
-					, section->get_address()
-					, section->get_size()
-				);
-
-				mem.map(chunk.data(), section->get_address(), section->get_size(), section->get_name());
-			} else {
-				fprintf(stderr, "Ignored section %s\n", section->get_name().c_str());
-			}
-		}*/
-
 		return prog;
 	}
 
