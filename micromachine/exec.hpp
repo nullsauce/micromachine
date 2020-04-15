@@ -750,7 +750,7 @@ static void exec(const push instruction, registers& regs, memory& mem) {
 	precond(instruction.pushed_registers_count() > 0, "must push at least one register");
 	const size_t stored_size = 4 * instruction.pushed_registers_count();
 	const uint32_t start_address = regs.get_sp() - stored_size;
-	//fprintf(stderr, "push stack %08X - %08X\n", start_address, regs.get_sp());
+
 	size_t count = 0;
 	for(reg_idx rid = 0; rid < registers::NUM_REGS-1; rid++) {
 		if(instruction.is_set(rid)) {
