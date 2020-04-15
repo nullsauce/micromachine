@@ -265,9 +265,9 @@ public:
 
 private:
 	non_implemented_exception_state _used_for_sp;
-	fixed_priority_exception_state<-3> _reset;
-	fixed_priority_exception_state<-2> _nmi;
-	fixed_priority_exception_state<-1> _hard_fault;
+	fixed_priority_exception_state<exception::RESET_PRIORITY> _reset;
+	fixed_priority_exception_state<exception::NMI_PRIORITY> _nmi;
+	fixed_priority_exception_state<exception::HARDFAULT_PRIORITY> _hard_fault;
 	non_implemented_exception_state _reserved_0;
 	non_implemented_exception_state _reserved_1;
 	non_implemented_exception_state _reserved_2;
