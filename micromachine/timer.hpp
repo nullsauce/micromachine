@@ -34,8 +34,6 @@ public:
 			return;
 		}
 
-		//fprintf(stderr, "sistick current=%d, reload=%d\n", (uint32_t)_current_value, (uint32_t)_reload_value);
-
 		if(0U == _current_value) {
 			_current_value.set_internal(_reload_value);
 			if(0U == _reload_value) {
