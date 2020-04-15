@@ -5,11 +5,11 @@
 #include "dispatcher.hpp"
 #include "string_format.hpp"
 
-#define DISASM_FMT_HEX 				(1u << 0)
-#define DISASM_FMT_HEX_NO_PREFIX 	(1u << 1)
-#define DISASM_FMT_STD_REG_NAMES	(1u << 2)
-#define DISASM_FMT_BRANCH_IS_NARROW	(1u << 3)
-#define DISASM_FMT_USE_ALT_ADR		(1u << 4)
+#define DISASM_FMT_HEX				(1U << 0U)
+#define DISASM_FMT_HEX_NO_PREFIX	(1U << 1U)
+#define DISASM_FMT_STD_REG_NAMES	(1U << 2U)
+#define DISASM_FMT_BRANCH_IS_NARROW	(1U << 3U)
+#define DISASM_FMT_USE_ALT_ADR		(1U << 4U)
 class disasm : public dispatcher {
 
 public:
@@ -64,23 +64,23 @@ private:
 		}
 	}
 
-	bool format_use_hex() {
+	bool format_use_hex() const {
 		return format_options & DISASM_FMT_HEX;
 	}
 
-	bool format_hide_hex_prefix() {
+	bool format_hide_hex_prefix() const {
 		return format_options & DISASM_FMT_HEX_NO_PREFIX;
 	}
 
-	bool format_use_std_reg_names() {
+	bool format_use_std_reg_names() const {
 		return format_options & DISASM_FMT_STD_REG_NAMES;
 	}
 
-	bool format_use_narrow_branch() {
+	bool format_use_narrow_branch() const {
 		return format_options & DISASM_FMT_BRANCH_IS_NARROW;
 	}
 
-	bool format_use_alternate_adr() {
+	bool format_use_alternate_adr() const {
 		return format_options & DISASM_FMT_USE_ALT_ADR;
 	}
 
@@ -95,7 +95,7 @@ private:
 		return "#%d";
 	}
 
-	std::string join(const std::vector<std::string>& strings, const char* delim = ", ") {
+	static std::string join(const std::vector<std::string>& strings, const char* delim = ", ") {
 		return std::accumulate(std::begin(strings), std::end(strings), std::string(), [=](const std::string &l, const std::string &r) {
 			return l.empty() ? r : l + delim + r;
 		});
@@ -114,12 +114,12 @@ private:
 		return join(register_names, ", ");
 	}
 
-	const char* condition_string(uint8_t condition) {
+	static const char* condition_string(uint8_t condition) {
 		static const char* cond_names = "eqnecsccmiplvsvchilsgeltgtle";
 		return cond_names + (condition * 2U);
 	}
 
-	std::string special_register(special_reg_instr::SpecialRegister sr) {
+	static std::string special_register(special_reg_instr::SpecialRegister sr) {
 		switch(sr) {
 			case msr::SpecialRegister::APSR: 	return "apsr";
 			case msr::SpecialRegister::IAPSR: 	return "iapsr";
@@ -136,7 +136,7 @@ private:
 		}
 	}
 
-	std::string special_register(uint8_t val) {
+	static std::string special_register(uint8_t val) {
 		return special_register((special_reg_instr::SpecialRegister)val);
 	}
 
@@ -145,7 +145,7 @@ private:
 	}
 
 	void invalid_instruction(const instruction_pair instr) override {
-		format("<UNDEFINED> instruction: 0x%08x", instr.first() << 16 | instr.second());
+		format("<UNDEFINED> instruction: 0x%08x", instr.first() << 16U | instr.second());
 	}
 
 	//TODO: refactor and avoid passing _regs.app_status_register() explicitely

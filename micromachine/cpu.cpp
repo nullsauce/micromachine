@@ -49,7 +49,7 @@ cpu::cpu()
 }
 
 
-void cpu::execute(const instruction_pair instr)
+void cpu::execute(instruction_pair instr)
 {
 	_exec_dispatcher.dispatch_instruction(instr);
 }
@@ -100,17 +100,8 @@ void cpu::reset(uint32_t initial_pc) {
 }
 
 instruction_pair cpu::fetch_instruction(uint32_t address) const {
-	return instruction_pair(_mem.read32_unchecked(address));
+	return {_mem.read32_unchecked(address)};
 }
-
-// used for debug purposes only
-instruction_pair cpu::fetch_instruction_debug(uint32_t address) const {
-	uint16_t first_instr = _mem.read16_unchecked(address);
-	uint16_t second_instr = _mem.read16_unchecked(address + sizeof(uint16_t)); // always prefetch
-	return instruction_pair(first_instr, second_instr);
-}
-
-
 
 cpu::State cpu::step() {
 
