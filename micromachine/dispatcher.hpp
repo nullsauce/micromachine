@@ -7,388 +7,388 @@
 
 namespace {
 
-	static bool is_siadsumoco(const uint16_t instruction) {
+	bool is_siadsumoco(const uint16_t instruction) {
 		return 0 == bits<14,2>::of(instruction);
 	}
 
-	static bool is_data_processing(const uint16_t instruction) {
+	bool is_data_processing(const uint16_t instruction) {
 		return 0b010000 == bits<10,6>::of(instruction);
 	}
 
-	static bool is_sdibe(const uint16_t instruction) {
+	bool is_sdibe(const uint16_t instruction) {
 		return 0b010001 == bits<10,6>::of(instruction);
 	}
 
-	static bool is_lsl_imm(const uint16_t instruction) {
+	bool is_lsl_imm(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b000 == bits<11,3>::of(instruction);
 
 	}
 
-	static bool is_lsr_imm(const uint16_t instruction) {
+	bool is_lsr_imm(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b001 == bits<11,3>::of(instruction);
 	}
 
-	static bool is_asr_imm(const uint16_t instruction) {
+	bool is_asr_imm(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b010 == bits<11,3>::of(instruction);
 	}
 
-	static bool is_add_reg(const uint16_t instruction) {
+	bool is_add_reg(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01100 == bits<9,5>::of(instruction);
 	}
 
-	static bool is_subs_reg(const uint16_t instruction) {
+	bool is_subs_reg(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01101 == bits<9,5>::of(instruction);
 	}
 
-	static bool is_add_imm(const uint16_t instruction) {
+	bool is_add_imm(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01110 == bits<9,5>::of(instruction);
 	}
 
-	static bool is_subs_imm(const uint16_t instruction) {
+	bool is_subs_imm(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b01111 == bits<9,5>::of(instruction);
 	}
 
-	static bool is_mov_imm(const uint16_t instruction) {
+	bool is_mov_imm(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b100 == bits<11,3>::of(instruction);
 	}
 
-	static bool is_cmp_imm(const uint16_t instruction) {
+	bool is_cmp_imm(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b101 == bits<11,3>::of(instruction);
 	}
 
-	static bool is_add_imm_t2(const uint16_t instruction) {
+	bool is_add_imm_t2(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b110 == bits<11,3>::of(instruction);
 	}
 
-	static bool is_subs_imm8(const uint16_t instruction) {
+	bool is_subs_imm8(const uint16_t instruction) {
 		return is_siadsumoco(instruction) &&
 			   0b111 == bits<11,3>::of(instruction);
 	}
 
 
-	static bool is_and_reg(const uint16_t instruction) {
+	bool is_and_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0000 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_xor_reg(const uint16_t instruction) {
+	bool is_xor_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0001 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_lsl_reg(const uint16_t instruction) {
+	bool is_lsl_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0010 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_lsr_reg(const uint16_t instruction) {
+	bool is_lsr_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0011 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_asr_reg(const uint16_t instruction) {
+	bool is_asr_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0100 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_adc_reg(const uint16_t instruction) {
+	bool is_adc_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0101 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_sbc(const uint16_t instruction) {
+	bool is_sbc(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0110 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_ror_reg(const uint16_t instruction) {
+	bool is_ror_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b0111 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_tst_reg(const uint16_t instruction) {
+	bool is_tst_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1000 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_rsb_imm(const uint16_t instruction) {
+	bool is_rsb_imm(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1001 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_cmn_reg(const uint16_t instruction) {
+	bool is_cmn_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1011 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_cmp_reg(const uint16_t instruction) {
+	bool is_cmp_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1010 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_orr_reg(const uint16_t instruction) {
+	bool is_orr_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1100 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_mul_reg(const uint16_t instruction) {
+	bool is_mul_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1101 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_bitclear_reg(const uint16_t instruction) {
+	bool is_bitclear_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1110 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_not_reg(const uint16_t instruction) {
+	bool is_not_reg(const uint16_t instruction) {
 		return is_data_processing(instruction) &&
 			   0b1111 == bits<6,4>::of(instruction);
 	}
 
 
-	static bool is_add_highreg(const uint16_t instruction) {
+	bool is_add_highreg(const uint16_t instruction) {
 		return is_sdibe(instruction) &&
 			   0b00 == bits<8,2>::of(instruction);
 	}
 
-	static bool is_sdibe_unpredictable_0(const uint16_t instruction) {
+	bool is_sdibe_unpredictable_0(const uint16_t instruction) {
 		return is_sdibe(instruction) &&
 			   0b0100 == bits<6,4>::of(instruction);
 	}
 
-	static bool is_cmp_highreg(const uint16_t instruction) {
+	bool is_cmp_highreg(const uint16_t instruction) {
 		return is_sdibe(instruction) && (
 			(0b0101 == bits<6,4>::of(instruction)) ||
 			(0b011 == bits<7,3>::of(instruction))
 		);
 	}
 
-	static bool is_mov_highreg(const uint16_t instruction) {
+	bool is_mov_highreg(const uint16_t instruction) {
 		return is_sdibe(instruction) &&
 			   0b10 == bits<8,2>::of(instruction);
 	}
 
-	static bool is_bx(const uint16_t instruction) {
+	bool is_bx(const uint16_t instruction) {
 		return is_sdibe(instruction) &&
 			   0b110 == bits<7,3>::of(instruction);
 	}
 
-	static bool is_blx(const uint16_t instruction) {
+	bool is_blx(const uint16_t instruction) {
 		return is_sdibe(instruction) &&
 			   0b111 == bits<7,3>::of(instruction);
 	}
 
-	static bool is_ldr_literal(const uint16_t instruction) {
+	bool is_ldr_literal(const uint16_t instruction) {
 		return 0b01001 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_str_reg(const uint16_t instruction) {
+	bool is_str_reg(const uint16_t instruction) {
 		return 0b0101000 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_strh_reg(const uint16_t instruction) {
+	bool is_strh_reg(const uint16_t instruction) {
 		return 0b0101001 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_strb_reg(const uint16_t instruction) {
+	bool is_strb_reg(const uint16_t instruction) {
 		return 0b0101010 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_ldrsb_reg(const uint16_t instruction) {
+	bool is_ldrsb_reg(const uint16_t instruction) {
 		return 0b0101011 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_ldr_reg(const uint16_t instruction) {
+	bool is_ldr_reg(const uint16_t instruction) {
 		return 0b0101100 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_ldrh_reg(const uint16_t instruction) {
+	bool is_ldrh_reg(const uint16_t instruction) {
 		return 0b0101101 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_ldrb_reg(const uint16_t instruction) {
+	bool is_ldrb_reg(const uint16_t instruction) {
 		return 0b0101110 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_ldrsh_reg(const uint16_t instruction) {
+	bool is_ldrsh_reg(const uint16_t instruction) {
 		return 0b0101111 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_str_imm(const uint16_t instruction) {
+	bool is_str_imm(const uint16_t instruction) {
 		return 0b01100 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_ldr_imm(const uint16_t instruction) {
+	bool is_ldr_imm(const uint16_t instruction) {
 		return 0b01101 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_strb_imm(const uint16_t instruction) {
+	bool is_strb_imm(const uint16_t instruction) {
 		return 0b01110 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_ldrb_imm(const uint16_t instruction) {
+	bool is_ldrb_imm(const uint16_t instruction) {
 		return 0b01111 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_strh_imm(const uint16_t instruction) {
+	bool is_strh_imm(const uint16_t instruction) {
 		return 0b10000 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_ldrh_imm(const uint16_t instruction) {
+	bool is_ldrh_imm(const uint16_t instruction) {
 		return 0b10001 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_str_sp_imm(const uint16_t instruction) {
+	bool is_str_sp_imm(const uint16_t instruction) {
 		return 0b10010 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_ldr_sp_imm(const uint16_t instruction) {
+	bool is_ldr_sp_imm(const uint16_t instruction) {
 		return 0b10011 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_adr(const uint16_t instruction) {
+	bool is_adr(const uint16_t instruction) {
 		return 0b10100 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_add_sp_imm(const uint16_t instruction) {
+	bool is_add_sp_imm(const uint16_t instruction) {
 		return 0b10101 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_add_sp_imm_t2(const uint16_t instruction) {
+	bool is_add_sp_imm_t2(const uint16_t instruction) {
 		return 0b101100000 == bits<7,9>::of(instruction);
 	}
 
-	static bool is_sub_sp_imm(const uint16_t instruction) {
+	bool is_sub_sp_imm(const uint16_t instruction) {
 		return 0b101100001 == bits<7,9>::of(instruction);
 	}
 
-	static bool is_sxth(const uint16_t instruction) {
+	bool is_sxth(const uint16_t instruction) {
 		return 0b1011001000 == bits<6,10>::of(instruction);
 	}
 
-	static bool is_sxtb(const uint16_t instruction) {
+	bool is_sxtb(const uint16_t instruction) {
 		return 0b1011001001 == bits<6,10>::of(instruction);
 	}
 
-	static bool is_uxth(const uint16_t instruction) {
+	bool is_uxth(const uint16_t instruction) {
 		return 0b1011001010 == bits<6,10>::of(instruction);
 	}
 
-	static bool is_uxtb(const uint16_t instruction) {
+	bool is_uxtb(const uint16_t instruction) {
 		return 0b1011001011 == bits<6,10>::of(instruction);
 	}
 
-	static bool is_push(const uint16_t instruction) {
+	bool is_push(const uint16_t instruction) {
 		return 0b1011010 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_cps(const uint16_t instruction) {
+	bool is_cps(const uint16_t instruction) {
 		return 0b10110110011 == bits<5,11>::of(instruction);
 	}
 
-	static bool is_rev_word(const uint16_t instruction) {
+	bool is_rev_word(const uint16_t instruction) {
 		return 0b1011101000 == bits<6,10>::of(instruction);
 	}
 
-	static bool is_rev16(const uint16_t instruction) {
+	bool is_rev16(const uint16_t instruction) {
 		return 0b1011101001 == bits<6,10>::of(instruction);
 	}
 
-	static bool is_revsh(const uint16_t instruction) {
+	bool is_revsh(const uint16_t instruction) {
 		return 0b1011101011 == bits<6,10>::of(instruction);
 	}
 
-	static bool is_pop(const uint16_t instruction) {
+	bool is_pop(const uint16_t instruction) {
 		return 0b1011110 == bits<9,7>::of(instruction);
 	}
 
-	static bool is_breakpoint(const uint16_t instruction) {
+	bool is_breakpoint(const uint16_t instruction) {
 		return 0b10111110 == bits<8,8>::of(instruction);
 	}
 
-	static bool is_hints(const uint16_t instruction) {
+	bool is_hints(const uint16_t instruction) {
 		return 0b10111111 == bits<8,8>::of(instruction);
 	}
 
-	static bool is_nop(const uint16_t instruction) {
+	bool is_nop(const uint16_t instruction) {
 		return 0b1011111100000000 == instruction;
 	}
 
-	static bool is_stm(const uint16_t instruction) {
+	bool is_stm(const uint16_t instruction) {
 		return 0b11000 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_ldm(const uint16_t instruction) {
+	bool is_ldm(const uint16_t instruction) {
 		return 0b11001 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_branch(const uint16_t instruction) {
+	bool is_branch(const uint16_t instruction) {
 		return 0b1101 == bits<12,4>::of(instruction) &&
 			   (bits<9,3>::of(instruction) != 0b111);
 	}
 
-	static bool is_svc(const uint16_t instruction) {
+	bool is_svc(const uint16_t instruction) {
 		return 0b1101 == bits<12,4>::of(instruction) &&
 			   0b1111 == bits<8,4>::of(instruction);
 	}
 
 
-	static bool is_unconditional_branch(const uint16_t instruction) {
+	bool is_unconditional_branch(const uint16_t instruction) {
 		return 0b11100 == bits<11,5>::of(instruction);
 	}
 
-	static bool is_32bit_thumb_encoding(const uint16_t instruction) {
+	bool is_32bit_thumb_encoding(const uint16_t instruction) {
 		return 0b111 == bits<13,3>::of(instruction) &&
 			   0b00 !=  bits<11,2>::of(instruction);
 	}
 
 
-	static bool is_32bit_thumb_br_misc_ctl(const instruction_pair instr) {
+	bool is_32bit_thumb_br_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_encoding(instr.first()) &&
 			   0b10 == bits<11,2>::of(instr.first()) &&
 			   0b1  == bits<15,1>::of(instr.second());
 	}
 
-	static bool is_32bit_thumb_msr(const instruction_pair instr) {
+	bool is_32bit_thumb_msr(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			   0b011100 == bits<5,6>::of(instr.first()) &&
-			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101);
+			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101U);
 	}
 
-	static bool is_32bit_thumb_misc_ctl(const instruction_pair instr) {
+	bool is_32bit_thumb_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			   0b0111011 == bits<4,7>::of(instr.first()) &&
-			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101);
+			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101U);
 	}
 
-	static bool is_32bit_thumb_mrs(const instruction_pair instr) {
+	bool is_32bit_thumb_mrs(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			   0b011111 == bits<5,6>::of(instr.first()) &&
-			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101);
+			   0b000 	== (bits<12,3>::of(instr.second()) & 0b101U);
 	}
 
-	static bool is_32bit_thumb_bl(const instruction_pair instr) {
-		auto op2 = bits<12,3>::of(instr.second()) & 0b101;
+	bool is_32bit_thumb_bl(const instruction_pair instr) {
+		auto op2 = bits<12,3>::of(instr.second()) & 0b101U;
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			 0b101 	== op2 ;
 	}
 
-	static bool is_undefined(const uint16_t instr) {
+	bool is_undefined(const uint16_t instr) {
 		return 0b11011110 == bits<8,8>::of(instr);
 	}
 
-	static bool is_undefined32(const instruction_pair instr) {
+	bool is_undefined32(const instruction_pair instr) {
 		return is_32bit_thumb_encoding(instr.first()) &&
 				0b111101111111 == bits<4,12>::of(instr.first()) &&
 				0b1010 == bits<12,4>::of(instr.second());
@@ -648,88 +648,88 @@ public:
 	}
 
 private:
-	virtual void invalid_instruction(const uint16_t instr) = 0;
-	virtual void invalid_instruction(const instruction_pair instr) = 0;
-	virtual void dispatch(const nop instruction) = 0;
-	virtual void dispatch(const yield instruction) = 0;
-	virtual void dispatch(const wfe instruction) = 0;
-	virtual void dispatch(const wfi instruction) = 0;
-	virtual void dispatch(const sev instruction) = 0;
-	virtual void dispatch(const lsl_imm instruction) = 0;
-	virtual void dispatch(const lsr_imm instruction) = 0;
-	virtual void dispatch(const asr_imm instruction) = 0;
-	virtual void dispatch(const add_reg instruction) = 0;
-	virtual void dispatch(const subs_reg instruction) = 0;
-	virtual void dispatch(const add_imm instruction) = 0;
-	virtual void dispatch(const subs_imm instruction) = 0;
-	virtual void dispatch(const mov_imm instruction) = 0;
-	virtual void dispatch(const movs instruction) = 0;
-	virtual void dispatch(const cmp_imm instruction) = 0;
-	virtual void dispatch(const add_imm_t2 instruction) = 0;
-	virtual void dispatch(const subs_imm8 instruction) = 0;
-	virtual void dispatch(const and_reg instruction) = 0;
-	virtual void dispatch(const eor_reg instruction) = 0;
-	virtual void dispatch(const lsl_reg instruction) = 0;
-	virtual void dispatch(const lsr_reg instruction) = 0;
-	virtual void dispatch(const asr_reg instruction) = 0;
-	virtual void dispatch(const adc instruction) = 0;
-	virtual void dispatch(const sbc instruction) = 0;
-	virtual void dispatch(const ror_reg instruction) = 0;
-	virtual void dispatch(const tst_reg instruction) = 0;
-	virtual void dispatch(const rsb_imm instruction) = 0;
-	virtual void dispatch(const cmp_reg instruction) = 0;
-	virtual void dispatch(const cmn_reg instruction) = 0;
-	virtual void dispatch(const orr_reg instruction) = 0;
-	virtual void dispatch(const mul_reg instruction) = 0;
-	virtual void dispatch(const bic_reg instruction) = 0;
-	virtual void dispatch(const mvn instruction) = 0;
-	virtual void dispatch(const add_highreg instruction) = 0;
-	virtual void dispatch(const cmp_highreg instruction) = 0;
-	virtual void dispatch(const mov_highreg instruction) = 0;
-	virtual void dispatch(const bx instruction) = 0;
-	virtual void dispatch(const blx instruction) = 0;
-	virtual void dispatch(const ldr_literal instruction) = 0;
-	virtual void dispatch(const str_reg instruction) = 0;
-	virtual void dispatch(const strh_reg instruction) = 0;
-	virtual void dispatch(const strb_reg instruction) = 0;
-	virtual void dispatch(const ldrsb_reg instruction) = 0;
-	virtual void dispatch(const ldr_reg instruction) = 0;
-	virtual void dispatch(const ldrh_reg instruction) = 0;
-	virtual void dispatch(const ldrb_reg instruction) = 0;
-	virtual void dispatch(const ldrsh_reg instruction) = 0;
-	virtual void dispatch(const str_imm instruction) = 0;
-	virtual void dispatch(const ldr_imm instruction) = 0;
-	virtual void dispatch(const strb_imm instruction) = 0;
-	virtual void dispatch(const ldrb_imm instruction) = 0;
-	virtual void dispatch(const strh_imm instruction) = 0;
-	virtual void dispatch(const ldrh_imm instruction) = 0;
-	virtual void dispatch(const str_sp_imm instruction) = 0;
-	virtual void dispatch(const ldr_sp_imm instruction) = 0;
-	virtual void dispatch(const adr instruction) = 0;
-	virtual void dispatch(const add_sp_imm instruction) = 0;
-	virtual void dispatch(const add_sp_imm_t2 instruction) = 0;
-	virtual void dispatch(const sub_sp_imm instruction) = 0;
-	virtual void dispatch(const sxth instruction) = 0;
-	virtual void dispatch(const sxtb instruction) = 0;
-	virtual void dispatch(const uxth instruction) = 0;
-	virtual void dispatch(const uxtb instruction) = 0;
-	virtual void dispatch(const push instruction) = 0;
-	virtual void dispatch(const cps instruction) = 0;
-	virtual void dispatch(const pop instruction) = 0;
-	virtual void dispatch(const bkpt instr) = 0;
-	virtual void dispatch(const rev_word instruction) = 0;
-	virtual void dispatch(const rev16 instruction) = 0;
-	virtual void dispatch(const revsh instruction) = 0;
-	virtual void dispatch(const branch instruction) = 0;
-	virtual void dispatch(const unconditional_branch instruction) = 0;
-	virtual void dispatch(const stm instruction) = 0;
-	virtual void dispatch(const ldm instruction) = 0;
-	virtual void dispatch(const mrs instruction) = 0;
-	virtual void dispatch(const msr instruction) = 0;
-	virtual void dispatch(const bl_imm instruction) = 0;
-	virtual void dispatch(const svc instruction) = 0;
-	virtual void dispatch(const udf instr) = 0;
-	virtual void dispatch(const udfw instr) = 0;
+	virtual void invalid_instruction(uint16_t instr) = 0;
+	virtual void invalid_instruction(instruction_pair instr) = 0;
+	virtual void dispatch(nop instruction) = 0;
+	virtual void dispatch(yield instruction) = 0;
+	virtual void dispatch(wfe instruction) = 0;
+	virtual void dispatch(wfi instruction) = 0;
+	virtual void dispatch(sev instruction) = 0;
+	virtual void dispatch(lsl_imm instruction) = 0;
+	virtual void dispatch(lsr_imm instruction) = 0;
+	virtual void dispatch(asr_imm instruction) = 0;
+	virtual void dispatch(add_reg instruction) = 0;
+	virtual void dispatch(subs_reg instruction) = 0;
+	virtual void dispatch(add_imm instruction) = 0;
+	virtual void dispatch(subs_imm instruction) = 0;
+	virtual void dispatch(mov_imm instruction) = 0;
+	virtual void dispatch(movs instruction) = 0;
+	virtual void dispatch(cmp_imm instruction) = 0;
+	virtual void dispatch(add_imm_t2 instruction) = 0;
+	virtual void dispatch(subs_imm8 instruction) = 0;
+	virtual void dispatch(and_reg instruction) = 0;
+	virtual void dispatch(eor_reg instruction) = 0;
+	virtual void dispatch(lsl_reg instruction) = 0;
+	virtual void dispatch(lsr_reg instruction) = 0;
+	virtual void dispatch(asr_reg instruction) = 0;
+	virtual void dispatch(adc instruction) = 0;
+	virtual void dispatch(sbc instruction) = 0;
+	virtual void dispatch(ror_reg instruction) = 0;
+	virtual void dispatch(tst_reg instruction) = 0;
+	virtual void dispatch(rsb_imm instruction) = 0;
+	virtual void dispatch(cmp_reg instruction) = 0;
+	virtual void dispatch(cmn_reg instruction) = 0;
+	virtual void dispatch(orr_reg instruction) = 0;
+	virtual void dispatch(mul_reg instruction) = 0;
+	virtual void dispatch(bic_reg instruction) = 0;
+	virtual void dispatch(mvn instruction) = 0;
+	virtual void dispatch(add_highreg instruction) = 0;
+	virtual void dispatch(cmp_highreg instruction) = 0;
+	virtual void dispatch(mov_highreg instruction) = 0;
+	virtual void dispatch(bx instruction) = 0;
+	virtual void dispatch(blx instruction) = 0;
+	virtual void dispatch(ldr_literal instruction) = 0;
+	virtual void dispatch(str_reg instruction) = 0;
+	virtual void dispatch(strh_reg instruction) = 0;
+	virtual void dispatch(strb_reg instruction) = 0;
+	virtual void dispatch(ldrsb_reg instruction) = 0;
+	virtual void dispatch(ldr_reg instruction) = 0;
+	virtual void dispatch(ldrh_reg instruction) = 0;
+	virtual void dispatch(ldrb_reg instruction) = 0;
+	virtual void dispatch(ldrsh_reg instruction) = 0;
+	virtual void dispatch(str_imm instruction) = 0;
+	virtual void dispatch(ldr_imm instruction) = 0;
+	virtual void dispatch(strb_imm instruction) = 0;
+	virtual void dispatch(ldrb_imm instruction) = 0;
+	virtual void dispatch(strh_imm instruction) = 0;
+	virtual void dispatch(ldrh_imm instruction) = 0;
+	virtual void dispatch(str_sp_imm instruction) = 0;
+	virtual void dispatch(ldr_sp_imm instruction) = 0;
+	virtual void dispatch(adr instruction) = 0;
+	virtual void dispatch(add_sp_imm instruction) = 0;
+	virtual void dispatch(add_sp_imm_t2 instruction) = 0;
+	virtual void dispatch(sub_sp_imm instruction) = 0;
+	virtual void dispatch(sxth instruction) = 0;
+	virtual void dispatch(sxtb instruction) = 0;
+	virtual void dispatch(uxth instruction) = 0;
+	virtual void dispatch(uxtb instruction) = 0;
+	virtual void dispatch(push instruction) = 0;
+	virtual void dispatch(cps instruction) = 0;
+	virtual void dispatch(pop instruction) = 0;
+	virtual void dispatch(bkpt instr) = 0;
+	virtual void dispatch(rev_word instruction) = 0;
+	virtual void dispatch(rev16 instruction) = 0;
+	virtual void dispatch(revsh instruction) = 0;
+	virtual void dispatch(branch instruction) = 0;
+	virtual void dispatch(unconditional_branch instruction) = 0;
+	virtual void dispatch(stm instruction) = 0;
+	virtual void dispatch(ldm instruction) = 0;
+	virtual void dispatch(mrs instruction) = 0;
+	virtual void dispatch(msr instruction) = 0;
+	virtual void dispatch(bl_imm instruction) = 0;
+	virtual void dispatch(svc instruction) = 0;
+	virtual void dispatch(udf instr) = 0;
+	virtual void dispatch(udfw instr) = 0;
 };
 
 
