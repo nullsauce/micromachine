@@ -6,6 +6,8 @@
 
 class shpr3_reg : public word_reg {
 public:
+	static constexpr uint32_t SHPR3 = 0xE000ED20;
+
 	using ireg::operator=;
 
 	using pr14_bits = bits<22, 2>;

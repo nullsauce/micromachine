@@ -115,8 +115,8 @@ private:
 	exception_state_vector _exception_vector;
 	interrupter			_interrupter;
 	nvic				_nvic;
-	shpr2_reg 			_sphr2_reg;
-	shpr3_reg 			_sphr3_reg;
+	shpr2_reg 			_shpr2_reg;
+	shpr3_reg 			_shpr3_reg;
 	generic_io_reg		_generic_io_reg;
 	systick				_system_timer;
 	memory 				_mem;
