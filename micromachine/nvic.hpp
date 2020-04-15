@@ -157,6 +157,19 @@ private:
 
 public:
 
+	static constexpr uint32_t NVIC_ISER = 0xE000E100;
+	static constexpr uint32_t NVIC_ICER = 0xE000E180;
+	static constexpr uint32_t NVIC_ISPR = 0xE000E200;
+	static constexpr uint32_t NVIC_ICPR = 0xE000E280;
+	static constexpr uint32_t NVIC_IPR0 = 0xE000E400;
+	static constexpr uint32_t NVIC_IPR1 = 0xE000E404;
+	static constexpr uint32_t NVIC_IPR2 = 0xE000E408;
+	static constexpr uint32_t NVIC_IPR3 = 0xE000E40C;
+	static constexpr uint32_t NVIC_IPR4 = 0xE000E40E;
+	static constexpr uint32_t NVIC_IPR5 = 0xE000E410;
+	static constexpr uint32_t NVIC_IPR6 = 0xE000E414;
+	static constexpr uint32_t NVIC_IPR7 = 0xE000E418;
+
 	nvic() : nvic(0U, 0U) {}
 
 	// This is used for testing purposes
