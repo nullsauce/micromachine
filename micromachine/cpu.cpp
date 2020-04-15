@@ -12,18 +12,18 @@ and/or distributed without the express permission of Flavio Roth.
 
 cpu::cpu()
 	: _regs(_ctx_switcher)
-	, _exception_vector(_nvic, _sphr2_reg, _sphr3_reg)
+	, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg)
 	, _interrupter(_exception_vector)
 	, _generic_io_reg(std::ref(_io_reg_callback))
 	, _system_timer(_interrupter)
 	, _mem(_interrupter,{
-		std::make_pair(0xE000ED1C, std::ref(_sphr2_reg)),
-		std::make_pair(0xE000ED20, std::ref(_sphr3_reg)),
-		std::make_pair(0xE000E010, std::ref(_system_timer.control_register())),
-		std::make_pair(0xE000E014, std::ref(_system_timer.reload_value_register())),
-		std::make_pair(0xE000E018, std::ref(_system_timer.current_value_register())),
-		std::make_pair(0xE000E01C, std::ref(_system_timer.calib_value_register())),
-		std::make_pair(0xE000EF90, std::ref(_generic_io_reg)),
+		std::make_pair(shpr2_reg::SHPR2, std::ref(_shpr2_reg)),
+		std::make_pair(shpr3_reg::SHPR3, std::ref(_shpr3_reg)),
+		std::make_pair(systick_control_reg::SYST_CSR, std::ref(_system_timer.control_register())),
+		std::make_pair(systick_control_reg::SYST_RVR, std::ref(_system_timer.reload_value_register())),
+		std::make_pair(systick_control_reg::SYST_CVR, std::ref(_system_timer.current_value_register())),
+		std::make_pair(systick_control_reg::SYST_CALIB, std::ref(_system_timer.calib_value_register())),
+		std::make_pair(generic_io_reg::GIO_IO, std::ref(_generic_io_reg)),
 		std::make_pair(nvic::NVIC_ISER, std::ref(_nvic.iser_reg())),
 		std::make_pair(nvic::NVIC_ICER, std::ref(_nvic.icer_reg())),
 		std::make_pair(nvic::NVIC_ISPR, std::ref(_nvic.ispr_reg())),
@@ -65,8 +65,8 @@ void cpu::reset(uint32_t initial_pc) {
 	_regs.set_sp(initial_sp_main);
 	_regs.set_pc(initial_pc);
 	_system_timer.reset();
-	_sphr2_reg.reset();
-	_sphr3_reg.reset();
+	_shpr2_reg.reset();
+	_shpr3_reg.reset();
 
 	// set sp to vector+0
 	/*

@@ -6,6 +6,8 @@
 
 class generic_io_reg : public word_reg {
 public:
+	static constexpr uint32_t GIO_IO = 0xE000EF90;
+
 	using callback_t = std::function<void(uint8_t op, uint8_t data)>;
 
 	generic_io_reg(const callback_t& callback)
