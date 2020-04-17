@@ -16,7 +16,7 @@ set(CMAKE_ASM_COMPILER "${TARGET_PREFIX}as")
 
 UNSET(CMAKE_C_FLAGS CACHE)
 UNSET(CMAKE_CXX_FLAGS CACHE)
-set(COMMON_CFLAGS "-ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m")
+set(COMMON_CFLAGS "-ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m -ggdb")
 set(CMAKE_C_FLAGS "${COMMON_CFLAGS} -std=c11")
 # note that to avoid undefined reference to `__cxa_guard_acquire' the threadsafe static initialization of c++11 is
 # disabled
