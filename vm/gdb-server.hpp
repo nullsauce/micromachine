@@ -67,6 +67,7 @@ public:
 		packet_buffer.push_back(checksum_str[0]);
 		packet_buffer.push_back(checksum_str[1]);
 		send(_socket, packet_buffer.data(), packet_buffer.size(), 0);
+		packet_buffer.push_back(0); // null terminator for printf
 		fprintf(stderr, "sent: %s\n", packet_buffer.data());
 	}
 
@@ -226,7 +227,8 @@ public:
 		} else if(packet.compare("vCont?") == 0) {
 			client.send_packet("vCont;c;C;s;S;t");
 		} else if(packet.rfind("vCont", 0) == 0) {
-			client.send_packet("OK");
+			_cpu.step();
+			client.send_packet("T05");
 		} else if(packet.compare("?") == 0) {
 			client.send_packet("S05");
 		} else if(packet.compare("qfThreadInfo") == 0) {
@@ -291,7 +293,7 @@ public:
 				}
 			}
 		} else if(packet.rfind("qXfer:exec-file:read:", 0) == 0) {
-			client.send_packet("l/program.elf");
+			client.send_packet("l/" + _program->path());
 		} else if(packet.rfind("vFile:setfs:", 0) == 0) {
 			client.send_packet("");
 		} else if(packet.rfind("vFile:fstat", 0) == 0) {
@@ -310,14 +312,22 @@ public:
 			sscanf(smatch[2].str().c_str(), "%zx", &offset);
 			fprintf(stderr, "read file descriptor=0, offset=%zx, size=%zx\n", offset, size);
 
-			if(offset + size > _program->size()) {
-				size = _program->size() - offset;
+			// this is highly innefficient as it will open the file each time
+			std::ifstream file(_program->path(), std::ios::binary | std::ios::ate);
+			size_t fsize = file.tellg();
+			file.seekg(0, std::ios::beg);
+
+			std::vector<char> elf(fsize);
+			file.read(elf.data(), fsize);
+
+			if(offset + size > fsize) {
+				size = fsize - offset;
 			}
 
 			static uint8_t packet_buff[1024];
 			size_t data_size = std::min(size, sizeof(packet_buff) - 14);
 			size_t header_size = sprintf((char*)packet_buff, "F%zX;", data_size);
-			memcpy(packet_buff + header_size, _program->data() + offset, data_size);
+			memcpy(packet_buff + header_size, elf.data() + offset, data_size);
 			client.send_packet_binary(packet_buff, header_size + data_size);
 
 		}
