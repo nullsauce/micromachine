@@ -366,16 +366,37 @@ namespace {
 			   0b000 == (bits<12, 3>::of(instr.second()) & 0b101);
 	}
 
+	bool is_32bit_thumb_mrs(const instruction_pair instr) {
+		return is_32bit_thumb_br_misc_ctl(instr) &&
+			   0b011111 == bits<5, 6>::of(instr.first()) &&
+			   0b000 == (bits<12, 3>::of(instr.second()) & 0b101);
+	}
+
+	bool is_32bit_thumb_udf(const instruction_pair instr) {
+		return is_32bit_thumb_br_misc_ctl(instr) &&
+			   0b1111111 == bits<4, 7>::of(instr.first()) &&
+			   0b000 == (bits<12, 3>::of(instr.second()) & 0b101);
+	}
+
 	bool is_32bit_thumb_misc_ctl(const instruction_pair instr) {
 		return is_32bit_thumb_br_misc_ctl(instr) &&
 			   0b0111011 == bits<4, 7>::of(instr.first()) &&
 			   0b000 == (bits<12, 3>::of(instr.second()) & 0b101);
 	}
 
-	bool is_32bit_thumb_mrs(const instruction_pair instr) {
-		return is_32bit_thumb_br_misc_ctl(instr) &&
-			   0b011111 == bits<5, 6>::of(instr.first()) &&
-			   0b000 == (bits<12, 3>::of(instr.second()) & 0b101);
+	bool is_32bit_thumb_misc_ctl_dsb(const instruction_pair instr) {
+		return is_32bit_thumb_misc_ctl(instr) &&
+			   0b0100 == bits<4, 4>::of(instr.second());
+	}
+
+	bool is_32bit_thumb_misc_ctl_dmb(const instruction_pair instr) {
+		return is_32bit_thumb_misc_ctl(instr) &&
+			   0b0101 == bits<4, 4>::of(instr.second());
+	}
+
+	bool is_32bit_thumb_misc_ctl_isb(const instruction_pair instr) {
+		return is_32bit_thumb_misc_ctl(instr) &&
+			   0b0110 == bits<4, 4>::of(instr.second());
 	}
 
 	static bool is_32bit_thumb_bl(const instruction_pair instr) {
@@ -469,7 +490,7 @@ public:
 		} else if(is_add_highreg(instr)) {
 			dispatch(add_highreg(instr));
 		} else if(is_sdibe_unpredictable_0(instr)) {
-			// fault !
+			// TODO fault !
 		} else if(is_cmp_highreg(instr)) {
 			dispatch(cmp_highreg(instr));
 		} else if(is_mov_highreg(instr)) {
@@ -573,7 +594,7 @@ public:
 						break;
 					}
 					case 0b0100: {
-						dispatch(sev());
+						dispatch(sev(instr));
 						break;
 					}
 					default: {
@@ -592,25 +613,38 @@ public:
 		} else if(is_unconditional_branch(instr)) {
 			dispatch(unconditional_branch(instr));
 
-			// 32bit encodings
+		// 32bit encodings
 		} else if(is_32bit_thumb_encoding(instr)) {
-
 			if(is_undefined32(instruction_pair)) {
 				dispatch(udfw(instruction_pair));
+
+			// Branch and miscellaneous control
 			} else if(is_32bit_thumb_br_misc_ctl(instruction_pair)) {
 
-				if(is_32bit_thumb_msr(instruction_pair)) {
+				// Check for branch first
+				if(is_32bit_thumb_bl(instruction_pair)) {
+					dispatch(bl_imm(instruction_pair));
+				// then for miscellaneous control instructions first
+				} else if(is_32bit_thumb_misc_ctl_dsb(instruction_pair)) {
+					dispatch(dsb(instruction_pair.second()));
+				} else if(is_32bit_thumb_misc_ctl_dmb(instruction_pair)) {
+					dispatch(dmb(instruction_pair.second()));
+				} else if(is_32bit_thumb_misc_ctl_isb(instruction_pair)) {
+					dispatch(isb(instruction_pair.second()));
+
+				// Then UDF 32-bit misc control
+				} else if(is_32bit_thumb_udf(instruction_pair)) {
+					dispatch(isb(instruction_pair.second()));
+
+				// Then msr and mrs
+				} else if(is_32bit_thumb_msr(instruction_pair)) {
 					dispatch(msr(instruction_pair));
-				} else if(is_32bit_thumb_misc_ctl(instruction_pair)) {
-					// TODO unimplemented 32 bit misc ctl instructions
 				} else if(is_32bit_thumb_mrs(instruction_pair)) {
 					dispatch(mrs(instruction_pair));
-				} else if(is_32bit_thumb_bl(instruction_pair)) {
-					dispatch(bl_imm(instruction_pair));
 				} else {
-					// TODO unimplemented 32bit misc br and ctrl instruction
 					invalid_instruction(instruction_pair);
 				}
+
 			} else {
 				invalid_instruction(instruction_pair);
 			}
@@ -787,6 +821,12 @@ private:
 	virtual void dispatch(const udf instr) = 0;
 
 	virtual void dispatch(const udfw instr) = 0;
+
+	virtual void dispatch(const dsb instr) = 0;
+
+	virtual void dispatch(const dmb instr) = 0;
+
+	virtual void dispatch(const isb instr) = 0;
 };
 
 

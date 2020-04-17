@@ -1,9 +1,11 @@
 #ifndef MICROMACHINE_DISASM_HPP
 #define MICROMACHINE_DISASM_HPP
 
-#include <numeric>
+
 #include "dispatcher.hpp"
 #include "string_format.hpp"
+
+#include <numeric>
 
 #define DISASM_FMT_HEX				(1U << 0U)
 #define DISASM_FMT_HEX_NO_PREFIX	(1U << 1U)
@@ -413,6 +415,15 @@ private:
 	}
 	void dispatch(const svc instruction) override {
 		format("svc %d", instruction.imm8().extract());
+	}
+	void dispatch(const dmb instruction) override {
+		format("dmb " + IMM(), instruction.imm4().extract());
+	}
+	void dispatch(const dsb instruction) override {
+		format("dsb " + IMM(), instruction.imm4().extract());
+	}
+	void dispatch(const isb instruction) override {
+		format("isb " + IMM(), instruction.imm4().extract());
 	}
 	void dispatch(const udf instr) override {
 		format("udf " + IMM(), instr.imm32);

@@ -118,14 +118,17 @@ declare_test(exceptions/exception_vector.cpp)
 declare_test(systick.cpp)
 declare_test(nvic.cpp)
 
-# these tests have yet to be integrated
-#declare_test(disasm/disasm.cpp)
+# disabled until we dont rely anymore on bkp to stop execution flow.
 #declare_test(instructions/bkptInstrTest.cpp)
+
+# these tests have yet to be integrated
 #declare_test(instructions/sevInstrTest.cpp)
 #declare_test(instructions/wfeInstrTest.cpp)
 #declare_test(instructions/wfiInstrTest.cpp)
 #declare_test(instructions/yieldInstrTest.cpp)
 #declare_test(alu_tests alu_tests.cpp)
+
+#declare_test(disasm/disasm.cpp)
 
 # Build a single executable with ALL tests collected in ALL_TEST_OBJS
 add_executable(all_tests ${ALL_TEST_OBJS})

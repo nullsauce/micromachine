@@ -9,26 +9,30 @@
 #include "interrupter.hpp"
 
 class exec_dispatcher : public dispatcher {
-public:
-	exec_dispatcher(
-		registers& regs,
-		memory& mem,
-		interrupter& interrupter,
-		bool& break_signal)
-	: _interrupter(interrupter)
-	, _regs(regs)
-	, _mem(mem)
-	, _break_signal(break_signal)
-	{}
-
-
 private:
-
 	interrupter& _interrupter;
 	registers& _regs;
 	memory& _mem;
+	event_register& _event_register;
 	bool& _break_signal;
+	bool& _enter_low_power_mode_signal;
 
+public:
+	exec_dispatcher(registers& regs,
+					memory& mem,
+					interrupter& interrupter,
+					event_register& event_register,
+					bool& break_signal,
+					bool& enter_low_power_mode_signal)
+	: _interrupter(interrupter)
+	, _regs(regs)
+	, _mem(mem)
+	, _event_register(event_register)
+	, _break_signal(break_signal)
+	, _enter_low_power_mode_signal(enter_low_power_mode_signal)
+	{}
+
+private:
 	void invalid_instruction(const uint16_t instr) override {
 		(void)instr;
 		_interrupter.raise_hardfault();
@@ -39,29 +43,25 @@ private:
 		_interrupter.raise_hardfault();
 	}
 
-	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
 	void dispatch(const nop) override {
 		// do literally nothing
 	}
-	void dispatch(const yield) override {
+	void dispatch(const yield instruction) override {
 		// for os and threading
+		exec(instruction);
 	}
-	void dispatch(const wfe) override {
-		// wait for event in event register
-		/* TODO: Implement WFE event sources as specified below
-		The following events are WFE wake-up events:
-		- the execution of an SEV instruction on any other processor in a multiprocessor system
-		- any exception entering the pending state if SEVONPEND in the System Control Register is set to 1
-		- an asynchronous exception at a priority that preempts any currently active exceptions
-		- a debug event with debug enabled.
-		*/
+	void dispatch(const wfe instruction) override {
+		exec(instruction, _event_register, _enter_low_power_mode_signal);
 	}
-	void dispatch(const wfi) override {
-		// wait for interrupt
+	void dispatch(const wfi instruction) override {
+		/* If PRIMASK.PM is set to 1, an asynchronous exception that has a higher group priority than
+		 * any active exception results in a WFI instruction exit. If the group priority of the exception is
+		 * less than or equal to the execution group priority, the exception is ignored.
+		 */
+		exec(instruction);
 	}
-	void dispatch(const sev) override {
-		// causes an event to be signaled to all processors in a
-		// multiprocessor system
+	void dispatch(const sev instruction) override {
+		exec(instruction);
 	}
 	void dispatch(const lsl_imm instruction) override {
 		exec(instruction, _regs, _regs.app_status_register());
@@ -282,6 +282,15 @@ private:
 	void dispatch(const svc) override {
 		_interrupter.raise_svcall();
 	}
+	void dispatch(const dmb instruction) override {
+		exec(instruction);
+	}
+	void dispatch(const dsb instruction) override {
+		exec(instruction);
+	}
+	void dispatch(const isb instruction) override {
+		exec(instruction);
+	}
 	void dispatch(const udf instr) override {
 		// undefined instruction
 		_interrupter.raise_hardfault();
@@ -290,6 +299,7 @@ private:
 		// undefined instruction
 		_interrupter.raise_hardfault();
 	}
+
 };
 
 #endif //MICROMACHINE_INTRUCTION_DISPATCHER_HPP

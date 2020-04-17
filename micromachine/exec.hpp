@@ -5,12 +5,14 @@
 #ifndef THUMBEMU_EXEC_HPP
 #define THUMBEMU_EXEC_HPP
 
+
 #include "types.hpp"
 #include "instructions.hpp"
 #include "alu.hpp"
 #include "memory/memory.hpp"
 #include "registers/apsr_reg.hpp"
 #include "registers/registers.hpp"
+#include "registers/event_register.hpp"
 
 static void unpredictable() {
 	std::abort();
@@ -999,6 +1001,62 @@ static void exec(const bl_imm instruction, registers& regs) {
 	int32_t new_pc = regs.get_pc() + offset;
 	regs.set_pc(new_pc);
 }
+
+static void exec(const dsb instruction) {
+
+}
+
+static void exec(const dmb instruction) {
+
+}
+
+static void exec(const isb instruction) {
+
+}
+
+static void exec(const sev instruction) {
+
+}
+
+static void exec(const wfi instruction) {
+	/*
+	 * If PRIMASK.PM is set to 1, an asynchronous exception that has a higher group priority than
+	 * any active exception results in a WFI instruction exit. If the group priority of the exception is
+	 *less than or equal to the execution group priority, the exception is ignored.
+	 */
+
+}
+
+static void exec(const wfe instruction, event_register& event_register, bool& enter_low_power_mode_signal) {
+	// wait for event in event register
+
+	/**
+	 * The action of the Wait For Event instruction, see WFE on page A6-197, depends on the state of the Event
+	 * Register:
+	 * - If the Event Register is set, the instruction clears the register and returns immediately.
+	 * - If the Event Register is clear the processor can suspend execution and enter a low-power state. It can
+	 * remain in that state until the processor detects a WFE wakeup event or a reset. When the processor
+	 * detects a WFE wakeup event, or earlier if the implementation chooses, the WFE instruction completes.
+	 *
+	 * The following events are WFE wake-up events:
+	 * - the execution of an SEV instruction on any other processor in a multiprocessor system
+	 * - any exception entering the pending state if SEVONPEND in the System Control Register is set to 1
+	 * - an asynchronous exception at a priority that preempts any currently active exceptions
+	 * - a debug event with debug enabled.
+	*/
+
+	if(event_register.is_set()) {
+		event_register.clear();
+	} else {
+		// enter low power
+		enter_low_power_mode_signal = true;
+	}
+}
+
+static void exec(const yield instruction) {
+
+}
+
 
 #endif //THUMBEMU_EXEC_HPP
 

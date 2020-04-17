@@ -38,7 +38,8 @@ cpu::cpu()
 		std::make_pair(nvic::NVIC_IPR7, std::ref(_nvic.priority_reg<7>())),
 	})
 	, _break_signal(false)
-	, _exec_dispatcher(_regs, _mem, _interrupter, _break_signal)
+	, _enter_low_power_mode_signal(false)
+	, _exec_dispatcher(_regs, _mem, _interrupter, _event_register, _break_signal, _enter_low_power_mode_signal)
 	, _ctx_switcher(_regs, _mem, _exception_vector)
 	, _debug_instruction_counter(0)
 {
@@ -76,12 +77,13 @@ instruction_pair cpu::fetch_instruction(uint32_t address) const {
 cpu::State cpu::step() {
 
 	if(_break_signal) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		return cpu::State::BREAK;
 	}
 	_debug_instruction_counter++;
 
+	// update timer
 	_system_timer.tick();
+
 
 	const uint32_t cur_instruction_address = _regs.get_pc();
 	instruction_pair cur_intruction = fetch_instruction(cur_instruction_address);
@@ -92,6 +94,7 @@ cpu::State cpu::step() {
 		_interrupter.raise_hardfault();
 	}
 
+	// check for asynchronous interrupt
 	exception_state* ex = next_exception_to_take();
 
 	if(nullptr == ex) {
@@ -101,12 +104,16 @@ cpu::State cpu::step() {
 		_regs.reset_pc_dirty_status();
 		execute(cur_intruction);
 
+		// check for synchronous exception that might
+		// have been raised during the execution
 		ex = next_exception_to_take();
 	}
-
 	uint32_t next_instruction_address = get_next_instruction_address(cur_instruction_address, cur_intruction);
 
 	if(ex) {
+
+		// wake up event for wfe or wfi
+
 		// an exception to be taken is pending
 		_regs.set_pc(cur_instruction_address);
 		_ctx_switcher.exception_entry(*ex, cur_instruction_address, cur_intruction, next_instruction_address);

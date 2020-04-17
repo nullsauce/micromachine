@@ -17,6 +17,7 @@
 #include "registers/apsr_reg.hpp"
 #include "registers/custom/generic_io_reg.hpp"
 #include "registers/exec_mode_reg.hpp"
+#include "registers/event_register.hpp"
 #include "context_switcher.hpp"
 #include "exec_dispatcher.hpp"
 #include "interrupter.hpp"
@@ -119,11 +120,14 @@ private:
 	shpr2_reg 			_shpr2_reg;
 	shpr3_reg 			_shpr3_reg;
 	generic_io_reg		_generic_io_reg;
+	event_register		_event_register;
 	systick				_system_timer;
 	memory 				_mem;
 	bool				_break_signal;
+	bool 				_enter_low_power_mode_signal;
 	exec_dispatcher 	_exec_dispatcher;
 	context_switcher 	_ctx_switcher;
+
 
 	// TODO: this is not needed here
 	uint64_t _debug_instruction_counter;

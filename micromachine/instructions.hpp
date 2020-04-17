@@ -154,7 +154,7 @@ using layout_16_34               = standard_1_fields<uint16_t, 3, 4>;
 using layout_16_07               = standard_1_fields<uint16_t, 0, 7>;
 using layout_16_08               = standard_1_fields<uint16_t, 0, 8>;
 using layout_16_011              = standard_1_fields<uint16_t, 0, 11>;
-
+using layout_16_04               = standard_1_fields<uint16_t, 0, 4>;
 
 struct standard_rd_rm_imm5 : public layout_16_03_33_65 {
 	using layout_16_03_33_65::layout_16_03_33_65;
@@ -347,6 +347,13 @@ struct standard_imm8_rt : public layout_16_08_83 {
 	define_instruction_field(rt, 1);
 };
 
+struct standard_imm4 : public layout_16_04 {
+	using layout_16_04::layout_16_04;
+
+	define_instruction_field(imm4, 0);
+};
+
+
 struct standard_imm7 : public layout_16_07 {
 	using layout_16_07::layout_16_07;
 
@@ -429,7 +436,10 @@ struct nop {};
 struct wfe {};
 struct yield {};
 struct wfi {};
-struct sev {};
+
+struct sev : public generic_instruction<uint16_t> {
+	using generic_instruction<uint16_t>::generic_instruction;
+};
 
 struct adc : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
@@ -914,4 +924,19 @@ struct hint : public layout_16_04_44 {
 	define_instruction_field(opa, 0);
 	define_instruction_field(opb, 1);
 };
+
+struct dsb : public standard_imm4 {
+	using standard_imm4::standard_imm4;
+};
+
+struct dmb : public standard_imm4 {
+	using standard_imm4::standard_imm4;
+};
+
+struct isb : public standard_imm4 {
+	using standard_imm4::standard_imm4;
+};
+
+
+
 #endif //THUMBEMU_INSTRUCTIONS_HPP
