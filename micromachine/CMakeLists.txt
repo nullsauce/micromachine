@@ -22,6 +22,7 @@ set(SRCS
     registers/system_control/shpr3.hpp
     registers/system_control/systick.hpp
     registers/custom/generic_io_reg.hpp
+    registers/event_register.hpp
     memory/memory.hpp
     nvic.hpp
     string_format.hpp
