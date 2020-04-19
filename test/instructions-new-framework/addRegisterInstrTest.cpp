@@ -11,54 +11,74 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* ADD - Register - Encoding T1
    Encoding: 000 11 0 0 Rm:3 Rn:3 Rd:3 */
-TEST_F(CpuTestHarness, addRegister_T1UseLowestRegisterForAllArgs)
-{
-	code_gen().emit_ins16("0001100mmmnnnddd", R0, R0, R0);
-	setExpectedXPSRflags("nZcv");
-	setExpectedRegisterValue(R0, 0U);
-	step();
+MICROMACHINE_TEST_F(addRegister, T1UseLowestRegisterForAllArgs, CpuTestFixture) {
+	code_gen().emit_add_t1(registers::R0, registers::R0, registers::R0);
+	Step();
+	ExpectThat()
+		.XPSRFlagsEquals("nZcv")
+		.Register(registers::R0).Equals(0U)
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T1UseHigestRegisterForAllArgs)
-{
-	code_gen().emit_ins16("0001100mmmnnnddd", R7, R7, R7);
-	setExpectedXPSRflags("NzcV");
-	setExpectedRegisterValue(R7, 0x77777777U + 0x77777777U);
-	step();
+MICROMACHINE_TEST_F(addRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) {
+	code_gen().emit_add_t1(registers::R7, registers::R7, registers::R7);
+
+	getCpu().regs().set(registers::R7, 0x77777777U);
+
+	Step();
+
+	ExpectThat()
+		.XPSRFlagsEquals("NzcV")
+		.Register(registers::R7).Equals(0x77777777U + 0x77777777U)
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T1UseDifferentRegistersForEachArg)
-{
-	code_gen().emit_ins16("0001100mmmnnnddd", R1, R2, R3);
-	setExpectedXPSRflags("nzcv");
-	setExpectedRegisterValue(R3, 0x11111111U + 0x22222222U);
-	step();
+MICROMACHINE_TEST_F(addRegister, T1UseDifferentRegistersForEachArg, CpuTestFixture) {
+	code_gen().emit_add_t1(registers::R1, registers::R2, registers::R3);
+
+	getCpu().regs().set(registers::R1, 0x11111111U);
+	getCpu().regs().set(registers::R2, 0x22222222U);
+
+	Step();
+
+	ExpectThat()
+		.XPSRFlagsEquals("nzcv")
+		.Register(registers::R3).Equals(0x11111111U + 0x22222222U)
+	;
 }
 
 // Force APSR flags to be set which haven't already been covered above.
-TEST_F(CpuTestHarness, addRegister_T1ForceCarryWithNoOverflow)
-{
-	code_gen().emit_ins16("0001100mmmnnnddd", R1, R2, R0);
-	setExpectedXPSRflags("nZCv");
-	setRegisterValue(R1, -1);
-	setRegisterValue(R2, 1);
-	setExpectedRegisterValue(R0, -1 + 1);
-	step();
+MICROMACHINE_TEST_F(addRegister, T1ForceCarryWithNoOverflow, CpuTestFixture) {
+	code_gen().emit_add_t1(registers::R1, registers::R2, registers::R0);
+
+	getCpu().regs().set(registers::R1, -1);
+	getCpu().regs().set(registers::R2, 1);
+
+	Step();
+
+	ExpectThat()
+		.XPSRFlagsEquals("nZCv")
+		.Register(registers::R0).Equals(-1 + 1)
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T1ForceCarryAndOverflow)
-{
-	code_gen().emit_ins16("0001100mmmnnnddd", R1, R2, R0);
-	setExpectedXPSRflags("nzCV");
-	setRegisterValue(R1, -1);
-	setRegisterValue(R2, 0x80000000U);
-	setExpectedRegisterValue(R0, 0x7FFFFFFFU);
-	step();
+MICROMACHINE_TEST_F(addRegister, T1ForceCarryAndOverflow, CpuTestFixture) {
+	code_gen().emit_add_t1(registers::R1, registers::R2, registers::R0);
+
+	getCpu().regs().set(registers::R1, -1);
+	getCpu().regs().set(registers::R2, 0x80000000U);
+
+	Step();
+
+	ExpectThat()
+		.XPSRFlagsEquals("nzCV")
+		.Register(registers::R0).Equals(0x7FFFFFFFU)
+	;
 }
 
 
@@ -66,98 +86,165 @@ TEST_F(CpuTestHarness, addRegister_T1ForceCarryAndOverflow)
 /* ADD - Register - Encoding T2
    Encoding: 010001 00 DN:1 Rm:4 Rdn:3
    NOTE: Shouldn't modify any of the APSR flags.*/
-TEST_F(CpuTestHarness, addRegister_T2UseR1ForAllArgs)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", R1, R1);
-	setExpectedRegisterValue(R1, 0x11111111U + 0x11111111U);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2UseR1ForAllArgs, CpuTestFixture) {
+
+	code_gen().emit_add_t2(registers::R1, registers::R1);
+
+	getCpu().regs().set(registers::R1, 0x11111111U);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::R1).Equals(0x11111111U + 0x11111111U)
+		.APSRFlagsDidNotChange()
+	;
+
 }
 
-TEST_F(CpuTestHarness, addRegister_T2UseLowestRegisterForAllArgs)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", R0, R0);
-	setExpectedRegisterValue(R0, 0U);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2UseLowestRegisterForAllArgs, CpuTestFixture) {
+	code_gen().emit_add_t2(registers::R0, registers::R0);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::R1).Equals(0)
+		.APSRFlagsDidNotChange()
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T2UseR12ForAllArgs)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", R12, R12);
-	setExpectedRegisterValue(R12, 0xCCCCCCCCU + 0xCCCCCCCCU);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2UseForR12AllArgs, CpuTestFixture) {
+	code_gen().emit_add_t2(registers::R12, registers::R12);
+
+	getCpu().regs().set(registers::R12, 0xCCCCCCCCU);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::R12).Equals(0xCCCCCCCCU + 0xCCCCCCCCU)
+		.APSRFlagsDidNotChange()
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T2UseDifferentRegistersForEachArg)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", R2, R1);
-	setExpectedRegisterValue(R2, 0x11111111U + 0x22222222U);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2UseDifferentRegistersForEachArg, CpuTestFixture) {
+	code_gen().emit_add_t2(registers::R2, registers::R1);
+
+	getCpu().regs().set(registers::R1, 0x11111111U);
+	getCpu().regs().set(registers::R2, 0x22222222U);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::R2).Equals(0x11111111U + 0x22222222U)
+		.APSRFlagsDidNotChange()
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T2WrapAroundTo0)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", R2, R1);
-	setRegisterValue(R1, -1);
-	setRegisterValue(R2, 1);
-	setExpectedRegisterValue(R2, -1 + 1);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2WrapAroundTo0, CpuTestFixture) {
+	code_gen().emit_add_t2(registers::R2, registers::R1);
+	getCpu().regs().set(registers::R1, -1);
+	getCpu().regs().set(registers::R2, 1);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::R2).Equals(-1 + 1)
+		.APSRFlagsDidNotChange()
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T2OverflowFromLowestNegativeValue)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", R11, R10);
-	setRegisterValue(R10, -1);
-	setRegisterValue(R11, 0x80000000U);
-	setExpectedRegisterValue(R11, 0x7FFFFFFF);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2OverflowFromLowestNegativeValue, CpuTestFixture) {
+	code_gen().emit_add_t2(registers::R11, registers::R10);
+	getCpu().regs().set(registers::R10, -1);
+	getCpu().regs().set(registers::R11, 0x80000000U);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::R11).Equals(0x7FFFFFFF)
+		.APSRFlagsDidNotChange()
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T2Add4ToSP)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", registers::SP, R1);
-	setRegisterValue(registers::SP, INITIAL_SP - 4);
-	setRegisterValue(R1, 4);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4 + 4);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2Add4ToSP, CpuTestFixture) {
+	constexpr uint32_t INITIAL_SP = 0x00002000;
+
+	code_gen().emit_add_t2(registers::SP, registers::R1);
+	getCpu().regs().set(registers::SP, INITIAL_SP - 4);
+	getCpu().regs().set(registers::R1, 4);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::SP).Equals(INITIAL_SP - 4 + 4)
+		.APSRFlagsDidNotChange()
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T2Subtract4FromSP)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", registers::SP, R1);
-	setRegisterValue(R1, -4);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP - 4);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2Subtract4FromSP, CpuTestFixture) {
+	code_gen().emit_add_t2(registers::SP, registers::R1);
+	getCpu().regs().set(registers::R1, -4);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::SP).Equals(TestSystem::INITIAL_SP - 4)
+		.APSRFlagsDidNotChange()
+	;
+
 }
 
-TEST_F(CpuTestHarness, addRegister_T2Add1ToLR)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", registers::LR, R1);
-	setRegisterValue(R1, 1);
-	setExpectedRegisterValue(registers::LR, INITIAL_LR + 1);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2Add1ToLR, CpuTestFixture) {
+	code_gen().emit_add_t2(registers::LR, registers::R1);
+
+	constexpr uint32_t INITIAL_LR = 0xFFFFFFFF;
+	getCpu().regs().set(registers::LR, INITIAL_LR);
+
+	getCpu().regs().set(registers::R1, 1);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::LR).Equals(INITIAL_LR + 1)
+		.APSRFlagsDidNotChange()
+	;
 }
 
-TEST_F(CpuTestHarness, addRegister_T2Add1ToPCWhichWillBeOddAndRoundedDown)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", registers::PC, R1);
-	setRegisterValue(R1, 1);
-	setExpectedRegisterValue(registers::PC, (INITIAL_PC + 4 + 1) & 0xFFFFFFFE);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2Add1ToPCWhichWillBeOddAndRoundedDown, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+
+	code_gen().emit_add_t2(registers::PC, registers::R1);
+	getCpu().regs().set(registers::PC, INITIAL_PC);
+
+	getCpu().regs().set(registers::R1, 1);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::PC).Equals((INITIAL_PC + 4 + 1) & 0xFFFFFFFE)
+		.APSRFlagsDidNotChange();
 }
 
-TEST_F(CpuTestHarness, addRegister_T2Add2ToPC)
-{
-	code_gen().emit_ins16("01000100dmmmmddd", registers::PC, R1);
-	setRegisterValue(R1, 2);
-	setExpectedRegisterValue(registers::PC, (INITIAL_PC + 4 + 2) & 0xFFFFFFFE);
-	step();
+MICROMACHINE_TEST_F(addRegister, T2Add2ToPC, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+
+	code_gen().emit_add_t2(registers::PC, registers::R1);
+	getCpu().regs().set(registers::PC, INITIAL_PC);
+
+	getCpu().regs().set(registers::R1, 2);
+
+	Step();
+
+	ExpectThat()
+		.Register(registers::PC).Equals((INITIAL_PC + 4 + 2) & 0xFFFFFFFE)
+		.APSRFlagsDidNotChange();
+	;
 }
 /*
 TEST_SIM_ONLY(addRegister, T2ItIsUnpredictableToHaveBothArgsBePC)
 {
-    code_gen().emit_ins16("01000100dmmmmddd", registers::PC, registers::PC);
+    code_gen().emit_add_t2(registers::PC, registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    .Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 */
