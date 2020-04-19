@@ -20,6 +20,10 @@ public:
 	void emit_ins32(const char* encoding1, const char* encoding2, ...);
 	void write(uint16_t instruction);
 
+	void emit_adc(reg_idx m, reg_idx d) {
+		emit_ins16("0100000101mmmddd", m, d);
+	}
+
 private:
 	static uint16_t assemble_instruction(const char* encoding, va_list valist);
 };
