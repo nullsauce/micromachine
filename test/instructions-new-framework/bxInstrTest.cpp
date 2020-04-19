@@ -16,27 +16,28 @@
 
 /* BX (Branch and Exchange)
    Encoding: 010001 11 0 Rm:4 (0)(0)(0) */
-TEST_F(CpuTestFixture,
-	   bx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
-{
+MICROMACHINE_TEST_F(bx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeAndHardFaultOnNextInstr,
+					CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("010001110mmmm000", registers::R0);
-	ExpectThat().XPSRFlagsEquals("t");
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
+	Step();
+	ExpectThat().XPSRFlagsEquals("t");
 	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
-	Step();
 
-	const uint16_t NOP = 0xBF00;
-	memory_write_32(INITIAL_PC + 16, NOP);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 
-MICROMACHINE_TEST_F(bx, UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb, CpuTestFixture)
-{
+MICROMACHINE_TEST_F(bx, UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
+
 	code_gen().emit_ins16("010001110mmmm000", registers::LR);
 	getCpu().regs().set(registers::LR, (INITIAL_PC + 16) | 1);
-	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
 	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
 }
 /*
 TEST_SIM_ONLY(bx, UnpredictableToUseR15)
