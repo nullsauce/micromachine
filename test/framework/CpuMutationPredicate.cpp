@@ -74,11 +74,33 @@ CpuMutationPredicate& CpuMutationPredicate::RegistersDidNotChange() {
 	return *this;
 }
 
-
 CpuMutationPredicate& CpuMutationPredicate::NoInterruptIsPending() {
 	EXPECT_FALSE(_current.exceptions().any_pending());
 	return *this;
 }
+
+CpuMutationPredicate& CpuMutationPredicate::ExceptionIsPending(exception::Type ex) {
+	EXPECT_TRUE(_current.exceptions().at(ex).is_pending());
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::ExceptionIsActive(exception::Type ex) {
+	EXPECT_TRUE(_current.exceptions().at(ex).is_active());
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::ExceptionHandlerReached(exception::Type ex) {
+	uint32_t handler_address = _current.mem().read32(ex * sizeof(uint32_t)) & ~1;
+	EXPECT_EQ(_current.regs().get_pc(), handler_address);
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::HardfaultHandlerReached() {
+	ExceptionIsActive(exception::Type::HARDFAULT);
+	ExceptionHandlerReached(exception::Type::HARDFAULT);
+	return *this;
+}
+
 
 RegisterMutationPredicate CpuMutationPredicate::Register(reg_idx regIdx) {
 	return {_previous, _current, regIdx};

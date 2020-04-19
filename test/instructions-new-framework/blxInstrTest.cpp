@@ -11,51 +11,52 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* BLX (Branch with Link and Exchange)
    Encoding: 010001 11 1 Rm:4 (0)(0)(0) */
-   /*
-TEST_F(CpuTestHarness, blx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
-{
+MICROMACHINE_TEST_F(blx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeAndHardFaultOnNextInstr, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("010001111mmmm000", registers::R0);
-	setExpectedXPSRflags("t");
-	setRegisterValue(registers::R0, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
-	step();
+	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
+	Step();
+	ExpectThat()
+		.XPSRFlagsEquals("t")
+		.Register(registers::PC).Equals(INITIAL_PC + 16)
+		.Register(registers::LR).Equals((INITIAL_PC + 2) | 1);
 
-	const uint16_t NOP = 0xBF00;
-	memory_write_32(INITIAL_PC + 16, NOP);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
-}*/
-
-
-TEST_F(CpuTestHarness, blx_UseRegisterToBranchToOddAddressAsRequiredForThumb)
-{
-	code_gen().emit_ins16("010001111mmmm000", registers::R2);
-	setRegisterValue(registers::R2, (INITIAL_PC + 16) | 1);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
-	step();
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 
-TEST_F(CpuTestHarness, blx_UseHighestRegisterToBranchToOddAddressAsRequiredForThumb)
-{
+
+MICROMACHINE_TEST_F(blx, UseRegisterToBranchToOddAddressAsRequiredForThumb, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
+	code_gen().emit_ins16("010001111mmmm000", registers::R2);
+	getCpu().regs().set(registers::R2, (INITIAL_PC + 16) | 1);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
+	ExpectThat().Register(registers::LR).Equals((INITIAL_PC + 2) | 1);
+}
+
+MICROMACHINE_TEST_F(blx, UseHighestRegisterToBranchToOddAddressAsRequiredForThumb, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("010001111mmmm000", registers::LR);
-	setRegisterValue(registers::LR, (INITIAL_PC + 16) | 1);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
-	step();
+	getCpu().regs().set(registers::LR, (INITIAL_PC + 16) | 1);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
+	ExpectThat().Register(registers::LR).Equals((INITIAL_PC + 2) | 1);
 }
 /*
 TEST_SIM_ONLY(blx, UnpredictableToUseR15)
 {
     code_gen().emit_ins16("010001111mmmm000", registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -63,7 +64,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit0ToBeHigh)
 {
     code_gen().emit_ins16("010001111mmmm001", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -71,7 +72,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit1ToBeHigh)
 {
     code_gen().emit_ins16("010001111mmmm010", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -79,7 +80,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit2ToBeHigh)
 {
     code_gen().emit_ins16("010001111mmmm100", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 */
