@@ -18,9 +18,9 @@
    Encoding: 01001 Rt:3 Imm:8 */
 TEST_F(CpuTestHarness, ldrLiteral_LoadOffset0IntoHighestRegister)
 {
-	code_gen().emit_ins16("01001tttiiiiiiii", R7, 0);
+	code_gen().emit_ins16("01001tttiiiiiiii", registers::R7, 0);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(R7, 0xBAADFEED);
+	setExpectedRegisterValue(registers::R7, 0xBAADFEED);
 	step();
 }
 
@@ -29,19 +29,19 @@ TEST_F(CpuTestHarness, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
 	// Emit UNDEFINED 16-bit instruction.
 	code_gen().emit_ins16("1101111000000000");
 	// Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
-	code_gen().emit_ins16("01001tttiiiiiiii", R7, 0);
+	code_gen().emit_ins16("01001tttiiiiiiii", registers::R7, 0);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	// Move PC to point to second instruction.
 	setRegisterValue(registers::PC, _cpu.regs().get_pc() + 2);
-	setExpectedRegisterValue(R7, 0xBAADFEED);
+	setExpectedRegisterValue(registers::R7, 0xBAADFEED);
 	step();
 }
 
 TEST_F(CpuTestHarness, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
 {
-	code_gen().emit_ins16("01001tttiiiiiiii", R0, 255);
+	code_gen().emit_ins16("01001tttiiiiiiii", registers::R0, 255);
 	memory_write_32(INITIAL_PC + 4 + 255 * 4, 0xBAADFEED);
-	setExpectedRegisterValue(R0, 0xBAADFEED);
+	setExpectedRegisterValue(registers::R0, 0xBAADFEED);
 	step();
 }
 
@@ -51,7 +51,7 @@ TEST_F(CpuTestHarness, ldrLiteral_AttemptToLoadFromInvalidAddress)
 	setExpectedRegisterValue(registers::PC, INITIAL_SP - 128);
 	memory_write_32(INITIAL_SP - 128, 0);
 	code_gen().set_write_address(INITIAL_SP - 128);
-	code_gen().emit_ins16("01001tttiiiiiiii", R0, 255);
+	code_gen().emit_ins16("01001tttiiiiiiii", registers::R0, 255);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

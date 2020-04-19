@@ -18,33 +18,33 @@
    Encoding: 010000 1001 Rn:3 Rd:3 */
 TEST_F(CpuTestHarness, rsbImmediate_UseLowestRegisterOnly)
 {
-	code_gen().emit_ins16("0100001001nnnddd", R0, R0);
+	code_gen().emit_ins16("0100001001nnnddd", registers::R0, registers::R0);
 	setExpectedXPSRflags("nZCv");
-	setExpectedRegisterValue(R0, 0U);
+	setExpectedRegisterValue(registers::R0, 0U);
 	step();
 }
 
 TEST_F(CpuTestHarness, rsbImmediate_UseHigestRegisterOnly)
 {
-	code_gen().emit_ins16("0100001001nnnddd", R7, R7);
+	code_gen().emit_ins16("0100001001nnnddd", registers::R7, registers::R7);
 	setExpectedXPSRflags("Nzcv");
-	setExpectedRegisterValue(R7, -0x77777777U);
+	setExpectedRegisterValue(registers::R7, -0x77777777U);
 	step();
 }
 
 TEST_F(CpuTestHarness, rsbImmediate_UseDifferentRegistersForEachArg)
 {
-	code_gen().emit_ins16("0100001001nnnddd", R2, R0);
+	code_gen().emit_ins16("0100001001nnnddd", registers::R2, registers::R0);
 	setExpectedXPSRflags("Nzcv");
-	setExpectedRegisterValue(R0, -0x22222222);
+	setExpectedRegisterValue(registers::R0, -0x22222222);
 	step();
 }
 
 TEST_F(CpuTestHarness, rsbImmediate_ForceOverflowByNegatingLargestNegativeValue)
 {
-	code_gen().emit_ins16("0100001001nnnddd", R0, R7);
+	code_gen().emit_ins16("0100001001nnnddd", registers::R0, registers::R7);
 	setExpectedXPSRflags("NzcV");
-	setRegisterValue(R0, 0x80000000);
-	setExpectedRegisterValue(R7, 0x80000000U);
+	setRegisterValue(registers::R0, 0x80000000);
+	setExpectedRegisterValue(registers::R7, 0x80000000U);
 	step();
 }

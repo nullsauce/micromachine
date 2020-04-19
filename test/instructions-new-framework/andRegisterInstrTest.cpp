@@ -19,17 +19,17 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(CpuTestHarness, andRegister_UseLowestRegisterForBothArgs)
 {
-	code_gen().emit_ins16("0100000000mmmddd", R0, R0);
+	code_gen().emit_ins16("0100000000mmmddd", registers::R0, registers::R0);
 	setExpectedXPSRflags("nZc");
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	clearCarry();
-	setExpectedRegisterValue(R0, 0);
+	setExpectedRegisterValue(registers::R0, 0);
 	step();
 }
 
 TEST_F(CpuTestHarness, andRegister_UseHighestRegisterForBothArgs)
 {
-	code_gen().emit_ins16("0100000000mmmddd", R7, R7);
+	code_gen().emit_ins16("0100000000mmmddd", registers::R7, registers::R7);
 	setExpectedXPSRflags("nzC");
 	setCarry();
 	step();
@@ -37,28 +37,28 @@ TEST_F(CpuTestHarness, andRegister_UseHighestRegisterForBothArgs)
 
 TEST_F(CpuTestHarness, andRegister_AndR3andR7)
 {
-	code_gen().emit_ins16("0100000000mmmddd", R3, R7);
+	code_gen().emit_ins16("0100000000mmmddd", registers::R3, registers::R7);
 	setExpectedXPSRflags("nz");
-	setExpectedRegisterValue(R7, 0x33333333);
+	setExpectedRegisterValue(registers::R7, 0x33333333);
 	step();
 }
 
 TEST_F(CpuTestHarness, andRegister_UseAndToJustKeepNegativeSignBit)
 {
-	code_gen().emit_ins16("0100000000mmmddd", R6, R1);
-	setRegisterValue(R1, -1);
-	setRegisterValue(R6, 0x80000000);
+	code_gen().emit_ins16("0100000000mmmddd", registers::R6, registers::R1);
+	setRegisterValue(registers::R1, -1);
+	setRegisterValue(registers::R6, 0x80000000);
 	setExpectedXPSRflags("Nz");
-	setExpectedRegisterValue(R1, 0x80000000);
+	setExpectedRegisterValue(registers::R1, 0x80000000);
 	step();
 }
 
 TEST_F(CpuTestHarness, andRegister_HaveAndResultNotBeSameAsEitherSource)
 {
-	code_gen().emit_ins16("0100000000mmmddd", R5, R2);
-	setRegisterValue(R2, 0x12345678);
-	setRegisterValue(R5, 0xF0F0F0F0);
+	code_gen().emit_ins16("0100000000mmmddd", registers::R5, registers::R2);
+	setRegisterValue(registers::R2, 0x12345678);
+	setRegisterValue(registers::R5, 0xF0F0F0F0);
 	setExpectedXPSRflags("nz");
-	setExpectedRegisterValue(R2, 0x10305070);
+	setExpectedRegisterValue(registers::R2, 0x10305070);
 	step();
 }

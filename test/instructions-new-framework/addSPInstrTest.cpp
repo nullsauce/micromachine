@@ -18,22 +18,22 @@
    Encoding: 1010 1 Rd:3 Imm:8 */
 TEST_F(CpuTestHarness, addSP_T1UseHighestRegisterAddSmallestImmediate)
 {
-	code_gen().emit_ins16("10101dddiiiiiiii", R7, 0);
-	setExpectedRegisterValue(R7, INITIAL_SP + 0);
+	code_gen().emit_ins16("10101dddiiiiiiii", registers::R7, 0);
+	setExpectedRegisterValue(registers::R7, INITIAL_SP + 0);
 	step();
 }
 
 TEST_F(CpuTestHarness, addSP_T1UseLowestRegisterAddLargestImmediate)
 {
-	code_gen().emit_ins16("10101dddiiiiiiii", R0, 255);
-	setExpectedRegisterValue(R0, INITIAL_SP + 255 * 4);
+	code_gen().emit_ins16("10101dddiiiiiiii", registers::R0, 255);
+	setExpectedRegisterValue(registers::R0, INITIAL_SP + 255 * 4);
 	step();
 }
 
 TEST_F(CpuTestHarness, addSP_T1UseIntermediateValues)
 {
-	code_gen().emit_ins16("10101dddiiiiiiii", R3, 128);
-	setExpectedRegisterValue(R3, INITIAL_SP + 128 * 4);
+	code_gen().emit_ins16("10101dddiiiiiiii", registers::R3, 128);
+	setExpectedRegisterValue(registers::R3, INITIAL_SP + 128 * 4);
 	step();
 }
 

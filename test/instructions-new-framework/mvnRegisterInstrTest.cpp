@@ -20,35 +20,35 @@
 TEST_F(CpuTestHarness, mvnRegister_UseLowestRegisterForAllArgs)
 {
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-	code_gen().emit_ins16("0100001111mmmddd", R0, R0);
+	code_gen().emit_ins16("0100001111mmmddd", registers::R0, registers::R0);
 	setExpectedXPSRflags("NzC");
 	setCarry();
-	setExpectedRegisterValue(R0, ~0U);
+	setExpectedRegisterValue(registers::R0, ~0U);
 	step();
 }
 
 TEST_F(CpuTestHarness, mvnRegister_UseHigestRegisterForAllArgs)
 {
-	code_gen().emit_ins16("0100001111mmmddd", R7, R7);
+	code_gen().emit_ins16("0100001111mmmddd", registers::R7, registers::R7);
 	setExpectedXPSRflags("Nzc");
 	clearCarry();
-	setExpectedRegisterValue(R7, ~0x77777777U);
+	setExpectedRegisterValue(registers::R7, ~0x77777777U);
 	step();
 }
 
 TEST_F(CpuTestHarness, mvnRegister_UseDifferentRegistersForEachArg)
 {
-	code_gen().emit_ins16("0100001111mmmddd", R2, R1);
+	code_gen().emit_ins16("0100001111mmmddd", registers::R2, registers::R1);
 	setExpectedXPSRflags("Nz");
-	setExpectedRegisterValue(R1, ~0x22222222U);
+	setExpectedRegisterValue(registers::R1, ~0x22222222U);
 	step();
 }
 
 TEST_F(CpuTestHarness, mvnRegister_MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag)
 {
-	code_gen().emit_ins16("0100001111mmmddd", R2, R1);
-	setRegisterValue(R2, -1);
+	code_gen().emit_ins16("0100001111mmmddd", registers::R2, registers::R1);
+	setRegisterValue(registers::R2, -1);
 	setExpectedXPSRflags("nZ");
-	setExpectedRegisterValue(R1, 0U);
+	setExpectedRegisterValue(registers::R1, 0U);
 	step();
 }

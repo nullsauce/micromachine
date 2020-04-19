@@ -19,7 +19,7 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(CpuTestHarness, tstRegister_UseLowestRegisterForBothArgsAndResultShouldBeZero)
 {
-	code_gen().emit_ins16("0100001000mmmnnn", R0, R0);
+	code_gen().emit_ins16("0100001000mmmnnn", registers::R0, registers::R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	setExpectedXPSRflags("nZc");
 	clearCarry();
@@ -28,7 +28,7 @@ TEST_F(CpuTestHarness, tstRegister_UseLowestRegisterForBothArgsAndResultShouldBe
 
 TEST_F(CpuTestHarness, tstRegister_UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged)
 {
-	code_gen().emit_ins16("0100001000mmmnnn", R7, R7);
+	code_gen().emit_ins16("0100001000mmmnnn", registers::R7, registers::R7);
 	setExpectedXPSRflags("nzC");
 	setCarry();
 	step();
@@ -36,16 +36,16 @@ TEST_F(CpuTestHarness, tstRegister_UseHighestRegisterForBothArgsAndRegisterWillB
 
 TEST_F(CpuTestHarness, tstRegister_AndR3andR7)
 {
-	code_gen().emit_ins16("0100001000mmmnnn", R3, R7);
+	code_gen().emit_ins16("0100001000mmmnnn", registers::R3, registers::R7);
 	setExpectedXPSRflags("nz");
 	step();
 }
 
 TEST_F(CpuTestHarness, tstRegister_UseAndToJustKeepNegativeSignBit)
 {
-	code_gen().emit_ins16("0100001000mmmnnn", R7, R0);
-	setRegisterValue(R0, -1);
-	setRegisterValue(R7, 0x80000000);
+	code_gen().emit_ins16("0100001000mmmnnn", registers::R7, registers::R0);
+	setRegisterValue(registers::R0, -1);
+	setRegisterValue(registers::R7, 0x80000000);
 	setExpectedXPSRflags("Nz");
 	step();
 }

@@ -19,9 +19,9 @@
    /*
 TEST_F(CpuTestHarness, blx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
 {
-	code_gen().emit_ins16("010001111mmmm000", R0);
+	code_gen().emit_ins16("010001111mmmm000", registers::R0);
 	setExpectedXPSRflags("t");
-	setRegisterValue(R0, INITIAL_PC + 16);
+	setRegisterValue(registers::R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
 	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
 	step();
@@ -35,8 +35,8 @@ TEST_F(CpuTestHarness, blx_UseLowestRegisterToBranchToEvenAddressWhichClearsThum
 
 TEST_F(CpuTestHarness, blx_UseRegisterToBranchToOddAddressAsRequiredForThumb)
 {
-	code_gen().emit_ins16("010001111mmmm000", R2);
-	setRegisterValue(R2, (INITIAL_PC + 16) | 1);
+	code_gen().emit_ins16("010001111mmmm000", registers::R2);
+	setRegisterValue(registers::R2, (INITIAL_PC + 16) | 1);
 	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
 	setExpectedRegisterValue(registers::LR, (INITIAL_PC + 2) | 1);
 	step();
@@ -61,7 +61,7 @@ TEST_SIM_ONLY(blx, UnpredictableToUseR15)
 
 TEST_SIM_ONLY(blx, UnpredictableForBit0ToBeHigh)
 {
-    code_gen().emit_ins16("010001111mmmm001", R0);
+    code_gen().emit_ins16("010001111mmmm001", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -69,7 +69,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit0ToBeHigh)
 
 TEST_SIM_ONLY(blx, UnpredictableForBit1ToBeHigh)
 {
-    code_gen().emit_ins16("010001111mmmm010", R0);
+    code_gen().emit_ins16("010001111mmmm010", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -77,7 +77,7 @@ TEST_SIM_ONLY(blx, UnpredictableForBit1ToBeHigh)
 
 TEST_SIM_ONLY(blx, UnpredictableForBit2ToBeHigh)
 {
-    code_gen().emit_ins16("010001111mmmm100", R0);
+    code_gen().emit_ins16("010001111mmmm100", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
