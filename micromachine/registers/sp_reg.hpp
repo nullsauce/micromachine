@@ -9,12 +9,16 @@ class sp_reg : public ireg {
 public:
 
 	sp_reg(const exec_mode_reg& exec_mode_reg, const control_reg& control_reg)
-		: _sps{0, 0}
+		: _sps{{0, 0}}
 		, _exec_mode_reg(exec_mode_reg)
 		, _ctl_reg(control_reg)
-	{
+	{}
 
-	}
+	sp_reg(const exec_mode_reg& exec_mode_reg, const control_reg& control_reg, const sp_reg& existing_state)
+		: _sps(existing_state._sps)
+		, _exec_mode_reg(exec_mode_reg)
+		, _ctl_reg(control_reg)
+	{}
 
 	using ireg::operator=;
 
@@ -74,7 +78,7 @@ private:
 	// stack pointers
 	// 0: SP Main
 	// 1: SP Process
-	uint32_t _sps[2];
+	std::array<uint32_t, 2> _sps;
 
 	const exec_mode_reg& _exec_mode_reg;
 	const control_reg& _ctl_reg;

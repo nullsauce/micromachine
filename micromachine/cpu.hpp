@@ -33,6 +33,7 @@ public:
 
 	cpu();
 
+
 	enum class State {
 		RUN,
 		FAULT,
@@ -85,6 +86,48 @@ public:
 		}
 	}
 
+	cpu(const cpu& existing_cpu)
+		: _io_reg_callback(existing_cpu._io_reg_callback)
+		, _regs(_ctx_switcher, existing_cpu.regs())
+		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, existing_cpu._exception_vector)
+		, _interrupter(_exception_vector)
+		, _nvic(existing_cpu._nvic)
+		, _shpr2_reg(existing_cpu._shpr2_reg)
+		, _shpr3_reg(existing_cpu._shpr3_reg)
+		, _generic_io_reg(std::ref(_io_reg_callback))
+		, _event_register(existing_cpu._event_register)
+		, _system_timer(_interrupter, existing_cpu._system_timer)
+		, _mem(_interrupter,{
+			std::make_pair(shpr2_reg::SHPR2, std::ref(_shpr2_reg)),
+			std::make_pair(shpr3_reg::SHPR3, std::ref(_shpr3_reg)),
+			std::make_pair(systick_control_reg::SYST_CSR, std::ref(_system_timer.control_register())),
+			std::make_pair(systick_control_reg::SYST_RVR, std::ref(_system_timer.reload_value_register())),
+			std::make_pair(systick_control_reg::SYST_CVR, std::ref(_system_timer.current_value_register())),
+			std::make_pair(systick_control_reg::SYST_CALIB, std::ref(_system_timer.calib_value_register())),
+			std::make_pair(generic_io_reg::GIO_IO, std::ref(_generic_io_reg)),
+			std::make_pair(nvic::NVIC_ISER, std::ref(_nvic.iser_reg())),
+			std::make_pair(nvic::NVIC_ICER, std::ref(_nvic.icer_reg())),
+			std::make_pair(nvic::NVIC_ISPR, std::ref(_nvic.ispr_reg())),
+			std::make_pair(nvic::NVIC_ICPR, std::ref(_nvic.icpr_reg())),
+			std::make_pair(nvic::NVIC_IPR0, std::ref(_nvic.priority_reg<0>())),
+			std::make_pair(nvic::NVIC_IPR1, std::ref(_nvic.priority_reg<1>())),
+			std::make_pair(nvic::NVIC_IPR2, std::ref(_nvic.priority_reg<2>())),
+			std::make_pair(nvic::NVIC_IPR3, std::ref(_nvic.priority_reg<3>())),
+			std::make_pair(nvic::NVIC_IPR4, std::ref(_nvic.priority_reg<4>())),
+			std::make_pair(nvic::NVIC_IPR5, std::ref(_nvic.priority_reg<5>())),
+			std::make_pair(nvic::NVIC_IPR6, std::ref(_nvic.priority_reg<6>())),
+			std::make_pair(nvic::NVIC_IPR7, std::ref(_nvic.priority_reg<7>())),
+		})
+		, _break_signal(existing_cpu._break_signal)
+		, _enter_low_power_mode_signal(existing_cpu._enter_low_power_mode_signal)
+		, _exec_dispatcher(_regs, _mem, _interrupter, _event_register, _break_signal, _enter_low_power_mode_signal)
+		, _ctx_switcher(_regs, _mem, _exception_vector)
+		, _debug_instruction_counter(existing_cpu._debug_instruction_counter)
+
+	{
+		fprintf(stderr, "cpu::copy\n");
+	}
+
 private:
 
 	exception_state* next_exception_to_take() {
@@ -128,9 +171,9 @@ private:
 	exec_dispatcher 	_exec_dispatcher;
 	context_switcher 	_ctx_switcher;
 
-
 	// TODO: this is not needed here
 	uint64_t _debug_instruction_counter;
+
 };
 
 #endif //MICROMACHINE_CPU_HPP

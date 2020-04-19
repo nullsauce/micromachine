@@ -17,10 +17,6 @@ struct apsr_reg : public xpsr_reg {
 	using xpsr_reg::xpsr_reg;
 	using flags_bits = bits<28,4>;
 
-	void print() {
-		fprintf(stderr, "Z:%d, N:%d, C:%d, V:%d\n", zero_flag(), neg_flag(), carry_flag(), overflow_flag());
-	}
-
 	flags_bits::integer_slice<uint32_t> flags() {
 		return flags_bits::of(_xpsr);
 	}

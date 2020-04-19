@@ -13,7 +13,6 @@ public:
 
 	exec_mode_reg()
 		: _exec_mode(execution_mode::thread) {
-
 	}
 
 	bool is_handler_mode() const {
