@@ -28,6 +28,8 @@ set(HEADERS
 	include/tinyprintf.h
 	include/mem.h
 	include/system.h
+	include/core_cm0.h
+	include/micromachine_mcu.h
 	include/io.h
 	include/micromachine_mcu.h
 )
