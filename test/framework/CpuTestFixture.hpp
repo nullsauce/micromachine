@@ -17,6 +17,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <deque>
 
 #include "CpuMutationPredicate.hpp"
+#include "RegisterMutationPredicate.hpp"
 
 /**
  * Utility macro to declare tests with a test_case_name different
