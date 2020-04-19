@@ -11,57 +11,56 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* MOV - Register Encoding 1
    Encoding: 010001 10 D:1 Rm:4 Rd:3
    NOTE: This encoding doesn't update the APSR flags. */
-TEST_F(CpuTestHarness, movRegister_UseLowestRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(movRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("01000110dmmmmddd", registers::R0, registers::R0);
-	step();
+	Step();
 }
 
-TEST_F(CpuTestHarness, movRegister_UseHighRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(movRegister, UseHighRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("01000110dmmmmddd", registers::LR, registers::LR);
-	step();
+	Step();
 }
 
-TEST_F(CpuTestHarness, movRegister_MoveHighRegisterToLowRegister)
-{
+MICROMACHINE_TEST_F(movRegister, MoveHighRegisterToLowRegister, CpuTestFixture) {
 	code_gen().emit_ins16("01000110dmmmmddd", registers::R7, registers::R12);
-	setExpectedRegisterValue(registers::R7, 0xCCCCCCCC);
-	step();
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0xCCCCCCCC);
 }
 
-TEST_F(CpuTestHarness, movRegister_MoveLowRegisterToLHighRegister)
-{
+MICROMACHINE_TEST_F(movRegister, MoveLowRegisterToLHighRegister, CpuTestFixture) {
 	code_gen().emit_ins16("01000110dmmmmddd", registers::R12, registers::R7);
-	setExpectedRegisterValue(registers::R12, 0x77777777);
-	step();
+	Step();
+	ExpectThat().Register(registers::R12).Equals(0x77777777);
 }
 
-TEST_F(CpuTestHarness, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
-{
+MICROMACHINE_TEST_F(movRegister, MoveOddAddressIntoPCAndMakeSureLSbitIsCleared, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, registers::R1);
-	setRegisterValue(registers::R1, INITIAL_PC + 1025);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 1024);
-	step();
+	getCpu().regs().set(registers::R1, INITIAL_PC + 1025);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 1024);
 }
 
-TEST_F(CpuTestHarness, movRegister_MoveEvenAddressIntoPC)
-{
+MICROMACHINE_TEST_F(movRegister, MoveEvenAddressIntoPC, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, registers::R2);
-	setRegisterValue(registers::R2, INITIAL_PC + 1024);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 1024);
-	step();
+	getCpu().regs().set(registers::R2, INITIAL_PC + 1024);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 1024);
 }
 
-TEST_F(CpuTestHarness, movRegister_MovePCintoOtherRegister)
-{
+MICROMACHINE_TEST_F(movRegister, MovePCintoOtherRegister, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01000110dmmmmddd", registers::R3, registers::PC);
-	setExpectedRegisterValue(registers::R3, INITIAL_PC + 4);
-	step();
+	ExpectThat().Register(registers::R3).Equals(INITIAL_PC + 4);
+	Step();
 }
