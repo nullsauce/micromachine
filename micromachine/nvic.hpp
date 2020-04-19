@@ -172,6 +172,8 @@ public:
 
 	nvic() : nvic(0U, 0U) {}
 
+	nvic(const nvic& other) : nvic(other._interrupt_enable_statuses, other._interrupt_pending_statuses) {}
+
 	// This is used for testing purposes
 	static nvic with_enable_statuses(uint32_t statuses) {
 		return nvic(statuses, 0U);

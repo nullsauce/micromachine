@@ -14,8 +14,15 @@ set(ALL_TEST_OBJS "")
 add_library(test_common STATIC
 	framework/CpuTestHarness.hpp
 	framework/CpuTestHarness.cpp
+	framework/CpuMutationPredicate.cpp
+	framework/CpuMutationPredicate.hpp
+	framework/RegisterMutationPredicate.cpp
+	framework/RegisterMutationPredicate.hpp
 	framework/code_generator.hpp
 	framework/code_generator.cpp
+	framework/Checklist.hpp
+		framework/TestSystem.hpp
+	framework/CpuTestFixture.hpp
 )
 target_include_directories(test_common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/framework")
 target_link_libraries(test_common libgtest micromachine)
@@ -43,6 +50,8 @@ macro(declare_test test_src_file)
 	# Additionally link libgtest_main to allow the test to run
 	target_link_libraries(${test_executable_name} test_common libgtest_main ${CMAKE_THREAD_LIBS_INIT})
 endmacro()
+
+declare_test(framework/CpuTestFixtureTests.cpp)
 
 declare_test(instructions/adcRegisterInstrTest.cpp)
 declare_test(instructions/addImmediateInstrTest.cpp)

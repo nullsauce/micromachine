@@ -20,25 +20,67 @@
 #include "exception_return_handler.hpp"
 
 //#define USE_INDIRECT_REG_ACCESS
-struct registers {
+class registers {
+private:
+	std::array<standard_reg, 13> _gen_pupose_registers;
+	control_reg _control_register;
+	exec_mode_reg _exec_mode_register;
+	uint32_t _xpsr_register;
+	apsr_reg _app_status_register;
+	ipsr_reg _interrupt_status_register;
+	epsr_reg _execution_status_register;
+	primask_reg _primask_register;
+	sp_reg _sp;
+	standard_reg _lr;
+	pc_reg _pc;
 
+public:
 	registers(exception_return_handler& exception_return_handler)
 		: _xpsr_register(0)
 		, _app_status_register(_xpsr_register)
 		, _interrupt_status_register(_xpsr_register)
 		, _execution_status_register(_xpsr_register)
 		, _sp(_exec_mode_register, _control_register)
-		, _pc(_exec_mode_register, _execution_status_register, exception_return_handler) {
+		, _pc(_exec_mode_register, _execution_status_register, exception_return_handler)
+	{}
 
+	registers(exception_return_handler& exception_return_handler, const registers& existing_state)
+		: _gen_pupose_registers(existing_state._gen_pupose_registers)
+		, _control_register(existing_state._control_register)
+		, _exec_mode_register(existing_state._exec_mode_register)
+		, _xpsr_register(existing_state._xpsr_register)
+		, _app_status_register(_xpsr_register)
+		, _interrupt_status_register(_xpsr_register)
+		, _execution_status_register(_xpsr_register)
+		, _primask_register(existing_state._primask_register)
+		, _sp(_exec_mode_register, _control_register, existing_state._sp)
+		, _lr(existing_state._lr)
+		, _pc(_exec_mode_register, _execution_status_register, exception_return_handler, existing_state._pc)
+	{
+		int k = 0;
 	}
 
 	// Number general purpose registers. Here 'general purpose' means
 	// the low registers R0 to R7 AND the high registers R8 to R12
 	static constexpr size_t NUM_GP_REGS = 13;
 	static constexpr size_t NUM_REGS = NUM_GP_REGS + 3;
+	static constexpr reg_idx R0 = 0;
+	static constexpr reg_idx R1 = 1;
+	static constexpr reg_idx R2 = 2;
+	static constexpr reg_idx R3 = 3;
+	static constexpr reg_idx R4 = 4;
+	static constexpr reg_idx R5 = 5;
+	static constexpr reg_idx R6 = 6;
+	static constexpr reg_idx R7 = 7;
+	static constexpr reg_idx R8 = 8;
+	static constexpr reg_idx R9 = 9;
+	static constexpr reg_idx R10 = 10;
+	static constexpr reg_idx R11 = 11;
+	static constexpr reg_idx R12 = 12;
 	static constexpr reg_idx SP = 13;
 	static constexpr reg_idx LR = 14;
 	static constexpr reg_idx PC = 15;
+
 
 	void reset() {
 		for(reg_idx i = 0; i < NUM_REGS; i++) {
@@ -49,9 +91,6 @@ struct registers {
 	}
 
 	uint32_t get(reg_idx i) const {
-	#ifdef USE_INDIRECT_REG_ACCESS
-		return *_registers[i];
-	#else
 		precond(i < NUM_REGS, "register index too large %zu", i);
 		if(i < NUM_GP_REGS) {
 			return _gen_pupose_registers[i];
@@ -64,14 +103,9 @@ struct registers {
 		} else {
 			precond_fail("invalid register index %lu", i);
 		}
-		return 0;
-	#endif
 	}
 
 	void set(reg_idx i, uint32_t val) {
-	#ifdef USE_INDIRECT_REG_ACCESS
-		(*_registers[i]) = val;
-	#else
 		precond(i < NUM_REGS, "register index too large");
 		if(i < NUM_GP_REGS) {
 			_gen_pupose_registers[i] = val;
@@ -84,7 +118,6 @@ struct registers {
 		} else {
 			precond_fail("invalid register index %lu", i);
 		}
-	#endif
 	}
 
 	void branch_interworking(uint32_t address) {
@@ -201,39 +234,6 @@ struct registers {
 	const uint32_t& xpsr_register() const {
 		return _xpsr_register;
 	}
-
-private:
-
-	standard_reg 	_gen_pupose_registers[13];
-	control_reg 	_control_register;
-	exec_mode_reg 	_exec_mode_register;
-	uint32_t 		_xpsr_register;
-	apsr_reg 		_app_status_register;
-	ipsr_reg 		_interrupt_status_register;
-	epsr_reg		_execution_status_register;
-	primask_reg 	_primask_register;
-	sp_reg 			_sp;
-	standard_reg 	_lr;
-	pc_reg 			_pc;
-	const std::array<ireg*, 16> _registers = {{
-		&_gen_pupose_registers[0],
-		&_gen_pupose_registers[1],
-		&_gen_pupose_registers[2],
-		&_gen_pupose_registers[3],
-		&_gen_pupose_registers[4],
-		&_gen_pupose_registers[5],
-		&_gen_pupose_registers[6],
-		&_gen_pupose_registers[7],
-		&_gen_pupose_registers[8],
-		&_gen_pupose_registers[9],
-		&_gen_pupose_registers[10],
-		&_gen_pupose_registers[11],
-		&_gen_pupose_registers[12],
-		&_sp,
-		&_lr,
-		&_pc
-	}};
-
 
 };
 

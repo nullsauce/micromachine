@@ -197,8 +197,16 @@ public:
 
 class exception_state_vector {
 public:
-	exception_state_vector(const exception_state_vector&) = delete;
-	void operator=(const exception_state_vector&) = delete;
+
+	// copy constructor
+	exception_state_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, const exception_state_vector& existing_state)
+		: exception_state_vector(nvic, sph2, sph3) {
+		// Initializes everything as usual.
+		// Then copy the interrupt from the existing state
+		for(size_t i = 0; i < _indexed.size(); i++) {
+			_indexed[i] = existing_state._indexed[i];
+		}
+	}
 
 	exception_state_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
 		: _reset(exception::Type::RESET)
