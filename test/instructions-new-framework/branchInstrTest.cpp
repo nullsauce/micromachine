@@ -11,347 +11,377 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
+
+/* Condition codes */
+#define COND_EQ 0x0
+#define COND_NE (COND_EQ | 1)
+#define COND_CS 0x2
+#define COND_CC (COND_CS | 1)
+#define COND_MI 0x4
+#define COND_PL (COND_MI | 1)
+#define COND_VS 0x6
+#define COND_VC (COND_VS | 1)
+#define COND_HI 0x8
+#define COND_LS (COND_HI | 1)
+#define COND_GE 0xA
+#define COND_LT (COND_GE | 1)
+#define COND_GT 0xC
+#define COND_LE (COND_GT | 1)
+#define COND_AL 0xE
 
 
 /* B - Encoding T1 (Conditional)
    Encoding: 1101 Cond:4 Imm:8 */
-TEST_F(CpuTestHarness, b_BEQ_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BEQ_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 0);
 	// These tests set the APSR flags to specific value and expect them to be unmodified upon return.
-	setExpectedXPSRflags("z");
-	clearZero();
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("z");
 }
 
-TEST_F(CpuTestHarness, b_BEQ_Taken)
-{
+MICROMACHINE_TEST_F(b, BEQ_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 0);
-	setExpectedXPSRflags("Z");
-	setZero();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Z");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BNE_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BNE_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_NE, 0);
-	setExpectedXPSRflags("Z");
-	setZero();
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Z");
 }
 
-TEST_F(CpuTestHarness, b_BNE_Taken)
-{
+MICROMACHINE_TEST_F(b, BNE_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_NE, 0);
-	setExpectedXPSRflags("z");
-	clearZero();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("z");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BCS_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BCS_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_CS, 0);
-	setExpectedXPSRflags("c");
-	clearCarry();
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("c");
 }
 
-TEST_F(CpuTestHarness, b_BCS_Taken)
-{
+MICROMACHINE_TEST_F(b, BCS_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_CS, 0);
-	setExpectedXPSRflags("C");
-	setCarry();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("C");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BCC_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BCC_NotTaken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_CC, 0);
-	setExpectedXPSRflags("C");
-	setCarry();
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("C");
 }
 
-TEST_F(CpuTestHarness, b_BCC_Taken)
-{
+MICROMACHINE_TEST_F(b, BCC_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_CC, 0);
-	setExpectedXPSRflags("c");
-	clearCarry();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("c");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BMI_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BMI_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_MI, 0);
-	setExpectedXPSRflags("n");
-	clearNegative();
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("n");
 }
 
-TEST_F(CpuTestHarness, b_BMI_Taken)
-{
+MICROMACHINE_TEST_F(b, BMI_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_MI, 0);
-	setExpectedXPSRflags("N");
-	setNegative();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("N");
 }
 
-TEST_F(CpuTestHarness, b_BPL_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BPL_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_PL, 0);
-	setExpectedXPSRflags("N");
-	setNegative();
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("N");
 }
 
-TEST_F(CpuTestHarness, b_BPL_Taken)
-{
+MICROMACHINE_TEST_F(b, BPL_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_PL, 0);
-	setExpectedXPSRflags("n");
-	clearNegative();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("n");
 }
 
-TEST_F(CpuTestHarness, b_BVS_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BVS_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_VS, 0);
-	setExpectedXPSRflags("v");
-	clearOverflow();
-	step();
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("v");
 }
 
-TEST_F(CpuTestHarness, b_BVS_Taken)
-{
+MICROMACHINE_TEST_F(b, BVS_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_VS, 0);
-	setExpectedXPSRflags("V");
-	setOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("V");
 }
 
-TEST_F(CpuTestHarness, b_BVC_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BVC_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_VC, 0);
-	setExpectedXPSRflags("V");
-	setOverflow();
-	step();
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("V");
 }
 
-TEST_F(CpuTestHarness, b_BVC_Taken)
-{
+MICROMACHINE_TEST_F(b, BVC_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_VC, 0);
-	setExpectedXPSRflags("v");
-	clearOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("v");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BHI_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BHI_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_HI, 0);
-	setExpectedXPSRflags("cZ");
-	clearCarry();
-	setZero();
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("cZ");
 }
 
-TEST_F(CpuTestHarness, b_BHI_Taken)
-{
+MICROMACHINE_TEST_F(b, BHI_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_HI, 0);
-	setExpectedXPSRflags("Cz");
-	setCarry();
-	clearZero();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("Cz");
 }
 
-TEST_F(CpuTestHarness, b_BLS_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BLS_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LS, 0);
-	setExpectedXPSRflags("Cz");
-	setCarry();
-	clearZero();
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Cz");
 }
 
-TEST_F(CpuTestHarness, b_BLS_Taken)
-{
+MICROMACHINE_TEST_F(b, BLS_Taken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LS, 0);
-	setExpectedXPSRflags("cZ");
-	clearCarry();
-	setZero();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("cZ");
 }
 
-TEST_F(CpuTestHarness, b_BGE_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BGE_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
-	setExpectedXPSRflags("Nv");
-	setNegative();
-	clearOverflow();
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nv");
 }
 
-TEST_F(CpuTestHarness, b_BGE_Taken1)
-{
+MICROMACHINE_TEST_F(b, BGE_Taken1, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
-	setExpectedXPSRflags("NV");
-	setNegative();
-	setOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("NV");
 }
 
-TEST_F(CpuTestHarness, b_BGE_Taken2)
-{
+MICROMACHINE_TEST_F(b, BGE_Taken2, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
-	setExpectedXPSRflags("nv");
-	clearNegative();
-	clearOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nv");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BLT_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BLT_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
-	setExpectedXPSRflags("NV");
-	setNegative();
-	setOverflow();
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NV");
 }
 
-TEST_F(CpuTestHarness, b_BLT_Taken1)
-{
+MICROMACHINE_TEST_F(b, BLT_Taken1, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
-	setExpectedXPSRflags("Nv");
-	setNegative();
-	clearOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nv");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BLT_Taken2)
-{
+MICROMACHINE_TEST_F(b, BLT_Taken2, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
-	setExpectedXPSRflags("nV");
-	clearNegative();
-	setOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nV");
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BGT_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BGT_NotTaken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
-	setExpectedXPSRflags("ZNV");
-	setZero();
-	setNegative();
-	setOverflow();
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("ZNV");
 }
 
-TEST_F(CpuTestHarness, b_BGT_Taken1)
-{
+MICROMACHINE_TEST_F(b, BGT_Taken1, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
-	setExpectedXPSRflags("znv");
-	clearZero();
-	clearNegative();
-	clearOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("znv");
 }
 
-TEST_F(CpuTestHarness, b_BGT_Taken2)
-{
+MICROMACHINE_TEST_F(b, BGT_Taken2, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
-	setExpectedXPSRflags("zNV");
-	clearZero();
-	setNegative();
-	setOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("zNV");
 }
 
-TEST_F(CpuTestHarness, b_BLE_NotTaken)
-{
+MICROMACHINE_TEST_F(b, BLE_NotTaken, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
-	setExpectedXPSRflags("zNV");
-	clearZero();
-	setNegative();
-	setOverflow();
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("zNV");
 }
 
-TEST_F(CpuTestHarness, b_BLE_Taken1)
-{
+MICROMACHINE_TEST_F(b, BLE_Taken1, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
-	setExpectedXPSRflags("ZNv");
-	setZero();
-	setNegative();
-	clearOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	getCpu().regs().app_status_register().write_neg_flag(true);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("ZNv");
 }
 
-TEST_F(CpuTestHarness, b_BLE_Taken2)
-{
+MICROMACHINE_TEST_F(b, BLE_Taken2, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
-	setExpectedXPSRflags("ZnV");
-	setZero();
-	clearNegative();
-	setOverflow();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().XPSRFlagsEquals("ZnV");
 }
 
-TEST_F(CpuTestHarness, b_BEQ_TakenWithLargestPositiveOffset)
-{
+MICROMACHINE_TEST_F(b, BEQ_TakenWithLargestPositiveOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 127);
-	setExpectedXPSRflags("Z");
-	setZero();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4 + 127 * 2);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 + 127 * 2);
+	ExpectThat().XPSRFlagsEquals("Z");
 }
 
-TEST_F(CpuTestHarness, b_BEQ_TakenWithLargesNegativeOffset)
-{
+MICROMACHINE_TEST_F(b, BEQ_TakenWithLargesNegativeOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, -128);
-	setExpectedXPSRflags("Z");
-	setZero();
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4 - 128 * 2);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(true);
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 - 128 * 2);
+	ExpectThat().XPSRFlagsEquals("Z");
 }
 
 
 
 /* B - Encoding T2 (Unconditional)
    Encoding: 11100 Imm:11 */
-TEST_F(CpuTestHarness, b_BAL_ZeroOffset)
-{
+MICROMACHINE_TEST_F(b, BAL_ZeroOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("11100iiiiiiiiiii", 0);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, b_BAL_LargestPositiveOffset)
-{
+MICROMACHINE_TEST_F(b, BAL_LargestPositiveOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("11100iiiiiiiiiii", 1023);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4 + 1023 * 2);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 + 1023 * 2);
 }
 
-TEST_F(CpuTestHarness, b_BAL_LargestNegativeOffset)
-{
+MICROMACHINE_TEST_F(b, BAL_LargestNegativeOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("11100iiiiiiiiiii", -1024);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4 - 1024 * 2);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 - 1024 * 2);
 }
