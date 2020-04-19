@@ -19,7 +19,7 @@
    NOTE: This encoding doesn't update the APSR flags. */
 TEST_F(CpuTestHarness, movRegister_UseLowestRegisterForAllArgs)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", R0, R0);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::R0, registers::R0);
 	step();
 }
 
@@ -31,37 +31,37 @@ TEST_F(CpuTestHarness, movRegister_UseHighRegisterForAllArgs)
 
 TEST_F(CpuTestHarness, movRegister_MoveHighRegisterToLowRegister)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", R7, R12);
-	setExpectedRegisterValue(R7, 0xCCCCCCCC);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::R7, registers::R12);
+	setExpectedRegisterValue(registers::R7, 0xCCCCCCCC);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MoveLowRegisterToLHighRegister)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", R12, R7);
-	setExpectedRegisterValue(R12, 0x77777777);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::R12, registers::R7);
+	setExpectedRegisterValue(registers::R12, 0x77777777);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MoveOddAddressIntoPCAndMakeSureLSbitIsCleared)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, R1);
-	setRegisterValue(R1, INITIAL_PC + 1025);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, registers::R1);
+	setRegisterValue(registers::R1, INITIAL_PC + 1025);
 	setExpectedRegisterValue(registers::PC, INITIAL_PC + 1024);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MoveEvenAddressIntoPC)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, R2);
-	setRegisterValue(R2, INITIAL_PC + 1024);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, registers::R2);
+	setRegisterValue(registers::R2, INITIAL_PC + 1024);
 	setExpectedRegisterValue(registers::PC, INITIAL_PC + 1024);
 	step();
 }
 
 TEST_F(CpuTestHarness, movRegister_MovePCintoOtherRegister)
 {
-	code_gen().emit_ins16("01000110dmmmmddd", R3, registers::PC);
-	setExpectedRegisterValue(R3, INITIAL_PC + 4);
+	code_gen().emit_ins16("01000110dmmmmddd", registers::R3, registers::PC);
+	setExpectedRegisterValue(registers::R3, INITIAL_PC + 4);
 	step();
 }

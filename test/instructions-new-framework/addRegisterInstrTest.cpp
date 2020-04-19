@@ -21,8 +21,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseLowestRegisterForAllArgs, CpuTestFixture) 
 	Step();
 	ExpectThat()
 		.XPSRFlagsEquals("nZcv")
-		.Register(registers::R0).Equals(0U)
-	;
+		.Register(registers::R0).Equals(0U);
 }
 
 MICROMACHINE_TEST_F(addRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) {
@@ -34,8 +33,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) 
 
 	ExpectThat()
 		.XPSRFlagsEquals("NzcV")
-		.Register(registers::R7).Equals(0x77777777U + 0x77777777U)
-	;
+		.Register(registers::R7).Equals(0x77777777U + 0x77777777U);
 }
 
 MICROMACHINE_TEST_F(addRegister, T1UseDifferentRegistersForEachArg, CpuTestFixture) {
@@ -48,8 +46,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseDifferentRegistersForEachArg, CpuTestFixtu
 
 	ExpectThat()
 		.XPSRFlagsEquals("nzcv")
-		.Register(registers::R3).Equals(0x11111111U + 0x22222222U)
-	;
+		.Register(registers::R3).Equals(0x11111111U + 0x22222222U);
 }
 
 // Force APSR flags to be set which haven't already been covered above.
@@ -63,8 +60,7 @@ MICROMACHINE_TEST_F(addRegister, T1ForceCarryWithNoOverflow, CpuTestFixture) {
 
 	ExpectThat()
 		.XPSRFlagsEquals("nZCv")
-		.Register(registers::R0).Equals(-1 + 1)
-	;
+		.Register(registers::R0).Equals(-1 + 1);
 }
 
 MICROMACHINE_TEST_F(addRegister, T1ForceCarryAndOverflow, CpuTestFixture) {
@@ -77,8 +73,7 @@ MICROMACHINE_TEST_F(addRegister, T1ForceCarryAndOverflow, CpuTestFixture) {
 
 	ExpectThat()
 		.XPSRFlagsEquals("nzCV")
-		.Register(registers::R0).Equals(0x7FFFFFFFU)
-	;
+		.Register(registers::R0).Equals(0x7FFFFFFFU);
 }
 
 
@@ -96,8 +91,7 @@ MICROMACHINE_TEST_F(addRegister, T2UseR1ForAllArgs, CpuTestFixture) {
 
 	ExpectThat()
 		.Register(registers::R1).Equals(0x11111111U + 0x11111111U)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 
 }
 
@@ -108,8 +102,7 @@ MICROMACHINE_TEST_F(addRegister, T2UseLowestRegisterForAllArgs, CpuTestFixture) 
 
 	ExpectThat()
 		.Register(registers::R1).Equals(0)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 }
 
 MICROMACHINE_TEST_F(addRegister, T2UseForR12AllArgs, CpuTestFixture) {
@@ -121,8 +114,7 @@ MICROMACHINE_TEST_F(addRegister, T2UseForR12AllArgs, CpuTestFixture) {
 
 	ExpectThat()
 		.Register(registers::R12).Equals(0xCCCCCCCCU + 0xCCCCCCCCU)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 }
 
 MICROMACHINE_TEST_F(addRegister, T2UseDifferentRegistersForEachArg, CpuTestFixture) {
@@ -135,8 +127,7 @@ MICROMACHINE_TEST_F(addRegister, T2UseDifferentRegistersForEachArg, CpuTestFixtu
 
 	ExpectThat()
 		.Register(registers::R2).Equals(0x11111111U + 0x22222222U)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 }
 
 MICROMACHINE_TEST_F(addRegister, T2WrapAroundTo0, CpuTestFixture) {
@@ -148,8 +139,7 @@ MICROMACHINE_TEST_F(addRegister, T2WrapAroundTo0, CpuTestFixture) {
 
 	ExpectThat()
 		.Register(registers::R2).Equals(-1 + 1)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 }
 
 MICROMACHINE_TEST_F(addRegister, T2OverflowFromLowestNegativeValue, CpuTestFixture) {
@@ -161,8 +151,7 @@ MICROMACHINE_TEST_F(addRegister, T2OverflowFromLowestNegativeValue, CpuTestFixtu
 
 	ExpectThat()
 		.Register(registers::R11).Equals(0x7FFFFFFF)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 }
 
 MICROMACHINE_TEST_F(addRegister, T2Add4ToSP, CpuTestFixture) {
@@ -176,8 +165,7 @@ MICROMACHINE_TEST_F(addRegister, T2Add4ToSP, CpuTestFixture) {
 
 	ExpectThat()
 		.Register(registers::SP).Equals(INITIAL_SP - 4 + 4)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 }
 
 MICROMACHINE_TEST_F(addRegister, T2Subtract4FromSP, CpuTestFixture) {
@@ -188,8 +176,7 @@ MICROMACHINE_TEST_F(addRegister, T2Subtract4FromSP, CpuTestFixture) {
 
 	ExpectThat()
 		.Register(registers::SP).Equals(TestSystem::INITIAL_SP - 4)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 
 }
 
@@ -205,8 +192,7 @@ MICROMACHINE_TEST_F(addRegister, T2Add1ToLR, CpuTestFixture) {
 
 	ExpectThat()
 		.Register(registers::LR).Equals(INITIAL_LR + 1)
-		.APSRFlagsDidNotChange()
-	;
+		.APSRFlagsDidNotChange();
 }
 
 MICROMACHINE_TEST_F(addRegister, T2Add1ToPCWhichWillBeOddAndRoundedDown, CpuTestFixture) {
@@ -236,9 +222,9 @@ MICROMACHINE_TEST_F(addRegister, T2Add2ToPC, CpuTestFixture) {
 
 	ExpectThat()
 		.Register(registers::PC).Equals((INITIAL_PC + 4 + 2) & 0xFFFFFFFE)
-		.APSRFlagsDidNotChange();
-	;
+		.APSRFlagsDidNotChange();;
 }
+
 /*
 TEST_SIM_ONLY(addRegister, T2ItIsUnpredictableToHaveBothArgsBePC)
 {

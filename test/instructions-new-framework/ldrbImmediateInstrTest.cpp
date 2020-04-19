@@ -18,62 +18,62 @@
    Encoding: 011 1 1 Imm:5 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, ldrbImmediate_UseAMixOfRegistersWordAligned)
 {
-	code_gen().emit_ins16("01111iiiiinnnttt", 0, R7, R0);
-	setRegisterValue(R7, INITIAL_PC + 4);
+	code_gen().emit_ins16("01111iiiiinnnttt", 0, registers::R7, registers::R0);
+	setRegisterValue(registers::R7, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(R0, 0xED);
+	setExpectedRegisterValue(registers::R0, 0xED);
 	step();
 }
 
 TEST_F(CpuTestHarness, ldrbImmediate_UseAnotherMixOfRegistersSecondByteInWord)
 {
-	code_gen().emit_ins16("01111iiiiinnnttt", 1, R0, R7);
-	setRegisterValue(R0, INITIAL_PC + 4);
+	code_gen().emit_ins16("01111iiiiinnnttt", 1, registers::R0, registers::R7);
+	setRegisterValue(registers::R0, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(R7, 0xFE);
+	setExpectedRegisterValue(registers::R7, 0xFE);
 	step();
 }
 
 TEST_F(CpuTestHarness, ldrbImmediate_YetAnotherMixOfRegistersThirdByteInWord)
 {
-	code_gen().emit_ins16("01111iiiiinnnttt", 2, R1, R4);
-	setRegisterValue(R1, INITIAL_PC + 4);
+	code_gen().emit_ins16("01111iiiiinnnttt", 2, registers::R1, registers::R4);
+	setRegisterValue(registers::R1, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(R4, 0xAD);
+	setExpectedRegisterValue(registers::R4, 0xAD);
 	step();
 }
 
 TEST_F(CpuTestHarness, ldrbImmediate_YetAnotherMixOfRegistersFourthByteInWord)
 {
-	code_gen().emit_ins16("01111iiiiinnnttt", 3, R2, R5);
-	setRegisterValue(R2, INITIAL_PC + 4);
+	code_gen().emit_ins16("01111iiiiinnnttt", 3, registers::R2, registers::R5);
+	setRegisterValue(registers::R2, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(R5, 0xBA);
+	setExpectedRegisterValue(registers::R5, 0xBA);
 	step();
 }
 
 TEST_F(CpuTestHarness, ldrbImmediate_UseLargestOffset)
 {
-	code_gen().emit_ins16("01111iiiiinnnttt", 31, R3, R0);
-	setRegisterValue(R3, INITIAL_PC);
+	code_gen().emit_ins16("01111iiiiinnnttt", 31, registers::R3, registers::R0);
+	setRegisterValue(registers::R3, INITIAL_PC);
 	memory_write_32(INITIAL_PC + 28, 0x12345678);
-	setExpectedRegisterValue(R0, 0x12);
+	setExpectedRegisterValue(registers::R0, 0x12);
 	step();
 }
 
 TEST_F(CpuTestHarness, ldrbImmediate_LoadAPositiveValue)
 {
-	code_gen().emit_ins16("01111iiiiinnnttt", 0, R3, R0);
-	setRegisterValue(R3, INITIAL_PC + 4);
+	code_gen().emit_ins16("01111iiiiinnnttt", 0, registers::R3, registers::R0);
+	setRegisterValue(registers::R3, INITIAL_PC + 4);
 	memory_write_32(INITIAL_PC + 4, 0xFFFFFF7F);
-	setExpectedRegisterValue(R0, 0x7F);
+	setExpectedRegisterValue(registers::R0, 0x7F);
 	step();
 }
 
 TEST_F(CpuTestHarness, ldrbImmediate_AttemptLoadInvalidAddress)
 {
-	code_gen().emit_ins16("01111iiiiinnnttt", 0, R3, R0);
-	setRegisterValue(R3, 0xFFFFFFFC);
+	code_gen().emit_ins16("01111iiiiinnnttt", 0, registers::R3, registers::R0);
+	setRegisterValue(registers::R3, 0xFFFFFFFC);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

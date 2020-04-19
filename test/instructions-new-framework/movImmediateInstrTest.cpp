@@ -19,35 +19,35 @@
 /* NOTE: APSR_C state is maintained by this instruction. */
 TEST_F(CpuTestHarness, movImmediate_MovToR0)
 {
-	code_gen().emit_ins16("00100dddiiiiiiii", R0, 127);
+	code_gen().emit_ins16("00100dddiiiiiiii", registers::R0, 127);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	setExpectedXPSRflags("nzc");
 	clearCarry();
-	setExpectedRegisterValue(R0, 127);
+	setExpectedRegisterValue(registers::R0, 127);
 	step();
 }
 
 TEST_F(CpuTestHarness, movImmediate_MovToR7)
 {
-	code_gen().emit_ins16("00100dddiiiiiiii", R7, 127);
+	code_gen().emit_ins16("00100dddiiiiiiii", registers::R7, 127);
 	setExpectedXPSRflags("nzC");
 	setCarry();
-	setExpectedRegisterValue(R7, 127);
+	setExpectedRegisterValue(registers::R7, 127);
 	step();
 }
 
 TEST_F(CpuTestHarness, movImmediate_MovSmallestImmediateValueToR3)
 {
-	code_gen().emit_ins16("00100dddiiiiiiii", R3, 0);
+	code_gen().emit_ins16("00100dddiiiiiiii", registers::R3, 0);
 	setExpectedXPSRflags("nZ");
-	setExpectedRegisterValue(R3, 0);
+	setExpectedRegisterValue(registers::R3, 0);
 	step();
 }
 
 TEST_F(CpuTestHarness, movImmediate_MovLargestImmediateValueToR3)
 {
-	code_gen().emit_ins16("00100dddiiiiiiii", R3, 255);
+	code_gen().emit_ins16("00100dddiiiiiiii", registers::R3, 255);
 	setExpectedXPSRflags("nz");
-	setExpectedRegisterValue(R3, 255);
+	setExpectedRegisterValue(registers::R3, 255);
 	step();
 }

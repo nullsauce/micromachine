@@ -18,15 +18,15 @@
    Encoding: 1010 0 Rd:3 Imm:8 */
 TEST_F(CpuTestHarness, adr_LowestRegisterWithLargestOffset)
 {
-	code_gen().emit_ins16("10100dddiiiiiiii", R0, 255);
-	setExpectedRegisterValue(R0, INITIAL_PC + 4 + 255 * 4);
+	code_gen().emit_ins16("10100dddiiiiiiii", registers::R0, 255);
+	setExpectedRegisterValue(registers::R0, INITIAL_PC + 4 + 255 * 4);
 	step();
 }
 
 TEST_F(CpuTestHarness, adr_HighesttRegisterWithSmallestOffset)
 {
-	code_gen().emit_ins16("10100dddiiiiiiii", R7, 0);
-	setExpectedRegisterValue(R7, INITIAL_PC + 4);
+	code_gen().emit_ins16("10100dddiiiiiiii", registers::R7, 0);
+	setExpectedRegisterValue(registers::R7, INITIAL_PC + 4);
 	step();
 }
 
@@ -35,8 +35,8 @@ TEST_F(CpuTestHarness, adr_pcWillNeedToBeWordAlignedBeforeAdd)
 	// Emit UNDEFINED 16-bit instruction.
 	code_gen().emit_ins16("1101111000000000");
 	// Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
-	code_gen().emit_ins16("10100dddiiiiiiii", R3, 0);
+	code_gen().emit_ins16("10100dddiiiiiiii", registers::R3, 0);
 	setRegisterValue(registers::PC, INITIAL_PC + 2);
-	setExpectedRegisterValue(R3, INITIAL_PC + 4);
+	setExpectedRegisterValue(registers::R3, INITIAL_PC + 4);
 	step();
 }
