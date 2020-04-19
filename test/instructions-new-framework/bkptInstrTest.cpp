@@ -11,22 +11,20 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* BKPT
    Encoding: 1011 1110 Imm:8 */
 
-TEST_F(CpuTestHarness, bkpt_SmallestImmediate)
-{
+MICROMACHINE_TEST_F(bkpt, SmallestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("10111110iiiiiiii", 0);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC);
-	step();
+	Step();
+	ExpectThat().RegistersDidNotChange();
 }
 
-TEST_F(CpuTestHarness, bkpt_LargestImmediate)
-{
+MICROMACHINE_TEST_F(bkpt, LargestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("10111110iiiiiiii", 255);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC);
-	step();
+	Step();
+	ExpectThat().RegistersDidNotChange();
 }
