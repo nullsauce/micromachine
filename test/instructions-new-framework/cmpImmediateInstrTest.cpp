@@ -11,36 +11,33 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* CMP - Immediate
    Encoding: 001 01 Rn:3 Imm:8 */
-TEST_F(CpuTestHarness, cmpImmediate_CompareLowestRegisterToEqualValue)
-{
+MICROMACHINE_TEST_F(cmpImmediate, CompareLowestRegisterToEqualValue, CpuTestFixture) {
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R0, 0);
-	setExpectedXPSRflags("nZCv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
 }
 
-TEST_F(CpuTestHarness, cmpImmediate_CompareHighestRegisterToImmediateWhichIsSmaller)
-{
+MICROMACHINE_TEST_F(cmpImmediate, CompareHighestRegisterToImmediateWhichIsSmaller, CpuTestFixture) {
+	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R7, 127);
-	setExpectedXPSRflags("nzCv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCv");
 }
 
-TEST_F(CpuTestHarness, cmpImmediate_CompareRegisterToLargestImmediateWhichIsLarger)
-{
+MICROMACHINE_TEST_F(cmpImmediate, CompareRegisterToLargestImmediateWhichIsLarger, CpuTestFixture) {
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R0, 255);
-	setExpectedXPSRflags("Nzcv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzcv");
 }
 
-TEST_F(CpuTestHarness, cmpImmediate_CompareRegisterToImmediateWhichWillGenerateNegativeOverflow)
-{
+MICROMACHINE_TEST_F(cmpImmediate, CompareRegisterToImmediateWhichWillGenerateNegativeOverflow, CpuTestFixture) {
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R3, 1);
-	setRegisterValue(registers::R3, 0x80000000);
-	setExpectedXPSRflags("nzCV");
-	step();
+	getCpu().regs().set(registers::R3, 0x80000000);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCV");
 }
