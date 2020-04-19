@@ -11,7 +11,7 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 // Immediate values used for shift amount in tests.
 #define IMM_1  1
@@ -20,37 +20,33 @@
 
 /* LSR - Immediate (Logical Shift Right)
    Encoding: 000 01 imm:5 Rm:3 Rd:3 */
-TEST_F(CpuTestHarness, lsrImmediate_registers::R2by1toR0)
-{
+MICROMACHINE_TEST_F(lsr, ImmediateR2by1toR0, CpuTestFixture) {
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, registers::R2, registers::R0);
-	setExpectedXPSRflags("nzc");
-	setExpectedRegisterValue(registers::R0, 0x22222222U >> 1);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().Register(registers::R0).Equals(0x22222222U >> 1);
 }
 
-TEST_F(CpuTestHarness, lsrImmediate_registers::R7by32toR0_ZeroResult)
-{
+MICROMACHINE_TEST_F(lsr, ImmediateR7by32toR0_ZeroResult, CpuTestFixture) {
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_32, registers::R7, registers::R0);
-	setExpectedXPSRflags("nZc");
-	setExpectedRegisterValue(registers::R0, 0x0);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().Register(registers::R0).Equals(0x0);
 }
 
-TEST_F(CpuTestHarness, lsrImmediate_registers::R1by1toR7_CarryOut)
-{
+MICROMACHINE_TEST_F(lsr, ImmediateR1by1toR7_CarryOut, CpuTestFixture) {
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, registers::R1, registers::R7);
-	setExpectedXPSRflags("nzC");
-	setExpectedRegisterValue(registers::R7, 0x11111111U >> 1);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzC");
+	ExpectThat().Register(registers::R7).Equals(0x11111111U >> 1);
 }
 
-TEST_F(CpuTestHarness, lsrImmediate_registers::R0by32_CarryOutAndIsZero)
-{
+MICROMACHINE_TEST_F(lsr, ImmediateR0by32_CarryOutAndIsZero, CpuTestFixture) {
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_32, registers::R0, registers::R0);
-	setExpectedXPSRflags("nZC");
-	setRegisterValue(registers::R0, 0x80000000U);
-	setExpectedRegisterValue(registers::R0, 0U);
-	step();
+	getCpu().regs().set(registers::R0, 0x80000000U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZC");
+	ExpectThat().Register(registers::R0).Equals(0U);
 }
 
 // Can't generate a negative result as smallest shift is 1, meaning at least one 0 is shifted in from left.
