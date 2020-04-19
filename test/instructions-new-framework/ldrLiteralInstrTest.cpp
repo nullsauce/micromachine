@@ -11,47 +11,50 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* LDR - Literal
    Encoding: 01001 Rt:3 Imm:8 */
-TEST_F(CpuTestHarness, ldrLiteral_LoadOffset0IntoHighestRegister)
-{
+MICROMACHINE_TEST_F(ldrLiteral, LoadOffset0IntoHighestRegister, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01001tttiiiiiiii", registers::R7, 0);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R7, 0xBAADFEED);
-	step();
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0xBAADFEED);
 }
 
-TEST_F(CpuTestHarness, ldrLiteral_LoadOffset0IntoHighestRegisterNot4ByteAligned)
-{
+MICROMACHINE_TEST_F(ldrLiteral, LoadOffset0IntoHighestRegisterNot4ByteAligned, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	// Emit UNDEFINED 16-bit instruction.
 	code_gen().emit_ins16("1101111000000000");
 	// Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
 	code_gen().emit_ins16("01001tttiiiiiiii", registers::R7, 0);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
 	// Move PC to point to second instruction.
-	setRegisterValue(registers::PC, _cpu.regs().get_pc() + 2);
-	setExpectedRegisterValue(registers::R7, 0xBAADFEED);
-	step();
+	getCpu().regs().set(registers::PC, getCpu().regs().get_pc() + 2);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0xBAADFEED);
 }
 
-TEST_F(CpuTestHarness, ldrLiteral_LoadMaximumOffsetIntoLowestRegister)
-{
+MICROMACHINE_TEST_F(ldrLiteral, LoadMaximumOffsetIntoLowestRegister, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01001tttiiiiiiii", registers::R0, 255);
-	memory_write_32(INITIAL_PC + 4 + 255 * 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R0, 0xBAADFEED);
-	step();
+	getCpu().mem().write32(INITIAL_PC + 4 + 255 * 4, 0xBAADFEED);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0xBAADFEED);
 }
 
-TEST_F(CpuTestHarness, ldrLiteral_AttemptToLoadFromInvalidAddress)
-{
-	setRegisterValue(registers::PC, INITIAL_SP - 128);
-	setExpectedRegisterValue(registers::PC, INITIAL_SP - 128);
-	memory_write_32(INITIAL_SP - 128, 0);
-	code_gen().set_write_address(INITIAL_SP - 128);
+MICROMACHINE_TEST_F(ldrLiteral, AttemptToLoadFromInvalidAddress, CpuTestFixture) {
+	// load a pc-relative address at end of memory - 128, with an offset of 255
+	// this should overflow memory by 127 and hard fault
+	getCpu().regs().set_pc(TestSystem::MEMORY_SIZE - 128);
+	code_gen().set_write_address(TestSystem::MEMORY_SIZE - 128);
 	code_gen().emit_ins16("01001tttiiiiiiii", registers::R0, 255);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
