@@ -11,25 +11,23 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 /* CPS
    Encoding: 1011 0110 011 im:1 (0)(0)(1)(0) */
 
-TEST_F(CpuTestHarness, cps_InterruptEnable)
-{
+MICROMACHINE_TEST_F(cps, InterruptEnable, CpuTestFixture) {
 	code_gen().emit_ins16("10110110011i0010", 0);
-	PRIMASK |= PRIMASK_PM;
-	step();
-	EXPECT_FALSE(PRIMASK & PRIMASK_PM);
+	getCpu().regs().primask_register().set_pm(true);
+	Step();
+	ExpectThat().PrimaskStatusIs(false);
 }
 
-TEST_F(CpuTestHarness, cps_InterruptDisable)
-{
+MICROMACHINE_TEST_F(cps, InterruptDisable, CpuTestFixture) {
 	code_gen().emit_ins16("10110110011i0010", 1);
-	PRIMASK &= ~PRIMASK_PM;
-	step();
-	EXPECT_TRUE(PRIMASK & PRIMASK_PM);
+	getCpu().regs().primask_register().set_pm(false);
+	Step();
+	ExpectThat().PrimaskStatusIs(true);
 }
 
 /*
@@ -37,7 +35,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit0)
 {
     code_gen().emit_ins16("10110110011i0011", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 *//*
@@ -45,7 +43,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit1)
 {
     code_gen().emit_ins16("10110110011i0000", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 *//*
@@ -53,7 +51,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit2)
 {
     code_gen().emit_ins16("10110110011i0110", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 *//*
@@ -61,7 +59,7 @@ TEST_SIM_ONLY(cps, UnpredictableBecauseOfBit3)
 {
     code_gen().emit_ins16("10110110011i1010", 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 */
