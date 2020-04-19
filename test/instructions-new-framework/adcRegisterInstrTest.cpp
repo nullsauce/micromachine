@@ -13,7 +13,6 @@
 
 
 #include "CpuTestFixture.hpp"
-#include "RegisterMutationPredicate.hpp"
 
 
 /* ADC - Register (ADd with Carry)
