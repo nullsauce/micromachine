@@ -11,47 +11,45 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* CMN - Register (Compare Negative)
    Encoding: 010000 1011 Rm:3 Rn:3 */
-TEST_F(CpuTestHarness, cmnRegister_UseLowestRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(cmnRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R0, registers::R0);
-	setExpectedXPSRflags("nZcv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZcv");
 }
 
-TEST_F(CpuTestHarness, cmnRegister_UseHigestRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(cmnRegister, UseHigestRegisterForAllArgs, CpuTestFixture) {
+	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R7, registers::R7);
-	setExpectedXPSRflags("NzcV");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzcV");
 }
 
-TEST_F(CpuTestHarness, cmnRegister_UseDifferentRegistersForEachArg)
-{
+MICROMACHINE_TEST_F(cmnRegister, UseDifferentRegistersForEachArg, CpuTestFixture) {
+	getCpu().regs().set(registers::R1, 0x11111111);
+	getCpu().regs().set(registers::R2, 0x22222222);
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R1, registers::R2);
-	setExpectedXPSRflags("nzcv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzcv");
 }
 
 // Force APSR flags to be set which haven't already been covered above.
-TEST_F(CpuTestHarness, cmnRegister_ForceCarryWithNoOverflow)
-{
+MICROMACHINE_TEST_F(cmnRegister, ForceCarryWithNoOverflow, CpuTestFixture) {
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R1, registers::R2);
-	setExpectedXPSRflags("nZCv");
-	setRegisterValue(registers::R1, -1);
-	setRegisterValue(registers::R2, 1);
-	step();
+	getCpu().regs().set(registers::R1, -1);
+	getCpu().regs().set(registers::R2, 1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
 }
 
-TEST_F(CpuTestHarness, cmnRegister_ForceCarryAndOverflow)
-{
+MICROMACHINE_TEST_F(cmnRegister, ForceCarryAndOverflow, CpuTestFixture) {
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R1, registers::R2);
-	setExpectedXPSRflags("nzCV");
-	setRegisterValue(registers::R1, -1);
-	setRegisterValue(registers::R2, 0x80000000U);
-	step();
+	getCpu().regs().set(registers::R1, -1);
+	getCpu().regs().set(registers::R2, 0x80000000U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCV");
 }
