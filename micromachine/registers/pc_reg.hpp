@@ -19,9 +19,18 @@ public:
 			exception_return_handler& exception_return_handler)
 		: _exec_mode_reg(exec_mode_reg)
 		, _epsr_reg(epsr_reg)
-		, _exception_return_handler(exception_return_handler) {
+		, _exception_return_handler(exception_return_handler)
+	{}
 
-	}
+	pc_reg(const exec_mode_reg& exec_mode_reg,
+			epsr_reg& epsr_reg,
+			exception_return_handler& exception_return_handler,
+			const pc_reg& existing_state)
+		: standard_reg(existing_state)
+		, _exec_mode_reg(exec_mode_reg)
+		, _epsr_reg(epsr_reg)
+		, _exception_return_handler(exception_return_handler)
+	{}
 
 	void branch(uint32_t address) {
 		set(address & 0xFFFFFFFE);

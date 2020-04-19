@@ -14,13 +14,27 @@ and/or distributed without the express permission of Flavio Roth.
 #include "interrupter.hpp"
 
 class systick {
+private:
+	interrupter& _interrupter;
+	systick_control_reg _control;
+	systick_current_value_reg _current_value;
+	systick_reload_value_reg _reload_value;
+	systick_calib_value_reg _calib_value;
+
 public:
+
+	systick(interrupter& interrupter, const systick& existing_state)
+		: _interrupter(interrupter)
+		, _control(existing_state._control)
+		, _current_value(existing_state._current_value)
+		, _reload_value(existing_state._reload_value)
+		, _calib_value(existing_state._calib_value)
+	{}
 
 	systick(interrupter& interrupter)
 		: _interrupter(interrupter)
-		, _current_value(_control) {
-
-	}
+		, _current_value(_control)
+	{}
 
 	void reset() {
 		_control.reset();
@@ -65,12 +79,6 @@ public:
 		return _calib_value;
 	}
 
-private:
-	interrupter& _interrupter;
-	systick_control_reg _control;
-	systick_current_value_reg _current_value;
-	systick_reload_value_reg _reload_value;
-	systick_calib_value_reg _calib_value;
 
 };
 

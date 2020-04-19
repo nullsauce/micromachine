@@ -8,6 +8,7 @@ public:
 
 	using ireg::operator=;
 	standard_reg() : _word(0) {}
+	standard_reg(const standard_reg& existing_state) : _word(existing_state) {}
 
 	void reset() override {
 		set(0);
