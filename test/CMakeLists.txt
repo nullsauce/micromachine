@@ -126,7 +126,7 @@ declare_test(instructions/cpsInstrTest.cpp)
 
 declare_test(instructions-new-framework/adcRegisterInstrTest.cpp)
 declare_test(instructions-new-framework/addImmediateInstrTest.cpp)
-#declare_test(instructions-new-framework/addRegisterInstrTest.cpp)
+declare_test(instructions-new-framework/addRegisterInstrTest.cpp)
 #declare_test(instructions-new-framework/addSPInstrTest.cpp)
 #declare_test(instructions-new-framework/adrInstrTest.cpp)
 #declare_test(instructions-new-framework/andRegisterInstrTest.cpp)
