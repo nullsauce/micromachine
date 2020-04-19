@@ -13,7 +13,6 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "CpuMutationPredicate.hpp"
 
-#include <gtest/gtest.h>
 
 class RegisterMutationPredicate : public CpuMutationPredicate {
 private:
@@ -28,25 +27,10 @@ private:
 	}
 
 public:
-	RegisterMutationPredicate(const cpu& previous, const cpu& current, reg_idx regIdx)
-	 : CpuMutationPredicate(previous, current)
-	 , _regIdx(regIdx)
-	{}
-
-	RegisterMutationPredicate& Equals(uint32_t value) {
-		EXPECT_EQ(value, currentRegisterValue());
-		return *this;
-	}
-
-	RegisterMutationPredicate& DidNotChange() {
-		EXPECT_EQ(previousRegisterValue(), currentRegisterValue());
-		return *this;
-	}
-
-	RegisterMutationPredicate& Changed() {
-		EXPECT_NE(previousRegisterValue(), currentRegisterValue());
-		return *this;
-	}
+	RegisterMutationPredicate(const cpu& previous, const cpu& current, reg_idx regIdx);
+	RegisterMutationPredicate& Equals(uint32_t value);
+	RegisterMutationPredicate& DidNotChange();
+	RegisterMutationPredicate& Changed();
 };
 
 
