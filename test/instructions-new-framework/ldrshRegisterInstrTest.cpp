@@ -11,65 +11,65 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* LDRSH - Register
    Encoding: 0101 111 Rm:3 Rn:3 Rt:3 */
-TEST_F(CpuTestHarness, ldrshRegister_UseAMixOfRegistersWordAligned_NegativeValue)
+MICROMACHINE_TEST_F(ldrshRegister, UseAMixOfRegistersWordAligned_NegativeValue, CpuTestFixture)
 {
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, INITIAL_PC);
-	setRegisterValue(registers::R7, 4);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R0, 0xFFFFFEED);
-	step();
+	getCpu().regs().set(registers::R3, INITIAL_PC);
+	getCpu().regs().set(registers::R7, 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	ExpectThat().Register(registers::R0).Equals(0xFFFFFEED);
+	Step();
 }
 
-TEST_F(CpuTestHarness, ldrshRegister_UseAnotherMixOfRegistersWordAligned_NegativeValue)
+MICROMACHINE_TEST_F(ldrshRegister, UseAnotherMixOfRegistersWordAligned_NegativeValue, CpuTestFixture)
 {
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R1, registers::R0, registers::R7);
-	setRegisterValue(registers::R0, INITIAL_PC);
-	setRegisterValue(registers::R1, 4);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R7, 0xFFFFFEED);
-	step();
+	getCpu().regs().set(registers::R0, INITIAL_PC);
+	getCpu().regs().set(registers::R1, 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	ExpectThat().Register(registers::R7).Equals(0xFFFFFEED);
+	Step();
 }
 
-TEST_F(CpuTestHarness, ldrshRegister_YetAnotherMixOfRegistersNotWordAligned_NegativeValue)
+MICROMACHINE_TEST_F(ldrshRegister, YetAnotherMixOfRegistersNotWordAligned_NegativeValue, CpuTestFixture)
 {
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R0, registers::R7, registers::R4);
-	setRegisterValue(registers::R7, INITIAL_PC);
-	setRegisterValue(registers::R0, 6);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R4, 0xFFFFBAAD);
-	step();
+	getCpu().regs().set(registers::R7, INITIAL_PC);
+	getCpu().regs().set(registers::R0, 6);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	ExpectThat().Register(registers::R4).Equals(0xFFFFBAAD);
+	Step();
 }
 
-TEST_F(CpuTestHarness, ldrshRegister_LoadPositiveHalfWord)
+MICROMACHINE_TEST_F(ldrshRegister, LoadPositiveHalfWord, CpuTestFixture)
 {
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R0, registers::R7, registers::R4);
-	setRegisterValue(registers::R7, INITIAL_PC);
-	setRegisterValue(registers::R0, 4);
-	memory_write_32(INITIAL_PC + 4, 0xFFFF7FFF);
-	setExpectedRegisterValue(registers::R4, 0x7FFF);
-	step();
+	getCpu().regs().set(registers::R7, INITIAL_PC);
+	getCpu().regs().set(registers::R0, 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xFFFF7FFF);
+	ExpectThat().Register(registers::R4).Equals(0x7FFF);
+	Step();
 }
 
-TEST_F(CpuTestHarness, ldrshRegister_AttemptUnalignedLoad)
+MICROMACHINE_TEST_F(ldrshRegister, AttemptUnalignedLoad, CpuTestFixture)
 {
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, INITIAL_PC);
-	setRegisterValue(registers::R7, 1);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R3, INITIAL_PC);
+	getCpu().regs().set(registers::R7, 1);
+	ExpectThat().HardfaultHandlerReached();
+	Step();
 }
 
-TEST_F(CpuTestHarness, ldrshRegister_AttemptLoadFromInvalidAddress)
+MICROMACHINE_TEST_F(ldrshRegister, AttemptLoadFromInvalidAddress, CpuTestFixture)
 {
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, 0xFFFFFFFC);
-	setRegisterValue(registers::R7, 0);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
+	getCpu().regs().set(registers::R7, 0);
+	ExpectThat().HardfaultHandlerReached();
+	Step();
 }
