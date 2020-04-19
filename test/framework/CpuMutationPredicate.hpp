@@ -29,7 +29,10 @@ public:
 	CpuMutationPredicate& APSRFlagsDidNotChange();
 	CpuMutationPredicate& RegistersDidNotChange();
 	CpuMutationPredicate& NoInterruptIsPending();
-
+	CpuMutationPredicate& ExceptionIsPending(exception::Type ex);
+	CpuMutationPredicate& ExceptionIsActive(exception::Type ex);
+	CpuMutationPredicate& ExceptionHandlerReached(exception::Type ex);
+	CpuMutationPredicate& HardfaultHandlerReached();
 	RegisterMutationPredicate Register(reg_idx regIdx);
 };
 
