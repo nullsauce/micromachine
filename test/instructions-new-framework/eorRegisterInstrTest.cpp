@@ -11,46 +11,46 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* EOR - Register
    Encoding: 010000 0001 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(CpuTestHarness, eorRegister_UseLowestRegisterForBothArgs)
-{
+MICROMACHINE_TEST_F(eorRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100000001mmmddd", registers::R0, registers::R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-	setExpectedXPSRflags("nZc");
-	clearCarry();
-	setExpectedRegisterValue(registers::R0, 0);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0);
+	ExpectThat().XPSRFlagsEquals("nZc");
 }
 
-TEST_F(CpuTestHarness, eorRegister_UseHighestRegisterForBothArgs)
-{
+MICROMACHINE_TEST_F(eorRegister, UseHighestRegisterForBothArgs, CpuTestFixture) {
+	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100000001mmmddd", registers::R7, registers::R7);
-	setExpectedXPSRflags("nZC");
-	setCarry();
-	setExpectedRegisterValue(registers::R7, 0);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0);
+	ExpectThat().XPSRFlagsEquals("nZC");
 }
 
-TEST_F(CpuTestHarness, eorRegister_XorR3andR7)
-{
+MICROMACHINE_TEST_F(eorRegister, XorR3andR7, CpuTestFixture) {
+	getCpu().regs().set(registers::R3, 0x33333333);
+	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100000001mmmddd", registers::R3, registers::R7);
-	setExpectedXPSRflags("nzc");
-	setExpectedRegisterValue(registers::R7, 0x33333333 ^ 0x77777777);
-	clearCarry();
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().Register(registers::R7).Equals(0x33333333 ^ 0x77777777);
 }
 
-TEST_F(CpuTestHarness, eorRegister_UseXorToJustFlipNegativeSignBitOn)
-{
+MICROMACHINE_TEST_F(eorRegister, UseXorToJustFlipNegativeSignBitOn, CpuTestFixture) {
 	code_gen().emit_ins16("0100000001mmmddd", registers::R6, registers::R3);
-	setRegisterValue(registers::R6, 0x80000000);
-	setExpectedXPSRflags("NzC");
-	setExpectedRegisterValue(registers::R3, 0x33333333 ^ 0x80000000);
-	setCarry();
-	step();
+	getCpu().regs().set(registers::R3, 0x33333333);
+	getCpu().regs().set(registers::R6, 0x80000000);
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R3).Equals(0x33333333 ^ 0x80000000);
 }
