@@ -123,10 +123,7 @@ public:
 		, _exec_dispatcher(_regs, _mem, _interrupter, _event_register, _break_signal, _enter_low_power_mode_signal)
 		, _ctx_switcher(_regs, _mem, _exception_vector)
 		, _debug_instruction_counter(existing_cpu._debug_instruction_counter)
-
-	{
-		fprintf(stderr, "cpu::copy\n");
-	}
+	{}
 
 private:
 
