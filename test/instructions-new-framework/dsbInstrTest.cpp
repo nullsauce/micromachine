@@ -11,22 +11,24 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* DSB
    Encoding: 11110 0 111 01 1 (1)(1)(1)(1)
              10 (0) 0 (1)(1)(1)(1) 0100 option:4 */
-TEST_F(CpuTestHarness, dsb_OptionSetTo15)
-{
+MICROMACHINE_TEST_F(dsb, OptionSetTo15, CpuTestFixture) {
+	static uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110100oooo", 15);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, dsb_OptionSetTo0)
-{
+MICROMACHINE_TEST_F(dsb, OptionSetTo0, CpuTestFixture) {
+	static uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110100oooo", 0);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
