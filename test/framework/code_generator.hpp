@@ -32,6 +32,14 @@ public:
 		emit_ins16("00110dddiiiiiiii", d, imm);
 	}
 
+	void emit_add_t1(reg_idx m, reg_idx n, reg_idx d) {
+		emit_ins16("0001100mmmnnnddd", m, n, d);
+	}
+
+	void emit_add_t2(reg_idx m, reg_idx d) {
+		emit_ins16("01000100dmmmmddd", m, d);
+	}
+
 
 private:
 	static uint16_t assemble_instruction(const char* encoding, va_list valist);

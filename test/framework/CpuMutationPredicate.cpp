@@ -57,6 +57,16 @@ CpuMutationPredicate& CpuMutationPredicate::XPSRRegisterDidNotChange() {
 	return *this;
 }
 
+
+CpuMutationPredicate& CpuMutationPredicate::APSRFlagsDidNotChange() {
+	EXPECT_EQ(_previous.regs().app_status_register().neg_flag(), _current.regs().app_status_register().neg_flag());
+	EXPECT_EQ(_previous.regs().app_status_register().zero_flag(), _current.regs().app_status_register().zero_flag());
+	EXPECT_EQ(_previous.regs().app_status_register().carry_flag(), _current.regs().app_status_register().carry_flag());
+	EXPECT_EQ(_previous.regs().app_status_register().overflow_flag(), _current.regs().app_status_register().overflow_flag());
+	return *this;
+}
+
+
 CpuMutationPredicate& CpuMutationPredicate::RegistersDidNotChange() {
 	for (reg_idx r = 0; r < registers::NUM_GP_REGS; r++) {
 		Register(r).DidNotChange();
