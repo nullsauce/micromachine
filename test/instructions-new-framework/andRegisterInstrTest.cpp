@@ -11,54 +11,55 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* AND - Register
    Encoding: 010000 0000 Rm:3 Rdn:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(CpuTestHarness, andRegister_UseLowestRegisterForBothArgs)
-{
+MICROMACHINE_TEST_F(andRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100000000mmmddd", registers::R0, registers::R0);
-	setExpectedXPSRflags("nZc");
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-	clearCarry();
-	setExpectedRegisterValue(registers::R0, 0);
-	step();
+
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().Register(registers::R0).Equals(0);
 }
 
-TEST_F(CpuTestHarness, andRegister_UseHighestRegisterForBothArgs)
-{
+MICROMACHINE_TEST_F(andRegister, UseHighestRegisterForBothArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100000000mmmddd", registers::R7, registers::R7);
-	setExpectedXPSRflags("nzC");
-	setCarry();
-	step();
+	getCpu().regs().set(registers::R7, 0x77777777);
+
+	// check that carry remains set
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0x77777777);
+	ExpectThat().XPSRFlagsEquals("nzC");
 }
 
-TEST_F(CpuTestHarness, andRegister_AndR3andR7)
-{
+MICROMACHINE_TEST_F(andRegister, AndR3andR7, CpuTestFixture) {
 	code_gen().emit_ins16("0100000000mmmddd", registers::R3, registers::R7);
-	setExpectedXPSRflags("nz");
-	setExpectedRegisterValue(registers::R7, 0x33333333);
-	step();
+	getCpu().regs().set(registers::R7, 0x77777777);
+	getCpu().regs().set(registers::R3, 0x33333333);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().Register(registers::R7).Equals(0x33333333);
 }
 
-TEST_F(CpuTestHarness, andRegister_UseAndToJustKeepNegativeSignBit)
-{
+MICROMACHINE_TEST_F(andRegister, UseAndToJustKeepNegativeSignBit, CpuTestFixture) {
 	code_gen().emit_ins16("0100000000mmmddd", registers::R6, registers::R1);
-	setRegisterValue(registers::R1, -1);
-	setRegisterValue(registers::R6, 0x80000000);
-	setExpectedXPSRflags("Nz");
-	setExpectedRegisterValue(registers::R1, 0x80000000);
-	step();
+	getCpu().regs().set(registers::R1, -1);
+	getCpu().regs().set(registers::R6, 0x80000000);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().Register(registers::R1).Equals(0x80000000);
 }
 
-TEST_F(CpuTestHarness, andRegister_HaveAndResultNotBeSameAsEitherSource)
-{
+MICROMACHINE_TEST_F(andRegister, HaveAndResultNotBeSameAsEitherSource, CpuTestFixture) {
 	code_gen().emit_ins16("0100000000mmmddd", registers::R5, registers::R2);
-	setRegisterValue(registers::R2, 0x12345678);
-	setRegisterValue(registers::R5, 0xF0F0F0F0);
-	setExpectedXPSRflags("nz");
-	setExpectedRegisterValue(registers::R2, 0x10305070);
-	step();
+	getCpu().regs().set(registers::R2, 0x12345678);
+	getCpu().regs().set(registers::R5, 0xF0F0F0F0);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().Register(registers::R2).Equals(0x10305070);
 }
