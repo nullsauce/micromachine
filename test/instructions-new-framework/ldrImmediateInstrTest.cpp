@@ -11,79 +11,85 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* LDR - Immediate Encoding T1
    Encoding: 011 0 1 Imm:5 Rn:3 Rt:3 */
-TEST_F(CpuTestHarness, ldrImmediate_T1UseAMixOfRegistersWithSmallestOffset)
-{
+MICROMACHINE_TEST_F(ldrImmediate, T1UseAMixOfRegistersWithSmallestOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 0, registers::R7, registers::R0);
-	setRegisterValue(registers::R7, INITIAL_PC + 4);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R0, 0xBAADFEED);
-	step();
+	getCpu().regs().set(registers::R7, INITIAL_PC + 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0xBAADFEED);
 }
 
-TEST_F(CpuTestHarness, ldrImmediate_T1UseAnotherMixOfRegistersWithLargestOffset)
-{
+MICROMACHINE_TEST_F(ldrImmediate, T1UseAnotherMixOfRegistersWithLargestOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 31, registers::R0, registers::R7);
-	setRegisterValue(registers::R0, INITIAL_PC);
-	memory_write_32(INITIAL_PC + 31 * 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R7, 0xBAADFEED);
-	step();
+	getCpu().regs().set(registers::R0, INITIAL_PC);
+	getCpu().mem().write32(INITIAL_PC + 31 * 4, 0xBAADFEED);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0xBAADFEED);
 }
 
-TEST_F(CpuTestHarness, ldrImmediate_T1AttemptUnalignedLoad)
-{
+MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 0, registers::R3, registers::R2);
-	setRegisterValue(registers::R3, INITIAL_PC + 2);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R3, INITIAL_PC + 2);
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 
-TEST_F(CpuTestHarness, ldrImmediate_T1AttemptLoadFromInvalidAddress)
-{
+MICROMACHINE_TEST_F(ldrImmediate, T1AttemptLoadFromInvalidAddress, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 16, registers::R3, registers::R2);
-	setRegisterValue(registers::R3, 0xFFFFFFFC - 16 * 4);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R3, 0xFFFFFFFC - 16 * 4);
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 
 /* LDR - Immediate Encoding T2 (SP is base register)
    Encoding: 1001 1 Rt:3 Imm:8 */
-TEST_F(CpuTestHarness, ldrImmediate_T2UseHighestRegisterWithSmallestOffset)
-{
+MICROMACHINE_TEST_F(ldrImmediate, T2UseHighestRegisterWithSmallestOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R7, 0);
-	setRegisterValue(registers::SP, INITIAL_PC + 1024);
-	memory_write_32(INITIAL_PC + 1024, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R7, 0xBAADFEED);
-	step();
+	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
+	getCpu().mem().write32(INITIAL_PC + 1024, 0xBAADFEED);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0xBAADFEED);
 }
 
-TEST_F(CpuTestHarness, ldrImmediate_T2UseLowestRegisterWithLargestOffset)
-{
+MICROMACHINE_TEST_F(ldrImmediate, T2UseLowestRegisterWithLargestOffset, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R0, 255);
-	setRegisterValue(registers::SP, INITIAL_PC + 1024);
-	memory_write_32(INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED);
-	setExpectedRegisterValue(registers::R0, 0xBAADFEED);
-	step();
+	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
+	getCpu().mem().write32(INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0xBAADFEED);
 }
 /*
 TEST_SIM_ONLY(ldrImmediate, T2AttemptUnalignedLoad)
 {
     code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
-    setRegisterValue(registers::SP, INITIAL_PC + 1026);
+    getCpu().regs().set(registers::SP, INITIAL_PC + 1026);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
-    memory_write_32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
+    getCpu().mem().write32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
     pinkySimStep(&m_context);
 }
 
 TEST_SIM_ONLY(ldrImmediate, T2AttemptLoadFromInvalidAddress)
 {
     code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
-    setRegisterValue(registers::R3, 0xFFFFFFFC);
+    getCpu().regs().set(registers::R3, 0xFFFFFFFC);
     setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
     step(&m_context);
 }
