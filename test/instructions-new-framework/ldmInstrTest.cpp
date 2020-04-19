@@ -11,78 +11,80 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* LDM
    Encoding: 1100 1 Rn:3 RegisterList:8 */
-TEST_F(CpuTestHarness, ldm_JustPopR0WithR7AsAddress_WritebackNewAddressToR7)
-{
+MICROMACHINE_TEST_F(ldm, JustPopR0WithR7AsAddress_WritebackNewAddressToR7, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R7, (1 << 0));
-	setRegisterValue(registers::R7, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::R7, INITIAL_PC + 16 + 1 * 4);
-	setExpectedRegisterValue(registers::R0, 0xFFFFFFFF);
-	memory_write_32(INITIAL_PC + 16, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::R7, INITIAL_PC + 16);
+	getCpu().mem().write32(INITIAL_PC + 16, 0xFFFFFFFF);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0xFFFFFFFF);
+	ExpectThat().Register(registers::R7).Equals(INITIAL_PC + 16 + 1 * 4);
 }
 
-TEST_F(CpuTestHarness, ldm_JustPopR7WithR0AsAddress_WritebackNewAddressToR0)
-{
+MICROMACHINE_TEST_F(ldm, JustPopR7WithR0AsAddress_WritebackNewAddressToR0, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R0, (1 << 7));
-	setRegisterValue(registers::R0, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::R0, INITIAL_PC + 16 + 1 * 4);
-	setExpectedRegisterValue(registers::R7, 0xFFFFFFFF);
-	memory_write_32(INITIAL_PC + 16, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
+	getCpu().mem().write32(INITIAL_PC + 16, 0xFFFFFFFF);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0xFFFFFFFF);
+	ExpectThat().Register(registers::R0).Equals(INITIAL_PC + 16 + 1 * 4);
 }
 
-TEST_F(CpuTestHarness, ldm_PopAllNoWriteback)
-{
+MICROMACHINE_TEST_F(ldm, PopAllNoWriteback, CpuTestFixture) {
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R0, 0xFF);
-	setRegisterValue(registers::R0, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::R0, 0);
-	setExpectedRegisterValue(registers::R1, 1);
-	setExpectedRegisterValue(registers::R2, 2);
-	setExpectedRegisterValue(registers::R3, 3);
-	setExpectedRegisterValue(registers::R4, 4);
-	setExpectedRegisterValue(registers::R5, 5);
-	setExpectedRegisterValue(registers::R6, 6);
-	setExpectedRegisterValue(registers::R7, 7);
-	for (int i = 0; i < 8; i++)
-		memory_write_32(INITIAL_PC + 16 + 4 * i, i);
-	step();
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
+	for (int i = 0; i < 8; i++) {
+		getCpu().mem().write32(INITIAL_PC + 16 + 4 * i, i);
+	}
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0);
+	ExpectThat().Register(registers::R1).Equals(1);
+	ExpectThat().Register(registers::R2).Equals(2);
+	ExpectThat().Register(registers::R3).Equals(3);
+	ExpectThat().Register(registers::R4).Equals(4);
+	ExpectThat().Register(registers::R5).Equals(5);
+	ExpectThat().Register(registers::R6).Equals(6);
+	ExpectThat().Register(registers::R7).Equals(7);
 }
 
-TEST_F(CpuTestHarness, ldm_PopAllButAddressRegister_WritebackNewAddress)
-{
+MICROMACHINE_TEST_F(ldm, PopAllButAddressRegister_WritebackNewAddress, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R7, 0x7F);
-	setRegisterValue(registers::R7, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::R0, 0);
-	setExpectedRegisterValue(registers::R1, 1);
-	setExpectedRegisterValue(registers::R2, 2);
-	setExpectedRegisterValue(registers::R3, 3);
-	setExpectedRegisterValue(registers::R4, 4);
-	setExpectedRegisterValue(registers::R5, 5);
-	setExpectedRegisterValue(registers::R6, 6);
-	setExpectedRegisterValue(registers::R7, INITIAL_PC + 16 + 7 * 4);
-	for (int i = 0; i < 7; i++)
-		memory_write_32(INITIAL_PC + 16 + 4 * i, i);
-	step();
+	getCpu().regs().set(registers::R7, INITIAL_PC + 16);
+	for (int i = 0; i < 7; i++) {
+		getCpu().mem().write32(INITIAL_PC + 16 + 4 * i, i);
+	}
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0);
+	ExpectThat().Register(registers::R1).Equals(1);
+	ExpectThat().Register(registers::R2).Equals(2);
+	ExpectThat().Register(registers::R3).Equals(3);
+	ExpectThat().Register(registers::R4).Equals(4);
+	ExpectThat().Register(registers::R5).Equals(5);
+	ExpectThat().Register(registers::R6).Equals(6);
+	ExpectThat().Register(registers::R7).Equals(INITIAL_PC + 16 + 7 * 4);
 }
 
-TEST_F(CpuTestHarness, ldm_HardFaultFromInvalidMemoryRead)
-{
+MICROMACHINE_TEST_F(ldm, HardFaultFromInvalidMemoryRead, CpuTestFixture) {
+	constexpr uint32_t INITIAL_PC = 0x00001000;
 	code_gen().emit_ins16("11001nnnrrrrrrrr", 0, (1 << 0));
-	setRegisterValue(registers::R0, 0xFFFFFFFC);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R0, 0xFFFFFFFC);
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 /*
 TEST_SIM_ONLY(ldm, UnpredictableToPopNoRegisters)
 {
     code_gen().emit_ins16("11001nnnrrrrrrrr", 0, 0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 */
