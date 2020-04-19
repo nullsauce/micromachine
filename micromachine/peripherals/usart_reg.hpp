@@ -10,7 +10,7 @@
 namespace micromachine::system {
 
 namespace usart {
-static constexpr uint32_t USART_BASE = 0x40000000;
+	static constexpr uint32_t USART_BASE = 0x40000000;
 }
 
 class usart_cr1_reg;
@@ -213,7 +213,9 @@ private:
 		return _word;
 	}
 
-	void set(uint32_t) override {}
+	void set(uint32_t word) override {
+		_word = word;
+	}
 
 	usart_cr1_reg& _control_register;
 };
@@ -256,6 +258,9 @@ private:
 
 	void set(uint32_t word) override {
 		_word = word;
+		if(word & _isr.transmission_complete()) {
+			_isr.set_transmission_complete(false);
+		}
 	}
 
 	usart_is_reg& _isr;
@@ -276,21 +281,10 @@ public:
 		, _cr1(cr1)
 		, _callback(callback) {}
 
+
 private:
 	uint32_t get() const override {
-
-		if(!_cr1.enable()) {
-			return 0;
-		}
-
-		uint32_t word = _word;
-		if(_cr1.tx_empty_interrupt_enable()) {
-			_isr.set_transmit_data_register_empty(true);
-		}
-		if(_cr1.tx_complete_interrupt_enable()) {
-			_isr.set_transmission_complete(true);
-		};
-		return bits<0, 8>::of(word);
+		return 0;
 	}
 
 	void set(uint32_t word) override {
@@ -299,16 +293,30 @@ private:
 			return;
 		}
 
+		// consume the byte to send
 		bits<0, 8>::of(_word) = word;
+
+		// clear txc and txe
 		_isr.set_transmit_data_register_empty(false);
 		_isr.set_transmission_complete(false);
 
-		uint8_t data = static_cast<uint8_t>(bits<0, 8>::of(word));
-		uint8_t op = static_cast<uint8_t>(bits<8, 8>::of(word));
-
+		// transmit data
+		uint8_t data = static_cast<uint8_t>(bits<0, 8>::of(_word));
+		uint8_t op = static_cast<uint8_t>(bits<8, 8>::of(_word));
 		if(_callback) {
 			_callback(op, data);
 		}
+
+		// assume data is transmitted so clear the register
+		bits<0, 8>::of(_word) = 0;
+
+		// set interrupt if needed
+		if(_cr1.tx_empty_interrupt_enable()) {
+			_isr.set_transmit_data_register_empty(true);
+		}
+		if(_cr1.tx_complete_interrupt_enable()) {
+			_isr.set_transmission_complete(true);
+		};
 	}
 
 	usart_is_reg& _isr;

@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <usart.h>
+#include <micromachine_mcu.h>
 #include <tinyprintf.h>
 
 
@@ -11,7 +11,7 @@ struct usart_config {
 };
 
 struct usart_device {
-	struct usart_port* port;
+	USART_TypeDef* port;
 	struct usart_config conf;
 };
 
@@ -40,6 +40,7 @@ void main() {
 	};
 
 	usart_init(&dev);
-	uint8_t data[] = "Hello usart world!";
+
+	uint8_t data[] = "Hello usart world!\n";
 	usart_transmit(&dev, data, sizeof(data));
 }

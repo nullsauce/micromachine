@@ -28,34 +28,34 @@ public:
 	void run() {
 		// TODO JJO totally wip
 
-		if(!_control_register.enable()) {
+		if (!_control_register.enable()) {
 			return;
 		}
 
 		// consume the current data
 		uint32_t rx_data = _rx_register;
-		// vm_usart_tx_push(rx_data)
 
-		/*
-		 * Check is data should be forwarded to the usart tx register
-		 * if (vm_usart_rx_not_empty()) {
-		 * 		u32 input = vm_usart_rx_pop();
-		 * 		_tx_register = input;
-		 * }
-		 */
+		// clear or set isr if any
+		_interrupt_status_register.set_transmit_data_register_empty(
+			_control_register.tx_empty_interrupt_enable());
+
+		_interrupt_status_register.set_transmission_complete(
+			_control_register.tx_complete_interrupt_enable()
+		);
 
 		// raise interrupt if any
 		uint32_t isr = _interrupt_status_register;
 		if(isr) {
 			// TODO find a way to map EXTI_00 to usart:
 			// https://github.com/flavioroth/micromachine/projects/1#card-36544071
-			_exception_controller.raise_external_interrupt(exception::Type::EXTI_00);
+			_exception_controller.raise_external_interrupt(0 /*exception::Type::EXTI_00*/);
 		}
 	}
 
 	const usart_cr1_reg& control_register() const {
 		return _control_register;
 	}
+
 	usart_cr1_reg& control_register() {
 		return _control_register;
 	}

@@ -31,7 +31,6 @@ extern "C" {
 #endif
 
 
-
 /** @addtogroup Configuration_of_CMSIS
   * @{
   */
@@ -130,11 +129,11 @@ typedef enum IRQn
 
 typedef struct
 {
-	__IOM uint32_t   CR1;                 /*!< (@ 0x00000000) Control register 1                      */
-	__IM  uint32_t   ISR;                 /*!< (@ 0x00000004) Interrupt and status register           */
-	__IOM uint32_t   ICR;                 /*!< (@ 0x00000008) Interrupt clear register                */
-	__OM  uint32_t   TX;                  /*!< (@ 0x0000000c) Transmit data register                  */
-	__IM  uint32_t   RX;                  /*!< (@ 0x00000010) Receive data register                   */
+	__IO uint32_t   CR1;                 /*!< (@ 0x00000000) Control register 1                      */
+	__IO uint32_t   ISR;                 /*!< (@ 0x00000004) Interrupt and status register           */
+	__IO uint32_t   ICR;                 /*!< (@ 0x00000008) Interrupt clear register                */
+	__IO uint32_t   RX;                  /*!< (@ 0x0000000c) Receive data register                   */
+	__IO uint32_t   TX;                  /*!< (@ 0x00000010) Transmit data register                  */
 } USART_TypeDef;
 
 /*@}*/ /* end of group micromachine_mcu_Peripherals */
@@ -195,12 +194,61 @@ typedef struct
 /** @addtogroup Peripheral_Registers_Bits_Definition
 * @{
 */
+/* Usart control register bits definitions  */
 #define USART_CR1_UE_Pos          (0U)
 #define USART_CR1_UE_Msk          (0x1UL << USART_CR1_UE_Pos)
 #define USART_CR1_UE              USART_CR1_UE_Msk               /* USART enable */
+#define USART_CR1_RXNE_Pos        (1U)
+#define USART_CR1_RXNE_Msk        (0x1UL << USART_CR1_RXNE_Pos)
+#define USART_CR1_RXNE            USART_CR1_RXNE_Msk             /* RX not empty interrupt enable */
+#define USART_CR1_TXC_Pos         (2U)
+#define USART_CR1_TXC_Msk         (0x1UL << USART_CR1_TXC_Pos)
+#define USART_CR1_TXC             USART_CR1_TXC_Msk              /* TX complete interrupt enable */
+#define USART_CR1_TXE_Pos         (3U)
+#define USART_CR1_TXE_Msk         (0x1UL << USART_CR1_TXE_Pos)
+#define USART_CR1_TXE             USART_CR1_TXE_Msk              /* TX empty interrupt enable */
+
+/* Usart interrupt status register bits definitions */
+#define USART_ISR_TXE_Pos          (0U)
+#define USART_ISR_TXE_Msk          (0x1UL << USART_ISR_TXE_Pos)
+#define USART_ISR_TXE              USART_ISR_TXE_Msk               /* TX empty interrupt status */
+#define USART_ISR_TXC_Pos          (1U)
+#define USART_ISR_TXC_Msk          (0x1UL << USART_ISR_TXC_Pos)
+#define USART_ISR_TXC              USART_ISR_TXC_Msk              /* TX complete interrupt status */
+#define USART_ISR_RXNE_Pos         (2U)
+#define USART_ISR_RXNE_Msk         (0x1UL << USART_ISR_RXNE_Pos)
+#define USART_ISR_RXNE             USART_ISR_RXNE_Msk              /* RX not empty interrupt status */
+
+/* Usart interrupt clear flag register bits definitions */
+#define USART_ICR_TXC_Pos          (0U)
+#define USART_ICR_TXC_Msk          (0x1UL << USART_ICR_TXC_Pos)
+#define USART_ICR_TXC              USART_ICR_TXC_Msk              /* TX complete interrupt clear */
 
 /** @} */ /* End of group Peripheral_Registers_Bits_Definition */
 
+/** @addtogroup Exported_macros
+  * @{
+  */
+#define SET_BIT(REG, BIT)     ((REG) |= (BIT))
+
+#define CLEAR_BIT(REG, BIT)   ((REG) &= ~(BIT))
+
+#define READ_BIT(REG, BIT)    ((REG) & (BIT))
+
+#define CLEAR_REG(REG)        ((REG) = (0x0))
+
+#define WRITE_REG(REG, VAL)   ((REG) = (VAL))
+
+#define READ_REG(REG)         ((REG))
+
+#define MODIFY_REG(REG, CLEARMASK, SETMASK)  WRITE_REG((REG), (((READ_REG(REG)) & (~(CLEARMASK))) | (SETMASK)))
+
+#define POSITION_VAL(VAL)     (__CLZ(__RBIT(VAL)))
+
+
+/**
+  * @}
+  */ /* End of group Exported_macros */
 /** @} */ /* End of group micromachine_mcu */
 
 /** @} */ /* End of group micromachine */
