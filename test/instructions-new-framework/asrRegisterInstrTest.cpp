@@ -11,117 +11,106 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* ASR - Register (Arithmetic Shift Right)
    Encoding: 010000 0100 Rm:3 Rdn:3 */
-TEST_F(CpuTestHarness, asrRegister_Shift1by1_CarryOutFromLowestBit)
-{
+MICROMACHINE_TEST_F(asrRegister, Shift1by1_CarryOutFromLowestBit, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R0, registers::R7);
-	setRegisterValue(registers::R7, 1);
-	setRegisterValue(registers::R0, 1);
-	setExpectedXPSRflags("nZC");
-	setExpectedRegisterValue(registers::R7, (int32_t) 1U >> 1U);
-	step();
+	getCpu().regs().set(registers::R7, 1);
+	getCpu().regs().set(registers::R0, 1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZC");
+	ExpectThat().Register(registers::R7).Equals((int32_t)1U >> 1U);
 }
 
-TEST_F(CpuTestHarness, asrRegister_Shift1by0_MinimumShift_CarryUnmodified)
-{
+MICROMACHINE_TEST_F(asrRegister, Shift1by0_MinimumShift_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R0, registers::R7);
-	setRegisterValue(registers::R7, 1);
-	setRegisterValue(registers::R0, 0);
-	setExpectedXPSRflags("nz");
-	setExpectedRegisterValue(registers::R7, (int32_t) 1 >> 0);
-	step();
+	getCpu().regs().set(registers::R7, 1);
+	getCpu().regs().set(registers::R0, 0);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().Register(registers::R7).Equals((int32_t)1 >> 0);
 }
 
-TEST_F(CpuTestHarness, asrRegister_Shift2by1_NoCarryFromLowestBit)
-{
+MICROMACHINE_TEST_F(asrRegister, Shift2by1_NoCarryFromLowestBit, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R3, registers::R2);
-	setRegisterValue(registers::R2, 2);
-	setRegisterValue(registers::R3, 1);
-	setExpectedXPSRflags("nzc");
-	setExpectedRegisterValue(registers::R2, (int32_t) 2 >> 1);
-	step();
+	getCpu().regs().set(registers::R2, 2);
+	getCpu().regs().set(registers::R3, 1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().Register(registers::R2).Equals((int32_t)2 >> 1);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftNegativeNumberby31)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftNegativeNumberby31, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R3, registers::R2);
-	setRegisterValue(registers::R2, -1);
-	setRegisterValue(registers::R3, 31);
-	setExpectedXPSRflags("NzC");
-	setExpectedRegisterValue(registers::R2, (int32_t) -1 >> 31);
-	step();
+	getCpu().regs().set(registers::R2, -1);
+	getCpu().regs().set(registers::R3, 31);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R2).Equals((int32_t)-1 >> 31);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftMaximumNegativeValueBy32_CarryOutFromHighestBit, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R0, 0x80000000);
-	setRegisterValue(registers::R7, 32);
-	setExpectedXPSRflags("NzC");
-	setExpectedRegisterValue(registers::R0, -1);
-	step();
+	getCpu().regs().set(registers::R0, 0x80000000);
+	getCpu().regs().set(registers::R7, 32);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R0).Equals(-1);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueby33)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftNegativeValueby33, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R3, registers::R2);
-	setRegisterValue(registers::R2, -1);
-	setRegisterValue(registers::R3, 33);
-	setExpectedXPSRflags("NzC");
-	setExpectedRegisterValue(registers::R2, -1);
-	step();
+	getCpu().regs().set(registers::R2, -1);
+	getCpu().regs().set(registers::R3, 33);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R2).Equals(-1);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftPositiveValueby33)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftPositiveValueby33, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R3, registers::R2);
-	setRegisterValue(registers::R2, 0x7FFFFFFF);
-	setRegisterValue(registers::R3, 33);
-	setExpectedXPSRflags("nZc");
-	setExpectedRegisterValue(registers::R2, 0);
-	step();
+	getCpu().regs().set(registers::R2, 0x7FFFFFFF);
+	getCpu().regs().set(registers::R3, 33);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().Register(registers::R2).Equals(0);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftNegativeValueByMaximumShiftOf255)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftNegativeValueByMaximumShiftOf255, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R3, registers::R2);
-	setRegisterValue(registers::R2, -1);
-	setRegisterValue(registers::R3, 255);
-	setExpectedXPSRflags("NzC");
-	setExpectedRegisterValue(registers::R2, -1);
-	step();
+	getCpu().regs().set(registers::R2, -1);
+	getCpu().regs().set(registers::R3, 255);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R2).Equals(-1);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftOf256ShouldBeTreatedAsShiftOf0_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R0, -1);
-	setRegisterValue(registers::R7, 256);
-	setExpectedXPSRflags("Nz");
-	setExpectedRegisterValue(registers::R0, (int32_t) -1 >> 0);
-	step();
+	getCpu().regs().set(registers::R0, -1);
+	getCpu().regs().set(registers::R7, 256);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().Register(registers::R0).Equals((int32_t)-1 >> 0);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftLargestPositiveNumberBy31)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftLargestPositiveNumberBy31, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R2, registers::R3);
-	setRegisterValue(registers::R3, 0x7FFFFFFF);
-	setRegisterValue(registers::R2, 31);
-	setExpectedXPSRflags("nZC");
-	setExpectedRegisterValue(registers::R3, (int32_t) 0x7FFFFFFF >> 31);
-	step();
+	getCpu().regs().set(registers::R3, 0x7FFFFFFF);
+	getCpu().regs().set(registers::R2, 31);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZC");
+	ExpectThat().Register(registers::R3).Equals((int32_t)0x7FFFFFFF >> 31);
 }
 
-TEST_F(CpuTestHarness, asrRegister_ShiftLargestNegativeNumberBy1)
-{
+MICROMACHINE_TEST_F(asrRegister, ShiftLargestNegativeNumberBy1, CpuTestFixture) {
 	code_gen().emit_ins16("0100000100mmmddd", registers::R2, registers::R3);
-	setRegisterValue(registers::R3, 0x80000000);
-	setRegisterValue(registers::R2, 1);
-	setExpectedXPSRflags("Nzc");
-	setExpectedRegisterValue(registers::R3, (int32_t) 0x80000000 >> 1);
-	step();
+	getCpu().regs().set(registers::R3, 0x80000000);
+	getCpu().regs().set(registers::R2, 1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzc");
+	ExpectThat().Register(registers::R3).Equals((int32_t)0x80000000 >> 1);
 }
