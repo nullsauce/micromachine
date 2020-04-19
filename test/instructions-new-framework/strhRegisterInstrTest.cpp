@@ -18,9 +18,9 @@
    Encoding: 0101 001 Rm:3 Rn:3 Rt:3 */
 TEST_F(CpuTestHarness, strhRegister_UseAMixOfRegistersWordAligned)
 {
-	code_gen().emit_ins16("0101001mmmnnnttt", R7, R3, R0);
-	setRegisterValue(R3, INITIAL_PC);
-	setRegisterValue(R7, 4);
+	code_gen().emit_ins16("0101001mmmnnnttt", registers::R7, registers::R3, registers::R0);
+	setRegisterValue(registers::R3, INITIAL_PC);
+	setRegisterValue(registers::R7, 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
 	EXPECT_EQ(0xBAAD0000, memory_read_32(INITIAL_PC + 4));
@@ -28,9 +28,9 @@ TEST_F(CpuTestHarness, strhRegister_UseAMixOfRegistersWordAligned)
 
 TEST_F(CpuTestHarness, strhRegister_UseAnotherMixOfRegistersWordAligned)
 {
-	code_gen().emit_ins16("0101001mmmnnnttt", R1, R0, R7);
-	setRegisterValue(R0, INITIAL_PC);
-	setRegisterValue(R1, 4);
+	code_gen().emit_ins16("0101001mmmnnnttt", registers::R1, registers::R0, registers::R7);
+	setRegisterValue(registers::R0, INITIAL_PC);
+	setRegisterValue(registers::R1, 4);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
 	EXPECT_EQ(0xBAAD7777, memory_read_32(INITIAL_PC + 4));
@@ -38,9 +38,9 @@ TEST_F(CpuTestHarness, strhRegister_UseAnotherMixOfRegistersWordAligned)
 
 TEST_F(CpuTestHarness, strhRegister_YetAnotherMixOfRegistersNotWordAligned)
 {
-	code_gen().emit_ins16("0101001mmmnnnttt", R0, R7, R4);
-	setRegisterValue(R7, INITIAL_PC);
-	setRegisterValue(R0, 6);
+	code_gen().emit_ins16("0101001mmmnnnttt", registers::R0, registers::R7, registers::R4);
+	setRegisterValue(registers::R7, INITIAL_PC);
+	setRegisterValue(registers::R0, 6);
 	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
 	step();
 	EXPECT_EQ(0x4444FEED, memory_read_32(INITIAL_PC + 4));
@@ -48,9 +48,9 @@ TEST_F(CpuTestHarness, strhRegister_YetAnotherMixOfRegistersNotWordAligned)
 
 TEST_F(CpuTestHarness, strhRegister_AttemptUnalignedStore)
 {
-	code_gen().emit_ins16("0101001mmmnnnttt", R7, R3, R0);
-	setRegisterValue(R3, INITIAL_PC + 1024);
-	setRegisterValue(R7, 1);
+	code_gen().emit_ins16("0101001mmmnnnttt", registers::R7, registers::R3, registers::R0);
+	setRegisterValue(registers::R3, INITIAL_PC + 1024);
+	setRegisterValue(registers::R7, 1);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	memory_write_32(INITIAL_PC + 1024, 0xBAADFEED);
 	step();
@@ -58,9 +58,9 @@ TEST_F(CpuTestHarness, strhRegister_AttemptUnalignedStore)
 
 TEST_F(CpuTestHarness, strhRegister_AttemptStoreToInvalidAddress)
 {
-	code_gen().emit_ins16("0101001mmmnnnttt", R7, R3, R0);
-	setRegisterValue(R3, 0xFFFFFFFC);
-	setRegisterValue(R7, 0);
+	code_gen().emit_ins16("0101001mmmnnnttt", registers::R7, registers::R3, registers::R0);
+	setRegisterValue(registers::R3, 0xFFFFFFFC);
+	setRegisterValue(registers::R7, 0);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
 }

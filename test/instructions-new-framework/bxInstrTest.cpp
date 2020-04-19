@@ -19,9 +19,9 @@
 TEST_F(CpuTestHarness,
 	   bx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
 {
-	code_gen().emit_ins16("010001110mmmm000", R0);
+	code_gen().emit_ins16("010001110mmmm000", registers::R0);
 	setExpectedXPSRflags("t");
-	setRegisterValue(R0, INITIAL_PC + 16);
+	setRegisterValue(registers::R0, INITIAL_PC + 16);
 	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
 	step();
 
@@ -49,7 +49,7 @@ TEST_SIM_ONLY(bx, UnpredictableToUseR15)
 
 TEST_SIM_ONLY(bx, UnpredictableForBit0ToBeHigh)
 {
-    code_gen().emit_ins16("010001110mmmm001", R0);
+    code_gen().emit_ins16("010001110mmmm001", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -57,7 +57,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit0ToBeHigh)
 
 TEST_SIM_ONLY(bx, UnpredictableForBit1ToBeHigh)
 {
-    code_gen().emit_ins16("010001110mmmm010", R0);
+    code_gen().emit_ins16("010001110mmmm010", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(registers::PC, INITIAL_PC);
     pinkySimStep(&m_context);
@@ -65,7 +65,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit1ToBeHigh)
 
 TEST_SIM_ONLY(bx, UnpredictableForBit2ToBeHigh)
 {
-    code_gen().emit_ins16("010001110mmmm100", R0);
+    code_gen().emit_ins16("010001110mmmm100", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
     setExpectedRegisterValue(registers::PC, INITIAL_PC);
     step(&m_context);
