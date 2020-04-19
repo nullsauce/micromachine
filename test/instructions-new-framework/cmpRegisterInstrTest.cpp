@@ -11,56 +11,57 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* CMP - Register - Encoding T1
    Encoding: 010000 1010 Rm:3 Rn:3 */
-TEST_F(CpuTestHarness, cmpRegister_T1UseLowestRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(cmpRegister, T1UseLowestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R0, registers::R0);
-	setExpectedXPSRflags("nZCv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T1UseHigestRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(cmpRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) {
+	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R7, registers::R7);
-	setExpectedXPSRflags("nZCv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T1RnLargerThanRm)
-{
+MICROMACHINE_TEST_F(cmpRegister, T1RnLargerThanRm, CpuTestFixture) {
+	getCpu().regs().set(registers::R1, 0x11111111);
+	getCpu().regs().set(registers::R2, 0x22222222);
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R1, registers::R2);
-	setExpectedXPSRflags("nzCv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCv");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T1RnSmallerThanRm)
-{
+MICROMACHINE_TEST_F(cmpRegister, T1RnSmallerThanRm, CpuTestFixture) {
+	getCpu().regs().set(registers::R1, 0x11111111);
+
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R1, registers::R0);
-	setExpectedXPSRflags("Nzcv");
-	setRegisterValue(registers::R1, 1);
-	step();
+	getCpu().regs().set(registers::R1, 1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzcv");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T1ForceNegativeOverflow)
-{
+MICROMACHINE_TEST_F(cmpRegister, T1ForceNegativeOverflow, CpuTestFixture) {
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R1, registers::R2);
-	setExpectedXPSRflags("nzCV");
-	setRegisterValue(registers::R2, 0x80000000U);
-	setRegisterValue(registers::R1, 1U);
-	step();
+	getCpu().regs().set(registers::R2, 0x80000000U);
+	getCpu().regs().set(registers::R1, 1U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCV");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T1ForcePositiveOverflow)
-{
+MICROMACHINE_TEST_F(cmpRegister, T1ForcePositiveOverflow, CpuTestFixture) {
+	getCpu().regs().set(registers::R1, 0x11111111);
+	getCpu().regs().set(registers::R2, 0x22222222);
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R1, registers::R2);
-	setExpectedXPSRflags("NzcV");
-	setRegisterValue(registers::R2, 0x7FFFFFFFU);
-	setRegisterValue(registers::R1, -1U);
-	step();
+	getCpu().regs().set(registers::R2, 0x7FFFFFFFU);
+	getCpu().regs().set(registers::R1, -1U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzcV");
 }
 
 
@@ -68,52 +69,48 @@ TEST_F(CpuTestHarness, cmpRegister_T1ForcePositiveOverflow)
 /* CMP - Register - Encoding T2
    Encoding: 010001 01 N:1 Rm:4 Rn:3
    NOTE: At least one register must be high register, registers::R8 - registers::R14. */
-TEST_F(CpuTestHarness, cmpRegister_T2CompareLowestRegisterToHighestRegister)
-{
+MICROMACHINE_TEST_F(cmpRegister, T2CompareLowestRegisterToHighestRegister, CpuTestFixture) {
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::R0, registers::LR);
-	setRegisterValue(registers::LR, 0xEEEEEEEE);
-	setExpectedXPSRflags("nzcv");
-	step();
+	getCpu().regs().set(registers::LR, 0xEEEEEEEE);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzcv");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T2CompareHighestRegisterToLowestRegister)
-{
+MICROMACHINE_TEST_F(cmpRegister, T2CompareHighestRegisterToLowestRegister, CpuTestFixture) {
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::LR, registers::R0);
-	setRegisterValue(registers::LR, 0xEEEEEEEE);
-	setExpectedXPSRflags("NzCv");
-	step();
+	getCpu().regs().set(registers::LR, 0xEEEEEEEE);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzCv");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T2CompareR8ToItself)
-{
+MICROMACHINE_TEST_F(cmpRegister, T2CompareR8ToItself, CpuTestFixture) {
+	getCpu().regs().set(registers::R8, 0x88888888);
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::R8, registers::R8);
-	setExpectedXPSRflags("nZCv");
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T2ForceNegativeOverflow)
-{
+MICROMACHINE_TEST_F(cmpRegister, T2ForceNegativeOverflow, CpuTestFixture) {
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::R11, registers::R12);
-	setExpectedXPSRflags("nzCV");
-	setRegisterValue(registers::R11, 0x80000000U);
-	setRegisterValue(registers::R12, 1U);
-	step();
+	getCpu().regs().set(registers::R11, 0x80000000U);
+	getCpu().regs().set(registers::R12, 1U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCV");
 }
 
-TEST_F(CpuTestHarness, cmpRegister_T2ForcePositiveOverflow)
-{
+MICROMACHINE_TEST_F(cmpRegister, T2ForcePositiveOverflow, CpuTestFixture) {
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::R11, registers::R12);
-	setExpectedXPSRflags("NzcV");
-	setRegisterValue(registers::R11, 0x7FFFFFFFU);
-	setRegisterValue(registers::R12, -1U);
-	step();
+	getCpu().regs().set(registers::R11, 0x7FFFFFFFU);
+	getCpu().regs().set(registers::R12, -1U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzcV");
 }
 /*
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForBothArgsToBeLowRegisters)
 {
     code_gen().emit_ins16("01000101nmmmmnnn", registers::R6, registers::R7);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -121,7 +118,7 @@ TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRnToBeR15)
 {
     code_gen().emit_ins16("01000101nmmmmnnn", registers::PC, registers::R8);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -129,7 +126,7 @@ TEST_SIM_ONLY(cmpRegister, T2UnpredictableForRmToBeR15)
 {
     code_gen().emit_ins16("01000101nmmmmnnn", registers::R8, registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 */
