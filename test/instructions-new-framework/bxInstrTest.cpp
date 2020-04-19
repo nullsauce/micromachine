@@ -11,39 +11,39 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* BX (Branch and Exchange)
    Encoding: 010001 11 0 Rm:4 (0)(0)(0) */
-TEST_F(CpuTestHarness,
+TEST_F(CpuTestFixture,
 	   bx_UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeToCauseHardFaultOnNextInstruction)
 {
 	code_gen().emit_ins16("010001110mmmm000", registers::R0);
-	setExpectedXPSRflags("t");
-	setRegisterValue(registers::R0, INITIAL_PC + 16);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
-	step();
+	ExpectThat().XPSRFlagsEquals("t");
+	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
+	Step();
 
 	const uint16_t NOP = 0xBF00;
 	memory_write_32(INITIAL_PC + 16, NOP);
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	Step();
 }
 
-TEST_F(CpuTestHarness, bx_UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb)
+MICROMACHINE_TEST_F(bx, UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb, CpuTestFixture)
 {
 	code_gen().emit_ins16("010001110mmmm000", registers::LR);
-	setRegisterValue(registers::LR, (INITIAL_PC + 16) | 1);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
-	step();
+	getCpu().regs().set(registers::LR, (INITIAL_PC + 16) | 1);
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
+	Step();
 }
 /*
 TEST_SIM_ONLY(bx, UnpredictableToUseR15)
 {
     code_gen().emit_ins16("010001110mmmm000", registers::PC);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -51,7 +51,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit0ToBeHigh)
 {
     code_gen().emit_ins16("010001110mmmm001", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -59,7 +59,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit1ToBeHigh)
 {
     code_gen().emit_ins16("010001110mmmm010", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -67,7 +67,7 @@ TEST_SIM_ONLY(bx, UnpredictableForBit2ToBeHigh)
 {
     code_gen().emit_ins16("010001110mmmm100", registers::R0);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 */
