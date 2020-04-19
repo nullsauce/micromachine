@@ -11,22 +11,24 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* DMB
    Encoding: 11110 0 111 01 1 (1)(1)(1)(1)
              10 (0) 0 (1)(1)(1)(1) 0101 option:4 */
-TEST_F(CpuTestHarness, dmb_OptionSetTo15)
-{
+MICROMACHINE_TEST_F(dmb, OptionSetTo15, CpuTestFixture) {
+	static uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 15);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, dmb_OptionSetTo0)
-{
+MICROMACHINE_TEST_F(dmb, OptionSetTo0, CpuTestFixture) {
+	static uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 0);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
 }
