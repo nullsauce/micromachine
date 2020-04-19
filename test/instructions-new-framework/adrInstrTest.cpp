@@ -11,32 +11,39 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* ADR (ADDress of label)
    Encoding: 1010 0 Rd:3 Imm:8 */
-TEST_F(CpuTestHarness, adr_LowestRegisterWithLargestOffset)
-{
+MICROMACHINE_TEST_F(adr, LowestRegisterWithLargestOffset, CpuTestFixture) {
+	static uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
+
 	code_gen().emit_ins16("10100dddiiiiiiii", registers::R0, 255);
-	setExpectedRegisterValue(registers::R0, INITIAL_PC + 4 + 255 * 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::R0).Equals(INITIAL_PC + 4 + 255 * 4);
 }
 
-TEST_F(CpuTestHarness, adr_HighesttRegisterWithSmallestOffset)
-{
+MICROMACHINE_TEST_F(adr, HighesttRegisterWithSmallestOffset, CpuTestFixture) {
+	static uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
+
 	code_gen().emit_ins16("10100dddiiiiiiii", registers::R7, 0);
-	setExpectedRegisterValue(registers::R7, INITIAL_PC + 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::R7).Equals(INITIAL_PC + 4);
 }
 
-TEST_F(CpuTestHarness, adr_pcWillNeedToBeWordAlignedBeforeAdd)
-{
+MICROMACHINE_TEST_F(adr, pcWillNeedToBeWordAlignedBeforeAdd, CpuTestFixture) {
+	static uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().set(registers::PC, INITIAL_PC + 2);
+
 	// Emit UNDEFINED 16-bit instruction.
 	code_gen().emit_ins16("1101111000000000");
 	// Emit actual test instruction at a 2-byte aligned address which isn't 4-byte aligned.
 	code_gen().emit_ins16("10100dddiiiiiiii", registers::R3, 0);
-	setRegisterValue(registers::PC, INITIAL_PC + 2);
-	setExpectedRegisterValue(registers::R3, INITIAL_PC + 4);
-	step();
+
+	Step();
+	ExpectThat().Register(registers::R3).Equals(INITIAL_PC + 4);
 }
