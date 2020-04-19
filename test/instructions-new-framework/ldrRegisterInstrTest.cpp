@@ -16,50 +16,53 @@
 
 /* LDR - Register
    Encoding: 0101 100 Rm:3 Rn:3 Rt:3 */
-MICROMACHINE_TEST_F(ldrRegister, UseAMixOfRegisters, CpuTestFixture)
-{
+MICROMACHINE_TEST_F(ldrRegister, UseAMixOfRegisters, CpuTestFixture) {
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R7, registers::R3, registers::R0);
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
-	ExpectThat().Register(registers::R0).Equals(0xBAADFEED);
 	Step();
+	ExpectThat().Register(registers::R0).Equals(0xBAADFEED);
 }
 
-MICROMACHINE_TEST_F(ldrRegister, UseAnotherMixOfRegisters, CpuTestFixture)
-{
+MICROMACHINE_TEST_F(ldrRegister, UseAnotherMixOfRegisters, CpuTestFixture) {
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R1, registers::R0, registers::R7);
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
 	getCpu().regs().set(registers::R1, 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
-	ExpectThat().Register(registers::R7).Equals(0xBAADFEED);
 	Step();
+	ExpectThat().Register(registers::R7).Equals(0xBAADFEED);
 }
 
-MICROMACHINE_TEST_F(ldrRegister, YetAnotherMixOfRegisters, CpuTestFixture)
-{
+MICROMACHINE_TEST_F(ldrRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R0, registers::R7, registers::R4);
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
-	ExpectThat().Register(registers::R4).Equals(0xBAADFEED);
 	Step();
+	ExpectThat().Register(registers::R4).Equals(0xBAADFEED);
 }
 
-MICROMACHINE_TEST_F(ldrRegister, AttemptUnalignedLoad, CpuTestFixture)
-{
+MICROMACHINE_TEST_F(ldrRegister, AttemptUnalignedLoad, CpuTestFixture) {
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R7, registers::R3, registers::R0);
+	constexpr uint32_t INITIAL_PC = 0x00001000;
+	getCpu().regs().set_pc(INITIAL_PC);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 2);
-	ExpectThat().HardfaultHandlerReached();
 	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 
-MICROMACHINE_TEST_F(ldrRegister, AttemptLoadFromInvalidAddress, CpuTestFixture)
-{
+MICROMACHINE_TEST_F(ldrRegister, AttemptLoadFromInvalidAddress, CpuTestFixture) {
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
 	getCpu().regs().set(registers::R7, 0);
-	ExpectThat().HardfaultHandlerReached();
 	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
