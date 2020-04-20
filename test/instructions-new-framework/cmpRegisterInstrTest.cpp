@@ -19,14 +19,14 @@
 MICROMACHINE_TEST_F(cmpRegister, T1UseLowestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R0, registers::R0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R7, registers::R7);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T1RnLargerThanRm, CpuTestFixture) {
@@ -34,7 +34,7 @@ MICROMACHINE_TEST_F(cmpRegister, T1RnLargerThanRm, CpuTestFixture) {
 	getCpu().regs().set(registers::R2, 0x22222222);
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R1, registers::R2);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().APSRFlagsMatches("nzCv");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T1RnSmallerThanRm, CpuTestFixture) {
@@ -43,7 +43,7 @@ MICROMACHINE_TEST_F(cmpRegister, T1RnSmallerThanRm, CpuTestFixture) {
 	code_gen().emit_ins16("0100001010mmmnnn", registers::R1, registers::R0);
 	getCpu().regs().set(registers::R1, 1);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().APSRFlagsMatches("Nzcv");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T1ForceNegativeOverflow, CpuTestFixture) {
@@ -51,7 +51,7 @@ MICROMACHINE_TEST_F(cmpRegister, T1ForceNegativeOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R2, 0x80000000U);
 	getCpu().regs().set(registers::R1, 1U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T1ForcePositiveOverflow, CpuTestFixture) {
@@ -61,7 +61,7 @@ MICROMACHINE_TEST_F(cmpRegister, T1ForcePositiveOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R2, 0x7FFFFFFFU);
 	getCpu().regs().set(registers::R1, -1U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzcV");
+	ExpectThat().APSRFlagsMatches("NzcV");
 }
 
 
@@ -73,21 +73,21 @@ MICROMACHINE_TEST_F(cmpRegister, T2CompareLowestRegisterToHighestRegister, CpuTe
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::R0, registers::LR);
 	getCpu().regs().set(registers::LR, 0xEEEEEEEE);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzcv");
+	ExpectThat().APSRFlagsMatches("nzcv");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T2CompareHighestRegisterToLowestRegister, CpuTestFixture) {
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::LR, registers::R0);
 	getCpu().regs().set(registers::LR, 0xEEEEEEEE);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzCv");
+	ExpectThat().APSRFlagsMatches("NzCv");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T2CompareR8ToItself, CpuTestFixture) {
 	getCpu().regs().set(registers::R8, 0x88888888);
 	code_gen().emit_ins16("01000101nmmmmnnn", registers::R8, registers::R8);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T2ForceNegativeOverflow, CpuTestFixture) {
@@ -95,7 +95,7 @@ MICROMACHINE_TEST_F(cmpRegister, T2ForceNegativeOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R11, 0x80000000U);
 	getCpu().regs().set(registers::R12, 1U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 }
 
 MICROMACHINE_TEST_F(cmpRegister, T2ForcePositiveOverflow, CpuTestFixture) {
@@ -103,7 +103,7 @@ MICROMACHINE_TEST_F(cmpRegister, T2ForcePositiveOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R11, 0x7FFFFFFFU);
 	getCpu().regs().set(registers::R12, -1U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzcV");
+	ExpectThat().APSRFlagsMatches("NzcV");
 }
 /*
 TEST_SIM_ONLY(cmpRegister, T2UnpredictableForBothArgsToBeLowRegisters)

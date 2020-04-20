@@ -21,7 +21,7 @@ MICROMACHINE_TEST_F(lslRegister, ShiftR7by0_MinimumShift_CarryShouldBeUnmodified
 	code_gen().emit_ins16("0100000010mmmddd", registers::R0, registers::R7);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzC");
+	ExpectThat().APSRFlagsMatches("nzC");
 	ExpectThat().Register(registers::R7).Equals(0x77777777U);
 }
 
@@ -30,7 +30,7 @@ MICROMACHINE_TEST_F(lslRegister, ShiftValue1by31_NegativeResult, CpuTestFixture)
 	getCpu().regs().set(registers::R3, 1);
 	getCpu().regs().set(registers::R4, 31);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzc");
+	ExpectThat().APSRFlagsMatches("Nzc");
 	ExpectThat().Register(registers::R3).Equals(1 << 31);
 }
 
@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(lslRegister, ShiftValue1by32_CarryOutFromLowestBit, CpuTestF
 	getCpu().regs().set(registers::R0, 1);
 	getCpu().regs().set(registers::R7, 32);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZC");
+	ExpectThat().APSRFlagsMatches("nZC");
 	ExpectThat().Register(registers::R0).Equals(0);
 }
 
@@ -48,7 +48,7 @@ MICROMACHINE_TEST_F(lslRegister, ShiftNegativeValueBy1_CarryOutFromHighestBit, C
 	getCpu().regs().set(registers::R4, -1);
 	getCpu().regs().set(registers::R3, 1);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().APSRFlagsMatches("NzC");
 	ExpectThat().Register(registers::R4).Equals(0xffffffff << 1);
 }
 
@@ -57,7 +57,7 @@ MICROMACHINE_TEST_F(lslRegister, ShiftValue1by33_NoCarry, CpuTestFixture) {
 	getCpu().regs().set(registers::R0, 1);
 	getCpu().regs().set(registers::R7, 33);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().APSRFlagsMatches("nZc");
 	ExpectThat().Register(registers::R0).Equals(0);
 }
 
@@ -66,7 +66,7 @@ MICROMACHINE_TEST_F(lslRegister, ShiftValuee1by255_MaximumShift, CpuTestFixture)
 	getCpu().regs().set(registers::R0, 1);
 	getCpu().regs().set(registers::R7, 255);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().APSRFlagsMatches("nZc");
 	ExpectThat().Register(registers::R0).Equals(0);
 }
 
@@ -76,6 +76,6 @@ MICROMACHINE_TEST_F(lslRegister, ShiftValue1by256_ShouldBeTreatedAs0Shift_CarryU
 	getCpu().regs().set(registers::R0, 1);
 	getCpu().regs().set(registers::R7, 256);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().APSRFlagsMatches("nzc");
 	ExpectThat().Register(registers::R0).Equals(1);
 }

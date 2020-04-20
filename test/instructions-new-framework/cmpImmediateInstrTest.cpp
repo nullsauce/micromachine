@@ -19,25 +19,25 @@
 MICROMACHINE_TEST_F(cmpImmediate, CompareLowestRegisterToEqualValue, CpuTestFixture) {
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R0, 0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 }
 
 MICROMACHINE_TEST_F(cmpImmediate, CompareHighestRegisterToImmediateWhichIsSmaller, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R7, 127);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().APSRFlagsMatches("nzCv");
 }
 
 MICROMACHINE_TEST_F(cmpImmediate, CompareRegisterToLargestImmediateWhichIsLarger, CpuTestFixture) {
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R0, 255);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().APSRFlagsMatches("Nzcv");
 }
 
 MICROMACHINE_TEST_F(cmpImmediate, CompareRegisterToImmediateWhichWillGenerateNegativeOverflow, CpuTestFixture) {
 	code_gen().emit_ins16("00101nnniiiiiiii", registers::R3, 1);
 	getCpu().regs().set(registers::R3, 0x80000000);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 }

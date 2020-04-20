@@ -38,7 +38,7 @@ public:
 	CpuMutationPredicate& PcDidNotChange();
 	CpuMutationPredicate& InstructionExecutedWithoutBranch();
 	CpuMutationPredicate& RegisterValueEquals(reg_idx index, uint32_t value);
-	CpuMutationPredicate& XPSRFlagsEquals(const std::string& apsrFlags);
+	CpuMutationPredicate& APSRFlagsMatches(const std::string& apsrFlags);
 	CpuMutationPredicate& XPSRRegisterDidNotChange();
 	CpuMutationPredicate& APSRFlagsDidNotChange();
 	CpuMutationPredicate& IPSRFlagsDidNotChange();

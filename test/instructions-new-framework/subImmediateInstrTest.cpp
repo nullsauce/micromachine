@@ -19,7 +19,7 @@
 MICROMACHINE_TEST_F(subImmediate, T1UseLowestRegisterOnly_SmallestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("0001111iiinnnddd", 0, registers::R0, registers::R0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 	ExpectThat().Register(registers::R0).Equals(0U);
 }
 
@@ -27,14 +27,14 @@ MICROMACHINE_TEST_F(subImmediate, T1UseHigestRegisterOnly_LargestImmediate, CpuT
 	code_gen().emit_ins16("0001111iiinnnddd", 7, registers::R7, registers::R7);
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().APSRFlagsMatches("nzCv");
 	ExpectThat().Register(registers::R7).Equals(0x77777777U - 7U);
 }
 
 MICROMACHINE_TEST_F(subImmediate, T1UseDifferentRegistersForEachArg, CpuTestFixture) {
 	code_gen().emit_ins16("0001111iiinnnddd", 3, registers::R0, registers::R2);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().APSRFlagsMatches("Nzcv");
 	ExpectThat().Register(registers::R2).Equals(0U - 3U);
 }
 
@@ -42,7 +42,7 @@ MICROMACHINE_TEST_F(subImmediate, T1ForceOverflowPastLargestNegativeInteger, Cpu
 	code_gen().emit_ins16("0001111iiinnnddd", 1, registers::R1, registers::R6);
 	getCpu().regs().set(registers::R1, 0x80000000);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 	ExpectThat().Register(registers::R6).Equals(0x80000000U - 1U);
 }
 
@@ -53,7 +53,7 @@ MICROMACHINE_TEST_F(subImmediate, T1ForceOverflowPastLargestNegativeInteger, Cpu
 MICROMACHINE_TEST_F(subImmediate, T2LowestRegister_SmallestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R0, 0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 	ExpectThat().Register(registers::R0).Equals(0U);
 }
 
@@ -61,14 +61,14 @@ MICROMACHINE_TEST_F(subImmediate, T2HigestRegister_LargestImmediate, CpuTestFixt
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R7, 255);
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().APSRFlagsMatches("nzCv");
 	ExpectThat().Register(registers::R7).Equals(0x77777777U - 255U);
 }
 
 MICROMACHINE_TEST_F(subImmediate, T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult, CpuTestFixture) {
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R0, 127);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().APSRFlagsMatches("Nzcv");
 	ExpectThat().Register(registers::R0).Equals(0U - 127U);
 }
 
@@ -76,6 +76,6 @@ MICROMACHINE_TEST_F(subImmediate, T2ForceOverflowPastLargestNegativeInteger, Cpu
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R3, 1);
 	getCpu().regs().set(registers::R3, 0x80000000);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 	ExpectThat().Register(registers::R3).Equals(0x80000000U - 1U);
 }

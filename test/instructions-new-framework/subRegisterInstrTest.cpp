@@ -19,7 +19,7 @@
 MICROMACHINE_TEST_F(subRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0001101mmmnnnddd", registers::R0, registers::R0, registers::R0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 	ExpectThat().Register(registers::R0).Equals(0);
 }
 
@@ -27,7 +27,7 @@ MICROMACHINE_TEST_F(subRegister, UseHigestRegisterForAllArgs, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("0001101mmmnnnddd", registers::R7, registers::R7, registers::R7);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 	ExpectThat().Register(registers::R7).Equals(0);
 }
 
@@ -36,7 +36,7 @@ MICROMACHINE_TEST_F(subRegister, UseDifferentRegistersForEachArg, CpuTestFixture
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0001101mmmnnnddd", registers::R1, registers::R2, registers::R0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().APSRFlagsMatches("nzCv");
 	ExpectThat().Register(registers::R0).Equals(0x22222222U - 0x11111111U);
 }
 
@@ -45,7 +45,7 @@ MICROMACHINE_TEST_F(subRegister, ForceCarryClearToIndicateBorrowAndResultWillBeN
 	code_gen().emit_ins16("0001101mmmnnnddd", registers::R1, registers::R0, registers::R2);
 	getCpu().regs().set(registers::R1, 1);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().APSRFlagsMatches("Nzcv");
 	ExpectThat().Register(registers::R2).Equals(0U - 1U);
 }
 
@@ -54,7 +54,7 @@ MICROMACHINE_TEST_F(subRegister, ForceNegativeOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R2, 0x80000000U);
 	getCpu().regs().set(registers::R1, 1U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 	ExpectThat().Register(registers::R0).Equals(0x7FFFFFFF);
 }
 
@@ -63,6 +63,6 @@ MICROMACHINE_TEST_F(subRegister, ForcePositiveOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R2, 0x7FFFFFFFU);
 	getCpu().regs().set(registers::R1, -1U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzcV");
+	ExpectThat().APSRFlagsMatches("NzcV");
 	ExpectThat().Register(registers::R0).Equals(0x7FFFFFFFU + 1U);
 }

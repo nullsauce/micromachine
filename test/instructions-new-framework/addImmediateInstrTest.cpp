@@ -22,7 +22,7 @@ MICROMACHINE_TEST_F(addImmediate, T1UseLowestRegisterOnlyAddLargestImmediate, Cp
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R0).Equals(0U + 7U)
 	;
 }
@@ -35,7 +35,7 @@ MICROMACHINE_TEST_F(addImmediate, T1UseHigestRegisterOnlyAddSmallestImmediate, C
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R7).Equals(0x77777777U + 0U)
 	;
 }
@@ -48,7 +48,7 @@ MICROMACHINE_TEST_F(addImmediate, T1UseDifferentRegistersForEachArg, CpuTestFixt
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R0).Equals(0x77777777U + 3U)
 	;
 
@@ -63,7 +63,7 @@ MICROMACHINE_TEST_F(addImmediate, T1ForceCarryByAdding1ToLargestInteger, CpuTest
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nZCv")
+		.APSRFlagsMatches("nZCv")
 		.Register(registers::R1).Equals(0)
 	;
 }
@@ -76,7 +76,7 @@ MICROMACHINE_TEST_F(addImmediate, T1ForceOverflowPastLargestPositiveInteger, Cpu
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("NzcV")
+		.APSRFlagsMatches("NzcV")
 		.Register(registers::R5).Equals(0x7FFFFFFFU + 1U)
 	;
 }
@@ -90,7 +90,7 @@ MICROMACHINE_TEST_F(addImmediate, T2UseLowestRegisterAndAddLargestImmediate, Cpu
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R0).Equals(0U + 255U)
 	;
 }
@@ -103,7 +103,7 @@ MICROMACHINE_TEST_F(addImmediate, T2UseHigestRegisterAndAddSmallestImmediate, Cp
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R7).Equals(0x77777777U + 0U)
 	;
 
@@ -117,7 +117,7 @@ MICROMACHINE_TEST_F(addImmediate, T2ForceCarryByAdding1ToLargestInteger, CpuTest
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nZCv")
+		.APSRFlagsMatches("nZCv")
 		.Register(registers::R3).Equals(0)
 	;
 
@@ -131,7 +131,7 @@ MICROMACHINE_TEST_F(addImmediate, T2ForceOverflowPastLargestPositiveInteger, Cpu
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("NzcV")
+		.APSRFlagsMatches("NzcV")
 		.Register(registers::R3).Equals(0x7FFFFFFFU + 1)
 	;
 }

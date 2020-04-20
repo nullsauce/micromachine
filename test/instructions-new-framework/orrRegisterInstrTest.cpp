@@ -23,7 +23,7 @@ MICROMACHINE_TEST_F(orrRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().Register(registers::R0).Equals(0);
-	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().APSRFlagsMatches("nZc");
 }
 
 MICROMACHINE_TEST_F(orrRegister, UseHighestRegisterForBothArgs, CpuTestFixture) {
@@ -31,7 +31,7 @@ MICROMACHINE_TEST_F(orrRegister, UseHighestRegisterForBothArgs, CpuTestFixture) 
 	code_gen().emit_ins16("0100001100mmmddd", registers::R7, registers::R7);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzC");
+	ExpectThat().APSRFlagsMatches("nzC");
 }
 
 MICROMACHINE_TEST_F(orrRegister, OrR3andR7, CpuTestFixture) {
@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(orrRegister, OrR3andR7, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100001100mmmddd", registers::R3, registers::R7);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().APSRFlagsMatches("nz");
 	ExpectThat().Register(registers::R7).Equals(0x33333333 | 0x77777777);
 }
 
@@ -48,7 +48,7 @@ MICROMACHINE_TEST_F(orrRegister, UseOrToTurnOnNegativeSignBit, CpuTestFixture) {
 	getCpu().regs().set(registers::R0, 0x7FFFFFFF);
 	getCpu().regs().set(registers::R7, 0x80000000);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().APSRFlagsMatches("Nz");
 	ExpectThat().Register(registers::R0).Equals(0x7FFFFFFF | 0x80000000);
 }
 
@@ -57,6 +57,6 @@ MICROMACHINE_TEST_F(orrRegister, HaveAndResultNotBeSameAsEitherSource, CpuTestFi
 	getCpu().regs().set(registers::R0, 0x12345678);
 	getCpu().regs().set(registers::R7, 0xF0F0F0F0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().APSRFlagsMatches("Nz");
 	ExpectThat().Register(registers::R7).Equals(0xF2F4F6F8);
 }

@@ -20,7 +20,7 @@ MICROMACHINE_TEST_F(sbcRegister, UseLowestRegisterForAllArgsAndShouldBeZeroWithC
 	code_gen().emit_ins16("0100000110mmmddd", registers::R0, registers::R0);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 	ExpectThat().Register(registers::R0).Equals(0);
 }
 
@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(sbcRegister, UseHigestRegisterForAllArgsAndShouldBeZeroWithC
 	code_gen().emit_ins16("0100000110mmmddd", registers::R7, registers::R7);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 	ExpectThat().Register(registers::R7).Equals(0);
 }
 
@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(sbcRegister, UseDifferentRegistersForEachArgAndOnlyCarryShou
 	code_gen().emit_ins16("0100000110mmmddd", registers::R1, registers::R2);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().APSRFlagsMatches("nzCv");
 	ExpectThat().Register(registers::R2).Equals(0x22222222U - 0x11111111U);
 }
 
@@ -49,7 +49,7 @@ MICROMACHINE_TEST_F(sbcRegister, ForceCarryClearToIndicateBorrowAndResultWillBeN
 	getCpu().regs().set(registers::R1, 1);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().APSRFlagsMatches("Nzcv");
 	ExpectThat().Register(registers::R0).Equals(0U - 1U);
 }
 
@@ -61,7 +61,7 @@ MICROMACHINE_TEST_F(sbcRegister, ForceNegativeOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, 1U);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 	ExpectThat().Register(registers::R2).Equals((int32_t)0x80000000U - 1U);
 }
 
@@ -71,7 +71,7 @@ MICROMACHINE_TEST_F(sbcRegister, ForcePositiveOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, -1U);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzcV");
+	ExpectThat().APSRFlagsMatches("NzcV");
 	ExpectThat().Register(registers::R2).Equals(0x7FFFFFFF + 1U);
 }
 
@@ -81,6 +81,6 @@ MICROMACHINE_TEST_F(sbcRegister, ClearCarryToCauseABorrowToOccur, CpuTestFixture
 	code_gen().emit_ins16("0100000110mmmddd", registers::R1, registers::R2);
 	getCpu().regs().app_status_register().write_carry_flag(false); // Causes borrow.
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().APSRFlagsMatches("nzCv");
 	ExpectThat().Register(registers::R2).Equals(0x22222222U - 1U - 0x11111111U);
 }
