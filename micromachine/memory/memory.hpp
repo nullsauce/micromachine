@@ -167,6 +167,7 @@ private:
 			if(address >= 0xE0000000) {
 				auto reg_it = _system_control_registers.find(address);
 				if(_system_control_registers.end() != reg_it) {
+					ok = true;
 					return reg_it->second.get();
 				}
 			}
