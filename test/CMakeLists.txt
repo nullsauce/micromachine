@@ -196,6 +196,7 @@ declare_test(instructions-new-framework/isbInstrTest.cpp)
 declare_test(instructions-new-framework/dmbInstrTest.cpp)
 declare_test(instructions-new-framework/dsbInstrTest.cpp)
 declare_test(instructions-new-framework/cpsInstrTest.cpp)
+declare_test(instructions-new-framework/wfeInstrTest.cpp)
 
 
 declare_test(binary_helpers_tests.cpp)
