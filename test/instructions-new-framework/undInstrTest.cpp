@@ -10,37 +10,33 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 */
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
-TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllZeroesForImmedaite)
-{
+MICROMACHINE_TEST_F(undefined, Undedfined16BitWithAllZeroesForImmedaite, CpuTestFixture) {
 	code_gen().emit_ins16("11011110iiiiiiii", 0);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
+	ExpectThat().HardfaultHandlerReached();
 }
 
-TEST_F(CpuTestHarness, undefined_Undedfined16BitWithAllOnesForImmedaite)
-{
+MICROMACHINE_TEST_F(undefined, Undedfined16BitWithAllOnesForImmedaite, CpuTestFixture) {
 	code_gen().emit_ins16("11011110iiiiiiii", -1);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
+	ExpectThat().HardfaultHandlerReached();
 }
 
-TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllZeroesForImmediate)
-{
+MICROMACHINE_TEST_F(undefined, Undefined32BitWithAllZeroesForImmediate, CpuTestFixture) {
 	code_gen().emit_ins32("111101111111iiii", "1010iiiiiiiiiiii", 0, 0);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
+	ExpectThat().HardfaultHandlerReached();
 }
 
-TEST_F(CpuTestHarness, undefined_Undefined32BitWithAllOnesForImmediate)
-{
+MICROMACHINE_TEST_F(undefined, Undefined32BitWithAllOnesForImmediate, CpuTestFixture) {
 	code_gen().emit_ins32("111101111111iiii", "1010iiiiiiiiiiii", -1, -1);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	Step();
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
+	ExpectThat().HardfaultHandlerReached();
 }
