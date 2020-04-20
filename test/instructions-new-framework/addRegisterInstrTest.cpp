@@ -20,7 +20,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseLowestRegisterForAllArgs, CpuTestFixture) 
 	code_gen().emit_add_t1(registers::R0, registers::R0, registers::R0);
 	Step();
 	ExpectThat()
-		.XPSRFlagsEquals("nZcv")
+		.APSRFlagsMatches("nZcv")
 		.Register(registers::R0).Equals(0U);
 }
 
@@ -32,7 +32,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) 
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("NzcV")
+		.APSRFlagsMatches("NzcV")
 		.Register(registers::R7).Equals(0x77777777U + 0x77777777U);
 }
 
@@ -45,7 +45,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseDifferentRegistersForEachArg, CpuTestFixtu
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R3).Equals(0x11111111U + 0x22222222U);
 }
 
@@ -59,7 +59,7 @@ MICROMACHINE_TEST_F(addRegister, T1ForceCarryWithNoOverflow, CpuTestFixture) {
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nZCv")
+		.APSRFlagsMatches("nZCv")
 		.Register(registers::R0).Equals(-1 + 1);
 }
 
@@ -72,7 +72,7 @@ MICROMACHINE_TEST_F(addRegister, T1ForceCarryAndOverflow, CpuTestFixture) {
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzCV")
+		.APSRFlagsMatches("nzCV")
 		.Register(registers::R0).Equals(0x7FFFFFFFU);
 }
 

@@ -23,7 +23,7 @@ MICROMACHINE_TEST_F(blx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbM
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
 	Step();
 	ExpectThat()
-		.XPSRFlagsEquals("t")
+		.ThumbBitIsNotSet()
 		.Register(registers::PC).Equals(INITIAL_PC + 16)
 		.Register(registers::LR).Equals((INITIAL_PC + 2) | 1);
 

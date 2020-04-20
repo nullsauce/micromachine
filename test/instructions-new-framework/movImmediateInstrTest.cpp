@@ -23,27 +23,27 @@ MICROMACHINE_TEST_F(movImmediate, MovToR0, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().Register(registers::R0).Equals(127);
-	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().APSRFlagsMatches("nzc");
 }
 
 MICROMACHINE_TEST_F(movImmediate, MovToR7, CpuTestFixture) {
 	code_gen().emit_ins16("00100dddiiiiiiii", registers::R7, 127);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzC");
+	ExpectThat().APSRFlagsMatches("nzC");
 	ExpectThat().Register(registers::R7).Equals(127);
 }
 
 MICROMACHINE_TEST_F(movImmediate, MovSmallestImmediateValueToR3, CpuTestFixture) {
 	code_gen().emit_ins16("00100dddiiiiiiii", registers::R3, 0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZ");
+	ExpectThat().APSRFlagsMatches("nZ");
 	ExpectThat().Register(registers::R3).Equals(0);
 }
 
 MICROMACHINE_TEST_F(movImmediate, MovLargestImmediateValueToR3, CpuTestFixture) {
 	code_gen().emit_ins16("00100dddiiiiiiii", registers::R3, 255);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().APSRFlagsMatches("nz");
 	ExpectThat().Register(registers::R3).Equals(255);
 }

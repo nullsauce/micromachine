@@ -35,7 +35,7 @@ CpuMutationPredicate& CpuMutationPredicate::InstructionExecutedWithoutBranch() {
 }
 
 
-CpuMutationPredicate& CpuMutationPredicate::XPSRFlagsEquals(const std::string& apsrFlags) {
+CpuMutationPredicate& CpuMutationPredicate::APSRFlagsMatches(const std::string& apsrFlags) {
 	for(char c : apsrFlags) {
 		switch(c) {
 			case 'n' : EXPECT_FALSE(_current.regs().app_status_register().neg_flag()); break;
@@ -46,8 +46,9 @@ CpuMutationPredicate& CpuMutationPredicate::XPSRFlagsEquals(const std::string& a
 			case 'C' : EXPECT_TRUE(_current.regs().app_status_register().carry_flag()); break;
 			case 'v' : EXPECT_FALSE(_current.regs().app_status_register().overflow_flag()); break;
 			case 'V' : EXPECT_TRUE(_current.regs().app_status_register().overflow_flag()); break;
-			case 't' : EXPECT_FALSE(_current.regs().execution_status_register().thumb_bit_set()); break;
-			case 'T' : EXPECT_TRUE(_current.regs().execution_status_register().thumb_bit_set()); break;
+			default: {
+				assert(false && "Invalid APSR flag given");
+			}
 		}
 	}
 	return *this;
