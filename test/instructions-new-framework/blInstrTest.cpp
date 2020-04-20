@@ -23,7 +23,7 @@ MICROMACHINE_TEST_F(bl, OffsetOf0, CpuTestFixture) {
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0, 1, 1, 0);
 	Step();
-	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4);
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
 	ExpectThat().Register(registers::LR).Equals((INITIAL_PC + 4) | 1);
 }
 
