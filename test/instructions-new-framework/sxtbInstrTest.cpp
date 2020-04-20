@@ -11,39 +11,35 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* SXTB (Sign ExTend Byte)
    Encoding: 1011 0010 01 Rm:3 Rd:3 */
-TEST_F(CpuTestHarness, sxtb_SignExtendLowestRegisterIntoHighestRegister_PositiveValue)
-{
+MICROMACHINE_TEST_F(sxtb, SignExtendLowestRegisterIntoHighestRegister_PositiveValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001001mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R7, 0x7F);
-	setExpectedRegisterValue(registers::R0, 0x7F);
-	step();
+	getCpu().regs().set(registers::R7, 0x7F);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0x7F);
 }
 
-TEST_F(CpuTestHarness, sxtb_SignExtendHighestRegisterIntoLowestRegister_NegativeValue)
-{
+MICROMACHINE_TEST_F(sxtb, SignExtendHighestRegisterIntoLowestRegister_NegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001001mmmddd", registers::R0, registers::R7);
-	setRegisterValue(registers::R0, 0x80);
-	setExpectedRegisterValue(registers::R7, 0xFFFFFF80);
-	step();
+	getCpu().regs().set(registers::R0, 0x80);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0xFFFFFF80);
 }
 
-TEST_F(CpuTestHarness, sxtb_OverwriteUpperBits_PositiveValue)
-{
+MICROMACHINE_TEST_F(sxtb, OverwriteUpperBits_PositiveValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001001mmmddd", registers::R6, registers::R1);
-	setRegisterValue(registers::R6, 0xBADBAD7F);
-	setExpectedRegisterValue(registers::R1, 0x7F);
-	step();
+	getCpu().regs().set(registers::R6, 0xBADBAD7F);
+	Step();
+	ExpectThat().Register(registers::R1).Equals(0x7F);
 }
 
-TEST_F(CpuTestHarness, sxtb_OverwriteUpperBits_NegativeValue)
-{
+MICROMACHINE_TEST_F(sxtb, OverwriteUpperBits_NegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001001mmmddd", registers::R2, registers::R5);
-	setRegisterValue(registers::R2, 0xBADBAD80);
-	setExpectedRegisterValue(registers::R5, 0xFFFFFF80);
-	step();
+	getCpu().regs().set(registers::R2, 0xBADBAD80);
+	Step();
+	ExpectThat().Register(registers::R5).Equals(0xFFFFFF80);
 }
