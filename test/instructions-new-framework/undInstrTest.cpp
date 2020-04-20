@@ -16,27 +16,23 @@
 MICROMACHINE_TEST_F(undefined, Undedfined16BitWithAllZeroesForImmedaite, CpuTestFixture) {
 	code_gen().emit_ins16("11011110iiiiiiii", 0);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().HardfaultHandlerReached();
 }
 
 MICROMACHINE_TEST_F(undefined, Undedfined16BitWithAllOnesForImmedaite, CpuTestFixture) {
 	code_gen().emit_ins16("11011110iiiiiiii", -1);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().HardfaultHandlerReached();
 }
 
 MICROMACHINE_TEST_F(undefined, Undefined32BitWithAllZeroesForImmediate, CpuTestFixture) {
 	code_gen().emit_ins32("111101111111iiii", "1010iiiiiiiiiiii", 0, 0);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().HardfaultHandlerReached();
 }
 
 MICROMACHINE_TEST_F(undefined, Undefined32BitWithAllOnesForImmediate, CpuTestFixture) {
 	code_gen().emit_ins32("111101111111iiii", "1010iiiiiiiiiiii", -1, -1);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().HardfaultHandlerReached();
 }
