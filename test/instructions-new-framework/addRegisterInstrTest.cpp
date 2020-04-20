@@ -196,7 +196,7 @@ MICROMACHINE_TEST_F(addRegister, T2Add1ToLR, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(addRegister, T2Add1ToPCWhichWillBeOddAndRoundedDown, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 
 	code_gen().emit_add_t2(registers::PC, registers::R1);
 	getCpu().regs().set(registers::PC, INITIAL_PC);
@@ -211,7 +211,7 @@ MICROMACHINE_TEST_F(addRegister, T2Add1ToPCWhichWillBeOddAndRoundedDown, CpuTest
 }
 
 MICROMACHINE_TEST_F(addRegister, T2Add2ToPC, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 
 	code_gen().emit_add_t2(registers::PC, registers::R1);
 	getCpu().regs().set(registers::PC, INITIAL_PC);

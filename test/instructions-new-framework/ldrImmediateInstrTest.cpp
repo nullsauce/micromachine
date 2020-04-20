@@ -17,7 +17,7 @@
 /* LDR - Immediate Encoding T1
    Encoding: 011 0 1 Imm:5 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(ldrImmediate, T1UseAMixOfRegistersWithSmallestOffset, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 0, registers::R7, registers::R0);
 	getCpu().regs().set(registers::R7, INITIAL_PC + 4);
@@ -27,7 +27,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1UseAMixOfRegistersWithSmallestOffset, CpuTes
 }
 
 MICROMACHINE_TEST_F(ldrImmediate, T1UseAnotherMixOfRegistersWithLargestOffset, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 31, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
@@ -37,7 +37,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1UseAnotherMixOfRegistersWithLargestOffset, C
 }
 
 MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 0, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC + 2);
@@ -46,7 +46,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(ldrImmediate, T1AttemptLoadFromInvalidAddress, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01101iiiiinnnttt", 16, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC - 16 * 4);
@@ -57,7 +57,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1AttemptLoadFromInvalidAddress, CpuTestFixtur
 /* LDR - Immediate Encoding T2 (SP is base register)
    Encoding: 1001 1 Rt:3 Imm:8 */
 MICROMACHINE_TEST_F(ldrImmediate, T2UseHighestRegisterWithSmallestOffset, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R7, 0);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
@@ -67,7 +67,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T2UseHighestRegisterWithSmallestOffset, CpuTes
 }
 
 MICROMACHINE_TEST_F(ldrImmediate, T2UseLowestRegisterWithLargestOffset, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R0, 255);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
