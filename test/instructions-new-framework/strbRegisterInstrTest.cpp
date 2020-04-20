@@ -31,6 +31,7 @@ MICROMACHINE_TEST_F(strbRegister, UseAnotherMixOfRegistersSecondByteInWord, CpuT
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R1, registers::R0, registers::R7);
+	getCpu().regs().set(registers::R7, 0x77777777U);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
 	getCpu().regs().set(registers::R1, 5);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -42,6 +43,7 @@ MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersThirdByteInWord, CpuTe
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R0, registers::R7, registers::R4);
+	getCpu().regs().set(registers::R4, 0x44444444U);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 6);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -53,6 +55,7 @@ MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersFourthByteInWord, CpuT
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R0, registers::R7, registers::R5);
+	getCpu().regs().set(registers::R5, 0x55555555U);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 7);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);

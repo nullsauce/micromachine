@@ -24,7 +24,7 @@ MICROMACHINE_TEST_F(rsbImmediate, UseLowestRegisterOnly, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(rsbImmediate, UseHigestRegisterOnly, CpuTestFixture) {
-
+	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("0100001001nnnddd", registers::R7, registers::R7);
 	Step();
 	ExpectThat().XPSRFlagsEquals("Nzcv");
@@ -40,6 +40,7 @@ MICROMACHINE_TEST_F(rsbImmediate, UseDifferentRegistersForEachArg, CpuTestFixtur
 }
 
 MICROMACHINE_TEST_F(rsbImmediate, ForceOverflowByNegatingLargestNegativeValue, CpuTestFixture) {
+	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("0100001001nnnddd", registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, 0x80000000);
 	Step();
