@@ -44,4 +44,4 @@ INTERRUPT_UNHANDLED
 void _isr_systick(void);
 
 INTERRUPT_UNHANDLED
-void _isr_external_interrupt(void);
+void _isr_usart(void);
