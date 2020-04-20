@@ -198,6 +198,7 @@ declare_test(instructions-new-framework/dsbInstrTest.cpp)
 declare_test(instructions-new-framework/cpsInstrTest.cpp)
 declare_test(instructions-new-framework/wfeInstrTest.cpp)
 declare_test(instructions-new-framework/wfiInstrTest.cpp)
+declare_test(instructions-new-framework/yieldInstrTest.cpp)
 
 
 declare_test(binary_helpers_tests.cpp)
