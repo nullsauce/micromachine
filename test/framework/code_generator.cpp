@@ -18,6 +18,10 @@ void code_generator::set_write_address(uint32_t address) {
 	_write_address = address;
 }
 
+uint32_t code_generator::write_address() const {
+	return _write_address;
+}
+
 void code_generator::emit_ins16(const char* encoding, ...) {
 	va_list valist;
 	va_start(valist, encoding);

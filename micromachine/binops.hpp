@@ -159,11 +159,18 @@ static bool any_bits_set(const u_type& source, size_t bit_offset, size_t num_bit
 	return 0 != read_uint<u_type>(source, bit_offset, num_bits);
 }
 
-template <typename u_type>
-static u_type aligned(const u_type& source, size_t align) {
-	return (source / align) * align;
+template<typename u_type>
+constexpr bool is_powerof2(u_type source) {
+	auto lower_bits_mask = source - 1U;
+	auto only_lower_bits = source & lower_bits_mask;
+	return source && (only_lower_bits == 0U);
 }
 
+template <size_t align, typename u_type>
+static u_type aligned(const u_type& source) {
+	static_assert(is_powerof2(align), "Can't align on non power of two values");
+	return (source / align) * align;
+}
 
 static constexpr uint64_t swap64(const uint64_t val) {
 	return
