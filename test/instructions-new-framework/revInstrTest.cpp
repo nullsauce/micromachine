@@ -11,23 +11,21 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* REV
    Encoding: 1011 1010 00 Rm:3 Rd:3 */
-TEST_F(CpuTestHarness, rev_RevR0toR7)
-{
+MICROMACHINE_TEST_F(rev, RevR0toR7, CpuTestFixture) {
 	code_gen().emit_ins16("1011101000mmmddd", registers::R0, registers::R7);
-	setRegisterValue(registers::R0, 0x12345678);
-	setExpectedRegisterValue(registers::R7, 0x78563412);
-	step();
+	getCpu().regs().set(registers::R0, 0x12345678);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0x78563412);
 }
 
-TEST_F(CpuTestHarness, rev_RevR7toR0)
-{
+MICROMACHINE_TEST_F(rev, RevR7toR0, CpuTestFixture) {
 	code_gen().emit_ins16("1011101000mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R7, 0x12345678);
-	setExpectedRegisterValue(registers::R0, 0x78563412);
-	step();
+	getCpu().regs().set(registers::R7, 0x12345678);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0x78563412);
 }
