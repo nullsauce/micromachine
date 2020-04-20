@@ -11,40 +11,38 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* RSB - Immediate
    Encoding: 010000 1001 Rn:3 Rd:3 */
-TEST_F(CpuTestHarness, rsbImmediate_UseLowestRegisterOnly)
-{
+MICROMACHINE_TEST_F(rsbImmediate, UseLowestRegisterOnly, CpuTestFixture) {
 	code_gen().emit_ins16("0100001001nnnddd", registers::R0, registers::R0);
-	setExpectedXPSRflags("nZCv");
-	setExpectedRegisterValue(registers::R0, 0U);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().Register(registers::R0).Equals(0U);
 }
 
-TEST_F(CpuTestHarness, rsbImmediate_UseHigestRegisterOnly)
-{
+MICROMACHINE_TEST_F(rsbImmediate, UseHigestRegisterOnly, CpuTestFixture) {
+
 	code_gen().emit_ins16("0100001001nnnddd", registers::R7, registers::R7);
-	setExpectedXPSRflags("Nzcv");
-	setExpectedRegisterValue(registers::R7, -0x77777777U);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().Register(registers::R7).Equals(-0x77777777U);
 }
 
-TEST_F(CpuTestHarness, rsbImmediate_UseDifferentRegistersForEachArg)
-{
+MICROMACHINE_TEST_F(rsbImmediate, UseDifferentRegistersForEachArg, CpuTestFixture) {
+	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0100001001nnnddd", registers::R2, registers::R0);
-	setExpectedXPSRflags("Nzcv");
-	setExpectedRegisterValue(registers::R0, -0x22222222);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().Register(registers::R0).Equals(-0x22222222);
 }
 
-TEST_F(CpuTestHarness, rsbImmediate_ForceOverflowByNegatingLargestNegativeValue)
-{
+MICROMACHINE_TEST_F(rsbImmediate, ForceOverflowByNegatingLargestNegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("0100001001nnnddd", registers::R0, registers::R7);
-	setExpectedXPSRflags("NzcV");
-	setRegisterValue(registers::R0, 0x80000000);
-	setExpectedRegisterValue(registers::R7, 0x80000000U);
-	step();
+	getCpu().regs().set(registers::R0, 0x80000000);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzcV");
+	ExpectThat().Register(registers::R7).Equals(0x80000000U);
 }
