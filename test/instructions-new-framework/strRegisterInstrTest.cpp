@@ -11,55 +11,50 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* STR - Register
    Encoding: 0101 000 Rm:3 Rn:3 Rt:3 */
-TEST_F(CpuTestHarness, strRegister_UseAMixOfRegisters)
-{
+MICROMACHINE_TEST_F(strRegister, UseAMixOfRegisters, CpuTestFixture) {
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, INITIAL_PC);
-	setRegisterValue(registers::R7, 4);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	step();
-	EXPECT_EQ(0x00000000, memory_read_32(INITIAL_PC + 4));
+	getCpu().regs().set(registers::R3, INITIAL_PC);
+	getCpu().regs().set(registers::R7, 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	EXPECT_EQ(0x00000000, getCpu().mem().read32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHarness, strRegister_UseAnotherMixOfRegisters)
-{
+MICROMACHINE_TEST_F(strRegister, UseAnotherMixOfRegisters, CpuTestFixture) {
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R1, registers::R0, registers::R7);
-	setRegisterValue(registers::R0, INITIAL_PC);
-	setRegisterValue(registers::R1, 4);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	step();
-	EXPECT_EQ(0x77777777, memory_read_32(INITIAL_PC + 4));
+	getCpu().regs().set(registers::R0, INITIAL_PC);
+	getCpu().regs().set(registers::R1, 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	EXPECT_EQ(0x77777777, getCpu().mem().read32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHarness, strRegister_YetAnotherMixOfRegisters)
-{
+MICROMACHINE_TEST_F(strRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R0, registers::R7, registers::R4);
-	setRegisterValue(registers::R7, INITIAL_PC);
-	setRegisterValue(registers::R0, 4);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	step();
-	EXPECT_EQ(0x44444444, memory_read_32(INITIAL_PC + 4));
+	getCpu().regs().set(registers::R7, INITIAL_PC);
+	getCpu().regs().set(registers::R0, 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	EXPECT_EQ(0x44444444, getCpu().mem().read32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHarness, strRegister_AttemptUnalignedStore)
-{
+MICROMACHINE_TEST_F(strRegister, AttemptUnalignedStore, CpuTestFixture) {
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, INITIAL_PC);
-	setRegisterValue(registers::R7, 2);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R3, INITIAL_PC);
+	getCpu().regs().set(registers::R7, 2);
+	ExpectThat().HardfaultHandlerReached();
+	Step();
 }
 
-TEST_F(CpuTestHarness, strRegister_AttemptStoreToInvalidAddress)
-{
+MICROMACHINE_TEST_F(strRegister, AttemptStoreToInvalidAddress, CpuTestFixture) {
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, 0xFFFFFFFC);
-	setRegisterValue(registers::R7, 0);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
+	getCpu().regs().set(registers::R7, 0);
+	ExpectThat().HardfaultHandlerReached();
+	Step();
 }
