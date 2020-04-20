@@ -11,56 +11,61 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* STRB - Register
    Encoding: 0101 010 Rm:3 Rn:3 Rt:3 */
-TEST_F(CpuTestHarness, strbRegister_UseAMixOfRegistersWordAligned)
-{
+MICROMACHINE_TEST_F(strbRegister, UseAMixOfRegistersWordAligned, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, INITIAL_PC);
-	setRegisterValue(registers::R7, 4);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	step();
-	EXPECT_EQ(0xBAADFE00, memory_read_32(INITIAL_PC + 4));
+	getCpu().regs().set(registers::R3, INITIAL_PC);
+	getCpu().regs().set(registers::R7, 4);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	EXPECT_EQ(0xBAADFE00, getCpu().mem().read32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHarness, strbRegister_UseAnotherMixOfRegistersSecondByteInWord)
-{
+MICROMACHINE_TEST_F(strbRegister, UseAnotherMixOfRegistersSecondByteInWord, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R1, registers::R0, registers::R7);
-	setRegisterValue(registers::R0, INITIAL_PC);
-	setRegisterValue(registers::R1, 5);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	step();
-	EXPECT_EQ(0xBAAD77ED, memory_read_32(INITIAL_PC + 4));
+	getCpu().regs().set(registers::R0, INITIAL_PC);
+	getCpu().regs().set(registers::R1, 5);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	EXPECT_EQ(0xBAAD77ED, getCpu().mem().read32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHarness, strbRegister_YetAnotherMixOfRegistersThirdByteInWord)
-{
+MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersThirdByteInWord, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R0, registers::R7, registers::R4);
-	setRegisterValue(registers::R7, INITIAL_PC);
-	setRegisterValue(registers::R0, 6);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	step();
-	EXPECT_EQ(0xBA44FEED, memory_read_32(INITIAL_PC + 4));
+	getCpu().regs().set(registers::R7, INITIAL_PC);
+	getCpu().regs().set(registers::R0, 6);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	EXPECT_EQ(0xBA44FEED, getCpu().mem().read32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHarness, strbRegister_YetAnotherMixOfRegistersFourthByteInWord)
-{
+MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersFourthByteInWord, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R0, registers::R7, registers::R5);
-	setRegisterValue(registers::R7, INITIAL_PC);
-	setRegisterValue(registers::R0, 7);
-	memory_write_32(INITIAL_PC + 4, 0xBAADFEED);
-	step();
-	EXPECT_EQ(0x55ADFEED, memory_read_32(INITIAL_PC + 4));
+	getCpu().regs().set(registers::R7, INITIAL_PC);
+	getCpu().regs().set(registers::R0, 7);
+	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
+	Step();
+	EXPECT_EQ(0x55ADFEED, getCpu().mem().read32(INITIAL_PC + 4));
 }
 
-TEST_F(CpuTestHarness, strbRegister_AttemptStoreToInvalidAddress)
-{
+MICROMACHINE_TEST_F(strbRegister, AttemptStoreToInvalidAddress, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	setRegisterValue(registers::R3, 0xFFFFFFFC);
-	setRegisterValue(registers::R7, 0);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
+	getCpu().regs().set(registers::R7, 0);
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
