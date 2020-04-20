@@ -17,7 +17,7 @@
 /* ADR (ADDress of label)
    Encoding: 1010 0 Rd:3 Imm:8 */
 MICROMACHINE_TEST_F(adr, LowestRegisterWithLargestOffset, CpuTestFixture) {
-	static uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 
 	code_gen().emit_ins16("10100dddiiiiiiii", registers::R0, 255);
@@ -26,7 +26,7 @@ MICROMACHINE_TEST_F(adr, LowestRegisterWithLargestOffset, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(adr, HighesttRegisterWithSmallestOffset, CpuTestFixture) {
-	static uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 
 	code_gen().emit_ins16("10100dddiiiiiiii", registers::R7, 0);
@@ -35,7 +35,7 @@ MICROMACHINE_TEST_F(adr, HighesttRegisterWithSmallestOffset, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(adr, pcWillNeedToBeWordAlignedBeforeAdd, CpuTestFixture) {
-	static uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	getCpu().regs().set(registers::PC, INITIAL_PC + 2);
 
