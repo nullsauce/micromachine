@@ -11,21 +11,19 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* SVC
    Encoding: 1101 1111 Imm:8 */
-TEST_F(CpuTestHarness, svc_SmallestImmediate)
-{
+MICROMACHINE_TEST_F(svc, SmallestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("11011111iiiiiiii", 0);
-	setExpectedExceptionTaken(CPU_STEP_SVC);
-	step();
+	Step();
+	ExpectThat().ExceptionIsActive(exception::SVCALL);
 }
 
-TEST_F(CpuTestHarness, svc_LargestImmediate)
-{
+MICROMACHINE_TEST_F(svc, LargestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("11011111iiiiiiii", 255);
-	setExpectedExceptionTaken(CPU_STEP_SVC);
-	step();
+	Step();
+	ExpectThat().ExceptionIsActive(exception::SVCALL);
 }
