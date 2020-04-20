@@ -11,16 +11,16 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* YIELD
    Encoding: 1011 1111 0001 0000 */
 
-TEST_SIM_ONLY(yield, BasicTest
-)
-{
-code_gen().emit_ins16("1011111100010000");
-setExpectedStepReturn(PINKYSIM_STEP_UNSUPPORTED);
-pinkySimStep(&m_context);
+MICROMACHINE_TEST_F(yield, BasicTest, CpuTestFixture) {
+	code_gen().emit_ins16("1011111100010000");
+	Step();
+	ExpectThat()
+		.InstructionExecutedWithoutBranch()
+		.NoInterruptIsPending();
 }
