@@ -28,3 +28,8 @@ RegisterMutationPredicate& RegisterMutationPredicate::Changed() {
 	EXPECT_NE(previousRegisterValue(), currentRegisterValue());
 	return *this;
 }
+
+RegisterMutationPredicate& RegisterMutationPredicate::WasIncrementedBy(uint32_t amount) {
+	uint32_t expectedValue = previousRegisterValue() + amount;
+	return Equals(expectedValue);
+}
