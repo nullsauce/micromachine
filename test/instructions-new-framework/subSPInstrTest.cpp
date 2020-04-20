@@ -11,28 +11,31 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* SUB registers::SP Minus Immediate
    Encoding: 1011 0000 1 Imm:7 */
-TEST_F(CpuTestHarness, subSP_SmallestImmediate)
-{
+MICROMACHINE_TEST_F(subSP, SmallestImmediate, CpuTestFixture) {
+	constexpr uint32_t INITIAL_SP = 0x00002000;
+	getCpu().regs().set_sp(INITIAL_SP);
 	code_gen().emit_ins16("101100001iiiiiii", 0);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP - 0);
-	step();
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP - 0);
 }
 
-TEST_F(CpuTestHarness, subSP_LargestImmediate)
-{
+MICROMACHINE_TEST_F(subSP, LargestImmediate, CpuTestFixture) {
+	constexpr uint32_t INITIAL_SP = 0x00002000;
+	getCpu().regs().set_sp(INITIAL_SP);
 	code_gen().emit_ins16("101100001iiiiiii", 127);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP - 127 * 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP - 127 * 4);
 }
 
-TEST_F(CpuTestHarness, subSP_UseIntermediateValues)
-{
+MICROMACHINE_TEST_F(subSP, UseIntermediateValues, CpuTestFixture) {
+	constexpr uint32_t INITIAL_SP = 0x00002000;
+	getCpu().regs().set_sp(INITIAL_SP);
 	code_gen().emit_ins16("101100001iiiiiii", 64);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP - 64 * 4);
-	step();
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP - 64 * 4);
 }
