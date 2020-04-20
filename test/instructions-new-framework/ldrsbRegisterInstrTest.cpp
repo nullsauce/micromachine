@@ -17,7 +17,7 @@
 /* LDRSB - Register
    Encoding: 0101 011 Rm:3 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(ldrsbRegister, UseAMixOfRegistersWordAligned_NegativeValue, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101011mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
@@ -28,7 +28,7 @@ MICROMACHINE_TEST_F(ldrsbRegister, UseAMixOfRegistersWordAligned_NegativeValue, 
 }
 
 MICROMACHINE_TEST_F(ldrsbRegister, UseAnotherMixOfRegistersSecondByteInWord_NegativeValue, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101011mmmnnnttt", registers::R1, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(ldrsbRegister, UseAnotherMixOfRegistersSecondByteInWord_Nega
 }
 
 MICROMACHINE_TEST_F(ldrsbRegister, YetAnotherMixOfRegistersThirdByteInWord_NegativeValue, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101011mmmnnnttt", registers::R0, registers::R7, registers::R4);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
@@ -50,7 +50,7 @@ MICROMACHINE_TEST_F(ldrsbRegister, YetAnotherMixOfRegistersThirdByteInWord_Negat
 }
 
 MICROMACHINE_TEST_F(ldrsbRegister, YetAnotherMixOfRegistersFourthByteInWord_NegativeValue, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101011mmmnnnttt", registers::R0, registers::R7, registers::R5);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
@@ -61,7 +61,7 @@ MICROMACHINE_TEST_F(ldrsbRegister, YetAnotherMixOfRegistersFourthByteInWord_Nega
 }
 
 MICROMACHINE_TEST_F(ldrsbRegister, LoadAPositiveValue, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101011mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
@@ -72,7 +72,7 @@ MICROMACHINE_TEST_F(ldrsbRegister, LoadAPositiveValue, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(ldrsbRegister, AttemptLoadInvalidAddress, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101011mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);

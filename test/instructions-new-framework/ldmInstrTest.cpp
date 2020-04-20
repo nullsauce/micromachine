@@ -17,7 +17,7 @@
 /* LDM
    Encoding: 1100 1 Rn:3 RegisterList:8 */
 MICROMACHINE_TEST_F(ldm, JustPopR0WithR7AsAddress_WritebackNewAddressToR7, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R7, (1 << 0));
 	getCpu().regs().set(registers::R7, INITIAL_PC + 16);
 	getCpu().mem().write32(INITIAL_PC + 16, 0xFFFFFFFF);
@@ -27,7 +27,7 @@ MICROMACHINE_TEST_F(ldm, JustPopR0WithR7AsAddress_WritebackNewAddressToR7, CpuTe
 }
 
 MICROMACHINE_TEST_F(ldm, JustPopR7WithR0AsAddress_WritebackNewAddressToR0, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R0, (1 << 7));
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
 	getCpu().mem().write32(INITIAL_PC + 16, 0xFFFFFFFF);
@@ -38,7 +38,7 @@ MICROMACHINE_TEST_F(ldm, JustPopR7WithR0AsAddress_WritebackNewAddressToR0, CpuTe
 
 MICROMACHINE_TEST_F(ldm, PopAllNoWriteback, CpuTestFixture) {
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R0, 0xFF);
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
 	for (int i = 0; i < 8; i++) {
 		getCpu().mem().write32(INITIAL_PC + 16 + 4 * i, i);
@@ -55,7 +55,7 @@ MICROMACHINE_TEST_F(ldm, PopAllNoWriteback, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(ldm, PopAllButAddressRegister_WritebackNewAddress, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R7, 0x7F);
 	getCpu().regs().set(registers::R7, INITIAL_PC + 16);
 	for (int i = 0; i < 7; i++) {
@@ -73,7 +73,7 @@ MICROMACHINE_TEST_F(ldm, PopAllButAddressRegister_WritebackNewAddress, CpuTestFi
 }
 
 MICROMACHINE_TEST_F(ldm, HardFaultFromInvalidMemoryRead, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("11001nnnrrrrrrrr", 0, (1 << 0));
 	getCpu().regs().set(registers::R0, 0xFFFFFFFC);
 	Step();

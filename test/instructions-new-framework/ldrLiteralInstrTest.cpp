@@ -17,7 +17,7 @@
 /* LDR - Literal
    Encoding: 01001 Rt:3 Imm:8 */
 MICROMACHINE_TEST_F(ldrLiteral, LoadOffset0IntoHighestRegister, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01001tttiiiiiiii", registers::R7, 0);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -26,7 +26,7 @@ MICROMACHINE_TEST_F(ldrLiteral, LoadOffset0IntoHighestRegister, CpuTestFixture) 
 }
 
 MICROMACHINE_TEST_F(ldrLiteral, LoadOffset0IntoHighestRegisterNot4ByteAligned, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	// Emit UNDEFINED 16-bit instruction.
 	code_gen().emit_ins16("1101111000000000");
@@ -40,7 +40,7 @@ MICROMACHINE_TEST_F(ldrLiteral, LoadOffset0IntoHighestRegisterNot4ByteAligned, C
 }
 
 MICROMACHINE_TEST_F(ldrLiteral, LoadMaximumOffsetIntoLowestRegister, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("01001tttiiiiiiii", registers::R0, 255);
 	getCpu().mem().write32(INITIAL_PC + 4 + 255 * 4, 0xBAADFEED);

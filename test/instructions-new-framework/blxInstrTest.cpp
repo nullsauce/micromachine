@@ -17,7 +17,7 @@
 /* BLX (Branch with Link and Exchange)
    Encoding: 010001 11 1 Rm:4 (0)(0)(0) */
 MICROMACHINE_TEST_F(blx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeAndHardFaultOnNextInstr, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("010001111mmmm000", registers::R0);
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
@@ -33,7 +33,7 @@ MICROMACHINE_TEST_F(blx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbM
 
 
 MICROMACHINE_TEST_F(blx, UseRegisterToBranchToOddAddressAsRequiredForThumb, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("010001111mmmm000", registers::R2);
 	getCpu().regs().set(registers::R2, (INITIAL_PC + 16) | 1);
@@ -43,7 +43,7 @@ MICROMACHINE_TEST_F(blx, UseRegisterToBranchToOddAddressAsRequiredForThumb, CpuT
 }
 
 MICROMACHINE_TEST_F(blx, UseHighestRegisterToBranchToOddAddressAsRequiredForThumb, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("010001111mmmm000", registers::LR);
 	getCpu().regs().set(registers::LR, (INITIAL_PC + 16) | 1);
