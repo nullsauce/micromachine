@@ -18,7 +18,7 @@
    Encoding: 010001 11 0 Rm:4 (0)(0)(0) */
 MICROMACHINE_TEST_F(bx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeAndHardFaultOnNextInstr,
 					CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("010001110mmmm000", registers::R0);
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
@@ -31,7 +31,7 @@ MICROMACHINE_TEST_F(bx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbMo
 }
 
 MICROMACHINE_TEST_F(bx, UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb, CpuTestFixture) {
-	constexpr uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 
 	code_gen().emit_ins16("010001110mmmm000", registers::LR);
