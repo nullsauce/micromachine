@@ -45,7 +45,7 @@ protected:
 
 /*
  * On write 0: no effect
- * On write 1: enable to associated bit
+ * On write 1: enable the associated bit
  */
 class nvic_enable_on_write_reg : public nvic_status_reg {
 public:
@@ -208,6 +208,43 @@ public:
 		return _icpr_reg;
 	}
 
+	// The nth bit matching the nth exti of a status register (enable statuses, ot pending statuses)
+	template <size_t exti_number>
+	using status_bit = bits<exti_number, 1>;
+
+	// The nth bit matching the nth exti of a 32bit status register
+	template<size_t exti_number>
+	using status_bit_ref = typename status_bit<exti_number>::template integer_slice<uint32_t>;
+
+	// The (const) nth bit matching the nth exti of a 32bit status register
+	template<size_t exti_number>
+	using status_bit_const_ref = typename status_bit<exti_number>::template const_integer_slice<uint32_t>;
+
+
+	/// gets a mutable reference to the interrupt enable bit for a given external interrupt
+	template<size_t exti_number>
+	status_bit_ref<exti_number> enable_bit_for() {
+		return status_bit_ref<exti_number>(_interrupt_enable_statuses);
+	}
+
+	/// gets an immutable reference to the interrupt enable bit for a given external interrupt
+	template<size_t exti_number>
+	status_bit_const_ref<exti_number> enable_bit_for() const {
+		return status_bit_const_ref<exti_number>(_interrupt_enable_statuses);
+	}
+
+	/// gets a mutable reference to the interrupt pending bit for a given external interrupt
+	template<size_t exti_number>
+	status_bit_ref<exti_number> pending_bit_for() {
+		return status_bit_ref<exti_number>(_interrupt_pending_statuses);
+	}
+
+	/// gets an immutable reference to the interrupt pending bit for a given external interrupt
+	template<size_t exti_number>
+	status_bit_const_ref<exti_number> pending_bit_for() const {
+		return status_bit_const_ref<exti_number>(_interrupt_pending_statuses);
+	}
+
 	/// Gets a mutable reference to the two priority bits for a given external interrupt
 	/// \tparam exti_number External interrupter number [0 - 15]
 	/// \return a mutable reference to the two priority bits of this external interrupt
@@ -239,6 +276,8 @@ public:
 	const nvic_ipr_reg& priority_reg() const {
 		return _priority_regs[index];
 	}
+
+
 
 
 private:
