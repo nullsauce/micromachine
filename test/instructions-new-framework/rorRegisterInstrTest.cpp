@@ -11,107 +11,97 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* ROR - Register (ROtate Right)
    Encoding: 010000 0111 Rm:3 Rdn:3 */
-TEST_F(CpuTestHarness, rorRegister_Rotate1by1_CarryOutFromLowestBit)
-{
+MICROMACHINE_TEST_F(rorRegister, Rotate1by1_CarryOutFromLowestBit, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R0, registers::R7);
-	setExpectedXPSRflags("NzC");
-	setRegisterValue(registers::R0, 1);
-	setRegisterValue(registers::R7, 1);
-	setExpectedRegisterValue(registers::R7, 0x80000000);
-	step();
+	getCpu().regs().set(registers::R0, 1);
+	getCpu().regs().set(registers::R7, 1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R7).Equals(0x80000000);
 }
 
-TEST_F(CpuTestHarness, rorRegister_Rotate1by0_MinimumShift_CarryUnmodified)
-{
+MICROMACHINE_TEST_F(rorRegister, Rotate1by0_MinimumShift_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R7, registers::R0);
-	setExpectedXPSRflags("nz");
-	setRegisterValue(registers::R0, 1);
-	setRegisterValue(registers::R7, 0);
-	setExpectedRegisterValue(registers::R0, 1);
-	step();
+	getCpu().regs().set(registers::R0, 1);
+	getCpu().regs().set(registers::R7, 0);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().Register(registers::R0).Equals(1);
 }
 
-TEST_F(CpuTestHarness, rorRegister_Rotate2by1_NoCarry)
-{
+MICROMACHINE_TEST_F(rorRegister, Rotate2by1_NoCarry, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R3, registers::R2);
-	setExpectedXPSRflags("nzc");
-	setRegisterValue(registers::R2, 2);
-	setRegisterValue(registers::R3, 1);
-	setExpectedRegisterValue(registers::R2, 2 >> 1);
-	step();
+	getCpu().regs().set(registers::R2, 2);
+	getCpu().regs().set(registers::R3, 1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().Register(registers::R2).Equals(2 >> 1);
 }
 
-TEST_F(CpuTestHarness, rorRegister_Rotate16Bits)
-{
+MICROMACHINE_TEST_F(rorRegister, Rotate16Bits, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R3, registers::R2);
-	setExpectedXPSRflags("nzc");
-	setRegisterValue(registers::R2, 0x12345678);
-	setRegisterValue(registers::R3, 16);
-	setExpectedRegisterValue(registers::R2, 0x56781234);
-	step();
+	getCpu().regs().set(registers::R2, 0x12345678);
+	getCpu().regs().set(registers::R3, 16);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().Register(registers::R2).Equals(0x56781234);
 }
 
-TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf31)
-{
+MICROMACHINE_TEST_F(rorRegister, RotateWithShiftOf31, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R3, registers::R2);
-	setExpectedXPSRflags("nzc");
-	setRegisterValue(registers::R2, 0x80000000);
-	setRegisterValue(registers::R3, 31);
-	setExpectedRegisterValue(registers::R2, 0x00000001);
-	step();
+	getCpu().regs().set(registers::R2, 0x80000000);
+	getCpu().regs().set(registers::R3, 31);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().Register(registers::R2).Equals(0x00000001);
 }
 
-TEST_F(CpuTestHarness, rorRegister_RotateBy32_CarryOutHighestBit)
-{
+MICROMACHINE_TEST_F(rorRegister, RotateBy32_CarryOutHighestBit, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R7, registers::R0);
-	setExpectedXPSRflags("NzC");
-	setRegisterValue(registers::R0, 0x80000000);
-	setRegisterValue(registers::R7, 32);
-	setExpectedRegisterValue(registers::R0, 0x80000000);
-	step();
+	getCpu().regs().set(registers::R0, 0x80000000);
+	getCpu().regs().set(registers::R7, 32);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R0).Equals(0x80000000);
 }
 
-TEST_F(CpuTestHarness, rorRegister_RotateBy33)
-{
+MICROMACHINE_TEST_F(rorRegister, RotateBy33, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R3, registers::R2);
-	setExpectedXPSRflags("NzC");
-	setRegisterValue(registers::R2, 0x80000001);
-	setRegisterValue(registers::R3, 33);
-	setExpectedRegisterValue(registers::R2, 0xC0000000);
-	step();
+	getCpu().regs().set(registers::R2, 0x80000001);
+	getCpu().regs().set(registers::R3, 33);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R2).Equals(0xC0000000);
 }
 
-TEST_F(CpuTestHarness, rorRegister_RotateWithMaximumShiftOf255)
-{
+MICROMACHINE_TEST_F(rorRegister, RotateWithMaximumShiftOf255, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R3, registers::R2);
-	setExpectedXPSRflags("nzc");
-	setRegisterValue(registers::R2, 0x80000000);
-	setRegisterValue(registers::R3, 255);
-	setExpectedRegisterValue(registers::R2, 0x00000001);
-	step();
+	getCpu().regs().set(registers::R2, 0x80000000);
+	getCpu().regs().set(registers::R3, 255);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().Register(registers::R2).Equals(0x00000001);
 }
 
-TEST_F(CpuTestHarness, rorRegister_RotateWithShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified)
-{
+MICROMACHINE_TEST_F(rorRegister, RotateWithShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R7, registers::R0);
-	setExpectedXPSRflags("Nz");
-	setRegisterValue(registers::R0, 0x80000000);
-	setRegisterValue(registers::R7, 256);
-	setExpectedRegisterValue(registers::R0, 0x80000000);
-	step();
+	getCpu().regs().set(registers::R0, 0x80000000);
+	getCpu().regs().set(registers::R7, 256);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().Register(registers::R0).Equals(0x80000000);
 }
 
-TEST_F(CpuTestHarness, rorRegister_Rotate0by16)
-{
+MICROMACHINE_TEST_F(rorRegister, Rotate0by16, CpuTestFixture) {
 	code_gen().emit_ins16("0100000111mmmddd", registers::R7, registers::R0);
-	setExpectedXPSRflags("nZc");
-	setRegisterValue(registers::R0, 0);
-	setRegisterValue(registers::R7, 16);
-	setExpectedRegisterValue(registers::R0, 0);
-	step();
+	getCpu().regs().set(registers::R0, 0);
+	getCpu().regs().set(registers::R7, 16);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().Register(registers::R0).Equals(0);
 }
