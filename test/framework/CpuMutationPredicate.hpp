@@ -38,6 +38,7 @@ public:
 	CpuMutationPredicate& PrimaskStatusIs(bool value);
 	CpuMutationPredicate& IPSRExceptionNumberIs(exception::Type ex);
 	CpuMutationPredicate& ThumbBitIsSet();
+	CpuMutationPredicate& ThumbBitIsNotSet();
 	RegisterMutationPredicate Register(reg_idx regIdx);
 };
 
