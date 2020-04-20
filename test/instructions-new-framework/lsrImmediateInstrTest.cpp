@@ -21,6 +21,7 @@
 /* LSR - Immediate (Logical Shift Right)
    Encoding: 000 01 imm:5 Rm:3 Rd:3 */
 MICROMACHINE_TEST_F(lsr, ImmediateR2by1toR0, CpuTestFixture) {
+	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, registers::R2, registers::R0);
 	Step();
 	ExpectThat().XPSRFlagsEquals("nzc");
@@ -35,6 +36,8 @@ MICROMACHINE_TEST_F(lsr, ImmediateR7by32toR0_ZeroResult, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(lsr, ImmediateR1by1toR7_CarryOut, CpuTestFixture) {
+	getCpu().regs().set(registers::R7, 0x77777777U);
+	getCpu().regs().set(registers::R1, 0x11111111U);
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, registers::R1, registers::R7);
 	Step();
 	ExpectThat().XPSRFlagsEquals("nzC");

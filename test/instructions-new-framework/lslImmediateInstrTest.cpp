@@ -25,6 +25,7 @@
    Encoding: 000 00 imm:5 Rm:3 Rd:3 */
 MICROMACHINE_TEST_F(lslImmediate, MovR7toR0_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("00000iiiiimmmddd", IMM_0, registers::R7, registers::R0);
+	getCpu().regs().set(registers::R7, 0x77777777U);
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().XPSRFlagsEquals("nzc");
@@ -40,6 +41,7 @@ MICROMACHINE_TEST_F(lslImmediate, MovR0toR7_ZeroResultAndCarryUnmodified, CpuTes
 }
 
 MICROMACHINE_TEST_F(lslImmediate, ShiftR1by3_ResultInNegativeValue, CpuTestFixture) {
+	getCpu().regs().set(registers::R1, 0x11111111U);
 	code_gen().emit_ins16("00000iiiiimmmddd", IMM_3, registers::R1, registers::R0);
 	Step();
 	ExpectThat().XPSRFlagsEquals("Nzc");
@@ -47,6 +49,7 @@ MICROMACHINE_TEST_F(lslImmediate, ShiftR1by3_ResultInNegativeValue, CpuTestFixtu
 }
 
 MICROMACHINE_TEST_F(lslImmediate, ShiftR1by4_HasCarryOut, CpuTestFixture) {
+	getCpu().regs().set(registers::R1, 0x11111111U);
 	code_gen().emit_ins16("00000iiiiimmmddd", IMM_4, registers::R1, registers::R0);
 	Step();
 	ExpectThat().Register(registers::R0).Equals(0x11111111U << 4);
