@@ -37,8 +37,8 @@ MICROMACHINE_TEST_F(ldm, JustPopR7WithR0AsAddress_WritebackNewAddressToR0, CpuTe
 }
 
 MICROMACHINE_TEST_F(ldm, PopAllNoWriteback, CpuTestFixture) {
-	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R0, 0xFF);
 	const uint32_t INITIAL_PC = code_gen().write_address();
+	code_gen().emit_ins16("11001nnnrrrrrrrr", registers::R0, 0xFF);
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
 	for (int i = 0; i < 8; i++) {
 		getCpu().mem().write32(INITIAL_PC + 16 + 4 * i, i);
