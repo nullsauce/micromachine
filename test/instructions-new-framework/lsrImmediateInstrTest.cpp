@@ -24,14 +24,14 @@ MICROMACHINE_TEST_F(lsr, ImmediateR2by1toR0, CpuTestFixture) {
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, registers::R2, registers::R0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzc");
+	ExpectThat().APSRFlagsMatches("nzc");
 	ExpectThat().Register(registers::R0).Equals(0x22222222U >> 1);
 }
 
 MICROMACHINE_TEST_F(lsr, ImmediateR7by32toR0_ZeroResult, CpuTestFixture) {
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_32, registers::R7, registers::R0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().APSRFlagsMatches("nZc");
 	ExpectThat().Register(registers::R0).Equals(0x0);
 }
 
@@ -40,7 +40,7 @@ MICROMACHINE_TEST_F(lsr, ImmediateR1by1toR7_CarryOut, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, 0x11111111U);
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_1, registers::R1, registers::R7);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzC");
+	ExpectThat().APSRFlagsMatches("nzC");
 	ExpectThat().Register(registers::R7).Equals(0x11111111U >> 1);
 }
 
@@ -48,7 +48,7 @@ MICROMACHINE_TEST_F(lsr, ImmediateR0by32_CarryOutAndIsZero, CpuTestFixture) {
 	code_gen().emit_ins16("00001iiiiimmmddd", IMM_32, registers::R0, registers::R0);
 	getCpu().regs().set(registers::R0, 0x80000000U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZC");
+	ExpectThat().APSRFlagsMatches("nZC");
 	ExpectThat().Register(registers::R0).Equals(0U);
 }
 

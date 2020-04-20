@@ -22,7 +22,7 @@ MICROMACHINE_TEST_F(mvnRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100001111mmmddd", registers::R0, registers::R0);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().APSRFlagsMatches("NzC");
 	ExpectThat().Register(registers::R0).Equals(~0U);
 }
 
@@ -31,7 +31,7 @@ MICROMACHINE_TEST_F(mvnRegister, UseHigestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100001111mmmddd", registers::R7, registers::R7);
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nzc");
+	ExpectThat().APSRFlagsMatches("Nzc");
 	ExpectThat().Register(registers::R7).Equals(~0x77777777U);
 }
 
@@ -40,7 +40,7 @@ MICROMACHINE_TEST_F(mvnRegister, UseDifferentRegistersForEachArg, CpuTestFixture
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0100001111mmmddd", registers::R2, registers::R1);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().APSRFlagsMatches("Nz");
 	ExpectThat().Register(registers::R1).Equals(~0x22222222U);
 }
 
@@ -48,6 +48,6 @@ MICROMACHINE_TEST_F(mvnRegister, MoveANegationOfNegativeOne_ClearsNegativeFlagAn
 	code_gen().emit_ins16("0100001111mmmddd", registers::R2, registers::R1);
 	getCpu().regs().set(registers::R2, -1);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZ");
+	ExpectThat().APSRFlagsMatches("nZ");
 	ExpectThat().Register(registers::R1).Equals(0U);
 }

@@ -61,7 +61,7 @@ MICROMACHINE_TEST_F(mrs, FromAPSR, CpuTestFixture) {
 	ExpectThat()
 		.Register(registers::R12).Equals(expectedXpsr)
 		.Register(registers::PC).WasIncrementedBy(4)
-		.XPSRFlagsEquals("NzCv")
+		.APSRFlagsMatches("NzCv")
 		.IPSRExceptionNumberIs(exception::EXTI_08)
 		.ThumbBitIsSet();
 }
@@ -87,7 +87,7 @@ MICROMACHINE_TEST_F(mrs, FromIAPSR, CpuTestFixture) {
 	ExpectThat()
 		.Register(registers::R0).Equals(expectedXpsr)
 		.Register(registers::PC).WasIncrementedBy(4)
-		.XPSRFlagsEquals("NzCv")
+		.APSRFlagsMatches("NzCv")
 		.IPSRExceptionNumberIs(exception::EXTI_08)
 		.ThumbBitIsSet();
 }
@@ -113,7 +113,7 @@ MICROMACHINE_TEST_F(mrs, FromEAPSR, CpuTestFixture) {
 	ExpectThat()
 		.Register(registers::R12).Equals(expectedXpsr)
 		.Register(registers::PC).WasIncrementedBy(4)
-		.XPSRFlagsEquals("NzCv")
+		.APSRFlagsMatches("NzCv")
 		.IPSRExceptionNumberIs(exception::EXTI_08)
 		.ThumbBitIsSet();
 }
@@ -139,7 +139,7 @@ MICROMACHINE_TEST_F(mrs, FromXPSR, CpuTestFixture) {
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
-		.XPSRFlagsEquals("NzCv")
+		.APSRFlagsMatches("NzCv")
 		.IPSRExceptionNumberIs(exception::EXTI_08)
 		.ThumbBitIsSet();
 }
@@ -163,7 +163,7 @@ MICROMACHINE_TEST_F(mrs, FromIPSR, CpuTestFixture) {
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
 		.IPSRExceptionNumberIs(exception::EXTI_08)
-		.XPSRFlagsEquals("NzCv")
+		.APSRFlagsMatches("NzCv")
 		.ThumbBitIsSet();
 }
 
@@ -186,7 +186,7 @@ MICROMACHINE_TEST_F(mrs, FromEPSR, CpuTestFixture) {
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
-		.XPSRFlagsEquals("NzCv")
+		.APSRFlagsMatches("NzCv")
 		.IPSRExceptionNumberIs(exception::EXTI_08)
 		.ThumbBitIsSet();
 }
@@ -211,7 +211,7 @@ MICROMACHINE_TEST_F(mrs, FromIEPSR, CpuTestFixture) {
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
-		.XPSRFlagsEquals("NzCv")
+		.APSRFlagsMatches("NzCv")
 		.IPSRExceptionNumberIs(exception::EXTI_08)
 		.ThumbBitIsSet();
 }

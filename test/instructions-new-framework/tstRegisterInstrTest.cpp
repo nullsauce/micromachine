@@ -22,7 +22,7 @@ MICROMACHINE_TEST_F(tstRegister, UseLowestRegisterForBothArgsAndResultShouldBeZe
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().APSRFlagsMatches("nZc");
 }
 
 MICROMACHINE_TEST_F(tstRegister, UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged, CpuTestFixture) {
@@ -30,7 +30,7 @@ MICROMACHINE_TEST_F(tstRegister, UseHighestRegisterForBothArgsAndRegisterWillBeU
 	code_gen().emit_ins16("0100001000mmmnnn", registers::R7, registers::R7);
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzC");
+	ExpectThat().APSRFlagsMatches("nzC");
 }
 
 MICROMACHINE_TEST_F(tstRegister, AndR3andR7, CpuTestFixture) {
@@ -38,7 +38,7 @@ MICROMACHINE_TEST_F(tstRegister, AndR3andR7, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("0100001000mmmnnn", registers::R3, registers::R7);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().APSRFlagsMatches("nz");
 }
 
 MICROMACHINE_TEST_F(tstRegister, UseAndToJustKeepNegativeSignBit, CpuTestFixture) {
@@ -47,5 +47,5 @@ MICROMACHINE_TEST_F(tstRegister, UseAndToJustKeepNegativeSignBit, CpuTestFixture
 	getCpu().regs().set(registers::R0, -1);
 	getCpu().regs().set(registers::R7, 0x80000000);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().APSRFlagsMatches("Nz");
 }

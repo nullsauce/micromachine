@@ -19,14 +19,14 @@
 MICROMACHINE_TEST_F(cmnRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R0, registers::R0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZcv");
+	ExpectThat().APSRFlagsMatches("nZcv");
 }
 
 MICROMACHINE_TEST_F(cmnRegister, UseHigestRegisterForAllArgs, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R7, registers::R7);
 	Step();
-	ExpectThat().XPSRFlagsEquals("NzcV");
+	ExpectThat().APSRFlagsMatches("NzcV");
 }
 
 MICROMACHINE_TEST_F(cmnRegister, UseDifferentRegistersForEachArg, CpuTestFixture) {
@@ -34,7 +34,7 @@ MICROMACHINE_TEST_F(cmnRegister, UseDifferentRegistersForEachArg, CpuTestFixture
 	getCpu().regs().set(registers::R2, 0x22222222);
 	code_gen().emit_ins16("0100001011mmmnnn", registers::R1, registers::R2);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzcv");
+	ExpectThat().APSRFlagsMatches("nzcv");
 }
 
 // Force APSR flags to be set which haven't already been covered above.
@@ -43,7 +43,7 @@ MICROMACHINE_TEST_F(cmnRegister, ForceCarryWithNoOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, -1);
 	getCpu().regs().set(registers::R2, 1);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().APSRFlagsMatches("nZCv");
 }
 
 MICROMACHINE_TEST_F(cmnRegister, ForceCarryAndOverflow, CpuTestFixture) {
@@ -51,5 +51,5 @@ MICROMACHINE_TEST_F(cmnRegister, ForceCarryAndOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, -1);
 	getCpu().regs().set(registers::R2, 0x80000000U);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().APSRFlagsMatches("nzCV");
 }

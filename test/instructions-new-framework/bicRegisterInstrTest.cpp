@@ -24,7 +24,7 @@ MICROMACHINE_TEST_F(bicRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 	// clear carry flag
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().APSRFlagsMatches("nZc");
 	ExpectThat().Register(registers::R0).Equals(0);
 }
 
@@ -33,7 +33,7 @@ MICROMACHINE_TEST_F(bicRegister, UseHighestRegisterForBothArgs, CpuTestFixture) 
 	// set carry flag
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZC");
+	ExpectThat().APSRFlagsMatches("nZC");
 	ExpectThat().Register(registers::R7).Equals(0);
 }
 
@@ -42,7 +42,7 @@ MICROMACHINE_TEST_F(bicRegister, UseR3andR7, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100001110mmmddd", registers::R3, registers::R7);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().APSRFlagsMatches("nz");
 	ExpectThat().Register(registers::R7).Equals(0x77777777 & ~0x33333333);
 }
 
@@ -51,6 +51,6 @@ MICROMACHINE_TEST_F(bicRegister, UseBicToClearLSbit, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, -1);
 	getCpu().regs().set(registers::R6, 1);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().APSRFlagsMatches("Nz");
 	ExpectThat().Register(registers::R1).Equals(-1U & ~1);
 }

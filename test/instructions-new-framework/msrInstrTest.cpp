@@ -42,7 +42,7 @@ MICROMACHINE_TEST_F(msr, ToAPSR, CpuTestFixture) {
 	Step();
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
-		.XPSRFlagsEquals("NZCV");
+		.APSRFlagsMatches("NZCV");
 }
 
 MICROMACHINE_TEST_F(msr, ToIAPSR, CpuTestFixture) {
@@ -57,7 +57,7 @@ MICROMACHINE_TEST_F(msr, ToIAPSR, CpuTestFixture) {
 	Step();
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
-		.XPSRFlagsEquals("NZCV");
+		.APSRFlagsMatches("NZCV");
 }
 
 MICROMACHINE_TEST_F(msr, ToEAPSR, CpuTestFixture) {
@@ -72,7 +72,7 @@ MICROMACHINE_TEST_F(msr, ToEAPSR, CpuTestFixture) {
 	Step();
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
-		.XPSRFlagsEquals("NZCV");
+		.APSRFlagsMatches("NZCV");
 }
 
 MICROMACHINE_TEST_F(msr, ToXPSR, CpuTestFixture) {
@@ -86,7 +86,7 @@ MICROMACHINE_TEST_F(msr, ToXPSR, CpuTestFixture) {
 	Step();
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
-		.XPSRFlagsEquals("NZCV");
+		.APSRFlagsMatches("NZCV");
 }
 
 MICROMACHINE_TEST_F(msr, ToIPSRIsIgnored, CpuTestFixture) {

@@ -23,14 +23,14 @@ MICROMACHINE_TEST_F(adcRegister, UserR1ForAllArgs, CpuTestFixture) {
 
 	code_gen().emit_adc(registers::R1, registers::R1);
 
-	ExpectThat().XPSRFlagsEquals("c"); // carry must be clear
+	ExpectThat().APSRFlagsMatches("c"); // carry must be clear
 
 	Step();
 
 	ExpectThat()
 		.Register(registers::R1).Equals(0x11111111U + 0x11111111U)
 		.InstructionExecutedWithoutBranch()
-		.XPSRFlagsEquals("nzcv");
+		.APSRFlagsMatches("nzcv");
 }
 
 
@@ -38,11 +38,11 @@ MICROMACHINE_TEST_F(adcRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
 
 	code_gen().emit_adc(registers::R0, registers::R0);
 
-	ExpectThat().XPSRFlagsEquals("c"); // carry must be clear
+	ExpectThat().APSRFlagsMatches("c"); // carry must be clear
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nZcv")
+		.APSRFlagsMatches("nZcv")
 		.Register(registers::R0).Equals(0U);
 }
 
@@ -51,11 +51,11 @@ MICROMACHINE_TEST_F(adcRegister, UseHigestRegisterForAllArgsPositiveOverflow, Cp
 
 	getCpu().regs().set(registers::R7, 0x77777777U);
 
-	ExpectThat().XPSRFlagsEquals("c"); // carry must be clear
+	ExpectThat().APSRFlagsMatches("c"); // carry must be clear
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("NzcV")
+		.APSRFlagsMatches("NzcV")
 		.Register(registers::R7).Equals(0x77777777U + 0x77777777U);
 }
 
@@ -65,11 +65,11 @@ MICROMACHINE_TEST_F(adcRegister, UseDifferentRegistersForEachArg, CpuTestFixture
 	getCpu().regs().set(registers::R1, 0x11111111U);
 	getCpu().regs().set(registers::R2, 0x22222222U);
 
-	ExpectThat().XPSRFlagsEquals("c"); // carry must be clear
+	ExpectThat().APSRFlagsMatches("c"); // carry must be clear
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R2).Equals(0x11111111U + 0x22222222U);
 }
 
@@ -82,7 +82,7 @@ MICROMACHINE_TEST_F(adcRegister, Add0to0WithCarryInSetToGiveAResultOf1, CpuTestF
 	Step();
 
 	ExpectThat()
-		.XPSRFlagsEquals("nzcv")
+		.APSRFlagsMatches("nzcv")
 		.Register(registers::R0).Equals(0U + 0U + 1U);
 }
 
@@ -93,12 +93,12 @@ MICROMACHINE_TEST_F(adcRegister, ForceCarryOut, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, -1);
 	getCpu().regs().set(registers::R2, 1);
 
-	ExpectThat().XPSRFlagsEquals("c"); // carry must be clear
+	ExpectThat().APSRFlagsMatches("c"); // carry must be clear
 	Step();
 
 	ExpectThat()
 		.Register(registers::R2).Equals(-1 + 1)
-		.XPSRFlagsEquals("nZCv");
+		.APSRFlagsMatches("nZCv");
 }
 
 MICROMACHINE_TEST_F(adcRegister, ForceCarryOutAndOverflow, CpuTestFixture) {
@@ -107,11 +107,11 @@ MICROMACHINE_TEST_F(adcRegister, ForceCarryOutAndOverflow, CpuTestFixture) {
 	getCpu().regs().set(registers::R1, -1);
 	getCpu().regs().set(registers::R2, 0x80000000U);
 
-	ExpectThat().XPSRFlagsEquals("c"); // carry must be clear
+	ExpectThat().APSRFlagsMatches("c"); // carry must be clear
 	Step();
 
 	ExpectThat()
 		.Register(registers::R2).Equals(0x7FFFFFFF)
-		.XPSRFlagsEquals("nzCV");
+		.APSRFlagsMatches("nzCV");
 }
 

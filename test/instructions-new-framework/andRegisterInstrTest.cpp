@@ -22,7 +22,7 @@ MICROMACHINE_TEST_F(andRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 
 	Step();
-	ExpectThat().XPSRFlagsEquals("nZc");
+	ExpectThat().APSRFlagsMatches("nZc");
 	ExpectThat().Register(registers::R0).Equals(0);
 }
 
@@ -34,7 +34,7 @@ MICROMACHINE_TEST_F(andRegister, UseHighestRegisterForBothArgs, CpuTestFixture) 
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().Register(registers::R7).Equals(0x77777777);
-	ExpectThat().XPSRFlagsEquals("nzC");
+	ExpectThat().APSRFlagsMatches("nzC");
 }
 
 MICROMACHINE_TEST_F(andRegister, AndR3andR7, CpuTestFixture) {
@@ -42,7 +42,7 @@ MICROMACHINE_TEST_F(andRegister, AndR3andR7, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777);
 	getCpu().regs().set(registers::R3, 0x33333333);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().APSRFlagsMatches("nz");
 	ExpectThat().Register(registers::R7).Equals(0x33333333);
 }
 
@@ -51,7 +51,7 @@ MICROMACHINE_TEST_F(andRegister, UseAndToJustKeepNegativeSignBit, CpuTestFixture
 	getCpu().regs().set(registers::R1, -1);
 	getCpu().regs().set(registers::R6, 0x80000000);
 	Step();
-	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().APSRFlagsMatches("Nz");
 	ExpectThat().Register(registers::R1).Equals(0x80000000);
 }
 
@@ -60,6 +60,6 @@ MICROMACHINE_TEST_F(andRegister, HaveAndResultNotBeSameAsEitherSource, CpuTestFi
 	getCpu().regs().set(registers::R2, 0x12345678);
 	getCpu().regs().set(registers::R5, 0xF0F0F0F0);
 	Step();
-	ExpectThat().XPSRFlagsEquals("nz");
+	ExpectThat().APSRFlagsMatches("nz");
 	ExpectThat().Register(registers::R2).Equals(0x10305070);
 }
