@@ -127,6 +127,11 @@ CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsSet() {
 	return *this;
 }
 
+CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsNotSet() {
+	EXPECT_FALSE(_current.regs().execution_status_register().thumb_bit_set());
+	return *this;
+}
+
 
 RegisterMutationPredicate CpuMutationPredicate::Register(reg_idx regIdx) {
 	return {_previous, _current, regIdx};

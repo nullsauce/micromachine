@@ -11,83 +11,94 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* POP
    Encoding: 1011 1 10 P:1 RegisterList:8 */
-TEST_F(CpuTestHarness, pop_JustPopPC)
-{
+MICROMACHINE_TEST_F(pop, JustPopPC, CpuTestFixture) {
+	const uint32_t INITIAL_SP = 0x00002000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0);
-	setRegisterValue(registers::SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
-	memory_write_32(INITIAL_SP - 4, (INITIAL_PC + 16) | 1);
-	step();
+	getCpu().regs().set(registers::SP, INITIAL_SP - 4);
+	getCpu().mem().write32(INITIAL_SP - 4, (INITIAL_PC + 16) | 1);
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP);
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
 }
 
-TEST_F(CpuTestHarness, pop_JustPopR0)
-{
+MICROMACHINE_TEST_F(pop, JustPopR0, CpuTestFixture) {
+	const uint32_t INITIAL_SP = 0x00002000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("1011110Prrrrrrrr", 0, 1);
-	setRegisterValue(registers::SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP);
-	setExpectedRegisterValue(registers::R0, 0xFFFFFFFF);
-	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::SP, INITIAL_SP - 4);
+	getCpu().mem().write32(INITIAL_SP - 4, 0xFFFFFFFF);
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP);
+	ExpectThat().Register(registers::R0).Equals(0xFFFFFFFF);
 }
 
-TEST_F(CpuTestHarness, pop_JustPopR7)
-{
+MICROMACHINE_TEST_F(pop, JustPopR7, CpuTestFixture) {
+	const uint32_t INITIAL_SP = 0x00002000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("1011110Prrrrrrrr", 0, (1 << 7));
-	setRegisterValue(registers::SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP);
-	setExpectedRegisterValue(registers::R7, 0xFFFFFFFF);
-	memory_write_32(INITIAL_SP - 4, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::SP, INITIAL_SP - 4);
+	getCpu().mem().write32(INITIAL_SP - 4, 0xFFFFFFFF);
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP);
+	ExpectThat().Register(registers::R7).Equals(0xFFFFFFFF);
 }
 
-TEST_F(CpuTestHarness, pop_PopAll)
-{
+MICROMACHINE_TEST_F(pop, PopAll, CpuTestFixture) {
+	const uint32_t INITIAL_SP = 0x00002000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0xFF);
-	setRegisterValue(registers::SP, INITIAL_SP - 4 * 9);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP);
-	setExpectedRegisterValue(registers::R0, 9);
-	setExpectedRegisterValue(registers::R1, 8);
-	setExpectedRegisterValue(registers::R2, 7);
-	setExpectedRegisterValue(registers::R3, 6);
-	setExpectedRegisterValue(registers::R4, 5);
-	setExpectedRegisterValue(registers::R5, 4);
-	setExpectedRegisterValue(registers::R6, 3);
-	setExpectedRegisterValue(registers::R7, 2);
-	setExpectedRegisterValue(registers::PC, 1 & ~1);
-	for (int i = 1; i <= 9; i++)
-		memory_write_32(INITIAL_SP - 4 * i, i);
-	step();
+	getCpu().regs().set(registers::SP, INITIAL_SP - 4 * 9);
+	for (int i = 1; i <= 9; i++) {
+		getCpu().mem().write32(INITIAL_SP - 4 * i, i);
+	}
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP);
+	ExpectThat().Register(registers::R0).Equals(9);
+	ExpectThat().Register(registers::R1).Equals(8);
+	ExpectThat().Register(registers::R2).Equals(7);
+	ExpectThat().Register(registers::R3).Equals(6);
+	ExpectThat().Register(registers::R4).Equals(5);
+	ExpectThat().Register(registers::R5).Equals(4);
+	ExpectThat().Register(registers::R6).Equals(3);
+	ExpectThat().Register(registers::R7).Equals(2);
+	ExpectThat().Register(registers::PC).Equals(1 & ~1);
 }
 
-TEST_F(CpuTestHarness, pop_PopToSetPCToEvenAddressWhichGeneratesHardFault)
-{
+MICROMACHINE_TEST_F(pop, PopToSetPCToEvenAddressWhichGeneratesHardFaultOnNextStep, CpuTestFixture) {
+	const uint32_t INITIAL_SP = 0x00002000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("1011110Prrrrrrrr", 1, 0);
-	setExpectedXPSRflags("t");
-	setRegisterValue(registers::SP, INITIAL_SP - 4);
-	setExpectedRegisterValue(registers::SP, INITIAL_SP);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 16);
-	memory_write_32(INITIAL_SP - 4, INITIAL_PC + 16);
-	step();
+	getCpu().regs().set(registers::SP, INITIAL_SP - 4);
+	getCpu().mem().write32(INITIAL_SP - 4, INITIAL_PC + 16);
 
-	const uint16_t NOP = 0xBF00;
-	memory_write_32(INITIAL_PC + 16, NOP);
-	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
-	step();
+	Step();
+	ExpectThat().Register(registers::SP).Equals(INITIAL_SP);
+	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 16);
+	ExpectThat().ThumbBitIsNotSet();
+
+
+	code_gen().set_write_address(INITIAL_PC + 16);
+	code_gen().emit_nop();
+
+	// Prepare to execute a nop, but expect a hardfault instead
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
-/*
-TEST_F(CpuTestHarness, pop_HardFaultFromInvalidMemoryRead)
-{
-    code_gen().emit_ins16("1011110Prrrrrrrr", 0, 1);
-    setRegisterValue(registers::SP, 0xFFFFFFFC);
-    setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
-    step(&m_context);
-}*/
+
+MICROMACHINE_TEST_F(pop, HardFaultFromInvalidMemoryRead, CpuTestFixture) {
+	code_gen().emit_ins16("1011110Prrrrrrrr", 0, 1);
+	getCpu().regs().set(registers::SP, 0xFFFFFFFC);
+
+	Step();
+	ExpectThat().HardfaultHandlerReached();
+}
+
 /*
 TEST_SIM_ONLY(pop, UnpredictableToPopNoRegisters)
 {
