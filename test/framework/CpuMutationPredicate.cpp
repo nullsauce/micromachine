@@ -9,6 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "CpuMutationPredicate.hpp"
 #include "RegisterMutationPredicate.hpp"
+#include "MemoryMutationPredicate.hpp"
 
 #include <gtest/gtest.h>
 
@@ -132,7 +133,11 @@ CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsNotSet() {
 	return *this;
 }
 
-
 RegisterMutationPredicate CpuMutationPredicate::Register(reg_idx regIdx) {
 	return {_previous, _current, regIdx};
+}
+
+template <typename uint_type>
+MemoryMutationPredicate<uint_type> CpuMutationPredicate::MemoryAt(uint32_t address) {
+	return MemoryMutationPredicate<uint_type>(_previous, _current, address);
 }

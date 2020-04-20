@@ -18,6 +18,9 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "CpuMutationPredicate.hpp"
 #include "RegisterMutationPredicate.hpp"
+#include "MemoryMutationPredicate.hpp"
+
+
 
 /**
  * Utility macro to declare tests with a test_case_name different

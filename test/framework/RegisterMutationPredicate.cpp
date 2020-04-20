@@ -12,7 +12,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 RegisterMutationPredicate::RegisterMutationPredicate(const cpu& previous, const cpu& current, reg_idx regIdx)
 	: CpuMutationPredicate(previous, current)
-	, _regIdx(regIdx) {}
+	, _regIdx(regIdx)
+{}
 
 RegisterMutationPredicate& RegisterMutationPredicate::Equals(uint32_t value) {
 	EXPECT_EQ(value, currentRegisterValue());

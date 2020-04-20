@@ -18,10 +18,12 @@ add_library(test_common STATIC
 	framework/CpuMutationPredicate.hpp
 	framework/RegisterMutationPredicate.cpp
 	framework/RegisterMutationPredicate.hpp
+	framework/MemoryMutationPredicate.cpp
+	framework/MemoryMutationPredicate.hpp
 	framework/code_generator.hpp
 	framework/code_generator.cpp
 	framework/Checklist.hpp
-		framework/TestSystem.hpp
+	framework/TestSystem.hpp
 	framework/CpuTestFixture.hpp
 )
 target_include_directories(test_common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/framework")
