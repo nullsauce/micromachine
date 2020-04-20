@@ -11,39 +11,35 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* REVSH
    Encoding: 1011 1010 11 Rm:3 Rd:3 */
-TEST_F(CpuTestHarness, revsh_RevR0toR7)
-{
+MICROMACHINE_TEST_F(revsh, RevR0toR7, CpuTestFixture) {
 	code_gen().emit_ins16("1011101011mmmddd", registers::R0, registers::R7);
-	setRegisterValue(registers::R0, 0x12345678);
-	setExpectedRegisterValue(registers::R7, 0x7856);
-	step();
+	getCpu().regs().set(registers::R0, 0x12345678);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0x7856);
 }
 
-TEST_F(CpuTestHarness, revsh_RevR7toR0)
-{
+MICROMACHINE_TEST_F(revsh, RevR7toR0, CpuTestFixture) {
 	code_gen().emit_ins16("1011101011mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R7, 0x12345678);
-	setExpectedRegisterValue(registers::R0, 0x7856);
-	step();
+	getCpu().regs().set(registers::R7, 0x12345678);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0x7856);
 }
 
-TEST_F(CpuTestHarness, revsh_PositiveValue)
-{
+MICROMACHINE_TEST_F(revsh, PositiveValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011101011mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R7, 0xFF7F);
-	setExpectedRegisterValue(registers::R0, 0x7FFF);
-	step();
+	getCpu().regs().set(registers::R7, 0xFF7F);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0x7FFF);
 }
 
-TEST_F(CpuTestHarness, revsh_NegativeValue)
-{
+MICROMACHINE_TEST_F(revsh, NegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011101011mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R7, 0x0080);
-	setExpectedRegisterValue(registers::R0, 0xFFFF8000);
-	step();
+	getCpu().regs().set(registers::R7, 0x0080);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0xFFFF8000);
 }
