@@ -907,40 +907,48 @@ static void exec(const mrs instruction, registers& regs) {
 	uint8_t instr_sysn = instruction.sysn;
 	uint8_t sysn_bits = bits<3,5>::of(instruction.sysn);
 	switch(sysn_bits) {
-		case 0b00000: {
-			if(bits<0>::of(instruction.sysn)) {
+		case 0b00000: { // xPSR composites
+			if(bits<0>::of(instruction.sysn)) { // add IPSR bits
 				bits<0,8>::of(val) = bits<0,8>::of((uint32_t)regs.interrupt_status_register().exception_num());
 			}
-			if(bits<1>::of(instruction.sysn)) {
+			if(bits<1>::of(instruction.sysn)) { // add EPSR bits
 				// T-bit reads as zero
 				bits<epsr_reg::THUMB_BIT>::of(val) = false;
 			}
-			if(!bits<2>::of(instruction.sysn)) {
+			if(!bits<2>::of(instruction.sysn)) { // add APSR bits
 				// T-bit reads as zero
 				// copy 5 bits from APS
 				// TODO: Why 5 and not 4 ???
 				bits<27, 5>::of(val) = bits<27, 5>::of(regs.xpsr_register());
 			}
 		} break;
-		case 0b00001: {
+		case 0b00001: { // SP (exclusive)
 			switch((uint8_t)bits<0,3>::of(instruction.sysn)) {
-				case 0b000: {
+				case 0b000: { // add MSP bits
 					val = regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
 				} break;
-				case 0b001: {
+				case 0b001: { // add PSP bits
 					val = regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
 					fprintf(stderr, "%08x\n", val);
 				} break;
+				default: {
+					// unpredictable
+					break;
+				}
 			}
 		} break;
-		case 0b00010: {
+		case 0b00010: { // PRIMASK & CONTROL (exclusive)
 			switch((uint8_t)bits<0,3>::of(instruction.sysn)) {
 				case 0b000: {
 					val = regs.primask_register().pm();
 				} break;
-				case 0b001: {
+				case 0b100: {
 					bits<0, 2>::of(val) = bits<0, 2>::of((uint32_t)regs.control_register());
 				} break;
+				default: {
+					// unpredictable
+					break;
+				}
 			}
 		} break;
 		default: {

@@ -27,12 +27,17 @@ public:
 	CpuMutationPredicate& XPSRFlagsEquals(const std::string& apsrFlags);
 	CpuMutationPredicate& XPSRRegisterDidNotChange();
 	CpuMutationPredicate& APSRFlagsDidNotChange();
+	CpuMutationPredicate& IPSRFlagsDidNotChange();
+	CpuMutationPredicate& EPSRFlagsDidNotChange();
 	CpuMutationPredicate& RegistersDidNotChange();
 	CpuMutationPredicate& NoInterruptIsPending();
 	CpuMutationPredicate& ExceptionIsPending(exception::Type ex);
 	CpuMutationPredicate& ExceptionIsActive(exception::Type ex);
 	CpuMutationPredicate& ExceptionHandlerReached(exception::Type ex);
 	CpuMutationPredicate& HardfaultHandlerReached();
+	CpuMutationPredicate& PrimaskStatusIs(bool value);
+	CpuMutationPredicate& IPSRExceptionNumberIs(exception::Type ex);
+	CpuMutationPredicate& ThumbBitIsSet();
 	RegisterMutationPredicate Register(reg_idx regIdx);
 };
 
