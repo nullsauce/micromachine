@@ -11,15 +11,16 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* WFI
    Encoding: 1011 1111 0011 0000 */
-TEST_SIM_ONLY(wfi, BasicTest
-)
-{
-code_gen().emit_ins16("1011111100110000");
-setExpectedStepReturn(PINKYSIM_STEP_UNSUPPORTED);
-pinkySimStep(&m_context);
+
+MICROMACHINE_TEST_F(wfi, BasicTest, CpuTestFixture) {
+	code_gen().emit_ins16("1011111100110000");
+	Step();
+	ExpectThat()
+		.InstructionExecutedWithoutBranch()
+		.NoInterruptIsPending();
 }
