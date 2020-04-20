@@ -11,44 +11,43 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* MVN - Register (MOve Negative)
    Encoding: 010000 1111 Rm:3 Rd:3 */
 /* NOTE: APSR_C state is maintained by this instruction. */
-TEST_F(CpuTestHarness, mvnRegister_UseLowestRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(mvnRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 	code_gen().emit_ins16("0100001111mmmddd", registers::R0, registers::R0);
-	setExpectedXPSRflags("NzC");
-	setCarry();
-	setExpectedRegisterValue(registers::R0, ~0U);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(true);
+	Step();
+	ExpectThat().XPSRFlagsEquals("NzC");
+	ExpectThat().Register(registers::R0).Equals(~0U);
 }
 
-TEST_F(CpuTestHarness, mvnRegister_UseHigestRegisterForAllArgs)
-{
+MICROMACHINE_TEST_F(mvnRegister, UseHigestRegisterForAllArgs, CpuTestFixture) {
+	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("0100001111mmmddd", registers::R7, registers::R7);
-	setExpectedXPSRflags("Nzc");
-	clearCarry();
-	setExpectedRegisterValue(registers::R7, ~0x77777777U);
-	step();
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzc");
+	ExpectThat().Register(registers::R7).Equals(~0x77777777U);
 }
 
-TEST_F(CpuTestHarness, mvnRegister_UseDifferentRegistersForEachArg)
-{
+MICROMACHINE_TEST_F(mvnRegister, UseDifferentRegistersForEachArg, CpuTestFixture) {
+	getCpu().regs().set(registers::R1, 0x11111111U);
+	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0100001111mmmddd", registers::R2, registers::R1);
-	setExpectedXPSRflags("Nz");
-	setExpectedRegisterValue(registers::R1, ~0x22222222U);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nz");
+	ExpectThat().Register(registers::R1).Equals(~0x22222222U);
 }
 
-TEST_F(CpuTestHarness, mvnRegister_MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag)
-{
+MICROMACHINE_TEST_F(mvnRegister, MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag, CpuTestFixture) {
 	code_gen().emit_ins16("0100001111mmmddd", registers::R2, registers::R1);
-	setRegisterValue(registers::R2, -1);
-	setExpectedXPSRflags("nZ");
-	setExpectedRegisterValue(registers::R1, 0U);
-	step();
+	getCpu().regs().set(registers::R2, -1);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZ");
+	ExpectThat().Register(registers::R1).Equals(0U);
 }
