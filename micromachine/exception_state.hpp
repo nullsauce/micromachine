@@ -20,24 +20,23 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/system_control/shpr2.hpp"
 #include "registers/system_control/shpr3.hpp"
 
-class exception_state
-{
-
+class exception_state {
 private:
-	bool _pending;
 	bool _active;
 	const exception::Type _number;
 
 public:
 	exception_state(exception::Type number)
-		: _pending(false)
-		, _active(false)
+		: _active(false)
 		, _number(number)
-	{
-	}
+	{}
 
 	virtual exception::priority_t priority() const = 0;
 	virtual void set_priority(exception::priority_t priority) = 0;
+	virtual void set_pending(bool pending) = 0;
+	virtual bool is_pending() const = 0;
+	virtual bool is_enabled() const = 0;
+	virtual void set_enable(bool enable) = 0;
 
 	exception::Type number() const {
 		return _number;
@@ -51,7 +50,7 @@ public:
 	void activate()
 	{
 		_active = true;
-		_pending = false;
+		set_pending(false);
 	}
 
 	void deactivate()
@@ -59,19 +58,9 @@ public:
 		_active = false;
 	}
 
-	bool is_pending() const
-	{
-		return _pending;
-	}
-
-	void set_pending()
-	{
-		_pending = true;
-	}
-
 	void clear_pending()
 	{
-		_pending = false;
+		set_pending(false);
 	}
 
 	void reset() {
@@ -80,10 +69,40 @@ public:
 	}
 };
 
-template<int8_t Priority>
-class fixed_priority_exception_state : public exception_state {
+class internal_exception_state : public exception_state {
+private:
+	bool _pending;
+
 public:
-	using exception_state::exception_state;
+
+	internal_exception_state(exception::Type number)
+		: exception_state(number)
+		, _pending(false)
+	{}
+
+	bool is_pending() const override {
+		return _pending;
+	}
+
+	void set_pending(bool pending) override {
+		_pending = pending;
+	}
+
+	bool is_enabled() const override {
+		// internal exceptions are always enabled
+		return true;
+	}
+
+	void set_enable(bool enable) override {
+		precond(false, "Can't disable an internal exception");
+	}
+
+};
+
+template<int8_t Priority>
+class fixed_priority_exception_state : public internal_exception_state {
+public:
+	using internal_exception_state::internal_exception_state;
 	exception::priority_t priority() const override {
 		return Priority;
 	}
@@ -94,25 +113,25 @@ public:
 	}
 };
 
-class shpr2_exception_state : public exception_state {
+class shpr2_exception_state : public internal_exception_state {
 protected:
 	shpr2_reg& _reg;
 
 public:
 	shpr2_exception_state(exception::Type number, shpr2_reg& reg)
-		: exception_state(number)
+		: internal_exception_state(number)
 		, _reg(reg)
 	{}
 
 };
 
-class shpr3_exception_state : public exception_state {
+class shpr3_exception_state : public internal_exception_state {
 protected:
 	shpr3_reg& _reg;
 
 public:
 	shpr3_exception_state(exception::Type number, shpr3_reg& reg)
-		: exception_state(number)
+		: internal_exception_state(number)
 		, _reg(reg)
 	{}
 };
@@ -173,6 +192,22 @@ public:
 
 	void set_priority(exception::priority_t priority) override {
 		_nvic.priority_bits_for<ExternalInterruptNumber>() = priority;
+	}
+
+	bool is_pending() const override {
+		return _nvic.pending_bit_for<ExternalInterruptNumber>();
+	}
+
+	void set_pending(bool pending) override {
+		_nvic.pending_bit_for<ExternalInterruptNumber>() = pending;
+	}
+
+	bool is_enabled() const override {
+		return _nvic.enable_bit_for<ExternalInterruptNumber>();
+	}
+
+	void set_enable(bool enable) override {
+		_nvic.enable_bit_for<ExternalInterruptNumber>() = enable;
 	}
 };
 
@@ -359,6 +394,10 @@ public:
 		for(exception_state& e : _indexed) {
 			// ignore exception that are not pending
 			if(!e.is_pending()) continue;
+
+			// ignore exception that are not enabled
+			if(!e.is_enabled()) continue;
+
 			// select any exception with lower priority value
 			if(top == nullptr || e.priority() < top->priority()) {
 				top = &e;
