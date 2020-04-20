@@ -13,6 +13,20 @@ and/or distributed without the express permission of Flavio Roth.
 #include "cpu.hpp"
 
 class RegisterMutationPredicate;
+
+template<typename uint_type>
+class MemoryMutationPredicate;
+
+template<>
+class MemoryMutationPredicate<uint32_t>;
+
+template<>
+class MemoryMutationPredicate<uint16_t>;
+
+template<>
+class MemoryMutationPredicate<uint8_t>;
+
+
 class CpuMutationPredicate {
 protected:
 	const cpu& _previous;
@@ -39,7 +53,13 @@ public:
 	CpuMutationPredicate& IPSRExceptionNumberIs(exception::Type ex);
 	CpuMutationPredicate& ThumbBitIsSet();
 	CpuMutationPredicate& ThumbBitIsNotSet();
+
 	RegisterMutationPredicate Register(reg_idx regIdx);
+
+	template <typename uint_type>
+	MemoryMutationPredicate<uint_type> MemoryAt(uint32_t address);
+
+
 };
 
 
