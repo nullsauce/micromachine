@@ -11,40 +11,36 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 
 /* UXTB (Unsigned ExTend Byte)
    Encoding: 1011 0010 11 Rm:3 Rd:3 */
-TEST_F(CpuTestHarness, uxtb_ExtendLowestRegisterIntoHighestRegister_PositiveValue)
-{
+MICROMACHINE_TEST_F(uxtb, ExtendLowestRegisterIntoHighestRegister_PositiveValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001011mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R7, 0x7F);
-	setExpectedRegisterValue(registers::R0, 0x7F);
-	step();
+	getCpu().regs().set(registers::R7, 0x7F);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0x7F);
 }
 
-TEST_F(CpuTestHarness, uxtb_ExtendHighestRegisterIntoLowestRegister_NegativeValue)
-{
+MICROMACHINE_TEST_F(uxtb, ExtendHighestRegisterIntoLowestRegister_NegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001011mmmddd", registers::R0, registers::R7);
-	setRegisterValue(registers::R0, 0x80);
-	setExpectedRegisterValue(registers::R7, 0x80);
-	step();
+	getCpu().regs().set(registers::R0, 0x80);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0x80);
 }
 
-TEST_F(CpuTestHarness, uxtb_OverwriteUpperBits_PositiveValue)
-{
+MICROMACHINE_TEST_F(uxtb, OverwriteUpperBits_PositiveValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001011mmmddd", registers::R6, registers::R1);
-	setRegisterValue(registers::R6, 0xBADBAD7F);
-	setExpectedRegisterValue(registers::R1, 0x7F);
-	step();
+	getCpu().regs().set(registers::R6, 0xBADBAD7F);
+	Step();
+	ExpectThat().Register(registers::R1).Equals(0x7F);
 }
 
-TEST_F(CpuTestHarness, uxtb_OverwriteUpperBits_NegativeValue)
-{
+MICROMACHINE_TEST_F(uxtb, OverwriteUpperBits_NegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001011mmmddd", registers::R2, registers::R5);
-	setRegisterValue(registers::R2, 0xBADBAD80);
-	setExpectedRegisterValue(registers::R5, 0x80);
-	step();
+	getCpu().regs().set(registers::R2, 0xBADBAD80);
+	Step();
+	ExpectThat().Register(registers::R5).Equals(0x80);
 }
