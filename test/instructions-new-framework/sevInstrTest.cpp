@@ -11,14 +11,16 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* SEV
    Encoding: 1011 1111 0100 0000 */
 
-TEST_F(CpuTestHarness, serv_BasicTest)
-{
+MICROMACHINE_TEST_F(serv, BasicTest, CpuTestFixture) {
 	code_gen().emit_ins16("1011111101000000");
-	step();
+	Step();
+	ExpectThat()
+		.InstructionExecutedWithoutBranch()
+		.NoInterruptIsPending();
 }
