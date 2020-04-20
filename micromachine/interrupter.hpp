@@ -18,7 +18,7 @@ private:
 
 	template<exception::Type Ex>
 	void raise() {
-		_exception_vector.interrupt_state<Ex>().set_pending();
+		_exception_vector.interrupt_state<Ex>().set_pending(true);
 	}
 
 public:
@@ -50,7 +50,7 @@ public:
 	}
 
 	void raise_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(exception::Type::EXTI_00 + number).set_pending();
+		_exception_vector.interrupt_state(exception::Type::EXTI_00 + number).set_pending(true);
 	}
 
 };
