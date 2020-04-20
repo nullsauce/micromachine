@@ -11,39 +11,35 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* UXTH (Unsigned ExTend Halfword)
    Encoding: 1011 0010 10 Rm:3 Rd:3 */
-TEST_F(CpuTestHarness, uxth_ExtendLowestRegisterIntoHighestRegister_PositiveValue)
-{
+MICROMACHINE_TEST_F(uxth, ExtendLowestRegisterIntoHighestRegister_PositiveValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001010mmmddd", registers::R7, registers::R0);
-	setRegisterValue(registers::R7, 0x7FFF);
-	setExpectedRegisterValue(registers::R0, 0x7FFF);
-	step();
+	getCpu().regs().set(registers::R7, 0x7FFF);
+	Step();
+	ExpectThat().Register(registers::R0).Equals(0x7FFF);
 }
 
-TEST_F(CpuTestHarness, uxth_ExtendHighestRegisterIntoLowestRegister_NegativeValue)
-{
+MICROMACHINE_TEST_F(uxth, ExtendHighestRegisterIntoLowestRegister_NegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001010mmmddd", registers::R0, registers::R7);
-	setRegisterValue(registers::R0, 0x8000);
-	setExpectedRegisterValue(registers::R7, 0x8000);
-	step();
+	getCpu().regs().set(registers::R0, 0x8000);
+	Step();
+	ExpectThat().Register(registers::R7).Equals(0x8000);
 }
 
-TEST_F(CpuTestHarness, uxth_OverwriteUpperBits_PositiveValue)
-{
+MICROMACHINE_TEST_F(uxth, OverwriteUpperBits_PositiveValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001010mmmddd", registers::R6, registers::R1);
-	setRegisterValue(registers::R6, 0xF00D7FFF);
-	setExpectedRegisterValue(registers::R1, 0x7FFF);
-	step();
+	getCpu().regs().set(registers::R6, 0xF00D7FFF);
+	Step();
+	ExpectThat().Register(registers::R1).Equals(0x7FFF);
 }
 
-TEST_F(CpuTestHarness, uxth_OverwriteUpperBits_NegativeValue)
-{
+MICROMACHINE_TEST_F(uxth, OverwriteUpperBits_NegativeValue, CpuTestFixture) {
 	code_gen().emit_ins16("1011001010mmmddd", registers::R2, registers::R5);
-	setRegisterValue(registers::R2, 0xF00D8000);
-	setExpectedRegisterValue(registers::R5, 0x8000);
-	step();
+	getCpu().regs().set(registers::R2, 0xF00D8000);
+	Step();
+	ExpectThat().Register(registers::R5).Equals(0x8000);
 }
