@@ -31,6 +31,7 @@ public:
 	RegisterMutationPredicate& Equals(uint32_t value);
 	RegisterMutationPredicate& DidNotChange();
 	RegisterMutationPredicate& Changed();
+	RegisterMutationPredicate& WasIncrementedBy(uint32_t amount);
 };
 
 

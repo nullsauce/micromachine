@@ -66,6 +66,17 @@ CpuMutationPredicate& CpuMutationPredicate::APSRFlagsDidNotChange() {
 	return *this;
 }
 
+CpuMutationPredicate& CpuMutationPredicate::IPSRFlagsDidNotChange() {
+	EXPECT_EQ(_previous.regs().interrupt_status_register().exception_num(), _current.regs().interrupt_status_register()
+	.exception_num());
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::EPSRFlagsDidNotChange() {
+	EXPECT_EQ(_previous.regs().execution_status_register().thumb_bit_set(), _current.regs().execution_status_register().thumb_bit_set());
+	EXPECT_EQ(_previous.regs().execution_status_register().stack_alignment(),_current.regs().execution_status_register().stack_alignment());
+	return *this;
+}
 
 CpuMutationPredicate& CpuMutationPredicate::RegistersDidNotChange() {
 	for (reg_idx r = 0; r < registers::NUM_GP_REGS; r++) {
@@ -98,6 +109,21 @@ CpuMutationPredicate& CpuMutationPredicate::ExceptionHandlerReached(exception::T
 CpuMutationPredicate& CpuMutationPredicate::HardfaultHandlerReached() {
 	ExceptionIsActive(exception::Type::HARDFAULT);
 	ExceptionHandlerReached(exception::Type::HARDFAULT);
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::PrimaskStatusIs(bool value) {
+	EXPECT_EQ(value, _current.regs().primask_register().pm());
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::IPSRExceptionNumberIs(exception::Type ex) {
+	EXPECT_EQ(ex, _current.regs().interrupt_status_register().exception_num());
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsSet() {
+	EXPECT_TRUE(_current.regs().execution_status_register().thumb_bit_set());
 	return *this;
 }
 
