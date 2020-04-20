@@ -17,6 +17,8 @@
 /* STR - Register
    Encoding: 0101 000 Rm:3 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(strRegister, UseAMixOfRegisters, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 4);
@@ -26,6 +28,9 @@ MICROMACHINE_TEST_F(strRegister, UseAMixOfRegisters, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(strRegister, UseAnotherMixOfRegisters, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R1, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
 	getCpu().regs().set(registers::R1, 4);
@@ -35,6 +40,9 @@ MICROMACHINE_TEST_F(strRegister, UseAnotherMixOfRegisters, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(strRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().set(registers::R4, 0x44444444U);
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R0, registers::R7, registers::R4);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 4);
@@ -44,17 +52,21 @@ MICROMACHINE_TEST_F(strRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(strRegister, AttemptUnalignedStore, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 2);
-	ExpectThat().HardfaultHandlerReached();
 	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 
 MICROMACHINE_TEST_F(strRegister, AttemptStoreToInvalidAddress, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("0101000mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
 	getCpu().regs().set(registers::R7, 0);
-	ExpectThat().HardfaultHandlerReached();
 	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
