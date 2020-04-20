@@ -512,7 +512,7 @@ static void exec(const blx instruction, registers& regs) {
 
 static void exec(const ldr_literal instruction, registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm32();
-	uint32_t base 	= binops::aligned(regs.get_pc(), 4);
+	uint32_t base 	= binops::aligned<4>(regs.get_pc());
 	uint32_t address = base + offset;
 	uint32_t value = mem.read32(address);
 	regs.set(instruction.rt(), value);
@@ -685,7 +685,7 @@ static void exec(const ldr_sp_imm instruction, registers& regs, const memory& me
 
 static void exec(const adr instruction, registers& regs) {
 	uint32_t offset = instruction.imm32();
-	uint32_t base 	= binops::aligned(regs.get_pc(), 4); // PC
+	uint32_t base 	= binops::aligned<4>(regs.get_pc()); // PC
 	uint32_t address = base + offset;
 	regs.set(instruction.rd(), address);
 }
@@ -974,12 +974,17 @@ static void exec(const msr instruction, registers& regs, apsr_reg& apsr) {
 		} break;
 		case msr::SpecialRegister::MSP: {
 			// TODO: Should fail if not in privileged mode
-			uint32_t sp = bits<2,30>::of(regs.get(instruction.rn)) << 2;
+
+			// align to word address (multiple of 4)
+			uint32_t sp = binops::aligned<4>(regs.get(instruction.rn));
 			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main, sp);
 		} break;
 		case msr::SpecialRegister::PSP: {
 			// TODO: Should fail if not in privileged mode
-			uint32_t sp = bits<2,30>::of(regs.get(instruction.rn));
+
+			// align to word address (multiple of 4)
+			uint32_t sp = binops::aligned<4>(regs.get(instruction.rn));
+
 			regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process, sp);
 		} break;
 		case msr::SpecialRegister::PRIMASK: {

@@ -11,138 +11,190 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
+
+/* SYSm field values for MSR and MRS instructions. */
+#define SYS_APSR    0
+#define SYS_IAPSR   1
+#define SYS_EAPSR   2
+#define SYS_XPSR    3
+#define SYS_IPSR    5
+#define SYS_EPSR    6
+#define SYS_IEPSR   7
+#define SYS_MSP     8
+#define SYS_PSP     9
+#define SYS_PRIMASK 16
+#define SYS_CONTROL 20
 
 
 /* MSR
    Encoding: 11110 0 1110 0 (0) Rn:4
              10 (0) 0 (1) (0) (0) (0) SYSm:8 */
-TEST_F(CpuTestHarness, msr_ToAPSR)
-{
+MICROMACHINE_TEST_F(msr, ToAPSR, CpuTestFixture) {
+
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_APSR);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedXPSRflags("NZCV");
-	clearNegative();
-	clearZero();
-	clearCarry();
-	clearOverflow();
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.XPSRFlagsEquals("NZCV");
 }
 
-TEST_F(CpuTestHarness, msr_ToIAPSR)
-{
+MICROMACHINE_TEST_F(msr, ToIAPSR, CpuTestFixture) {
+
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_IAPSR);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedXPSRflags("NZCV");
-	clearNegative();
-	clearZero();
-	clearCarry();
-	clearOverflow();
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+	getCpu().regs().app_status_register().write_neg_flag(false);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.XPSRFlagsEquals("NZCV");
 }
 
-TEST_F(CpuTestHarness, msr_ToEAPSR)
-{
+MICROMACHINE_TEST_F(msr, ToEAPSR, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_EAPSR);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedXPSRflags("NZCV");
-	clearNegative();
-	clearZero();
-	clearCarry();
-	clearOverflow();
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
+
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.XPSRFlagsEquals("NZCV");
 }
 
-TEST_F(CpuTestHarness, msr_ToXPSR)
-{
+MICROMACHINE_TEST_F(msr, ToXPSR, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R0, SYS_XPSR);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setExpectedXPSRflags("NZCV");
-	clearNegative();
-	clearZero();
-	clearCarry();
-	clearOverflow();
-	setRegisterValue(registers::R0, 0xFFFFFFFF);
-	step();
+	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().regs().app_status_register().write_zero_flag(false);
+	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().regs().set(registers::R0, 0xFFFFFFFF);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.XPSRFlagsEquals("NZCV");
 }
 
-TEST_F(CpuTestHarness, msr_ToIPSR)
-{
+MICROMACHINE_TEST_F(msr, ToIPSRIsIgnored, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_IPSR);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.IPSRFlagsDidNotChange();
 }
 
-TEST_F(CpuTestHarness, msr_ToEPSR)
-{
+MICROMACHINE_TEST_F(msr, ToEPSRIsIgnored, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_EPSR);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.EPSRFlagsDidNotChange();
 }
 
-TEST_F(CpuTestHarness, msr_ToIEPSR)
-{
+MICROMACHINE_TEST_F(msr, ToIEPSRIsIgnored, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_IEPSR);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.EPSRFlagsDidNotChange()
+		.IPSRFlagsDidNotChange();
 }
 
-TEST_F(CpuTestHarness, msr_ToMSP)
-{
+MICROMACHINE_TEST_F(msr, ToMSP, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	const uint32_t spValue = INITIAL_PC + 1024 + 2;
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_MSP);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setRegisterValue(registers::R12, INITIAL_PC + 1024 + 2);
-	setExpectedRegisterValue(registers::SP, INITIAL_PC + 1024);
-	step();
+	getCpu().regs().set(registers::R12, spValue);
+
+	// the sp value is aligned to lowest 4 bytes address boundary
+	uint32_t expectedSpValue = binops::aligned<4>(spValue);
+
+	Step();
+	EXPECT_EQ(expectedSpValue, getCpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
+	EXPECT_EQ(0U, getCpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Process));
+	ExpectThat()
+		.Register(registers::SP).Equals(expectedSpValue)
+		.Register(registers::PC).WasIncrementedBy(4);
 }
 
-TEST_F(CpuTestHarness, msr_ToPSP)
-{
+MICROMACHINE_TEST_F(msr, ToPSP, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	const uint32_t spValue = INITIAL_PC + 1024 + 2;
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_PSP);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
+	getCpu().regs().set(registers::R12, spValue);
+
+	// the sp value is aligned to lowest 4 bytes address boundary
+	uint32_t expectedSpValue = binops::aligned<4>(spValue);
+
+	Step();
+	EXPECT_EQ(expectedSpValue, getCpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Process));
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.Register(registers::SP).DidNotChange();
 }
 
-TEST_F(CpuTestHarness, msr_PRIMASKto1)
-{
+
+MICROMACHINE_TEST_F(msr, PRIMASKto1, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_PRIMASK);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setRegisterValue(registers::R12, 0xFFFFFFFF);
-	step();
-	EXPECT_EQ(1, PRIMASK);
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.PrimaskStatusIs(true);
 }
 
-TEST_F(CpuTestHarness, msr_PRIMASKto0)
-{
+MICROMACHINE_TEST_F(msr, PRIMASKto0, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_PRIMASK);
-	setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-	setRegisterValue(registers::R12, 0xFFFFFFFE);
-	step();
-	EXPECT_EQ(0, PRIMASK);
+	getCpu().regs().set(registers::R12, 0xFFFFFFFE);
+
+	Step();
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4)
+		.PrimaskStatusIs(false);
 }
-/*
-TEST_F(CpuTestHarness, msr_CONTROLIgnored)
-{
-    code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_CONTROL);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC + 4);
-    setRegisterValue(registers::R12, 0xFFFFFFFF);
-    step(&m_context);
-    EXPECT_EQ(0, CONTROL);
+
+
+MICROMACHINE_TEST_F(msr, ToCONTROL, CpuTestFixture) {
+	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_CONTROL);
+	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
+	getCpu().regs().control_register().set_n_priv(false);
+	getCpu().regs().control_register().set_sp_sel(false);
+
+	Step();
+	EXPECT_TRUE(getCpu().regs().control_register().n_priv());
+	EXPECT_TRUE(getCpu().regs().control_register().sp_sel());
+	ExpectThat()
+		.Register(registers::PC).WasIncrementedBy(4);
+
 }
-*/
+
 /*
 TEST_SIM_ONLY(msr, registers::R13IsUnpredictable)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::SP, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -150,7 +202,7 @@ TEST_SIM_ONLY(msr, registers::R15IsUnpredictable)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::PC, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -170,7 +222,7 @@ TEST_SIM_ONLY(msr, UnpredictableSYSm)
             initContext();
             code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R0, i);
             setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-            setExpectedRegisterValue(registers::PC, INITIAL_PC);
+            ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
             pinkySimStep(&m_context);
         }
     }
@@ -180,7 +232,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_8)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001001ssssssss", registers::R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -188,7 +240,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_9)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001010ssssssss", registers::R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -196,7 +248,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_10)
 {
     code_gen().emit_ins32("111100111000nnnn", "10001100ssssssss", registers::R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -204,7 +256,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_11)
 {
     code_gen().emit_ins32("111100111000nnnn", "10000000ssssssss", registers::R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -212,7 +264,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit2_13)
 {
     code_gen().emit_ins32("111100111000nnnn", "10101000ssssssss", registers::R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     pinkySimStep(&m_context);
 }
 
@@ -220,7 +272,7 @@ TEST_SIM_ONLY(msr, UnpredictableBecauseOfBit1_4)
 {
     code_gen().emit_ins32("111100111001nnnn", "10001000ssssssss", registers::R0, SYS_XPSR);
     setExpectedStepReturn(CPU_STEP_UNPREDICTABLE);
-    setExpectedRegisterValue(registers::PC, INITIAL_PC);
+    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
     step(&m_context);
 }
 */
