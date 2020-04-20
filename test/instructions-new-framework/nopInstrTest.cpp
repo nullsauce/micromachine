@@ -11,23 +11,23 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* NOP
    Encoding: 1011 1111 0000 0000 */
-TEST_F(CpuTestHarness, nop_BasicTest)
-{
+MICROMACHINE_TEST_F(nop, BasicTest, CpuTestFixture) {
 	code_gen().emit_ins16("1011111100000000");
-	step();
+	Step();
+	ExpectThat()
+		.InstructionExecutedWithoutBranch();
 }
 
 
-
 /* Unallocated hint encodings with OpB == 0 are treated as NOP as well. */
-// TODO: The doc says it should raise and UNDEFINED excepption
+// TODO: Adapt this test because the doc says it should raise and UNDEFINED exception
 /*
-TEST_F(CpuTestHarness, nop_UnallocatedHints)
+MICROMACHINE_TEST_F(nop, UnallocatedHints, CpuTestFixture)
 {
     for (uint32_t opA = 5 ; opA < 16 ; opA++)
     {
