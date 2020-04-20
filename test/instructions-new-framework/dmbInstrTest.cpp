@@ -18,7 +18,7 @@
    Encoding: 11110 0 111 01 1 (1)(1)(1)(1)
              10 (0) 0 (1)(1)(1)(1) 0101 option:4 */
 MICROMACHINE_TEST_F(dmb, OptionSetTo15, CpuTestFixture) {
-	static uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 15);
 	Step();
@@ -26,7 +26,7 @@ MICROMACHINE_TEST_F(dmb, OptionSetTo15, CpuTestFixture) {
 }
 
 MICROMACHINE_TEST_F(dmb, OptionSetTo0, CpuTestFixture) {
-	static uint32_t INITIAL_PC = 0x00001000;
+	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 0);
 	Step();
