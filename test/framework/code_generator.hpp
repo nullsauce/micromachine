@@ -22,6 +22,10 @@ public:
 	void emit_ins32(const char* encoding1, const char* encoding2, ...);
 	void write(uint16_t instruction);
 
+	void emit_nop() {
+		emit_ins16("1011111100000000");
+	}
+
 	void emit_adc(reg_idx m, reg_idx d) {
 		emit_ins16("0100000101mmmddd", m, d);
 	}
