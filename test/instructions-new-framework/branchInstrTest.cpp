@@ -48,7 +48,7 @@ MICROMACHINE_TEST_F(b, BEQ_Taken, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_zero_flag(true);
 	Step();
 	ExpectThat().XPSRFlagsEquals("Z");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BNE_NotTaken, CpuTestFixture) {
@@ -65,7 +65,7 @@ MICROMACHINE_TEST_F(b, BNE_Taken, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_zero_flag(false);
 	Step();
 	ExpectThat().XPSRFlagsEquals("z");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BCS_NotTaken, CpuTestFixture) {
@@ -82,7 +82,7 @@ MICROMACHINE_TEST_F(b, BCS_Taken, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().XPSRFlagsEquals("C");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BCC_NotTaken, CpuTestFixture) {
@@ -101,7 +101,7 @@ MICROMACHINE_TEST_F(b, BCC_Taken, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().XPSRFlagsEquals("c");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BMI_NotTaken, CpuTestFixture) {
@@ -117,7 +117,7 @@ MICROMACHINE_TEST_F(b, BMI_Taken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_MI, 0);
 	getCpu().regs().app_status_register().write_neg_flag(true);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("N");
 }
 
@@ -134,7 +134,7 @@ MICROMACHINE_TEST_F(b, BPL_Taken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_PL, 0);
 	getCpu().regs().app_status_register().write_neg_flag(false);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("n");
 }
 
@@ -151,7 +151,7 @@ MICROMACHINE_TEST_F(b, BVS_Taken, CpuTestFixture) {
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_VS, 0);
 	getCpu().regs().app_status_register().write_overflow_flag(true);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("V");
 }
 
@@ -169,7 +169,7 @@ MICROMACHINE_TEST_F(b, BVC_Taken, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_overflow_flag(false);
 	Step();
 	ExpectThat().XPSRFlagsEquals("v");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BHI_NotTaken, CpuTestFixture) {
@@ -187,7 +187,7 @@ MICROMACHINE_TEST_F(b, BHI_Taken, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_carry_flag(true);
 	getCpu().regs().app_status_register().write_zero_flag(false);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("Cz");
 }
 
@@ -206,7 +206,7 @@ MICROMACHINE_TEST_F(b, BLS_Taken, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_carry_flag(false);
 	getCpu().regs().app_status_register().write_zero_flag(true);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("cZ");
 }
 
@@ -225,7 +225,7 @@ MICROMACHINE_TEST_F(b, BGE_Taken1, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_neg_flag(true);
 	getCpu().regs().app_status_register().write_overflow_flag(true);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("NV");
 }
 
@@ -237,7 +237,7 @@ MICROMACHINE_TEST_F(b, BGE_Taken2, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_overflow_flag(false);
 	Step();
 	ExpectThat().XPSRFlagsEquals("nv");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BLT_NotTaken, CpuTestFixture) {
@@ -256,7 +256,7 @@ MICROMACHINE_TEST_F(b, BLT_Taken1, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_overflow_flag(false);
 	Step();
 	ExpectThat().XPSRFlagsEquals("Nv");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BLT_Taken2, CpuTestFixture) {
@@ -267,7 +267,7 @@ MICROMACHINE_TEST_F(b, BLT_Taken2, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_overflow_flag(true);
 	Step();
 	ExpectThat().XPSRFlagsEquals("nV");
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BGT_NotTaken, CpuTestFixture) {
@@ -287,7 +287,7 @@ MICROMACHINE_TEST_F(b, BGT_Taken1, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_neg_flag(false);
 	getCpu().regs().app_status_register().write_overflow_flag(false);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("znv");
 }
 
@@ -299,7 +299,7 @@ MICROMACHINE_TEST_F(b, BGT_Taken2, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_neg_flag(true);
 	getCpu().regs().app_status_register().write_overflow_flag(true);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("zNV");
 }
 
@@ -322,7 +322,7 @@ MICROMACHINE_TEST_F(b, BLE_Taken1, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_neg_flag(true);
 	getCpu().regs().app_status_register().write_overflow_flag(false);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("ZNv");
 }
 
@@ -334,7 +334,7 @@ MICROMACHINE_TEST_F(b, BLE_Taken2, CpuTestFixture) {
 	getCpu().regs().app_status_register().write_neg_flag(false);
 	getCpu().regs().app_status_register().write_overflow_flag(true);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 	ExpectThat().XPSRFlagsEquals("ZnV");
 }
 
@@ -367,7 +367,7 @@ MICROMACHINE_TEST_F(b, BAL_ZeroOffset, CpuTestFixture) {
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins16("11100iiiiiiiiiii", 0);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(b, BAL_LargestPositiveOffset, CpuTestFixture) {

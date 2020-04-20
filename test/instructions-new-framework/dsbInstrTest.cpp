@@ -22,7 +22,7 @@ MICROMACHINE_TEST_F(dsb, OptionSetTo15, CpuTestFixture) {
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110100oooo", 15);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
 
 MICROMACHINE_TEST_F(dsb, OptionSetTo0, CpuTestFixture) {
@@ -30,5 +30,5 @@ MICROMACHINE_TEST_F(dsb, OptionSetTo0, CpuTestFixture) {
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001110111111", "100011110100oooo", 0);
 	Step();
-	ExpectThat().Register(registers::PC).WasIncrementedBy(4)
+	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
 }
