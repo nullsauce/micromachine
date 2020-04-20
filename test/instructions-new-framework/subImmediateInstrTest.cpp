@@ -11,77 +11,71 @@
     GNU General Public License for more details.
 */
 
-#include "CpuTestHarness.hpp"
+#include "CpuTestFixture.hpp"
 
 
 /* SUB - Immediate - Encoding T1
    Encoding: 000 11 1 1 Imm:3 Rn:3 Rd:3 */
-TEST_F(CpuTestHarness, subImmediate_T1UseLowestRegisterOnly_SmallestImmediate)
-{
+MICROMACHINE_TEST_F(subImmediate, T1UseLowestRegisterOnly_SmallestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("0001111iiinnnddd", 0, registers::R0, registers::R0);
-	setExpectedXPSRflags("nZCv");
-	setExpectedRegisterValue(registers::R0, 0U);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().Register(registers::R0).Equals(0U);
 }
 
-TEST_F(CpuTestHarness, subImmediate_T1UseHigestRegisterOnly_LargestImmediate)
-{
+MICROMACHINE_TEST_F(subImmediate, T1UseHigestRegisterOnly_LargestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("0001111iiinnnddd", 7, registers::R7, registers::R7);
-	setExpectedXPSRflags("nzCv");
-	setExpectedRegisterValue(registers::R7, 0x77777777U - 7U);
-	step();
+	getCpu().regs().set(registers::R7, 0x77777777U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().Register(registers::R7).Equals(0x77777777U - 7U);
 }
 
-TEST_F(CpuTestHarness, subImmediate_T1UseDifferentRegistersForEachArg)
-{
+MICROMACHINE_TEST_F(subImmediate, T1UseDifferentRegistersForEachArg, CpuTestFixture) {
 	code_gen().emit_ins16("0001111iiinnnddd", 3, registers::R0, registers::R2);
-	setExpectedXPSRflags("Nzcv");
-	setExpectedRegisterValue(registers::R2, 0U - 3U);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().Register(registers::R2).Equals(0U - 3U);
 }
 
-TEST_F(CpuTestHarness, subImmediate_T1ForceOverflowPastLargestNegativeInteger)
-{
+MICROMACHINE_TEST_F(subImmediate, T1ForceOverflowPastLargestNegativeInteger, CpuTestFixture) {
 	code_gen().emit_ins16("0001111iiinnnddd", 1, registers::R1, registers::R6);
-	setExpectedXPSRflags("nzCV");
-	setRegisterValue(registers::R1, 0x80000000);
-	setExpectedRegisterValue(registers::R6, 0x80000000U - 1U);
-	step();
+	getCpu().regs().set(registers::R1, 0x80000000);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().Register(registers::R6).Equals(0x80000000U - 1U);
 }
 
 
 
 /* SUB - Immediate - Encoding T2
    Encoding: 001 11 Rdn:3 Imm:8 */
-TEST_F(CpuTestHarness, subImmediate_T2LowestRegister_SmallestImmediate)
-{
+MICROMACHINE_TEST_F(subImmediate, T2LowestRegister_SmallestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R0, 0);
-	setExpectedXPSRflags("nZCv");
-	setExpectedRegisterValue(registers::R0, 0U);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("nZCv");
+	ExpectThat().Register(registers::R0).Equals(0U);
 }
 
-TEST_F(CpuTestHarness, subImmediate_T2HigestRegister_LargestImmediate)
-{
+MICROMACHINE_TEST_F(subImmediate, T2HigestRegister_LargestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R7, 255);
-	setExpectedXPSRflags("nzCv");
-	setExpectedRegisterValue(registers::R7, 0x77777777U - 255U);
-	step();
+	getCpu().regs().set(registers::R7, 0x77777777U);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCv");
+	ExpectThat().Register(registers::R7).Equals(0x77777777U - 255U);
 }
 
-TEST_F(CpuTestHarness, subImmediate_T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult)
-{
+MICROMACHINE_TEST_F(subImmediate, T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult, CpuTestFixture) {
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R0, 127);
-	setExpectedXPSRflags("Nzcv");
-	setExpectedRegisterValue(registers::R0, 0U - 127U);
-	step();
+	Step();
+	ExpectThat().XPSRFlagsEquals("Nzcv");
+	ExpectThat().Register(registers::R0).Equals(0U - 127U);
 }
 
-TEST_F(CpuTestHarness, subImmediate_T2ForceOverflowPastLargestNegativeInteger)
-{
+MICROMACHINE_TEST_F(subImmediate, T2ForceOverflowPastLargestNegativeInteger, CpuTestFixture) {
 	code_gen().emit_ins16("00111dddiiiiiiii", registers::R3, 1);
-	setExpectedXPSRflags("nzCV");
-	setRegisterValue(registers::R3, 0x80000000);
-	setExpectedRegisterValue(registers::R3, 0x80000000U - 1U);
-	step();
+	getCpu().regs().set(registers::R3, 0x80000000);
+	Step();
+	ExpectThat().XPSRFlagsEquals("nzCV");
+	ExpectThat().Register(registers::R3).Equals(0x80000000U - 1U);
 }
