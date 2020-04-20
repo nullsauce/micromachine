@@ -14,8 +14,9 @@ This is the startup file for LPC81x. The C definition of the vector tables are d
 .extern _isr_hardfault
 .extern _isr_svcall
 .extern _isr_pendsv
-.extern _isr_sistick
-.extern _isr_external_interrupt
+.extern _isr_systick
+// external interupts
+.extern _isr_usart
 
 
 .align 2
@@ -37,10 +38,9 @@ This is the startup file for LPC81x. The C definition of the vector tables are d
 .long 0
 .long _isr_pendsv
 .long _isr_systick
-.long _isr_external_interrupt
 
 /* IRQ 0 */
-.long 0
+.long _isr_usart // mapped to exti_00
 .long 0
 .long 0
 .long 0

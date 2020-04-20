@@ -12,6 +12,6 @@ INTERRUPT_DEFAULT_IMPL void _isr_svcall(void);
 INTERRUPT_DEFAULT_IMPL void _isr_pendsv(void);
 
 void _isr_systick(void);
-void _isr_external_interrupt(void);
+void _isr_usart(void);
 
 #endif //MICROMACHINE_EMU_INTERRUPT_HANDLERS_H
