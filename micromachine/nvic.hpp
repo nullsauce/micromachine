@@ -185,10 +185,8 @@ public:
 	}
 
 	void reset() {
-		_iser_reg.reset();
-		_icer_reg.reset();
-		_ispr_reg.reset();
-		_icpr_reg.reset();
+		_interrupt_enable_statuses = 0U;
+		_interrupt_pending_statuses = 0U;
 		for(auto& reg : _priority_regs) {
 			reg.reset();
 		}
