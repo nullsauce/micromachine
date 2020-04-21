@@ -17,6 +17,7 @@ cpu::cpu()
 	, _generic_io_reg(std::ref(_io_reg_callback))
 	, _system_timer(_interrupter)
 	, _mem(_interrupter,{
+		std::make_pair(cpuid_reg::CPUID, std::ref(_cpuid_reg)),
 		std::make_pair(shpr2_reg::SHPR2, std::ref(_shpr2_reg)),
 		std::make_pair(shpr3_reg::SHPR3, std::ref(_shpr3_reg)),
 		std::make_pair(systick_control_reg::SYST_CSR, std::ref(_system_timer.control_register())),
