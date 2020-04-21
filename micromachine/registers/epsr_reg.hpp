@@ -25,6 +25,10 @@ struct epsr_reg : public xpsr_reg {
 	bool stack_alignment() const {
 		return bit(STACK_ALIGNMENT);
 	}
+
+	void reset() {
+		set_thumb_bit(true);
+	}
 };
 
 

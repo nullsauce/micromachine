@@ -63,7 +63,8 @@ void cpu::reset(uint32_t initial_pc) {
 	uint32_t initial_sp_main = _mem.read32_unchecked(0U) & 0xFFFFFFFC;
 
 	_break_signal = false;
-	_regs.exec_mode_register().set_thread_mode();
+
+
 	_regs.reset();
 	_regs.app_status_register().reset();
 	_regs.set_sp(initial_sp_main);
