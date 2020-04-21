@@ -92,6 +92,15 @@ CpuMutationPredicate& CpuMutationPredicate::NoInterruptIsPending() {
 	return *this;
 }
 
+CpuMutationPredicate& CpuMutationPredicate::NoInterruptIsActive() {
+	EXPECT_FALSE(_current.exceptions().any_active());
+	return IPSRExceptionNumberIs(exception::INVALID);
+}
+
+CpuMutationPredicate& CpuMutationPredicate::NoInterruptIsActiveOrPending() {
+	return NoInterruptIsActive().NoInterruptIsPending();
+}
+
 CpuMutationPredicate& CpuMutationPredicate::ExceptionIsPending(exception::Type ex) {
 	EXPECT_TRUE(_current.exceptions().at(ex).is_pending());
 	return *this;
@@ -120,6 +129,16 @@ CpuMutationPredicate& CpuMutationPredicate::PrimaskStatusIs(bool value) {
 
 CpuMutationPredicate& CpuMutationPredicate::IPSRExceptionNumberIs(exception::Type ex) {
 	EXPECT_EQ(ex, _current.regs().interrupt_status_register().exception_num());
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::ExecutionIsInHandlerMode() {
+	EXPECT_TRUE(_current.regs().exec_mode_register().is_handler_mode());
+	return *this;
+}
+
+CpuMutationPredicate& CpuMutationPredicate::ExecutionIsInThreadMode() {
+	EXPECT_TRUE(_current.regs().exec_mode_register().is_thread_mode());
 	return *this;
 }
 
