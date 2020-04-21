@@ -92,6 +92,14 @@ public:
 		return _tx_register;
 	}
 
+	void reset() {
+		_control_register.reset();
+		_interrupt_status_register.reset();
+		_interrupt_clear_register.reset();
+		_rx_register.reset();
+		_tx_register.reset();
+	}
+
 private:
 	usart_cr1_reg& _control_register;
 	usart_is_reg& _interrupt_status_register;
