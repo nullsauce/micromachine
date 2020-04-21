@@ -8,7 +8,7 @@
 struct ipsr_reg : public xpsr_reg {
 
 	using xpsr_reg::xpsr_reg;
-	// IPSR bits are XPSR's bit 0 to 5
+
 	using ipsr_bits = bits<0, 6>;
 
 	void set_exception_number(exception::Type number) {
@@ -17,6 +17,10 @@ struct ipsr_reg : public xpsr_reg {
 
 	exception::Type exception_num() const {
 		return static_cast<exception::Type>(ipsr_bits::of(_xpsr).extract());
+	}
+
+	void reset() {
+		ipsr_bits::of(_xpsr) = 0U;
 	}
 
 private:

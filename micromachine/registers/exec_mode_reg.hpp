@@ -10,7 +10,6 @@ class exec_mode_reg {
 
 public:
 
-
 	exec_mode_reg()
 		: _exec_mode(execution_mode::thread) {
 	}
@@ -29,6 +28,10 @@ public:
 
 	void set_thread_mode() {
 		set_mode(execution_mode::thread);
+	}
+
+	void reset() {
+		set_thread_mode();
 	}
 
 private:
