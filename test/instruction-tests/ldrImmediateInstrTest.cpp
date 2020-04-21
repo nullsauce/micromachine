@@ -29,6 +29,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1UseAMixOfRegistersWithSmallestOffset, CpuTes
 MICROMACHINE_TEST_F(ldrImmediate, T1UseAnotherMixOfRegistersWithLargestOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("01101iiiiinnnttt", 31, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
 	getCpu().mem().write32(INITIAL_PC + 31 * 4, 0xBAADFEED);
@@ -39,6 +40,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1UseAnotherMixOfRegistersWithLargestOffset, C
 MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("01101iiiiinnnttt", 0, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC + 2);
 	Step();
@@ -48,6 +50,8 @@ MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
 MICROMACHINE_TEST_F(ldrImmediate, T1AttemptLoadFromInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().set(registers::R2, 0x22222222U);
+	getCpu().regs().set(registers::R3, 0x33333333U);
 	code_gen().emit_ins16("01101iiiiinnnttt", 16, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC - 16 * 4);
 	Step();
@@ -76,21 +80,26 @@ MICROMACHINE_TEST_F(ldrImmediate, T2UseLowestRegisterWithLargestOffset, CpuTestF
 	ExpectThat().Register(registers::R0).Equals(0xBAADFEED);
 }
 /*
-TEST_SIM_ONLY(ldrImmediate, T2AttemptUnalignedLoad)
-{
-    code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
-    getCpu().regs().set(registers::SP, INITIAL_PC + 1026);
-    setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
-    ExpectThat().Register(registers::PC).Equals(INITIAL_PC);
-    getCpu().mem().write32(m_context.pMemory, INITIAL_PC + 1024, 0xBAADFEED, READ_ONLY);
-    pinkySimStep(&m_context);
+ * This tst is disabled because the implementation of SP can't store unaligned values
+ * TODO: Fix this
+ *
+MICROMACHINE_TEST_F(ldrImmediate, T2AttemptUnalignedLoad, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
+	code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
+	getCpu().regs().set(registers::SP, INITIAL_PC + 1026);
+	getCpu().mem().write32(INITIAL_PC + 1024, 0xBAADFEED);
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 
-TEST_SIM_ONLY(ldrImmediate, T2AttemptLoadFromInvalidAddress)
-{
-    code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
-    getCpu().regs().set(registers::R3, 0xFFFFFFFC);
-    setExpectedExceptionHandled(CPU_STEP_HARDFAULT);
-    step(&m_context);
+MICROMACHINE_TEST_F(ldrImmediate, T2AttemptLoadFromInvalidAddress, CpuTestFixture) {
+	const uint32_t INITIAL_PC = code_gen().write_address();
+	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().set(registers::R2, 0x22222222U);
+	code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
+	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
+	Step();
+	ExpectThat().HardfaultHandlerReached();
 }
 */
