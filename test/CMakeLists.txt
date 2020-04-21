@@ -205,6 +205,7 @@ declare_test(exceptions/exception_prioritisation.cpp)
 declare_test(exceptions/exception_vector.cpp)
 declare_test(systick.cpp)
 declare_test(nvic.cpp)
+declare_test(reset/reset_tests.cpp)
 
 # disabled until we dont rely anymore on bkp to stop execution flow.
 #declare_test(instructions/bkptInstrTest.cpp)

@@ -45,12 +45,16 @@ public:
 	CpuMutationPredicate& EPSRFlagsDidNotChange();
 	CpuMutationPredicate& RegistersDidNotChange();
 	CpuMutationPredicate& NoInterruptIsPending();
+	CpuMutationPredicate& NoInterruptIsActive();
+	CpuMutationPredicate& NoInterruptIsActiveOrPending();
 	CpuMutationPredicate& ExceptionIsPending(exception::Type ex);
 	CpuMutationPredicate& ExceptionIsActive(exception::Type ex);
 	CpuMutationPredicate& ExceptionHandlerReached(exception::Type ex);
 	CpuMutationPredicate& HardfaultHandlerReached();
 	CpuMutationPredicate& PrimaskStatusIs(bool value);
 	CpuMutationPredicate& IPSRExceptionNumberIs(exception::Type ex);
+	CpuMutationPredicate& ExecutionIsInHandlerMode();
+	CpuMutationPredicate& ExecutionIsInThreadMode();
 	CpuMutationPredicate& ThumbBitIsSet();
 	CpuMutationPredicate& ThumbBitIsNotSet();
 
