@@ -63,17 +63,21 @@ MICROMACHINE_TEST_F(ldrshRegister, LoadPositiveHalfWord, CpuTestFixture) {
 MICROMACHINE_TEST_F(ldrshRegister, AttemptUnalignedLoad, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
-	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R0);
+	getCpu().regs().set(registers::R2, 0x22222222U);
+	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 1);
 	Step();
 	ExpectThat().HardfaultHandlerReached();
+	ExpectThat().Register(registers::R2).DidNotChange();
 }
 
-MICROMACHINE_TEST_F(ldrshRegister, AttemptLoadFromInvalidAddress, CpuTestFixture) {
-	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R0);
+MICROMACHINE_TEST_F(ldrshRegister,  AttemptLoadFromInvalidAddress, CpuTestFixture) {
+	getCpu().regs().set(registers::R2, 0x22222222U);
+	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
 	getCpu().regs().set(registers::R7, 0);
 	Step();
 	ExpectThat().HardfaultHandlerReached();
+	ExpectThat().Register(registers::R2).DidNotChange();
 }
