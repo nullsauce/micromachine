@@ -8,6 +8,7 @@
 
 #include <utility>
 
+
 #include "types.hpp"
 #include "exec.hpp"
 #include "instructions.hpp"
@@ -16,6 +17,9 @@
 #include "registers/registers.hpp"
 #include "registers/apsr_reg.hpp"
 #include "registers/custom/generic_io_reg.hpp"
+#include "registers/system_control/shpr2.hpp"
+#include "registers/system_control/shpr3.hpp"
+#include "registers/system_control/systick.hpp"
 #include "registers/system_control/cpuid.hpp"
 #include "registers/exec_mode_reg.hpp"
 #include "registers/event_register.hpp"
