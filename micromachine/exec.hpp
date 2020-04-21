@@ -553,9 +553,9 @@ static void exec(const ldrsb_reg instruction, registers& regs, const memory& mem
 	uint32_t offset = regs.get(instruction.rm());
 	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	int8_t value = mem.read8(address, ok);
-	if(ok) {
+	bool memory_access_success = false;
+	int8_t value = mem.read8(address, memory_access_success);
+	if(memory_access_success) {
 		regs.set(instruction.rt(), value);
 	}
 }
@@ -565,9 +565,9 @@ static void exec(const ldr_reg instruction, registers& regs, const memory& mem) 
 	uint32_t offset = regs.get(instruction.rm());
 	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	uint32_t value = mem.read32(address, ok);
-	if(ok) {
+	bool memory_access_success = false;
+	uint32_t value = mem.read32(address, memory_access_success);
+	if(memory_access_success) {
 		regs.set(instruction.rt(), value);
 	}
 }
@@ -577,9 +577,9 @@ static void exec(const ldrh_reg instruction, registers& regs, const memory& mem)
 	uint32_t offset = regs.get(instruction.rm());
 	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	uint16_t value = mem.read16(address, ok);
-	if(ok) {
+	bool memory_access_success = false;
+	uint16_t value = mem.read16(address, memory_access_success);
+	if(memory_access_success) {
 		regs.set(instruction.rt(), (uint32_t) value);
 	}
 }
@@ -589,9 +589,9 @@ static void exec(const ldrb_reg instruction, registers& regs, const memory& mem)
 	uint32_t offset = regs.get(instruction.rm());
 	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	uint8_t value = mem.read8(address, ok);
-	if(ok) {
+	bool memory_access_success = false;
+	uint8_t value = mem.read8(address, memory_access_success);
+	if(memory_access_success) {
 		regs.set(instruction.rt(), (uint32_t) value);
 	}
 }
@@ -601,9 +601,9 @@ static void exec(const ldrsh_reg instruction, registers& regs, const memory& mem
 	uint32_t offset = regs.get(instruction.rm());
 	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	int16_t value = mem.read16(address, ok);
-	if(ok) {
+	bool memory_access_success = false;
+	int16_t value = mem.read16(address, memory_access_success);
+	if(memory_access_success) {
 		regs.set(instruction.rt(), value);
 	}
 }
@@ -621,7 +621,12 @@ static void exec(const ldr_imm instruction, registers& regs, const memory& mem) 
 	uint32_t offset = instruction.imm32();
 	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	regs.set(instruction.rt(), mem.read32(address));
+
+	bool memory_access_success = false;
+	uint32_t value = mem.read32(address, memory_access_success);
+	if(memory_access_success) {
+		regs.set(instruction.rt(), value);
+	}
 }
 
 static void exec(const strb_imm instruction, const registers& regs, memory& mem) {
@@ -636,10 +641,10 @@ static void exec(const ldrb_imm instruction, registers& regs, const memory& mem)
 	uint32_t offset = instruction.imm5();
 	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	uint32_t value = mem.read8(address, ok);
 
-	if(ok) {
+	bool memory_access_success = false;
+	uint32_t value = mem.read8(address, memory_access_success);
+	if(memory_access_success) {
 		regs.set(instruction.rt(), value);
 	}
 }
@@ -656,9 +661,10 @@ static void exec(const ldrh_imm instruction, registers& regs, const memory& mem)
 	uint32_t offset = instruction.imm5() << 1U;
 	uint32_t base 	= regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	uint32_t value = mem.read16(address, ok);
-	if(ok) {
+
+	bool memory_access_success = false;
+	uint32_t value = mem.read16(address, memory_access_success);
+	if(memory_access_success) {
 		regs.set(instruction.rt(), value);
 	}
 }
@@ -881,9 +887,9 @@ static void exec(const ldm instruction, registers& regs, memory& mem) {
 	for (reg_idx rid = 0; rid < 8; rid++) {
 		if(instruction.is_set(rid)) {
 			// dont modify register if memory access is faulty
-			bool mem_access_ok = false;
-			uint32_t value = mem.read32(address, mem_access_ok);
-			if(mem_access_ok) {
+			bool memory_access_success = false;
+			uint32_t value = mem.read32(address, memory_access_success);
+			if(memory_access_success) {
 				regs.set(rid, value);
 			}
 			address += 4;
