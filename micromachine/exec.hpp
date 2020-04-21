@@ -15,7 +15,7 @@
 #include "registers/event_register.hpp"
 
 static void unpredictable() {
-	std::abort();
+	// TODO:
 }
 
 static void exec(const lsl_imm instruction, registers& regs, apsr_reg& status_reg) {
@@ -621,11 +621,7 @@ static void exec(const ldr_imm instruction, registers& regs, const memory& mem) 
 	uint32_t offset = instruction.imm32();
 	uint32_t base = regs.get(instruction.rn());
 	uint32_t address = base + offset;
-	bool ok = false;
-	uint32_t value = mem.read32(address, ok);
-	if (ok) {
-		regs.set(instruction.rt(), value);
-	}
+	regs.set(instruction.rt(), mem.read32(address));
 }
 
 static void exec(const strb_imm instruction, const registers& regs, memory& mem) {
