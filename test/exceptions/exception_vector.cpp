@@ -97,7 +97,7 @@ TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 
 TEST_F(ExceptionVectorTestBench, RaiseExternalInterrupt)
 {
-	_evec.interrupt_state(exception::EXTI_12).set_enable(true);
+	_interrupter.enable_external_interrupt(12);
 	_interrupter.raise_external_interrupt(12);
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(exception::Type::EXTI_12, _evec.top_pending()->number());
@@ -105,15 +105,15 @@ TEST_F(ExceptionVectorTestBench, RaiseExternalInterrupt)
 
 TEST_F(ExceptionVectorTestBench, RaiseDisabledExternalInterrupt)
 {
-	_evec.interrupt_state(exception::EXTI_12).set_enable(false);
+	_interrupter.disable_external_interrupt(12);
 	_interrupter.raise_external_interrupt(12);
 	ASSERT_EQ(nullptr, _evec.top_pending());
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithLowerNumberTakesPrecedenceOnExceptionWithSamePriority)
 {
-	_evec.interrupt_state(exception::EXTI_13).set_enable(true);
-	_evec.interrupt_state(exception::EXTI_12).set_enable(true);
+	_interrupter.enable_external_interrupt(13);
+	_interrupter.enable_external_interrupt(12);
 	_interrupter.raise_external_interrupt(13);
 	_interrupter.raise_external_interrupt(12);
 	ASSERT_NE(nullptr, _evec.top_pending());
@@ -121,8 +121,8 @@ TEST_F(ExceptionVectorTestBench, ExceptionWithLowerNumberTakesPrecedenceOnExcept
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithHigherNumberTakesPrecedenceOnDisabledException) {
-	_evec.interrupt_state(exception::EXTI_13).set_enable(true);
-	_evec.interrupt_state(exception::EXTI_12).set_enable(false);
+	_interrupter.enable_external_interrupt(13);
+	_interrupter.disable_external_interrupt(12);
 	_interrupter.raise_external_interrupt(13);
 	_interrupter.raise_external_interrupt(12);
 	ASSERT_NE(nullptr, _evec.top_pending());
