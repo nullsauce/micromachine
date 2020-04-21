@@ -42,7 +42,7 @@ public:
 
 private:
 
-	static const uint32_t MASK = binops::make_mask<2, 30>();
+	static const uint32_t MASK = binops::make_mask<uint32_t>(2, 30);
 
 	void set(uint32_t word) override {
 		// these two bits should always be zero, or UNPREDICTABLE
