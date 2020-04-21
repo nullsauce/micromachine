@@ -42,24 +42,20 @@ public:
 		return _number;
 	}
 
-	bool is_active() const
-	{
+	bool is_active() const {
 		return _active;
 	}
 
-	void activate()
-	{
+	void activate() {
 		_active = true;
 		set_pending(false);
 	}
 
-	void deactivate()
-	{
+	void deactivate() {
 		_active = false;
 	}
 
-	void clear_pending()
-	{
+	void clear_pending() {
 		set_pending(false);
 	}
 
@@ -311,7 +307,7 @@ public:
 		}}
 	{}
 
-	size_t highest_accepted_exception_number() {
+	size_t highest_accepted_exception_number() const {
 		return _indexed.size() - 1;
 	}
 
