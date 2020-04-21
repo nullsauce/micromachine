@@ -18,6 +18,7 @@ set(SRCS
     registers/sp_reg.hpp
     registers/standard_reg.hpp
     registers/control_reg.hpp
+    registers/system_control/cpuid.hpp
     registers/system_control/shpr2.hpp
     registers/system_control/shpr3.hpp
     registers/system_control/systick.hpp

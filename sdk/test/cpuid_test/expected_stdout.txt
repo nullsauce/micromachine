@@ -1,0 +1,2 @@
+address = e000ed00
+value = 'MM|a'
