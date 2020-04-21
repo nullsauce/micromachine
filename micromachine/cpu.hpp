@@ -16,6 +16,7 @@
 #include "registers/registers.hpp"
 #include "registers/apsr_reg.hpp"
 #include "registers/custom/generic_io_reg.hpp"
+#include "registers/system_control/cpuid.hpp"
 #include "registers/exec_mode_reg.hpp"
 #include "registers/event_register.hpp"
 #include "context_switcher.hpp"
@@ -98,6 +99,7 @@ public:
 		, _event_register(existing_cpu._event_register)
 		, _system_timer(_interrupter, existing_cpu._system_timer)
 		, _mem(_interrupter,{
+			std::make_pair(cpuid_reg::CPUID, std::ref(_cpuid_reg)),
 			std::make_pair(shpr2_reg::SHPR2, std::ref(_shpr2_reg)),
 			std::make_pair(shpr3_reg::SHPR3, std::ref(_shpr3_reg)),
 			std::make_pair(systick_control_reg::SYST_CSR, std::ref(_system_timer.control_register())),
@@ -157,6 +159,7 @@ private:
 	exception_state_vector _exception_vector;
 	interrupter			_interrupter;
 	nvic				_nvic;
+	cpuid_reg			_cpuid_reg;
 	shpr2_reg 			_shpr2_reg;
 	shpr3_reg 			_shpr3_reg;
 	generic_io_reg		_generic_io_reg;

@@ -2,6 +2,7 @@ add_subdirectory(md5sum_test)
 add_subdirectory(timer_test)
 add_subdirectory(arithmetic_test)
 add_subdirectory(static_initialization)
+add_subdirectory(cpuid_test)
 
 # pass the --testing flag to the vm to enable various testing behaviors
 # such as filling uninitialized memory with non-zero values
@@ -56,5 +57,9 @@ add_test_command(
 	${CMAKE_CURRENT_SOURCE_DIR}/static_initialization/re_initialized_data_value_expected_stdout.txt
 )
 
-
+add_test_command(
+	cpuid_test
+	${CMAKE_CURRENT_BINARY_DIR}/cpuid_test/cpuid_test
+	${CMAKE_CURRENT_SOURCE_DIR}/cpuid_test/expected_stdout.txt
+)
 
