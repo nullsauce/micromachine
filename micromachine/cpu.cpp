@@ -72,6 +72,7 @@ void cpu::reset(uint32_t initial_pc) {
 	_shpr2_reg.reset();
 	_shpr3_reg.reset();
 	_nvic.reset();
+	_exception_vector.reset();
 
 }
 
