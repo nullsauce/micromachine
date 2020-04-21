@@ -49,8 +49,10 @@ MICROMACHINE_TEST_F(ldrhImmediate, LargestOffset, CpuTestFixture) {
 MICROMACHINE_TEST_F(ldrhImmediate, AttemptLoadFromInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
-	code_gen().emit_ins16("10001iiiiinnnttt", 0, registers::R3, registers::R0);
+	getCpu().regs().set(registers::R2, 0x22222222U);
+	code_gen().emit_ins16("10001iiiiinnnttt", 0, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
 	Step();
 	ExpectThat().HardfaultHandlerReached();
+	ExpectThat().Register(registers::R2).DidNotChange();
 }

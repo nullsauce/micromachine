@@ -45,17 +45,18 @@ MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
 	getCpu().regs().set(registers::R3, INITIAL_PC + 2);
 	Step();
 	ExpectThat().HardfaultHandlerReached();
+	ExpectThat().Register(registers::R2).DidNotChange();
 }
 
 MICROMACHINE_TEST_F(ldrImmediate, T1AttemptLoadFromInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	getCpu().regs().set_pc(INITIAL_PC);
 	getCpu().regs().set(registers::R2, 0x22222222U);
-	getCpu().regs().set(registers::R3, 0x33333333U);
 	code_gen().emit_ins16("01101iiiiinnnttt", 16, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC - 16 * 4);
 	Step();
 	ExpectThat().HardfaultHandlerReached();
+	ExpectThat().Register(registers::R2).DidNotChange();
 }
 
 /* LDR - Immediate Encoding T2 (SP is base register)
@@ -91,6 +92,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T2AttemptUnalignedLoad, CpuTestFixture) {
 	getCpu().mem().write32(INITIAL_PC + 1024, 0xBAADFEED);
 	Step();
 	ExpectThat().HardfaultHandlerReached();
+	ExpectThat().Register(registers::R2).DidNotChange();
 }
 
 MICROMACHINE_TEST_F(ldrImmediate, T2AttemptLoadFromInvalidAddress, CpuTestFixture) {
@@ -101,5 +103,6 @@ MICROMACHINE_TEST_F(ldrImmediate, T2AttemptLoadFromInvalidAddress, CpuTestFixtur
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
 	Step();
 	ExpectThat().HardfaultHandlerReached();
+	ExpectThat().Register(registers::R2).DidNotChange();
 }
 */
