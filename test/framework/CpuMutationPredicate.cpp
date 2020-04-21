@@ -109,9 +109,8 @@ CpuMutationPredicate& CpuMutationPredicate::ExceptionHandlerReached(exception::T
 }
 
 CpuMutationPredicate& CpuMutationPredicate::HardfaultHandlerReached() {
-	ExceptionIsActive(exception::Type::HARDFAULT);
-	ExceptionHandlerReached(exception::Type::HARDFAULT);
-	return *this;
+	return ExceptionIsActive(exception::Type::HARDFAULT)
+		.ExceptionHandlerReached(exception::Type::HARDFAULT);
 }
 
 CpuMutationPredicate& CpuMutationPredicate::PrimaskStatusIs(bool value) {
