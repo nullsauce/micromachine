@@ -315,6 +315,12 @@ public:
 		return _indexed.size() - 1;
 	}
 
+	size_t supported_exception_count() const {
+		return _indexed.size();
+	}
+
+
+
 private:
 	non_implemented_exception_state _used_for_sp;
 	fixed_priority_exception_state<exception::RESET_PRIORITY> _reset;
