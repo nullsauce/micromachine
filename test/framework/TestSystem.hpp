@@ -28,6 +28,17 @@ private:
 	std::vector<uint8_t> _memoryStorage;
 	cpu _cpu;
 
+	void initializeInterruptVectorTableWithStubs() {
+		constexpr uint32_t handlers_base = 0x3000;
+		constexpr uint32_t fake_handler_size = 0x10;
+
+		// note that these stub handlers are not valid code
+		for (uint32_t i = 1; i < _cpu.exceptions().supported_exception_count(); ++i) {
+			uint32_t handler_address = handlers_base + (i * fake_handler_size);
+			_cpu.mem().write32(i * sizeof(uint32_t), handler_address);
+		}
+	}
+
 public:
 	TestSystem()
 		: _memoryStorage(MEMORY_SIZE) {
@@ -40,6 +51,8 @@ public:
 
 		// write SP to memory address 0x0
 		((uint32_t*)_memoryStorage.data())[0] = INITIAL_SP;
+
+		initializeInterruptVectorTableWithStubs();
 
 		// initialize the cpu
 		_cpu.reset(INITIAL_PC);
