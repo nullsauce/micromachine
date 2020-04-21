@@ -150,6 +150,7 @@ public:
 	}
 
 	void reset(uint32_t program_entry_point) {
+		_usart_ctrl.reset();
 		_systick.reset();
 		_shpr2_reg.reset();
 		_shpr3_reg.reset();
