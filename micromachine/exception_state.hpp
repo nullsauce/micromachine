@@ -67,6 +67,13 @@ public:
 		clear_pending();
 		deactivate();
 	}
+
+	void copy_state_from(const exception_state& other) {
+		_active = other._active;
+		set_priority(other.priority());
+		set_pending(other.is_pending());
+		set_enable(other.is_enabled());
+	}
 };
 
 class internal_exception_state : public exception_state {
@@ -237,9 +244,11 @@ public:
 	exception_state_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, const exception_state_vector& existing_state)
 		: exception_state_vector(nvic, sph2, sph3) {
 		// Initializes everything as usual.
-		// Then copy the interrupt from the existing state
+		// Then copy the exception states from the existing state
 		for(size_t i = 0; i < _indexed.size(); i++) {
-			_indexed[i] = existing_state._indexed[i];
+			auto& current = _indexed[i].get();
+			auto& existing = existing_state._indexed[i].get();
+			current.copy_state_from(existing);
 		}
 	}
 
