@@ -81,13 +81,16 @@ public:
 	static constexpr reg_idx LR = 14;
 	static constexpr reg_idx PC = 15;
 
-
 	void reset() {
-		for(reg_idx i = 0; i < NUM_REGS; i++) {
+		_control_register.reset();
+		_exec_mode_register.reset();
+		_execution_status_register.reset();
+		_app_status_register.reset();
+		_interrupt_status_register.reset();
+		_primask_register.reset();
+		for (reg_idx i = 0; i < NUM_REGS; i++) {
 			set(i, 0);
 		}
-		_execution_status_register.set_thumb_bit(1);
-		_control_register.reset();
 	}
 
 	uint32_t get(reg_idx i) const {

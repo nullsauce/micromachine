@@ -19,10 +19,8 @@ class iword_reg : public ireg {
 		using ireg::operator=;
 		using ireg::operator uint32_t;
 		void reset() override {
-			set(0);
+			*this = 0U;
 		}
-	private:
-		virtual void set(uint32_t word) = 0;
 };
 
 class word_reg : public iword_reg {
