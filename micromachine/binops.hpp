@@ -12,31 +12,36 @@
 
 namespace binops {
 
+/**
+ * Returns the number of bits used by type T
+ * @tparam T integer type
+ * @return The sie in bits of T
+ */
 template<typename T>
 static constexpr size_t binsize() {
 	return sizeof(T) * 8U;
 }
 
+/**
+ * Overload for binsize<bool> that always returns 1
+ * On most platform boolean are aligned to a byte
+ * and will report a size of 1 byte.
+ * @tparam T integer type
+ * @return 1
+ */
 template<>
 constexpr size_t binsize<bool>() {
-	return 1;
+	return 1U;
 }
 
+/**
+ * Returns the number of bits used by type T (type deduced overload)
+ * @tparam T integer type
+ * @return
+ */
 template<typename T>
 static constexpr size_t binsize(T) {
 	return binsize<T>();
-}
-
-template<typename u_type>
-static u_type make_mask() {
-	precond(binsize<u_type>() <= binsize<u_type>(), "dest value can't hold num_bits");
-	return ((1ULL << binsize<u_type>()) - 1ULL);
-}
-
-template<typename u_type>
-static u_type make_mask(const size_t num_bits) {
-	precond(num_bits <= binsize<u_type>(), "dest value can't hold num_bits");
-	return ((1ULL << num_bits) - 1ULL);
 }
 
 template<typename T>
@@ -54,14 +59,6 @@ static bool get_bit(const u_type& source, size_t bit_offset) {
 	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
 	return source & (1 << bit_offset);
 }
-
-template <typename u_type>
-static u_type get_bits(const u_type& source, size_t bit_offset, size_t len) {
-	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
-	precond(bit_offset+len <= binsize<u_type>(), "len is too big");
-	return (source >> bit_offset) & binops::make_mask<u_type>(len);
-}
-
 
 template <typename u_type>
 static bool get_sign_bit(const u_type& source) {
@@ -89,31 +86,44 @@ static void write_bit(u_type& dest, size_t bit_offset, bool value) {
 	}
 }
 
-template<size_t num_bits>
-static constexpr size_t make_mask() {
-	return ((1ULL<<num_bits)-1ULL);
+/**
+ * Returns an integer of type u_type with the first num_bits lSB bits set to 1
+ * @tparam u_type
+ * @tparam num_bits
+ * @return
+ */
+template<typename u_type>
+static constexpr u_type make_mask(size_t num_bits) {
+	return ((1ULL << num_bits) - 1ULL);
 }
 
-template<size_t offset, size_t num_bits>
-static constexpr size_t make_mask() {
-	return make_mask<num_bits>() << offset;
+/**
+ * Returns an integer of type u_type with all bits set to 1
+ * @tparam u_type
+ * @return
+ */
+template<typename u_type>
+static constexpr u_type make_mask() {
+	return make_mask<u_type>(binsize<u_type>());
 }
+
+/**
+ * Returns an integer of type u_type with the bits from offset to offset + num_bits set to 1
+ * @tparam u_type
+ * @tparam num_bits
+ * @return
+ */
+template<typename u_type>
+static constexpr u_type make_mask(size_t offset, size_t num_bits) {
+	return ((1ULL << num_bits) - 1ULL) << offset;
+}
+
 
 template<size_t _offset, size_t _size>
 struct range {
 	static const size_t offset = _offset;
 	static const size_t size = _size;
 };
-
-template<typename u_type, typename bitrange>
-static u_type genbits() {
-	return make_mask<u_type>(bitrange::size) << bitrange::offset;
-}
-
-template<typename u_type, size_t offset, size_t size>
-static u_type genbits() {
-	return make_mask<u_type>(size) << offset;
-}
 
 template<typename u_type>
 u_type sign(const u_type& source, const size_t num_bits) {
@@ -151,7 +161,7 @@ static u_type read_sint(const u_type& source, const size_t bit_offset, const siz
 
 template <typename u_type>
 static bool all_bits_set(const u_type& source, size_t bit_offset, size_t num_bits) {
-	return read_uint<u_type>(source, bit_offset, num_bits) == make_mask<u_type>(num_bits);
+	return read_uint<u_type>(source, bit_offset, num_bits) == make_mask<u_type, num_bits>();
 }
 
 template <typename u_type>

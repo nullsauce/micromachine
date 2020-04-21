@@ -32,7 +32,7 @@ public:
 		assert(_regs.exec_mode_register().is_handler_mode());
 
 		// Ensure that bits 4 to 24 are set
-		if((uint32_t)binops::make_mask<24>() != (uint32_t)bits<4,24>::of(ret_address)) {
+		if((uint32_t)binops::make_mask<uint32_t>(24) != (uint32_t)bits<4,24>::of(ret_address)) {
 			// unpredictable
 			fprintf(stderr, "unpredictable.\n");
 		}
