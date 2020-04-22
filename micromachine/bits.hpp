@@ -160,6 +160,11 @@ struct slice {
 		return extract() == other.extract();
 	}
 
+	bool are_set() const {
+		return extract() == binops::make_mask<smallest_std_integer>(len);
+	}
+
+
 private:
 
 	void write_bits(integer_type& dst, size_t dst_offset, integer_type src, size_t src_offset, size_t dst_len) {
