@@ -82,12 +82,6 @@ public:
 	static constexpr reg_idx PC = 15;
 
 	void reset() {
-		_control_register.reset();
-		_exec_mode_register.reset();
-		_execution_status_register.reset();
-		_app_status_register.reset();
-		_interrupt_status_register.reset();
-		_primask_register.reset();
 		for (reg_idx i = 0; i < NUM_REGS; i++) {
 			set(i, 0);
 		}
