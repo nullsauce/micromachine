@@ -26,7 +26,7 @@
 MICROMACHINE_TEST_F(lslImmediate, MovR7toR0_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("00000iiiiimmmddd", IMM_0, registers::R7, registers::R0);
 	getCpu().regs().set(registers::R7, 0x77777777U);
-	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().APSRFlagsMatches("nzc");
 	ExpectThat().Register(registers::R0).Equals(0x77777777U);
@@ -34,7 +34,7 @@ MICROMACHINE_TEST_F(lslImmediate, MovR7toR0_CarryUnmodified, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(lslImmediate, MovR0toR7_ZeroResultAndCarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("00000iiiiimmmddd", IMM_0, registers::R0, registers::R7);
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().APSRFlagsMatches("nZC");
 	ExpectThat().Register(registers::R7).Equals(0x0);

@@ -10,11 +10,11 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_INTERRUPTOR_HPP
 #define MICROMACHINE_EMU_INTERRUPTOR_HPP
 
-#include "exception_state.hpp"
+#include "exception_vector.hpp"
 
 class interrupter {
 private:
-	exception_state_vector& _exception_vector;
+	exception_vector& _exception_vector;
 
 	template<exception::Type Ex>
 	void raise() {
@@ -23,7 +23,9 @@ private:
 
 public:
 
-	interrupter(exception_state_vector& exception_vector);
+	interrupter(exception_vector& exception_vector)
+		: _exception_vector(exception_vector)
+	{}
 
 	void raise_nmi() {
 		raise<exception::Type::NMI>();
@@ -70,6 +72,7 @@ public:
 	exception::priority_t exception_priority() {
 		return _exception_vector.interrupt_state<Ex>().priority();
 	}
+
 
 };
 

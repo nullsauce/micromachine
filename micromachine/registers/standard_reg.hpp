@@ -5,17 +5,19 @@
 
 class standard_reg : public ireg {
 public:
-
 	using ireg::operator=;
-	standard_reg() : _word(0) {}
-	standard_reg(const standard_reg& existing_state) : _word(existing_state) {}
+
+	standard_reg()
+		: _word(0) {}
+
+	standard_reg(const standard_reg& existing_state)
+		: _word(existing_state) {}
 
 	void reset() override {
 		set(0);
 	}
 
 private:
-
 	void set(uint32_t word) override {
 		_word = word;
 	}
@@ -28,4 +30,4 @@ protected:
 	uint32_t _word;
 };
 
-#endif //MICROMACHINE_STANDARD_REG_HPP_HPP
+#endif // MICROMACHINE_STANDARD_REG_HPP_HPP

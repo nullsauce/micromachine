@@ -20,7 +20,7 @@
 MICROMACHINE_TEST_F(movImmediate, MovToR0, CpuTestFixture) {
 	code_gen().emit_ins16("00100dddiiiiiiii", registers::R0, 127);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().Register(registers::R0).Equals(127);
 	ExpectThat().APSRFlagsMatches("nzc");
@@ -28,7 +28,7 @@ MICROMACHINE_TEST_F(movImmediate, MovToR0, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(movImmediate, MovToR7, CpuTestFixture) {
 	code_gen().emit_ins16("00100dddiiiiiiii", registers::R7, 127);
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().APSRFlagsMatches("nzC");
 	ExpectThat().Register(registers::R7).Equals(127);

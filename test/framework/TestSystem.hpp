@@ -10,7 +10,7 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_TESTSYSTEM_HPP
 #define MICROMACHINE_TESTSYSTEM_HPP
 
-#include "cpu.hpp"
+#include "system.hpp"
 
 #include <array>
 
@@ -26,16 +26,16 @@ public:
 
 private:
 	std::vector<uint8_t> _memoryStorage;
-	cpu _cpu;
+	class system _system;
 
 	void initializeInterruptVectorTableWithStubs() {
 		constexpr uint32_t handlers_base = 0x3000;
 		constexpr uint32_t fake_handler_size = 0x10;
 
 		// note that these stub handlers are not valid code
-		for (uint32_t i = 1; i < _cpu.exceptions().supported_exception_count(); ++i) {
+		for (uint32_t i = 1; i < _system.get_cpu().exceptions().supported_exception_count(); ++i) {
 			uint32_t handler_address = handlers_base + (i * fake_handler_size);
-			_cpu.mem().write32(i * sizeof(uint32_t), handler_address);
+			_system.get_memory().write32(i * sizeof(uint32_t), handler_address);
 		}
 	}
 
@@ -44,7 +44,7 @@ public:
 		: _memoryStorage(MEMORY_SIZE) {
 		// Maps host to virtual memory
 		// There's only one segment in the test system
-		_cpu.mem().map(_memoryStorage.data(), 0, _memoryStorage.size());
+		_system.get_memory().map(_memoryStorage.data(), 0, _memoryStorage.size());
 
 		// zero memory
 		std::fill(_memoryStorage.begin(), _memoryStorage.end(), 0);
@@ -54,24 +54,32 @@ public:
 
 		initializeInterruptVectorTableWithStubs();
 
-		// initialize the cpu
-		_cpu.reset(INITIAL_PC);
+		// initialize the system
+		_system.reset(INITIAL_PC);
 
 	};
 
 	TestSystem(const TestSystem& other)
 		: _memoryStorage(other._memoryStorage)
-		, _cpu(other._cpu) {
+		, _system(other._system) {
 		// Map the existing memory
-		_cpu.mem().map(_memoryStorage.data(), 0, _memoryStorage.size());
+		_system.get_memory().map(_memoryStorage.data(), 0, _memoryStorage.size());
+	}
+
+	const class system& getSystem() const {
+		return _system;
+	}
+
+	class system& getSystem() {
+		return _system;
 	}
 
 	const cpu& getCpu() const {
-		return _cpu;
+		return _system.get_cpu();
 	}
 
 	cpu& getCpu() {
-		return _cpu;
+		return _system.get_cpu();
 	}
 };
 

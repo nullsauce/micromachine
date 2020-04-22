@@ -12,7 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/widgets/text_display.hpp>
-#include <exception_state.hpp>
+#include <exception_vector.hpp>
 
 namespace {
 	const char* interrupt_names[] = {

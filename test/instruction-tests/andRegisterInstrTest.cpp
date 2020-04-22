@@ -31,7 +31,7 @@ MICROMACHINE_TEST_F(andRegister, UseHighestRegisterForBothArgs, CpuTestFixture) 
 	getCpu().regs().set(registers::R7, 0x77777777);
 
 	// check that carry remains set
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().Register(registers::R7).Equals(0x77777777);
 	ExpectThat().APSRFlagsMatches("nzC");

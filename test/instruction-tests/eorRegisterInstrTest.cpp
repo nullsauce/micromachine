@@ -20,7 +20,7 @@
 MICROMACHINE_TEST_F(eorRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100000001mmmddd", registers::R0, registers::R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().Register(registers::R0).Equals(0);
 	ExpectThat().APSRFlagsMatches("nZc");
@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(eorRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 MICROMACHINE_TEST_F(eorRegister, UseHighestRegisterForBothArgs, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100000001mmmddd", registers::R7, registers::R7);
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().Register(registers::R7).Equals(0);
 	ExpectThat().APSRFlagsMatches("nZC");
@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(eorRegister, XorR3andR7, CpuTestFixture) {
 	getCpu().regs().set(registers::R3, 0x33333333);
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("0100000001mmmddd", registers::R3, registers::R7);
-	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().APSRFlagsMatches("nzc");
 	ExpectThat().Register(registers::R7).Equals(0x33333333 ^ 0x77777777);
@@ -49,7 +49,7 @@ MICROMACHINE_TEST_F(eorRegister, UseXorToJustFlipNegativeSignBitOn, CpuTestFixtu
 	code_gen().emit_ins16("0100000001mmmddd", registers::R6, registers::R3);
 	getCpu().regs().set(registers::R3, 0x33333333);
 	getCpu().regs().set(registers::R6, 0x80000000);
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().APSRFlagsMatches("NzC");
 	ExpectThat().Register(registers::R3).Equals(0x33333333 ^ 0x80000000);

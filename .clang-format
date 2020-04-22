@@ -9,10 +9,12 @@ BreakConstructorInitializers: BeforeComma
 ColumnLimit: '100'
 CompactNamespaces: 'false'
 IncludeBlocks: Preserve
+IndentCaseLabels: 'true'
 IndentWidth: '4'
 PenaltyBreakTemplateDeclaration: '0'
 PointerAlignment: Left
 SpaceAfterTemplateKeyword: 'true'
+SpaceBeforeParens: Never
 Standard: Cpp11
 TabWidth: '4'
 UseTab: ForContinuationAndIndentation
@@ -20,5 +22,4 @@ BinPackArguments: 'false'
 BinPackParameters: 'false'
 AllowAllArgumentsOnNextLine: 'false'
 AllowAllParametersOfDeclarationOnNextLine: 'false'
-
 ...
