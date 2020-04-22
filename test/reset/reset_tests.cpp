@@ -37,6 +37,14 @@ MICROMACHINE_TEST_F(ResetBehavior, PcIsSetToGivenPosition, CpuResetTest) {
 	ExpectThat().Register(registers::PC).Equals(0x20);
 }
 
+
+MICROMACHINE_TEST_F(ResetBehavior, LrIsReset, CpuResetTest) {
+	getCpu().regs().set_lr(0xdeed00aa);
+	getCpu().reset(0x20);
+	ExpectThat().Register(registers::LR).Equals(0);
+}
+
+
 MICROMACHINE_TEST_F(ResetBehavior, PendingInternalExceptionIsCleared, CpuResetTest) {
 	getCpu().interrupt().raise_hardfault();
 	getCpu().reset(0x20);
