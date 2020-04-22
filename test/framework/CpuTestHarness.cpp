@@ -15,18 +15,18 @@ uint32_t CpuTestHarness::interrupt_handler_address(uint32_t exception_number)
 {
 	uint32_t vector_table_offset = exception_number * sizeof(uint32_t);
 	// clears the thumb bit from the address
-	uint32_t address = _cpu.mem().read32(vector_table_offset) & ~1;
+	uint32_t address = _system.get_memory().read32(vector_table_offset) & ~1;
 	return address;
 }
 
 void CpuTestHarness::memory_write_32(uint32_t address, uint32_t value)
 {
-	_cpu.mem().write32(address, value);
+	_system.get_memory().write32(address, value);
 }
 
 uint32_t CpuTestHarness::memory_read_32(uint32_t address)
 {
-	return _cpu.mem().read32(address);
+	return _system.get_memory().read32(address);
 }
 
 void CpuTestHarness::step()
@@ -43,10 +43,10 @@ void CpuTestHarness::SetUp()
 	_memory.resize(MEMORY_SIZE);
 
 	// map host memory
-	_cpu.mem().map(_memory.data(), 0, _memory.size());
+	_system.get_memory().map(_memory.data(), 0, _memory.size());
 
 	// expose cpu memory to assembler
-	_code_gen.set_mem(&_cpu.mem());
+	_code_gen.set_mem(&_system.get_memory());
 
 	initContext();
 }
@@ -57,7 +57,7 @@ void CpuTestHarness::initContext()
 	// zero memory
 	std::fill(_memory.begin(), _memory.end(), 0);
 
-	_cpu.reset(INITIAL_PC);
+	_system.reset(INITIAL_PC);
 
 	// assembler will start emiting instructions at the initial code position
 	_code_gen.set_write_address(INITIAL_PC);
@@ -76,12 +76,10 @@ void CpuTestHarness::initContext()
 	// fake vector table
 	for (uint32_t i = 1; i < 32; i++) {
 		uint32_t vt_offset = i * sizeof(uint32_t);
-		_cpu.mem().write32(vt_offset, (0x1000 + (vt_offset * 32)) | 1);
+		_system.get_memory().write32(vt_offset, (0x1000 + (vt_offset * 32)) | 1);
 	}
-	_cpu.mem().write32(INITIAL_PC, 0);
+	_system.get_memory().write32(INITIAL_PC, 0);
 
-	/* By default we will place the processor in Thumb mode. */
-	_cpu.regs().execution_status_register().set_thumb_bit(true);
 	// all tests are expected to run in thumb mode
 	m_expectedXPSRflags |= EPSR_T;
 
@@ -93,10 +91,10 @@ void CpuTestHarness::initContext()
 	for (uint32_t bit = 28; bit < 32; bit++) {
 		int setOrClear = rand() & 1;
 		if (setOrClear) {
-			binops::set_bit(_cpu.regs().xpsr_register(), bit);
+			binops::set_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
 			m_expectedXPSRflags |= (1 << bit);
 		} else {
-			binops::clear_bit(_cpu.regs().xpsr_register(), bit);
+			binops::clear_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
 			m_expectedXPSRflags &= ~(1 << bit);
 		}
 	}
@@ -105,7 +103,7 @@ void CpuTestHarness::initContext()
 	uint32_t value = 0;
 
 	for (int i = 0; i < 13; i++) {
-		_cpu.regs().set(i, value);
+		_system.get_cpu().regs().set(i, value);
 		m_expectedRegisterValues[i] = value;
 		value += 0x11111111;
 	}
@@ -159,42 +157,42 @@ void CpuTestHarness::setExpectedXPSRflags(const char *pExpectedFlags)
 		switch (*pExpectedFlags) {
 			case 'n':
 				m_expectedXPSRflags &= ~APSR_N;
-				_cpu.regs().app_status_register().write_neg_flag(true);
+				_system.get_cpu().special_regs().app_status_register().write_neg_flag(true);
 				//apsr |= APSR_N;
 				break;
 			case 'N':
 				m_expectedXPSRflags |= APSR_N;
-				_cpu.regs().app_status_register().write_neg_flag(false);
+				_system.get_cpu().special_regs().app_status_register().write_neg_flag(false);
 				//apsr &= ~APSR_N;
 				break;
 			case 'z':
 				m_expectedXPSRflags &= ~APSR_Z;
-				_cpu.regs().app_status_register().write_zero_flag(true);
+				_system.get_cpu().special_regs().app_status_register().write_zero_flag(true);
 				//apsr |= APSR_Z;
 				break;
 			case 'Z':
 				m_expectedXPSRflags |= APSR_Z;
-				_cpu.regs().app_status_register().write_zero_flag(false);
+				_system.get_cpu().special_regs().app_status_register().write_zero_flag(false);
 				//apsr &= ~APSR_Z;
 				break;
 			case 'c':
 				m_expectedXPSRflags &= ~APSR_C;
-				_cpu.regs().app_status_register().write_carry_flag(true);
+				_system.get_cpu().special_regs().app_status_register().write_carry_flag(true);
 				//apsr |= APSR_C;
 				break;
 			case 'C':
 				m_expectedXPSRflags |= APSR_C;
-				_cpu.regs().app_status_register().write_carry_flag(false);
+				_system.get_cpu().special_regs().app_status_register().write_carry_flag(false);
 				//apsr &= ~APSR_C;
 				break;
 			case 'v':
 				m_expectedXPSRflags &= ~APSR_V;
-				_cpu.regs().app_status_register().write_overflow_flag(true);
+				_system.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
 				//apsr |= APSR_V;
 				break;
 			case 'V':
 				m_expectedXPSRflags |= APSR_V;
-				_cpu.regs().app_status_register().write_overflow_flag(false);
+				_system.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
 				//apsr &= ~APSR_V;
 				break;
 			case 't':
@@ -235,7 +233,7 @@ void CpuTestHarness::setRegisterValue(reg_idx index, uint32_t value)
 	assert (index <= registers::PC);
 
 	setExpectedRegisterValue(index, value);
-	_cpu.regs().set(index, value);
+	_system.get_cpu().regs().set(index, value);
 
 	if (index == registers::PC) {
 		setExpectedRegisterValue(index, value + 2);
@@ -245,18 +243,18 @@ void CpuTestHarness::setRegisterValue(reg_idx index, uint32_t value)
 void CpuTestHarness::pinkySimStep()
 {
 	// TODO: why do we have a PRIMASK variable here ?
-	_cpu.regs().primask_register() = PRIMASK;
-	_cpu.step();
+	_system.get_cpu().special_regs().primask_register() = PRIMASK;
+	_system.step();
 	validateXPSR();
 	validateRegisters();
 	validateSignaledException();
-	PRIMASK = _cpu.regs().primask_register();
+	PRIMASK = _system.get_cpu().special_regs().primask_register();
 }
 
 void CpuTestHarness::validateSignaledException()
 {
 	if (CPU_STEP_HARDFAULT == m_expectedStepReturn) {
-		EXPECT_TRUE(_cpu.exceptions().interrupt_state<exception::Type::HARDFAULT>().is_active());
+		EXPECT_TRUE(_system.get_cpu().exceptions().interrupt_state<exception::Type::HARDFAULT>().is_active());
 	} else {
 		assert("TODO implement");
 	}
@@ -275,72 +273,72 @@ void CpuTestHarness::validateXPSR()
 	};
 
 	char currentFlagsStr[6] = {
-		(_cpu.regs().xpsr_register() & APSR_N) ? 'N' : 'n',
-		(_cpu.regs().xpsr_register() & APSR_Z) ? 'Z' : 'z',
-		(_cpu.regs().xpsr_register() & APSR_C) ? 'C' : 'c',
-		(_cpu.regs().xpsr_register() & APSR_V) ? 'V' : 'v',
-		(_cpu.regs().xpsr_register() & EPSR_T) ? 'T' : 't',
+		(_system.get_cpu().special_regs().xpsr_register() & APSR_N) ? 'N' : 'n',
+		(_system.get_cpu().special_regs().xpsr_register() & APSR_Z) ? 'Z' : 'z',
+		(_system.get_cpu().special_regs().xpsr_register() & APSR_C) ? 'C' : 'c',
+		(_system.get_cpu().special_regs().xpsr_register() & APSR_V) ? 'V' : 'v',
+		(_system.get_cpu().special_regs().xpsr_register() & EPSR_T) ? 'T' : 't',
 		0
 	};
 
 	//fprintf(stderr, "%s, %s\n", expectedFlagsStr, currentFlagsStr);
 
 	EXPECT_STREQ(expectedFlagsStr, currentFlagsStr);
-	EXPECT_EQ(m_expectedXPSRflags, _cpu.regs().xpsr_register() & (APSR_NZCV | EPSR_T));
-	EXPECT_EQ(m_expectedIPSR, _cpu.regs().xpsr_register() & IPSR_MASK);
+	EXPECT_EQ(m_expectedXPSRflags, _system.get_cpu().special_regs().xpsr_register() & (APSR_NZCV | EPSR_T));
+	EXPECT_EQ(m_expectedIPSR, _system.get_cpu().special_regs().xpsr_register() & IPSR_MASK);
 }
 
 void CpuTestHarness::validateRegisters()
 {
 	for (int i = 0; i < 13; i++)
-		EXPECT_EQ(m_expectedRegisterValues[i], _cpu.regs().get(i));
+		EXPECT_EQ(m_expectedRegisterValues[i], _system.get_cpu().regs().get(i));
 	EXPECT_EQ(m_expectedSPmain,
-			  _cpu.regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
-	EXPECT_EQ(m_expectedLR, _cpu.regs().get_lr());
-	EXPECT_EQ(m_expectedPC, _cpu.regs().get_pc());
+			  _system.get_cpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
+	EXPECT_EQ(m_expectedLR, _system.get_cpu().regs().get_lr());
+	EXPECT_EQ(m_expectedPC, _system.get_cpu().regs().get_pc());
 }
 
 void CpuTestHarness::setCarry()
 {
-	_cpu.regs().app_status_register().write_carry_flag(true);
+	_system.get_cpu().special_regs().app_status_register().write_carry_flag(true);
 }
 
 void CpuTestHarness::clearCarry()
 {
-	_cpu.regs().app_status_register().write_carry_flag(false);
+	_system.get_cpu().special_regs().app_status_register().write_carry_flag(false);
 }
 
 void CpuTestHarness::setZero()
 {
-	_cpu.regs().app_status_register().write_zero_flag(true);
+	_system.get_cpu().special_regs().app_status_register().write_zero_flag(true);
 }
 
 void CpuTestHarness::clearZero()
 {
-	_cpu.regs().app_status_register().write_zero_flag(false);
+	_system.get_cpu().special_regs().app_status_register().write_zero_flag(false);
 }
 
 void CpuTestHarness::setNegative()
 {
-	_cpu.regs().app_status_register().write_neg_flag(true);
+	_system.get_cpu().special_regs().app_status_register().write_neg_flag(true);
 }
 
 void CpuTestHarness::clearNegative()
 {
-	_cpu.regs().app_status_register().write_neg_flag(false);
+	_system.get_cpu().special_regs().app_status_register().write_neg_flag(false);
 }
 
 void CpuTestHarness::setOverflow()
 {
-	_cpu.regs().app_status_register().write_overflow_flag(true);
+	_system.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
 }
 
 void CpuTestHarness::clearOverflow()
 {
-	_cpu.regs().app_status_register().write_overflow_flag(false);
+	_system.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
 }
 
 void CpuTestHarness::setIPSR(uint32_t ipsr)
 {
-	_cpu.regs().xpsr_register() = (_cpu.regs().xpsr_register() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
+	_system.get_cpu().special_regs().xpsr_register() = (_system.get_cpu().special_regs().xpsr_register() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
 }

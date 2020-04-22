@@ -29,7 +29,7 @@ CpuMutationPredicate& CpuMutationPredicate::PcDidNotChange() {
 }
 
 CpuMutationPredicate& CpuMutationPredicate::InstructionExecutedWithoutBranch() {
-	instruction_pair instruction = _previous.fetch_instruction(_previous.regs().get_pc());
+	instruction_pair instruction = _previous.mem().read32_unchecked(_previous.regs().get_pc());
 	PcWasIncrementedBy(instruction.size());
 	return *this;
 }
@@ -38,14 +38,14 @@ CpuMutationPredicate& CpuMutationPredicate::InstructionExecutedWithoutBranch() {
 CpuMutationPredicate& CpuMutationPredicate::APSRFlagsMatches(const std::string& apsrFlags) {
 	for(char c : apsrFlags) {
 		switch(c) {
-			case 'n' : EXPECT_FALSE(_current.regs().app_status_register().neg_flag()); break;
-			case 'N' : EXPECT_TRUE(_current.regs().app_status_register().neg_flag()); break;
-			case 'z' : EXPECT_FALSE(_current.regs().app_status_register().zero_flag()); break;
-			case 'Z' : EXPECT_TRUE(_current.regs().app_status_register().zero_flag()); break;
-			case 'c' : EXPECT_FALSE(_current.regs().app_status_register().carry_flag()); break;
-			case 'C' : EXPECT_TRUE(_current.regs().app_status_register().carry_flag()); break;
-			case 'v' : EXPECT_FALSE(_current.regs().app_status_register().overflow_flag()); break;
-			case 'V' : EXPECT_TRUE(_current.regs().app_status_register().overflow_flag()); break;
+			case 'n' : EXPECT_FALSE(_current.special_regs().app_status_register().neg_flag()); break;
+			case 'N' : EXPECT_TRUE(_current.special_regs().app_status_register().neg_flag()); break;
+			case 'z' : EXPECT_FALSE(_current.special_regs().app_status_register().zero_flag()); break;
+			case 'Z' : EXPECT_TRUE(_current.special_regs().app_status_register().zero_flag()); break;
+			case 'c' : EXPECT_FALSE(_current.special_regs().app_status_register().carry_flag()); break;
+			case 'C' : EXPECT_TRUE(_current.special_regs().app_status_register().carry_flag()); break;
+			case 'v' : EXPECT_FALSE(_current.special_regs().app_status_register().overflow_flag()); break;
+			case 'V' : EXPECT_TRUE(_current.special_regs().app_status_register().overflow_flag()); break;
 			default: {
 				assert(false && "Invalid APSR flag given");
 			}
@@ -55,33 +55,33 @@ CpuMutationPredicate& CpuMutationPredicate::APSRFlagsMatches(const std::string& 
 }
 
 CpuMutationPredicate& CpuMutationPredicate::XPSRRegisterDidNotChange() {
-	EXPECT_EQ(_previous.regs().xpsr_register(), _current.regs().xpsr_register());
+	EXPECT_EQ(_previous.special_regs().xpsr_register(), _current.special_regs().xpsr_register());
 	return *this;
 }
 
 
 CpuMutationPredicate& CpuMutationPredicate::APSRFlagsDidNotChange() {
-	EXPECT_EQ(_previous.regs().app_status_register().neg_flag(), _current.regs().app_status_register().neg_flag());
-	EXPECT_EQ(_previous.regs().app_status_register().zero_flag(), _current.regs().app_status_register().zero_flag());
-	EXPECT_EQ(_previous.regs().app_status_register().carry_flag(), _current.regs().app_status_register().carry_flag());
-	EXPECT_EQ(_previous.regs().app_status_register().overflow_flag(), _current.regs().app_status_register().overflow_flag());
+	EXPECT_EQ(_previous.special_regs().app_status_register().neg_flag(), _current.special_regs().app_status_register().neg_flag());
+	EXPECT_EQ(_previous.special_regs().app_status_register().zero_flag(), _current.special_regs().app_status_register().zero_flag());
+	EXPECT_EQ(_previous.special_regs().app_status_register().carry_flag(), _current.special_regs().app_status_register().carry_flag());
+	EXPECT_EQ(_previous.special_regs().app_status_register().overflow_flag(), _current.special_regs().app_status_register().overflow_flag());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::IPSRFlagsDidNotChange() {
-	EXPECT_EQ(_previous.regs().interrupt_status_register().exception_num(), _current.regs().interrupt_status_register()
+	EXPECT_EQ(_previous.special_regs().interrupt_status_register().exception_num(), _current.special_regs().interrupt_status_register()
 	.exception_num());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::EPSRFlagsDidNotChange() {
-	EXPECT_EQ(_previous.regs().execution_status_register().thumb_bit_set(), _current.regs().execution_status_register().thumb_bit_set());
-	EXPECT_EQ(_previous.regs().execution_status_register().stack_alignment(),_current.regs().execution_status_register().stack_alignment());
+	EXPECT_EQ(_previous.special_regs().execution_status_register().thumb_bit_set(), _current.special_regs().execution_status_register().thumb_bit_set());
+	EXPECT_EQ(_previous.special_regs().execution_status_register().stack_alignment(),_current.special_regs().execution_status_register().stack_alignment());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::RegistersDidNotChange() {
-	for (reg_idx r = 0; r < registers::NUM_GP_REGS; r++) {
+	for (reg_idx r = 0; r < core_registers::NUM_GP_REGS; r++) {
 		Register(r).DidNotChange();
 	}
 	return *this;
@@ -123,32 +123,32 @@ CpuMutationPredicate& CpuMutationPredicate::HardfaultHandlerReached() {
 }
 
 CpuMutationPredicate& CpuMutationPredicate::PrimaskStatusIs(bool value) {
-	EXPECT_EQ(value, _current.regs().primask_register().pm());
+	EXPECT_EQ(value, _current.special_regs().primask_register().pm());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::IPSRExceptionNumberIs(exception::Type ex) {
-	EXPECT_EQ(ex, _current.regs().interrupt_status_register().exception_num());
+	EXPECT_EQ(ex, _current.special_regs().interrupt_status_register().exception_num());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::ExecutionIsInHandlerMode() {
-	EXPECT_TRUE(_current.regs().exec_mode_register().is_handler_mode());
+	EXPECT_EQ(execution_mode::handler, _current.get_execution_mode());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::ExecutionIsInThreadMode() {
-	EXPECT_TRUE(_current.regs().exec_mode_register().is_thread_mode());
+	EXPECT_EQ(execution_mode::thread, _current.get_execution_mode());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsSet() {
-	EXPECT_TRUE(_current.regs().execution_status_register().thumb_bit_set());
+	EXPECT_TRUE(_current.special_regs().execution_status_register().thumb_bit_set());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsNotSet() {
-	EXPECT_FALSE(_current.regs().execution_status_register().thumb_bit_set());
+	EXPECT_FALSE(_current.special_regs().execution_status_register().thumb_bit_set());
 	return *this;
 }
 

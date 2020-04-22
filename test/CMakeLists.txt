@@ -22,7 +22,6 @@ add_library(test_common STATIC
 	framework/MemoryMutationPredicate.hpp
 	framework/code_generator.hpp
 	framework/code_generator.cpp
-	framework/Checklist.hpp
 	framework/TestSystem.hpp
 	framework/CpuTestFixture.hpp
 )
@@ -203,7 +202,7 @@ declare_test(instruction-tests/yieldInstrTest.cpp)
 declare_test(binary_helpers_tests.cpp)
 declare_test(exceptions/exception_prioritisation.cpp)
 declare_test(exceptions/exception_vector.cpp)
-declare_test(systick.cpp)
+declare_test(systick_control_reg.cpp)
 declare_test(nvic.cpp)
 declare_test(reset/reset_tests.cpp)
 

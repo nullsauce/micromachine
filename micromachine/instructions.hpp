@@ -5,27 +5,25 @@
 #ifndef THUMBEMU_INSTRUCTIONS_HPP
 #define THUMBEMU_INSTRUCTIONS_HPP
 
-#include <cstdint>
-#include <string>
-#include <sstream>
-#include "types.hpp"
 #include "instruction_pair.hpp"
-#include "registers/registers.hpp"
+#include "registers/core_registers.hpp"
 #include "string_format.hpp"
+#include "types.hpp"
+#include <cstdint>
+#include <sstream>
+#include <string>
 
-
-template<typename uint_type>
+template <typename uint_type>
 class generic_instruction {
 public:
-	template<typename T>
+	template <typename T>
 	using slice_of = typename T::template integer_slice<uint_type>;
 
-	template<typename T>
+	template <typename T>
 	using const_slice_of = typename T::template const_integer_slice<uint_type>;
 
 	generic_instruction(uint_type word)
-		: _word(word)
-	{}
+		: _word(word) {}
 
 	uint_type value() const {
 		return _word;
@@ -38,7 +36,7 @@ protected:
 /// Standard 1-field instruction layout
 /// \tparam f0 offset (in bits) of the first field
 /// \tparam f1 size (in bits) of the first field
-template<typename uint_type, size_t f0, size_t f1>
+template <typename uint_type, size_t f0, size_t f1>
 struct standard_1_fields : public generic_instruction<uint_type> {
 	using generic_instruction<uint_type>::generic_instruction;
 	using field0_bits = bits<f0, f1>;
@@ -58,7 +56,7 @@ struct standard_1_fields : public generic_instruction<uint_type> {
 /// \tparam f1 size (in bits) of the first field
 /// \tparam f2 offset (in bits) of the second field
 /// \tparam f3 size (in bits) of the second field
-template<typename uint_type, size_t f0, size_t f1, size_t f2, size_t f3>
+template <typename uint_type, size_t f0, size_t f1, size_t f2, size_t f3>
 struct standard_2_fields : public standard_1_fields<uint_type, f0, f1> {
 	using standard_1_fields<uint_type, f0, f1>::standard_1_fields;
 	using field1_bits = bits<f2, f3>;
@@ -79,7 +77,7 @@ struct standard_2_fields : public standard_1_fields<uint_type, f0, f1> {
 /// \tparam f3 size (in bits) of the second field
 /// \tparam f4 offset (in bits) of the third field
 /// \tparam f5 size (in bits) of the third field
-template<typename uint_type, size_t f0, size_t f1, size_t f2, size_t f3, size_t f4, size_t f5>
+template <typename uint_type, size_t f0, size_t f1, size_t f2, size_t f3, size_t f4, size_t f5>
 struct standard_3_fields : public standard_2_fields<uint_type, f0, f1, f2, f3> {
 	using standard_2_fields<uint_type, f0, f1, f2, f3>::standard_2_fields;
 	using field2_bits = bits<f4, f5>;
@@ -101,7 +99,15 @@ struct standard_3_fields : public standard_2_fields<uint_type, f0, f1, f2, f3> {
 /// \tparam f5 size (in bits) of the third field
 /// \tparam f6 offset (in bits) of the fourth field
 /// \tparam f7 size (in bits) of the fourth field
-template<typename uint_type, size_t f0, size_t f1, size_t f2, size_t f3, size_t f4, size_t f5, size_t f6, size_t f7>
+template <typename uint_type,
+		  size_t f0,
+		  size_t f1,
+		  size_t f2,
+		  size_t f3,
+		  size_t f4,
+		  size_t f5,
+		  size_t f6,
+		  size_t f7>
 struct standard_4_fields : public standard_3_fields<uint_type, f0, f1, f2, f3, f4, f5> {
 	using standard_3_fields<uint_type, f0, f1, f2, f3, f4, f5>::standard_3_fields;
 	using field3_bits = bits<f6, f7>;
@@ -115,8 +121,17 @@ struct standard_4_fields : public standard_3_fields<uint_type, f0, f1, f2, f3, f
 	}
 };
 
-template<typename uint_type, size_t f0, size_t f1, size_t f2, size_t f3, size_t f4, size_t f5, size_t f6, size_t f7,
-    size_t f8, size_t f9>
+template <typename uint_type,
+		  size_t f0,
+		  size_t f1,
+		  size_t f2,
+		  size_t f3,
+		  size_t f4,
+		  size_t f5,
+		  size_t f6,
+		  size_t f7,
+		  size_t f8,
+		  size_t f9>
 struct standard_5_fields : public standard_4_fields<uint_type, f0, f1, f2, f3, f4, f5, f6, f7> {
 	using standard_4_fields<uint_type, f0, f1, f2, f3, f4, f5, f6, f7>::standard_3_fields;
 	using field4_bits = bits<f8, f9>;
@@ -133,28 +148,28 @@ struct standard_5_fields : public standard_4_fields<uint_type, f0, f1, f2, f3, f
 /// Helper macro to declare mutable and const accessor to a standard field
 /// \param name the name of the field
 /// \param field_no the number of the field (zero-based)
-#define define_instruction_field(name, field_no) \
-	using name##_bits = field##field_no##_bits; \
-	slice_of< name##_bits > name() { \
-		return field##field_no(); \
-	} \
-	const_slice_of< name##_bits > name() const { \
-		return field##field_no(); \
-	} \
+#define define_instruction_field(name, field_no)                                                   \
+	using name##_bits = field##field_no##_bits;                                                    \
+	slice_of<name##_bits> name() {                                                                 \
+		return field##field_no();                                                                  \
+	}                                                                                              \
+	const_slice_of<name##_bits> name() const {                                                     \
+		return field##field_no();                                                                  \
+	}
 
 // standard instruction binary layouts re-used across instructions
-using layout_16_03_33_65         = standard_3_fields<uint16_t, 0, 3, 3, 3, 6, 5>;
-using layout_16_03_33_63         = standard_3_fields<uint16_t, 0, 3, 3, 3, 6, 3>;
-using layout_16_03_34_71         = standard_3_fields<uint16_t, 0, 3, 3, 4, 7, 1>;
-using layout_16_08_83            = standard_2_fields<uint16_t, 0, 8, 8, 3>;
-using layout_16_08_84            = standard_2_fields<uint16_t, 0, 8, 8, 4>;
-using layout_16_03_33            = standard_2_fields<uint16_t, 0, 3, 3, 3>;
-using layout_16_04_44            = standard_2_fields<uint16_t, 0, 4, 4, 4>;
-using layout_16_34               = standard_1_fields<uint16_t, 3, 4>;
-using layout_16_07               = standard_1_fields<uint16_t, 0, 7>;
-using layout_16_08               = standard_1_fields<uint16_t, 0, 8>;
-using layout_16_011              = standard_1_fields<uint16_t, 0, 11>;
-using layout_16_04               = standard_1_fields<uint16_t, 0, 4>;
+using layout_16_03_33_65 = standard_3_fields<uint16_t, 0, 3, 3, 3, 6, 5>;
+using layout_16_03_33_63 = standard_3_fields<uint16_t, 0, 3, 3, 3, 6, 3>;
+using layout_16_03_34_71 = standard_3_fields<uint16_t, 0, 3, 3, 4, 7, 1>;
+using layout_16_08_83 = standard_2_fields<uint16_t, 0, 8, 8, 3>;
+using layout_16_08_84 = standard_2_fields<uint16_t, 0, 8, 8, 4>;
+using layout_16_03_33 = standard_2_fields<uint16_t, 0, 3, 3, 3>;
+using layout_16_04_44 = standard_2_fields<uint16_t, 0, 4, 4, 4>;
+using layout_16_34 = standard_1_fields<uint16_t, 3, 4>;
+using layout_16_07 = standard_1_fields<uint16_t, 0, 7>;
+using layout_16_08 = standard_1_fields<uint16_t, 0, 8>;
+using layout_16_011 = standard_1_fields<uint16_t, 0, 11>;
+using layout_16_04 = standard_1_fields<uint16_t, 0, 4>;
 
 struct standard_rd_rm_imm5 : public layout_16_03_33_65 {
 	using layout_16_03_33_65::layout_16_03_33_65;
@@ -225,7 +240,6 @@ struct standard_rdn_rm_dm : public layout_16_03_34_71 {
 	reg_idx high_rm() const {
 		return rm();
 	}
-
 };
 
 // This layout is similar to standard_rdn_rm_dm
@@ -248,7 +262,6 @@ struct standard_rdn_rm_dn : public layout_16_03_34_71 {
 	reg_idx high_rm() const {
 		return rm();
 	}
-
 };
 
 struct standard_rn_rm_dm : public layout_16_03_34_71 {
@@ -295,7 +308,6 @@ struct standard_rn_rm : public layout_16_03_33 {
 	define_instruction_field(rn, 0);
 	define_instruction_field(rm, 1);
 };
-
 
 struct standard_rd_rn : public layout_16_03_33 {
 	using layout_16_03_33::layout_16_03_33;
@@ -353,7 +365,6 @@ struct standard_imm4 : public layout_16_04 {
 	define_instruction_field(imm4, 0);
 };
 
-
 struct standard_imm7 : public layout_16_07 {
 	using layout_16_07::layout_16_07;
 
@@ -375,11 +386,8 @@ struct standard_imm11 : public layout_16_011 {
 struct standard_push_register_list : public generic_instruction<uint16_t> {
 
 	standard_push_register_list(uint16_t field)
-		: generic_instruction(
-			(binops::read_uint(field, 0, 8)) |
-			(binops::get_bit(field, 8) << 14)
-		)
-	{}
+		: generic_instruction((binops::read_uint(field, 0, 8)) |
+							  (binops::get_bit(field, 8) << 14)) {}
 
 	bool is_set(reg_idx reg) const {
 		return binops::get_bit(_word, reg);
@@ -391,15 +399,11 @@ struct standard_push_register_list : public generic_instruction<uint16_t> {
 	}
 };
 
-
 struct standard_pop_register_list : public generic_instruction<uint16_t> {
 
 	standard_pop_register_list(uint16_t field)
-			: generic_instruction(
-			(binops::read_uint(field, 0, 8)) |
-			(binops::get_bit(field, 8) << 15)
-	)
-	{}
+		: generic_instruction((binops::read_uint(field, 0, 8)) |
+							  (binops::get_bit(field, 8) << 15)) {}
 
 	bool is_set(reg_idx reg) const {
 		return binops::get_bit(_word, reg);
@@ -443,23 +447,19 @@ struct sev : public generic_instruction<uint16_t> {
 
 struct adc : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
-
 };
 
 struct add_imm : public standard_rd_rn_imm3 {
 	using standard_rd_rn_imm3::standard_rd_rn_imm3;
-
 };
 
 struct add_imm_t2 : public standard_imm8_rdn {
 	// T2 version of ADD immediate
 	using standard_imm8_rdn::standard_imm8_rdn;
-
 };
 
 struct add_reg : public standard_rd_rn_rm {
 	using standard_rd_rn_rm::standard_rd_rn_rm;
-
 };
 
 struct add_highreg : public standard_rdn_rm_dn {
@@ -481,7 +481,6 @@ struct add_sp_imm_t2 : public standard_imm7 {
 	uint32_t imm32() const {
 		return imm7() << 2;
 	}
-
 };
 
 struct adr : public standard_imm8_rd {
@@ -508,8 +507,7 @@ struct asr_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 };
 
-static
-const char* condition_string(uint8_t condition) {
+static const char* condition_string(uint8_t condition) {
 	static const char* cond_names = "eqnecsccmiplvsvchilsgeltgtle";
 	return cond_names + (condition * 2U);
 }
@@ -531,8 +529,7 @@ struct unconditional_branch : public standard_imm11 {
 	using standard_imm11::standard_imm11;
 
 	unconditional_branch()
-		: standard_imm11(0b1110000000000000)
-	{}
+		: standard_imm11(0b1110000000000000) {}
 
 	// t2 encoding of B
 	uint32_t imm32() const {
@@ -556,18 +553,16 @@ struct bic_reg : public standard_rdn_rm {
 struct bl_imm {
 
 	bl_imm(const instruction_pair& instr)
-			: j1(bits<13>::of(instr.second()))
-			, j2(bits<11>::of(instr.second()))
-			, s(bits<10>::of(instr.first()))
-			, imm10(bits<0,10>::of(instr.first()))
-			, imm11(bits<0,11>::of(instr.second()))
-	{}
+		: j1(bits<13>::of(instr.second()))
+		, j2(bits<11>::of(instr.second()))
+		, s(bits<10>::of(instr.first()))
+		, imm10(bits<0, 10>::of(instr.first()))
+		, imm11(bits<0, 11>::of(instr.second())) {}
 
 	int32_t offset() const {
 		const bool i1 = !((!j1) != (!s)); // logical xor i1 = not(j1 xor s)
 		const bool i2 = !((!j2) != (!s)); // logical xor i2 = not(j2 xor s)
-		uint32_t uint25_offset =
-				(imm11 | (imm10 << 11) | (i2 << 21) | (i1 << 22) | (s << 23)) << 1;
+		uint32_t uint25_offset = (imm11 | (imm10 << 11) | (i2 << 21) | (i1 << 22) | (s << 23)) << 1;
 		return binops::sign<int32_t>(uint25_offset, 25);
 	}
 
@@ -602,16 +597,27 @@ struct eor_reg : public standard_rdn_rm {
 	using standard_rdn_rm::standard_rdn_rm;
 };
 
-static
-std::string reglist(uint8_t mask) {
-	static const char* reg_names[] = {
-		"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12",
-		"sp", "lr", "pc"
-	};
+static std::string reglist(uint8_t mask) {
+	static const char* reg_names[] = {"r0",
+									  "r1",
+									  "r2",
+									  "r3",
+									  "r4",
+									  "r5",
+									  "r6",
+									  "r7",
+									  "r8",
+									  "r9",
+									  "r10",
+									  "r11",
+									  "r12",
+									  "sp",
+									  "lr",
+									  "pc"};
 	std::stringstream ss;
 	ss << "{";
 	for(reg_idx i = 0; i < 16; i++) {
-		if (mask & (1 << i)) {
+		if(mask & (1 << i)) {
 			ss << reg_names[i] << " ";
 		}
 	}
@@ -630,7 +636,6 @@ struct ldr_imm : public standard_rt_rn_imm5 {
 		return imm5() << 2;
 	}
 };
-
 
 struct ldr_sp_imm : public standard_imm8_rt {
 	using standard_imm8_rt::standard_imm8_rt;
@@ -652,7 +657,6 @@ struct ldr_reg : public standard_rt_rn_rm {
 	using standard_rt_rn_rm::standard_rt_rn_rm;
 };
 
-
 struct lsl_imm : public standard_rd_rm_imm5 {
 	using standard_rd_rm_imm5::standard_rd_rm_imm5;
 	imm5_bits::const_integer_slice<uint16_t> shift_offset() const {
@@ -670,7 +674,6 @@ struct lsr_imm : public standard_rd_rm_imm5 {
 struct subs_reg : public standard_rd_rn_rm {
 	using standard_rd_rn_rm::standard_rd_rn_rm;
 };
-
 
 struct subs_imm : public standard_rd_rn_imm3 {
 	using standard_rd_rn_imm3::standard_rd_rn_imm3;
@@ -730,7 +733,7 @@ struct mov_highreg : public standard_rd_rm_d {
 	using standard_rd_rm_d::standard_rd_rm_d;
 };
 
-struct movs: public standard_rd_rm {
+struct movs : public standard_rd_rm {
 	// encoding t2 of mov register
 	// lsl imm with imm = 0 redirects here
 	using standard_rd_rm::standard_rd_rm;
@@ -811,7 +814,6 @@ struct sub_sp_imm : public standard_imm7 {
 	}
 };
 
-
 struct sxth : public standard_rd_rm {
 	using standard_rd_rm::standard_rd_rm;
 };
@@ -858,59 +860,51 @@ struct svc : public standard_imm8 {
 
 struct special_reg_instr {
 	enum class SpecialRegister : imm8_t {
-		APSR 	= 0b00000000,
-		IAPSR 	= 0b00000001,
-		EAPSR 	= 0b00000010,
-		XPSR 	= 0b00000011,
-		IPSR 	= 0b00000101,
-		EPSR 	= 0b00000110,
-		IEPSR 	= 0b00000111,
-		MSP 	= 0b00001000,
-		PSP 	= 0b00001001,
-		PRIMASK	= 0b00010000,
-		CONTROL	= 0b00010100,
+		APSR = 0b00000000,
+		IAPSR = 0b00000001,
+		EAPSR = 0b00000010,
+		XPSR = 0b00000011,
+		IPSR = 0b00000101,
+		EPSR = 0b00000110,
+		IEPSR = 0b00000111,
+		MSP = 0b00001000,
+		PSP = 0b00001001,
+		PRIMASK = 0b00010000,
+		CONTROL = 0b00010100,
 	};
 };
 
-struct msr : special_reg_instr{
+struct msr : special_reg_instr {
 	msr(const instruction_pair& instr)
-		: rn(bits<0,4>::of(instr.first()))
-		, sysn((SpecialRegister)(uint8_t)bits<0,8>::of(instr.second())) {
-	}
+		: rn(bits<0, 4>::of(instr.first()))
+		, sysn((SpecialRegister)(uint8_t)bits<0, 8>::of(instr.second())) {}
 	const reg_idx rn;
 	const SpecialRegister sysn;
 };
 
-struct mrs : special_reg_instr{
+struct mrs : special_reg_instr {
 	mrs(const instruction_pair& instr)
-		: rd(bits<8,4>::of(instr.second()))
-		, sysn(bits<0,8>::of(instr.second())) {
-	}
+		: rd(bits<8, 4>::of(instr.second()))
+		, sysn(bits<0, 8>::of(instr.second())) {}
 	const reg_idx rd;
 	const uint8_t sysn;
 };
 
-
 struct udf {
 	udf(const uint16_t& instruction)
-		: imm32(bits<0,8>::of(instruction)) {
-	}
+		: imm32(bits<0, 8>::of(instruction)) {}
 	const uint32_t imm32;
 };
 
 struct udfw {
 	udfw(const instruction_pair& instr)
-		: imm32(
-			(bits<0,4>::of(instr.first()) << 12) |
-			(bits<0,12>::of(instr.second()))
-		){
-	}
+		: imm32((bits<0, 4>::of(instr.first()) << 12) | (bits<0, 12>::of(instr.second()))) {}
 	const uint32_t imm32;
 };
 
 struct cps {
 	cps(uint16_t instruction)
-	 : im(bits<4>::of(instruction)){}
+		: im(bits<4>::of(instruction)) {}
 	const bool im;
 };
 
@@ -937,6 +931,4 @@ struct isb : public standard_imm4 {
 	using standard_imm4::standard_imm4;
 };
 
-
-
-#endif //THUMBEMU_INSTRUCTIONS_HPP
+#endif // THUMBEMU_INSTRUCTIONS_HPP

@@ -33,10 +33,10 @@
 MICROMACHINE_TEST_F(msr, ToAPSR, CpuTestFixture) {
 
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_APSR);
-	getCpu().regs().app_status_register().write_neg_flag(false);
-	getCpu().regs().app_status_register().write_zero_flag(false);
-	getCpu().regs().app_status_register().write_carry_flag(false);
-	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().special_regs().app_status_register().write_neg_flag(false);
+	getCpu().special_regs().app_status_register().write_zero_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_overflow_flag(false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -48,11 +48,11 @@ MICROMACHINE_TEST_F(msr, ToAPSR, CpuTestFixture) {
 MICROMACHINE_TEST_F(msr, ToIAPSR, CpuTestFixture) {
 
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_IAPSR);
-	getCpu().regs().app_status_register().write_zero_flag(false);
-	getCpu().regs().app_status_register().write_carry_flag(false);
-	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().special_regs().app_status_register().write_zero_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_overflow_flag(false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
-	getCpu().regs().app_status_register().write_neg_flag(false);
+	getCpu().special_regs().app_status_register().write_neg_flag(false);
 
 	Step();
 	ExpectThat()
@@ -63,10 +63,10 @@ MICROMACHINE_TEST_F(msr, ToIAPSR, CpuTestFixture) {
 MICROMACHINE_TEST_F(msr, ToEAPSR, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_EAPSR);
 
-	getCpu().regs().app_status_register().write_neg_flag(false);
-	getCpu().regs().app_status_register().write_zero_flag(false);
-	getCpu().regs().app_status_register().write_carry_flag(false);
-	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().special_regs().app_status_register().write_neg_flag(false);
+	getCpu().special_regs().app_status_register().write_zero_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_overflow_flag(false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -77,10 +77,10 @@ MICROMACHINE_TEST_F(msr, ToEAPSR, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(msr, ToXPSR, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R0, SYS_XPSR);
-	getCpu().regs().app_status_register().write_neg_flag(false);
-	getCpu().regs().app_status_register().write_zero_flag(false);
-	getCpu().regs().app_status_register().write_carry_flag(false);
-	getCpu().regs().app_status_register().write_overflow_flag(false);
+	getCpu().special_regs().app_status_register().write_neg_flag(false);
+	getCpu().special_regs().app_status_register().write_zero_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_overflow_flag(false);
 	getCpu().regs().set(registers::R0, 0xFFFFFFFF);
 
 	Step();
@@ -178,12 +178,12 @@ MICROMACHINE_TEST_F(msr, PRIMASKto0, CpuTestFixture) {
 MICROMACHINE_TEST_F(msr, ToCONTROL, CpuTestFixture) {
 	code_gen().emit_ins32("111100111000nnnn", "10001000ssssssss", registers::R12, SYS_CONTROL);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
-	getCpu().regs().control_register().set_n_priv(false);
-	getCpu().regs().control_register().set_sp_sel(false);
+	getCpu().special_regs().control_register().set_n_priv(false);
+	getCpu().special_regs().control_register().set_sp_sel(false);
 
 	Step();
-	EXPECT_TRUE(getCpu().regs().control_register().n_priv());
-	EXPECT_TRUE(getCpu().regs().control_register().sp_sel());
+	EXPECT_TRUE(getCpu().special_regs().control_register().n_priv());
+	EXPECT_TRUE(getCpu().special_regs().control_register().sp_sel());
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4);
 

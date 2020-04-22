@@ -97,8 +97,8 @@ public:
 
 		for(size_t i = 0; i < cpu_steps; i++) {
 
-			cpu::State state = _cpu.step();
-			if(state == cpu::State::BREAK || state == cpu::State::FAULT) {
+			cpu::step_result state = _cpu.step();
+			if(state == cpu::step_result::BREAK || state == cpu::step_result::FAULT) {
 				interrupted = true;
 				break;
 			}

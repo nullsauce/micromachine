@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "exception_state.hpp"
+#include "exception_vector.hpp"
 #include "interrupter.hpp"
 
 class ExceptionVectorTestBench : public ::testing::Test {
@@ -11,7 +11,7 @@ protected:
 	nvic _nvic;
 	shpr2_reg _sph2;
 	shpr3_reg _sph3;
-	exception_state_vector _evec;
+	exception_vector _evec;
 	interrupter _interrupter;
 	ExceptionVectorTestBench()
 		: _evec(_nvic, _sph2, _sph3)

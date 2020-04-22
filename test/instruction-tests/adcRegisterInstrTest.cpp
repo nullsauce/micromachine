@@ -77,7 +77,7 @@ MICROMACHINE_TEST_F(adcRegister, Add0to0WithCarryInSetToGiveAResultOf1, CpuTestF
 	code_gen().emit_adc(registers::R0, registers::R0);
 
 	// set the carry flag
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 
 	Step();
 

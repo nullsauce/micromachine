@@ -20,7 +20,7 @@
 MICROMACHINE_TEST_F(tstRegister, UseLowestRegisterForBothArgsAndResultShouldBeZero, CpuTestFixture) {
 	code_gen().emit_ins16("0100001000mmmnnn", registers::R0, registers::R0);
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
-	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().APSRFlagsMatches("nZc");
 }
@@ -28,7 +28,7 @@ MICROMACHINE_TEST_F(tstRegister, UseLowestRegisterForBothArgsAndResultShouldBeZe
 MICROMACHINE_TEST_F(tstRegister, UseHighestRegisterForBothArgsAndRegisterWillBeUnchanged, CpuTestFixture) {
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("0100001000mmmnnn", registers::R7, registers::R7);
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().APSRFlagsMatches("nzC");
 }

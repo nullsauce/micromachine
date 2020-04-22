@@ -15,7 +15,6 @@
 
 
 #define memory_hardfault(reason_fmt,...)\
-	/*fprintf(stderr, "memory hardfault: " reason_fmt, __VA_ARGS__);*/ \
 	_interrupter.raise_memory_hardfault();
 
 class memory {
@@ -23,9 +22,15 @@ public:
 	using region_vec = std::vector<memory_mapping>;
 	using system_control_register_map = std::unordered_map<uint32_t, std::reference_wrapper<ireg>>;
 
-	memory(interrupter& interrupter, const system_control_register_map& scr_map)
+private:
+	region_vec _regions;
+	interrupter& _interrupter;
+	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers;
+
+public:
+	memory(interrupter& interrupter, system_control_register_map scr_map)
 		: _interrupter(interrupter)
-		, _system_control_registers(scr_map) {
+		, _system_control_registers(std::move(scr_map)) {
 	}
 
 	bool write32(uint32_t address, uint32_t val) {
@@ -211,10 +216,7 @@ private:
 		return const_cast<memory_mapping*>(find_const_region(address));
 	}
 
-private:
-	region_vec _regions;
-	interrupter& _interrupter;
-	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers;
+
 
 };
 

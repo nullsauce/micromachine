@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <cassert>
 
-#include "cpu.hpp"
+#include "system.hpp"
 #include "code_generator.hpp"
 #include "mini_assembler.hpp"
 
@@ -112,7 +112,7 @@ class CpuTestHarness : public ::testing::Test
 {
 protected:
 	const size_t MEMORY_SIZE = 0x8000;
-	cpu _cpu;
+	class system _system;
 	code_generator _code_gen;
 	std::vector<uint8_t> _memory;
 

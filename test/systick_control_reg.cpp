@@ -2,16 +2,15 @@
 // Created by fla on 17-5-8.
 //
 
+#include "systick.hpp"
 #include <gtest/gtest.h>
-#include "timer.hpp"
-
 
 class SystickTestBench : public ::testing::Test {
 protected:
 	nvic _nvic;
 	shpr2_reg _sph2;
 	shpr3_reg _sph3;
-	exception_state_vector _evec;
+	exception_vector _evec;
 	interrupter _interrupter;
 	systick syst;
 	SystickTestBench()

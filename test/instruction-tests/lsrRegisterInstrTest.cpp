@@ -27,7 +27,7 @@ MICROMACHINE_TEST_F(lsrRegister, ShiftValue1by1_CarryOutFromLowestBit, CpuTestFi
 
 MICROMACHINE_TEST_F(lsrRegister, ShiftValue1by0_MinimumShift_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("0100000011mmmddd", registers::R0, registers::R7);
-	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	getCpu().regs().set(registers::R7, 1);
 	getCpu().regs().set(registers::R0, 0);
 	Step();
@@ -82,7 +82,7 @@ MICROMACHINE_TEST_F(lsrRegister, MaximumShiftOf255_ResultIsZero_CarryClear, CpuT
 
 MICROMACHINE_TEST_F(lsrRegister, ShiftOf256_ShouldBeTreatedAs0Shift_CarryUnmodified, CpuTestFixture) {
 	code_gen().emit_ins16("0100000011mmmddd", registers::R7, registers::R0);
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	getCpu().regs().set(registers::R0, -1);
 	getCpu().regs().set(registers::R7, 256);
 	Step();
