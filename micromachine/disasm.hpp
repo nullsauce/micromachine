@@ -107,7 +107,7 @@ private:
 		std::stringstream ss;
 		std::vector<std::string> register_names;
 		register_names.reserve(16);
-		const reg_idx end = registers::NUM_REGS;
+		const reg_idx end = core_registers::NUM_CORE_REGS;
 		for(reg_idx rid = 0; rid < end; rid++) {
 			if(binops::get_bit(reg_list, rid)) {
 				register_names.emplace_back(R(rid));

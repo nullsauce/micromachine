@@ -52,8 +52,8 @@ MICROMACHINE_TEST_F(mrs, FromAPSR, CpuTestFixture) {
 	apsr_reg expectedApsr(expectedXpsr);
 	set_apsr_flags(expectedApsr, true, false, true, false);
 
-	set_apsr_flags(getCpu().regs().app_status_register(), true, false, true, false);
-	getCpu().regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -77,8 +77,8 @@ MICROMACHINE_TEST_F(mrs, FromIAPSR, CpuTestFixture) {
 	set_apsr_flags(expectedApsr, true, false, true, false);
 	expectedIpsr.set_exception_number(exception::EXTI_08);
 
-	set_apsr_flags(getCpu().regs().app_status_register(), true, false, true, false);
-	getCpu().regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
 	getCpu().regs().set(registers::R0, 0xFFFFFFFF);
 
 	Step();
@@ -104,8 +104,8 @@ MICROMACHINE_TEST_F(mrs, FromEAPSR, CpuTestFixture) {
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
 
-	set_apsr_flags(getCpu().regs().app_status_register(), true, false, true, false);
-	getCpu().regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -131,8 +131,8 @@ MICROMACHINE_TEST_F(mrs, FromXPSR, CpuTestFixture) {
 	expectedIpsr.set_exception_number(exception::EXTI_08);
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
-	getCpu().regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
-	set_apsr_flags(getCpu().regs().app_status_register(), true, false, true, false);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -153,8 +153,8 @@ MICROMACHINE_TEST_F(mrs, FromIPSR, CpuTestFixture) {
 	ipsr_reg expectedIpsr(expectedXpsr);
 	expectedIpsr.set_exception_number(exception::EXTI_08);
 
-	getCpu().regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
-	set_apsr_flags(getCpu().regs().app_status_register(), true, false, true, false);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -178,8 +178,8 @@ MICROMACHINE_TEST_F(mrs, FromEPSR, CpuTestFixture) {
 	epsr_reg expectedEpsr(expectedXpsr);
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
-	getCpu().regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
-	set_apsr_flags(getCpu().regs().app_status_register(), true, false, true, false);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -203,8 +203,8 @@ MICROMACHINE_TEST_F(mrs, FromIEPSR, CpuTestFixture) {
 	expectedIpsr.set_exception_number(exception::EXTI_08);
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
-	getCpu().regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
-	set_apsr_flags(getCpu().regs().app_status_register(), true, false, true, false);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -246,7 +246,7 @@ MICROMACHINE_TEST_F(mrs, FromPRIMASKsetTo1, CpuTestFixture) {
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_PRIMASK);
 	getCpu().regs().set(registers::R12, 0);
-	getCpu().regs().primask_register().set_pm(true);
+	getCpu().special_regs().primask_register().set_pm(true);
 
 	Step();
 	ExpectThat()
@@ -261,7 +261,7 @@ MICROMACHINE_TEST_F(mrs, PRIMASKto0, CpuTestFixture) {
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_PRIMASK);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
-	getCpu().regs().primask_register().set_pm(false);
+	getCpu().special_regs().primask_register().set_pm(false);
 
 	Step();
 	ExpectThat()
@@ -275,8 +275,8 @@ MICROMACHINE_TEST_F(mrs, FromCONTROL, CpuTestFixture) {
 	getCpu().regs().set_pc(INITIAL_PC);
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_CONTROL);
 	getCpu().regs().set(registers::R12, 0);
-	getCpu().regs().control_register().set_n_priv(true);
-	getCpu().regs().control_register().set_sp_sel(true);
+	getCpu().special_regs().control_register().set_n_priv(true);
+	getCpu().special_regs().control_register().set_sp_sel(true);
 
 	Step();
 	ExpectThat()

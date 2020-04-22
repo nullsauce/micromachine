@@ -18,14 +18,14 @@
 
 MICROMACHINE_TEST_F(cps, InterruptEnable, CpuTestFixture) {
 	code_gen().emit_ins16("10110110011i0010", 0);
-	getCpu().regs().primask_register().set_pm(true);
+	getCpu().special_regs().primask_register().set_pm(true);
 	Step();
 	ExpectThat().PrimaskStatusIs(false);
 }
 
 MICROMACHINE_TEST_F(cps, InterruptDisable, CpuTestFixture) {
 	code_gen().emit_ins16("10110110011i0010", 1);
-	getCpu().regs().primask_register().set_pm(false);
+	getCpu().special_regs().primask_register().set_pm(false);
 	Step();
 	ExpectThat().PrimaskStatusIs(true);
 }

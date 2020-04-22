@@ -13,41 +13,41 @@ class CpuResetTest : public CpuTestFixture {
 protected:
 	virtual void SetUp() override {
 		CpuTestFixture::SetUp();
-		for (reg_idx regIdx = 0; regIdx < registers::NUM_GP_REGS; regIdx++) {
+		for (reg_idx regIdx = 0; regIdx < core_registers::NUM_GP_REGS; regIdx++) {
 			getCpu().regs().set(regIdx, 0x11111111U * (1U + regIdx));
 		}
 	}
 };
 
 MICROMACHINE_TEST_F(ResetBehavior, GeneralPurposeRegistersAreSetTozero, CpuResetTest) {
-	for (reg_idx regIdx = 0; regIdx < registers::NUM_GP_REGS; regIdx++) {
+	for (reg_idx regIdx = 0; regIdx < core_registers::NUM_GP_REGS; regIdx++) {
 		ExpectThat().Register(regIdx).Equals(0x11111111U * (1U + regIdx));
 	}
 
-	getCpu().reset(0);
+	getSystem().reset(0);
 
-	for (reg_idx regIdx = 0; regIdx < registers::NUM_GP_REGS; regIdx++) {
+	for (reg_idx regIdx = 0; regIdx < core_registers::NUM_GP_REGS; regIdx++) {
 		ExpectThat().Register(regIdx).Equals(0);
 	}
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, PcIsSetToGivenPosition, CpuResetTest) {
 	getCpu().regs().set_pc(0x10);
-	getCpu().reset(0x20);
+	getSystem().reset(0x20);
 	ExpectThat().Register(registers::PC).Equals(0x20);
 }
 
 
 MICROMACHINE_TEST_F(ResetBehavior, LrIsReset, CpuResetTest) {
 	getCpu().regs().set_lr(0xdeed00aa);
-	getCpu().reset(0x20);
+	getSystem().reset(0x20);
 	ExpectThat().Register(registers::LR).Equals(0);
 }
 
 
 MICROMACHINE_TEST_F(ResetBehavior, PendingInternalExceptionIsCleared, CpuResetTest) {
 	getCpu().interrupt().raise_hardfault();
-	getCpu().reset(0x20);
+	getSystem().reset(0x20);
 	ExpectThat().NoInterruptIsActiveOrPending();
 }
 
@@ -55,7 +55,7 @@ MICROMACHINE_TEST_F(ResetBehavior, ActiveInternalExceptionIsCleared, CpuResetTes
 	getCpu().interrupt().raise_hardfault();
 	Step();
 	ExpectThat().HardfaultHandlerReached();
-	getCpu().reset(0x20);
+	getSystem().reset(0x20);
 	ExpectThat().NoInterruptIsActiveOrPending();
 }
 
@@ -64,7 +64,7 @@ MICROMACHINE_TEST_F(ResetBehavior, PendingExternalInterruptIsCleared, CpuResetTe
 	getCpu().interrupt().raise_external_interrupt(7);
 	Step();
 	ExpectThat().ExceptionHandlerReached(exception::EXTI_07);
-	getCpu().reset(0x20);
+	getSystem().reset(0x20);
 	ExpectThat().NoInterruptIsActiveOrPending();
 }
 
@@ -73,14 +73,14 @@ MICROMACHINE_TEST_F(ResetBehavior, ActiveExternalInterruptIsCleared, CpuResetTes
 	getCpu().interrupt().raise_external_interrupt(7);
 	Step();
 	ExpectThat().ExceptionHandlerReached(exception::EXTI_07);
-	getCpu().reset(0x20);
+	getSystem().reset(0x20);
 	ExpectThat().NoInterruptIsActiveOrPending();
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, InterruptPrioritiesAreReset, CpuResetTest) {
 	getCpu().interrupt().set_exception_priority<exception::EXTI_07>(3);
 	getCpu().interrupt().set_exception_priority<exception::SVCALL>(1);
-	getCpu().reset(0x20);
+	getSystem().reset(0x20);
 	EXPECT_EQ(0U, getCpu().interrupt().exception_priority<exception::EXTI_07>());
 	EXPECT_EQ(0U, getCpu().interrupt().exception_priority<exception::SVCALL>());
 	EXPECT_EQ(exception::RESET_PRIORITY, getCpu().interrupt().exception_priority<exception::RESET>());
@@ -90,8 +90,8 @@ MICROMACHINE_TEST_F(ResetBehavior, InterruptPrioritiesAreReset, CpuResetTest) {
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, XpsrIsCleared, CpuResetTest) {
-	getCpu().regs().xpsr_register() = 0xffffffff;
-	getCpu().reset(0x20);
+	getCpu().special_regs().xpsr_register() = 0xffffffff;
+	getSystem().reset(0x20);
 	ExpectThat()
 		.APSRFlagsMatches("nzcv")
 		.ThumbBitIsSet()
@@ -99,8 +99,8 @@ MICROMACHINE_TEST_F(ResetBehavior, XpsrIsCleared, CpuResetTest) {
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, ExecModeIsSetToThreadMode, CpuResetTest) {
-	getCpu().regs().exec_mode_register().set_handler_mode();
-	getCpu().reset(0x20);
+	getCpu().set_execution_mode(execution_mode::handler);
+	getSystem().reset(0x20);
 	ExpectThat()
 		.ExecutionIsInThreadMode()
 		.NoInterruptIsActiveOrPending();

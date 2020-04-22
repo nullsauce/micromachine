@@ -10,8 +10,8 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_TIMER_HPP
 #define MICROMACHINE_EMU_TIMER_HPP
 
-#include "registers/system_control/systick.hpp"
 #include "interrupter.hpp"
+#include "registers/system_control/systick_control_reg.hpp"
 
 class systick {
 private:

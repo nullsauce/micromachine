@@ -22,7 +22,7 @@ MICROMACHINE_TEST_F(bicRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 	// Use a couple of tests to explicitly set/clear carry to verify both states are maintained.
 
 	// clear carry flag
-	getCpu().regs().app_status_register().write_carry_flag(false);
+	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	Step();
 	ExpectThat().APSRFlagsMatches("nZc");
 	ExpectThat().Register(registers::R0).Equals(0);
@@ -31,7 +31,7 @@ MICROMACHINE_TEST_F(bicRegister, UseLowestRegisterForBothArgs, CpuTestFixture) {
 MICROMACHINE_TEST_F(bicRegister, UseHighestRegisterForBothArgs, CpuTestFixture) {
 	code_gen().emit_ins16("0100001110mmmddd", registers::R7, registers::R7);
 	// set carry flag
-	getCpu().regs().app_status_register().write_carry_flag(true);
+	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
 	ExpectThat().APSRFlagsMatches("nZC");
 	ExpectThat().Register(registers::R7).Equals(0);

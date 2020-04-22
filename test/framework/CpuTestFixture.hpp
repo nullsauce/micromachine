@@ -56,11 +56,17 @@ protected:
 		return _systems.back().getCpu();
 	}
 
+	class system& getSystem() {
+		//ASSERT_FALSE((_systems.empty()));
+		return _systems.back().getSystem();
+	}
+
 	code_generator& code_gen() {
 		return _code_generator;
 	}
 
 	virtual void SetUp() override {
+
 		// create the initial system and pushes it on the stack
 		_systems.emplace_back();
 
@@ -81,8 +87,8 @@ protected:
 		// save the current system state
 		stash();
 
-		// step the cpu
-		getCpu().step();
+		// step the system
+		getSystem().step();
 	}
 };
 

@@ -17,8 +17,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "exception_defs.hpp"
 #include "nvic.hpp"
-#include "registers/system_control/shpr2.hpp"
-#include "registers/system_control/shpr3.hpp"
+#include "registers/system_control/shpr2_reg.hpp"
+#include "registers/system_control/shpr3_reg.hpp"
 
 class exception_state {
 private:
@@ -233,12 +233,12 @@ public:
 };
 
 
-class exception_state_vector {
+class exception_vector {
 public:
 
 	// copy constructor
-	exception_state_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, const exception_state_vector& existing_state)
-		: exception_state_vector(nvic, sph2, sph3) {
+	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, const exception_vector& existing_state)
+		: exception_vector(nvic, sph2, sph3) {
 		// Initializes everything as usual.
 		// Then copy the exception states from the existing state
 		for(size_t i = 0; i < _indexed.size(); i++) {
@@ -248,7 +248,7 @@ public:
 		}
 	}
 
-	exception_state_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
+	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
 		: _reset(exception::Type::RESET)
 		, _nmi(exception::Type::NMI)
 		, _hard_fault(exception::Type::HARDFAULT)
