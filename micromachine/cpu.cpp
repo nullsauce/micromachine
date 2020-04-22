@@ -59,22 +59,26 @@ void cpu::execute(instruction_pair instr)
 }
 
 void cpu::reset(uint32_t initial_pc) {
-
 	uint32_t initial_sp_main = _mem.read32_unchecked(0U) & 0xFFFFFFFC;
-
-	_break_signal = false;
-
-
 	_regs.reset();
-	_regs.app_status_register().reset();
 	_regs.set_sp(initial_sp_main);
 	_regs.set_pc(initial_pc);
+	_regs.set_lr(0);
+	_regs.exec_mode_register().set_thread_mode();
+	_regs.app_status_register().reset();
+	_regs.execution_status_register().set_thumb_bit(true);
+	_regs.interrupt_status_register().reset();
+	_regs.primask_register().reset();
+	_regs.control_register().reset();
+	_exception_vector.reset();
+	_event_register.clear();
 	_system_timer.reset();
 	_shpr2_reg.reset();
 	_shpr3_reg.reset();
 	_nvic.reset();
-	_exception_vector.reset();
-
+	_break_signal = false;
+	_enter_low_power_mode_signal = false;
+	_debug_instruction_counter = 0;
 }
 
 instruction_pair cpu::fetch_instruction(uint32_t address) const {
