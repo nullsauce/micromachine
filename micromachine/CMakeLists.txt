@@ -5,6 +5,11 @@ set(SRCS
 	instruction_pair.hpp
 	instructions.hpp
 	precond.hpp
+	exception/exception_defs.hpp
+	exception/exception_controller.hpp
+	exception/exception_state.hpp
+	exception/exception_vector.hpp
+	exception/exception_return_handler.hpp
 	exec.hpp
 	alu.hpp
 	registers/core_registers.hpp
@@ -29,8 +34,6 @@ set(SRCS
 	string_format.hpp
 	exec_dispatcher.hpp
 	interworking_brancher.hpp
-	exception/exception_defs.hpp
-	exception/exception_controller.hpp
 	instruction_decoder.hpp
 	disasm.hpp
 	cpu.hpp
