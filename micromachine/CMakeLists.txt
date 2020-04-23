@@ -1,8 +1,5 @@
 
 
-
-
-
 set(SRCS
 	elfio/elf_types.hpp
 	elfio/elfio.hpp
