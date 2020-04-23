@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <vector>
 #include <algorithm>
-#include <unordered_map>
 #include <type_traits>
+#include <unordered_map>
+#include <vector>
 
 #include "exception_controller.hpp"
 #include "mapping.hpp"
@@ -18,7 +18,8 @@ namespace micromachine::system {
 class memory {
 public:
 	using region_vec = std::vector<memory_mapping>;
-	using system_control_register_map = std::unordered_map<uint32_t, std::reference_wrapper<iregister>>;
+	using system_control_register_map =
+		std::unordered_map<uint32_t, std::reference_wrapper<iregister>>;
 
 private:
 	region_vec _regions;
@@ -28,8 +29,7 @@ private:
 public:
 	memory(exception_controller& exception_controller, system_control_register_map scr_map)
 		: _exception_controller(exception_controller)
-		, _system_control_registers(std::move(scr_map)) {
-	}
+		, _system_control_registers(std::move(scr_map)) {}
 
 	bool write32(uint32_t address, uint32_t val) {
 		return this->write<uint32_t>(address, val);
@@ -79,7 +79,6 @@ public:
 		return read_unchecked<uint8_t>(address);
 	}
 
-
 	void map(uint8_t* host, uint32_t start_addr, uint32_t size, const std::string& name) {
 		_regions.emplace_back(host, start_addr, size, name);
 	}
@@ -90,7 +89,7 @@ public:
 
 	template <typename access_t>
 	static bool constexpr is_aligned(uint32_t address) {
-		return 0 == (address & (sizeof(access_t)-1));
+		return 0 == (address & (sizeof(access_t) - 1));
 	}
 
 	const region_vec& regions() const {
@@ -98,9 +97,10 @@ public:
 	}
 
 	const memory_mapping* find_const_region(uint32_t address) const {
-		const auto it = std::find_if(std::begin(_regions), std::end(_regions), [=](const memory_mapping& mm){
-			return in_range(address, mm);
-		});
+		const auto it =
+			std::find_if(std::begin(_regions), std::end(_regions), [=](const memory_mapping& mm) {
+				return in_range(address, mm);
+			});
 
 		if(std::end(_regions) != it) {
 			return it.base();
@@ -109,7 +109,6 @@ public:
 	}
 
 private:
-
 	template <typename access_t>
 	static access_t& access_host(void* host_addr) {
 		return *(static_cast<access_t*>(host_addr));
@@ -155,8 +154,6 @@ private:
 
 		return true;
 	}
-
-
 
 	template <typename access_t>
 	access_t read(uint32_t address, bool& ok) const {
@@ -212,8 +209,5 @@ private:
 	memory_mapping* find_region(uint32_t address) {
 		return const_cast<memory_mapping*>(find_const_region(address));
 	}
-
-
-
 };
 } // namespace micromachine::system

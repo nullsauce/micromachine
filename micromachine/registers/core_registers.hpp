@@ -29,7 +29,6 @@ public:
 	static constexpr size_t NUM_GP_REGS = NUM_LOW_GP_REGS + NUM_HIGH_GP_REGS;
 	static constexpr size_t NUM_CORE_REGS = NUM_GP_REGS + 3;
 
-
 	core_registers(const execution_mode& execution_mode,
 				   const control_reg& control_reg,
 				   exception_return_handler& exception_return_handler)
@@ -46,20 +45,20 @@ public:
 		, _pc(existing_state._pc) {}
 
 	void reset() {
-		for (reg_idx i = 0; i < NUM_CORE_REGS; i++) {
+		for(reg_idx i = 0; i < NUM_CORE_REGS; i++) {
 			set(i, 0);
 		}
 	}
 
 	uint32_t get(reg_idx i) const {
 		precond(i < NUM_CORE_REGS, "register index too large %zu", i);
-		if (i < NUM_GP_REGS) {
+		if(i < NUM_GP_REGS) {
 			return _general_purpose_registers[i];
-		} else if (i == registers::SP) {
+		} else if(i == registers::SP) {
 			return _sp;
-		} else if (i == registers::LR) {
+		} else if(i == registers::LR) {
 			return _lr;
-		} else if (i == registers::PC) {
+		} else if(i == registers::PC) {
 			return _pc;
 		} else {
 			precond_fail("invalid register index %lu", i);
@@ -68,13 +67,13 @@ public:
 
 	void set(reg_idx i, uint32_t val) {
 		precond(i < NUM_CORE_REGS, "register index too large");
-		if (i < NUM_GP_REGS) {
+		if(i < NUM_GP_REGS) {
 			_general_purpose_registers[i] = val;
-		} else if (i == registers::SP) {
+		} else if(i == registers::SP) {
 			_sp = val;
-		} else if (i == registers::LR) {
+		} else if(i == registers::LR) {
 			_lr = val;
-		} else if (i == registers::PC) {
+		} else if(i == registers::PC) {
 			_pc = val;
 		} else {
 			precond_fail("invalid register index %lu", i);
@@ -85,7 +84,8 @@ public:
 		_pc.branch(address);
 	}
 
-	//TODO Below replace set(REG, val) and get(REG) by a direct call the appropriate reg (ie: _sp = val)
+	// TODO Below replace set(REG, val) and get(REG) by a direct call the appropriate reg (ie: _sp =
+	// val)
 	uint32_t get_sp() const {
 		return get(registers::SP);
 	}

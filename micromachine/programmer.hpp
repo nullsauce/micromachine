@@ -19,27 +19,22 @@ private:
 	static constexpr uint8_t DEBUG_FILL_BYTE = 0xCD;
 
 public:
-
-
 	class program {
 	private:
-
 		// memory will be filled with debug bytes
 		// if debug is enabled.
 		const bool _non_zero_fill;
-
 
 	public:
 		using ptr = std::shared_ptr<program>;
 		using memory_segment = std::vector<uint8_t>;
 
 		program(bool non_zero_fill)
-			: _non_zero_fill(non_zero_fill)
-		{}
+			: _non_zero_fill(non_zero_fill) {}
 
 		memory_segment& allocate_segment(size_t size) {
 			_memory.emplace_back(size, _non_zero_fill ? DEBUG_FILL_BYTE : 0);
-			return _memory.at(_memory.size()-1);
+			return _memory.at(_memory.size() - 1);
 		}
 
 		bool is_null() const {
@@ -67,8 +62,7 @@ public:
 		std::string _path;
 	};
 
-
-	static program::ptr load_elf(const std::string &path, memory& mem, bool testing_enabled) {
+	static program::ptr load_elf(const std::string& path, memory& mem, bool testing_enabled) {
 
 		std::ifstream ifs(path, std::ios::binary);
 		if(!ifs) {
@@ -80,15 +74,15 @@ public:
 		prog->set_path(path);
 
 		ELFIO::elfio elfReader;
-		if (!elfReader.load(ifs)) {
+		if(!elfReader.load(ifs)) {
 			return prog;
 		}
 
-		if (elfReader.get_class() != ELFCLASS32) {
+		if(elfReader.get_class() != ELFCLASS32) {
 			return prog;
 		}
 
-		if (elfReader.get_encoding() != ELFDATA2LSB) {
+		if(elfReader.get_encoding() != ELFDATA2LSB) {
 			return prog;
 		}
 
@@ -96,7 +90,6 @@ public:
 		fprintf(stderr, "PC will be set to %08X\n", entryPoint);
 
 		prog->set_entry_point(entryPoint);
-
 
 		/* Process each segment defined in the ELF file
 		 * and prepare the appropriate memory mappings for
@@ -119,7 +112,7 @@ public:
 		 * The runtime is responsible for relocating a segment at startup by coyping the
 		 * progbits from the physical address to the memory address.
 		 */
-		for (const ELFIO::segment* elf_segment : elfReader.segments) {
+		for(const ELFIO::segment* elf_segment : elfReader.segments) {
 
 			const uint32_t virtual_address = (uint32_t)elf_segment->get_virtual_address();
 			const uint32_t physical_address = (uint32_t)elf_segment->get_physical_address();
@@ -128,18 +121,18 @@ public:
 			const uint32_t segment_index = elf_segment->get_index();
 			const bool has_progbits = progbits_size != 0;
 			const bool requires_relocation = has_progbits && virtual_address != physical_address;
-			const std::string segment_name = std::string("seg."+ std::to_string(segment_index));
+			const std::string segment_name = std::string("seg." + std::to_string(segment_index));
 
-			fprintf(stderr, "segment [%02i] : virtual=%08x physical=%08x map=%s size=%08x progbits=%s "
-				   "relocation=%s\n"
-				, elf_segment->get_index()
-				, virtual_address
-				, physical_address
-				, requires_relocation ? "phys" : "virt"
-				, memory_size
-				, has_progbits ? "yes" : "no"
-				, requires_relocation ? "yes" : "no "
-			);
+			fprintf(stderr,
+					"segment [%02i] : virtual=%08x physical=%08x map=%s size=%08x progbits=%s "
+					"relocation=%s\n",
+					elf_segment->get_index(),
+					virtual_address,
+					physical_address,
+					requires_relocation ? "phys" : "virt",
+					memory_size,
+					has_progbits ? "yes" : "no",
+					requires_relocation ? "yes" : "no ");
 
 			program::memory_segment& segment = prog->allocate_segment(memory_size);
 
@@ -147,7 +140,6 @@ public:
 			if(has_progbits) {
 				memcpy(segment.data(), elf_segment->get_data(), elf_segment->get_file_size());
 			}
-
 
 			if(requires_relocation) {
 				// Relocation segment -> Map in physical address space
@@ -163,39 +155,29 @@ public:
 				// are copied over it duting startup, it will be equal to the one originally
 				// defined in the ELF file.
 
-				mem.map(
-					segment.data(),
-					physical_address,
-					progbits_size, // only the progbits part is mapped
-					segment_name
-				);
+				mem.map(segment.data(),
+						physical_address,
+						progbits_size, // only the progbits part is mapped
+						segment_name);
 
 				// Allocate a new empty segment
 				program::memory_segment& relocation_segment = prog->allocate_segment(memory_size);
 
 				// Map it in the virtual address space
-				mem.map(
-					relocation_segment.data(),
-					virtual_address,
-					memory_size, // the 'full' memory size is used here
-					std::string("reloc of " + segment_name)
-				);
+				mem.map(relocation_segment.data(),
+						virtual_address,
+						memory_size, // the 'full' memory size is used here
+						std::string("reloc of " + segment_name));
 
 			} else {
 				// Standard segment -> Map in virtual address space
 
-				mem.map(
-					segment.data(),
-					virtual_address,
-					memory_size,
-					std::string(segment_name)
-				);
+				mem.map(segment.data(), virtual_address, memory_size, std::string(segment_name));
 			}
 		}
 
 		return prog;
 	}
-
 };
 
 } // namespace micromachine::system

@@ -122,5 +122,4 @@ public:
 	cpu::step_result step();
 };
 
-}
-
+} // namespace micromachine::system

@@ -9,52 +9,48 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include <functional>
 #include "binops.hpp"
+#include <functional>
 
 namespace micromachine::system {
-template<size_t offset, size_t len, typename integer_type>
+template <size_t offset, size_t len, typename integer_type>
 struct slice {
 
 	slice(integer_type& val)
 		: _val(val) {}
 
-
-	static_assert(len > 0,
-				  "cannot declare a bit slice of length 0");
+	static_assert(len > 0, "cannot declare a bit slice of length 0");
 	static_assert(offset < binops::binsize<integer_type>(),
 				  "source offset must be smaller than the total number of available bits");
 	static_assert(offset + len <= binops::binsize<integer_type>(),
 				  "the binary slice cannot cover more than the total number of available bits");
 
-
 	using same_type = slice<offset, len, integer_type>;
 	using const_type = slice<offset, len, const integer_type>;
 
-	template<typename other_integer_type>
-	using enable_only_if_const_differ = typename std::enable_if<!std::is_same<integer_type, other_integer_type>::value, same_type>::type;
+	template <typename other_integer_type>
+	using enable_only_if_const_differ =
+		typename std::enable_if<!std::is_same<integer_type, other_integer_type>::value,
+								same_type>::type;
 
-	template<typename other_integer_type>
-	using enable_only_if_source_has_less_or_equal_bits = typename std::enable_if<
-		binops::binsize<other_integer_type>() <= len,
-	same_type>::type;
+	template <typename other_integer_type>
+	using enable_only_if_source_has_less_or_equal_bits =
+		typename std::enable_if<binops::binsize<other_integer_type>() <= len, same_type>::type;
 
-	template<typename other_integer_type>
-	using enable_only_if_source_has_more_bits = typename std::enable_if<(binops::binsize<other_integer_type>() > len), same_type>::type;
+	template <typename other_integer_type>
+	using enable_only_if_source_has_more_bits =
+		typename std::enable_if<(binops::binsize<other_integer_type>() > len), same_type>::type;
 
-	using smallest_std_integer = typename std::conditional<len == 1,
+	using smallest_std_integer = typename std::conditional<
+		len == 1,
 		bool,
-		typename std::conditional<len <= 8,
+		typename std::conditional<
+			len <= 8,
 			uint8_t,
-			typename std::conditional<len <= 16,
+			typename std::conditional<
+				len <= 16,
 				uint16_t,
-				typename std::conditional<len <= 32,
-					uint32_t,
-					uint64_t
-				>::type
-			>::type
-		>::type
-	>::type;
+				typename std::conditional<len <= 32, uint32_t, uint64_t>::type>::type>::type>::type;
 
 	// Operator for assignment of same slice  length and offset
 	// bits<4,2> of A = bits<4,2> of B
@@ -64,12 +60,12 @@ struct slice {
 	}
 
 	// A copy constructor must be declared explicitly
-	slice(const same_type& other) : _val(other._val.get()) {}
+	slice(const same_type& other)
+		: _val(other._val.get()) {}
 
-	// Operator for assignment of same slice  length and offset but different constness of integer type
-	// bits<4,2> of A = bits<4,2> of (0xdeabeef)
-	// const version.
-	template<typename other_constness_type>
+	// Operator for assignment of same slice  length and offset but different constness of integer
+	// type bits<4,2> of A = bits<4,2> of (0xdeabeef) const version.
+	template <typename other_constness_type>
 	enable_only_if_const_differ<other_constness_type>&
 	operator=(const slice<offset, len, other_constness_type>& other) {
 		write_bits(_val, offset, other.val(), offset, len);
@@ -78,7 +74,7 @@ struct slice {
 
 	// Operator for assignment same slice length, but different offset
 	// bits<4,2> of A = bits<6,2> of B
-	template<size_t other_offset>
+	template <size_t other_offset>
 	same_type& operator=(const slice<other_offset, len, integer_type>& other) {
 		static_assert(other_offset < binops::binsize<integer_type>(),
 					  "source offset must be smaller than the total number of available bits");
@@ -88,7 +84,7 @@ struct slice {
 
 	// Operator for assignment same slice length, but different offset and constness
 	// bits<4,2> of A = bits<6,2> of B
-	template<size_t other_offset, typename other_constness_type>
+	template <size_t other_offset, typename other_constness_type>
 	enable_only_if_const_differ<other_constness_type>&
 	operator=(const slice<other_offset, len, other_constness_type>& other) {
 		static_assert(other_offset < binops::binsize<integer_type>(),
@@ -100,10 +96,9 @@ struct slice {
 	// Operator for assignment of different slice length and offset
 	// bits<0,8> of A = bits<4,4> of B
 	// extension by zero-filling
-	template<size_t other_offset, size_t other_len>
+	template <size_t other_offset, size_t other_len>
 	same_type& operator=(const slice<other_offset, other_len, integer_type>& other) {
-		static_assert(other_len <= len,
-					  "this slice can't hold that much bits");
+		static_assert(other_len <= len, "this slice can't hold that much bits");
 		// clear bits<0,8>
 		clear_bits(_val, offset, len);
 		// write bits<4,4> of  to bits<0,4>
@@ -112,7 +107,7 @@ struct slice {
 	}
 
 	// Allow conversion to bool if length equals 1
-	template<size_t num_bits = len>
+	template <size_t num_bits = len>
 	operator typename std::enable_if<num_bits == 1, bool>::type() const {
 		return extract();
 	}
@@ -126,13 +121,13 @@ struct slice {
 		return (_val.get() >> offset) & binops::make_mask<integer_type>(len);
 	}
 
-	template<typename int_type, size_t num_bits = len>
+	template <typename int_type, size_t num_bits = len>
 	enable_only_if_source_has_less_or_equal_bits<int_type>& operator=(int_type other) {
 		write_val(other);
 		return *this;
 	}
 
-	template<typename int_type, size_t num_bits = len>
+	template <typename int_type, size_t num_bits = len>
 	enable_only_if_source_has_more_bits<int_type>& operator=(int_type other) {
 		write_bits(_val, offset, other, 0, len);
 		return *this;
@@ -150,12 +145,12 @@ struct slice {
 		clear_bits(_val, offset, len);
 	}
 
-	template<size_t sub_offset, size_t new_len>
+	template <size_t sub_offset, size_t new_len>
 	slice<offset + sub_offset, new_len, integer_type> bits() {
 		return slice<offset + sub_offset, new_len, integer_type>(_val);
 	}
 
-	template<typename T>
+	template <typename T>
 	bool operator==(const T& other) const {
 		return extract() == other.extract();
 	}
@@ -164,10 +159,12 @@ struct slice {
 		return extract() == binops::make_mask<smallest_std_integer>(len);
 	}
 
-
 private:
-
-	void write_bits(integer_type& dst, size_t dst_offset, integer_type src, size_t src_offset, size_t dst_len) {
+	void write_bits(integer_type& dst,
+					size_t dst_offset,
+					integer_type src,
+					size_t src_offset,
+					size_t dst_len) {
 		integer_type to_place = binops::rlshift(src, src_offset, dst_offset);
 		integer_type mask = ~(binops::make_mask<integer_type>(dst_len) << dst_offset);
 		dst = (dst & (mask)) | (to_place & ~mask);
@@ -178,7 +175,7 @@ private:
 		dst &= mask;
 	}
 
-	template<typename any_val>
+	template <typename any_val>
 	void write_val(any_val val) {
 		static_assert(binops::binsize<any_val>() <= len,
 					  "attempt to write more bits than what the destination can hold");
@@ -187,31 +184,31 @@ private:
 
 	std::reference_wrapper<integer_type> _val;
 };
-template<size_t offset, size_t len = 1>
+template <size_t offset, size_t len = 1>
 struct bits {
 
-	template<typename integer_type>
+	template <typename integer_type>
 	using integer_slice = slice<offset, len, integer_type>;
 
-	template<typename integer_type>
+	template <typename integer_type>
 	using const_integer_slice = typename integer_slice<integer_type>::const_type;
 
-	template<typename integer_type>
+	template <typename integer_type>
 	static const_integer_slice<integer_type> of(const integer_type& integer) {
 		return const_integer_slice<integer_type>(integer);
 	}
 
-	template<typename integer_type>
+	template <typename integer_type>
 	static integer_slice<integer_type> of(integer_type& integer) {
 		return integer_slice<integer_type>(integer);
 	}
 
-	template<typename integer_type>
+	template <typename integer_type>
 	static integer_type as_mask() {
 		return binops::make_mask<integer_type>(len) << offset;
 	}
 
-	template<typename integer_type, size_t slice_offset, size_t slice_len>
+	template <typename integer_type, size_t slice_offset, size_t slice_len>
 	static slice<offset + slice_offset, len, integer_type>
 	of(slice<slice_offset, slice_len, integer_type> existing_slice) {
 		static_assert(offset + slice_offset + len <= slice_offset + slice_len,

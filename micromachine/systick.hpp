@@ -27,13 +27,11 @@ public:
 		, _control(existing_state._control)
 		, _current_value(existing_state._current_value)
 		, _reload_value(existing_state._reload_value)
-		, _calib_value(existing_state._calib_value)
-	{}
+		, _calib_value(existing_state._calib_value) {}
 
 	systick(exception_controller& exception_controller)
 		: _exception_controller(exception_controller)
-		, _current_value(_control)
-	{}
+		, _current_value(_control) {}
 
 	void reset() {
 		_control.reset();
@@ -77,7 +75,6 @@ public:
 	systick_calib_value_reg& calib_value_register() {
 		return _calib_value;
 	}
-
 };
 
 } // namespace micromachine::system

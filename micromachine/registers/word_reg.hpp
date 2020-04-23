@@ -23,12 +23,12 @@ public:
 	using standard_reg::reset;
 	using standard_reg::standard_reg;
 
-	template<typename bits_t>
+	template <typename bits_t>
 	constexpr auto self() {
 		return bits_t::of(_word);
 	}
 
-	template<typename bits_t>
+	template <typename bits_t>
 	constexpr auto self() const {
 		return bits_t::of(_word);
 	}

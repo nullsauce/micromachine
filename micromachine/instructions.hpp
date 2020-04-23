@@ -934,5 +934,4 @@ struct isb : public standard_imm4 {
 	using standard_imm4::standard_imm4;
 };
 
-}
-
+} // namespace micromachine::system

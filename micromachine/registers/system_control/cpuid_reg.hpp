@@ -14,7 +14,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 namespace micromachine::system {
 
-class cpuid_reg	: public memory_mapped_reg {
+class cpuid_reg : public memory_mapped_reg {
 public:
 	static constexpr uint32_t CPUID = 0xE000ED00;
 
@@ -28,7 +28,6 @@ private:
 	uint32_t get() const override {
 		return *((uint32_t*)_value);
 	}
-
 };
 
 } // namespace micromachine::system

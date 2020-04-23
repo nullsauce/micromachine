@@ -35,7 +35,7 @@ public:
 private:
 	static constexpr uint32_t _pri14_mask = (0b11 << 22);
 	static constexpr uint32_t _pri15_mask = (0b11 << 30);
-	static constexpr uint32_t _mask = _pri14_mask| _pri15_mask;
+	static constexpr uint32_t _mask = _pri14_mask | _pri15_mask;
 
 	void set(uint32_t word) override {
 		_word = word & _mask;
