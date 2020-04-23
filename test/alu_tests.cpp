@@ -2,8 +2,8 @@
 // Created by fla on 17-5-8.
 //
 
+#include "execution/alu.hpp"
 #include <gtest/gtest.h>
-#include "alu.hpp"
 
 template<typename u_type>
 static void test_lsl(const u_type initial, const u_type expected_result, const size_t offset,

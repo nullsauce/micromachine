@@ -12,7 +12,7 @@ set(SRCS
 	exception/exception_return_handler.hpp
 	execution/context_switcher.hpp
 	execution/exec.hpp
-	alu.hpp
+	execution/alu.hpp
 	registers/core_registers.hpp
 	registers/special_registers.hpp
 	registers/xpsr_reg.hpp
