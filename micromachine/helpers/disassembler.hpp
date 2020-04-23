@@ -16,17 +16,17 @@
 
 namespace micromachine::system {
 
-class disasm : public instruction_decoder {
+class disassembler : public instruction_decoder {
 
 public:
 	static std::string disassemble_instruction(const instruction_pair instr, uint32_t address) {
-		disasm d(address, DISASM_FMT_HEX);
+		disassembler d(address, DISASM_FMT_HEX);
 		d.decode_instruction(instr);
 		return d.instruction_string;
 	}
 
 private:
-	disasm(size_t address, uint32_t fmt)
+	disassembler(size_t address, uint32_t fmt)
 		: instruction_string(128, '\0')
 		, _addr(address)
 		, format_options(fmt) {}
