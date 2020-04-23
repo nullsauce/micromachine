@@ -209,18 +209,18 @@ typedef struct
 #define USART_CR1_TXE             USART_CR1_TXE_Msk              /* TX empty interrupt enable */
 
 /* Usart interrupt status register bits definitions */
-#define USART_ISR_TXE_Pos          (0U)
-#define USART_ISR_TXE_Msk          (0x1UL << USART_ISR_TXE_Pos)
-#define USART_ISR_TXE              USART_ISR_TXE_Msk               /* TX empty interrupt status */
-#define USART_ISR_TXC_Pos          (1U)
-#define USART_ISR_TXC_Msk          (0x1UL << USART_ISR_TXC_Pos)
-#define USART_ISR_TXC              USART_ISR_TXC_Msk              /* TX complete interrupt status */
-#define USART_ISR_RXNE_Pos         (2U)
+#define USART_ISR_RXNE_Pos         (1U)
 #define USART_ISR_RXNE_Msk         (0x1UL << USART_ISR_RXNE_Pos)
 #define USART_ISR_RXNE             USART_ISR_RXNE_Msk              /* RX not empty interrupt status */
+#define USART_ISR_TXC_Pos          (2U)
+#define USART_ISR_TXC_Msk          (0x1UL << USART_ISR_TXC_Pos)
+#define USART_ISR_TXC              USART_ISR_TXC_Msk              /* TX complete interrupt status */
+#define USART_ISR_TXE_Pos          (3U)
+#define USART_ISR_TXE_Msk          (0x1UL << USART_ISR_TXE_Pos)
+#define USART_ISR_TXE              USART_ISR_TXE_Msk               /* TX empty interrupt status */
 
 /* Usart interrupt clear flag register bits definitions */
-#define USART_ICR_TXC_Pos          (0U)
+#define USART_ICR_TXC_Pos          (1U)
 #define USART_ICR_TXC_Msk          (0x1UL << USART_ICR_TXC_Pos)
 #define USART_ICR_TXC              USART_ICR_TXC_Msk              /* TX complete interrupt clear */
 
