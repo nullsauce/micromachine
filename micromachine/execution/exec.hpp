@@ -26,7 +26,7 @@ static void exec(const lsl_imm instruction, core_registers& regs, apsr_reg& stat
 	const bool carry = alu::lsl_c(rm, instruction.shift_offset(), status_reg.carry_flag());
 	status_reg.apply_neg(rm);
 	status_reg.apply_zero(rm);
-	status_reg.write_carry_flag(carry);
+	status_reg.carry_flag() = carry;
 	regs.set(instruction.rd(), rm);
 }
 static void exec(const lsr_imm instruction, core_registers& regs, apsr_reg& status_reg) {
@@ -38,7 +38,7 @@ static void exec(const lsr_imm instruction, core_registers& regs, apsr_reg& stat
 	const bool carry = alu::lsr_c(rm, applied_offset, status_reg.carry_flag());
 	status_reg.apply_neg(rm);
 	status_reg.apply_zero(rm);
-	status_reg.write_carry_flag(carry);
+	status_reg.carry_flag() = carry;
 	regs.set(instruction.rd(), rm);
 }
 static void exec(const asr_imm instruction, core_registers& regs, apsr_reg& status_reg) {
@@ -50,7 +50,7 @@ static void exec(const asr_imm instruction, core_registers& regs, apsr_reg& stat
 	const bool carry = alu::asr_c(rm, applied_offset, status_reg.carry_flag());
 	status_reg.apply_neg(rm);
 	status_reg.apply_zero(rm);
-	status_reg.write_carry_flag(carry);
+	status_reg.carry_flag() = carry;
 	regs.set(instruction.rd(), rm);
 }
 static void exec(const add_reg instruction, core_registers& regs, apsr_reg& status_reg) {
@@ -64,8 +64,8 @@ static void exec(const add_reg instruction, core_registers& regs, apsr_reg& stat
 
 	regs.set(instruction.rd(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
@@ -80,8 +80,8 @@ static void exec(const subs_reg instruction, core_registers& regs, apsr_reg& sta
 
 	regs.set(instruction.rd(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
@@ -96,8 +96,8 @@ static void exec(const add_imm instruction, core_registers& regs, apsr_reg& stat
 
 	regs.set(instruction.rd(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
@@ -111,8 +111,8 @@ static void exec(const subs_imm instruction, core_registers& regs, apsr_reg& sta
 
 	regs.set(instruction.rd(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
@@ -137,8 +137,8 @@ static void exec(const cmp_imm instruction, const core_registers& regs, apsr_reg
 
 	uint32_t result = alu::add_with_carry(rn, ~imm32, true, carry, overflow);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
@@ -153,8 +153,8 @@ static void exec(const add_imm_t2 instruction, core_registers& regs, apsr_reg& s
 
 	regs.set(instruction.rdn(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
@@ -169,8 +169,8 @@ static void exec(const subs_imm8 instruction, core_registers& regs, apsr_reg& st
 
 	regs.set(instruction.rdn(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
@@ -208,7 +208,7 @@ static void exec(const lsl_reg instruction, core_registers& regs, apsr_reg& stat
 
 	regs.set(instruction.rdn(), value);
 
-	status_reg.write_carry_flag(carry);
+	status_reg.carry_flag() = carry;
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
@@ -220,7 +220,7 @@ static void exec(const lsr_reg instruction, core_registers& regs, apsr_reg& stat
 
 	regs.set(instruction.rdn(), value);
 
-	status_reg.write_carry_flag(carry);
+	status_reg.carry_flag() = carry;
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
@@ -232,7 +232,7 @@ static void exec(const asr_reg instruction, core_registers& regs, apsr_reg& stat
 
 	regs.set(instruction.rdn(), value);
 
-	status_reg.write_carry_flag(carry);
+	status_reg.carry_flag() = carry;
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
@@ -247,8 +247,8 @@ static void exec(const adc instruction, core_registers& regs, apsr_reg& status_r
 
 	regs.set(instruction.rdn(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
@@ -263,8 +263,8 @@ static void exec(const sbc instruction, core_registers& regs, apsr_reg& status_r
 
 	regs.set(instruction.rdn(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
@@ -276,7 +276,7 @@ static void exec(const ror_reg instruction, core_registers& regs, apsr_reg& stat
 
 	regs.set(instruction.rdn(), value);
 
-	status_reg.write_carry_flag(carry);
+	status_reg.carry_flag() = carry;
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
@@ -300,8 +300,8 @@ static void exec(const rsb_imm instruction, core_registers& regs, apsr_reg& stat
 
 	regs.set(instruction.rd(), result);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
@@ -314,8 +314,8 @@ static void exec(const cmp_reg instruction, const core_registers& regs, apsr_reg
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
@@ -328,8 +328,8 @@ static void exec(const cmn_reg instruction, const core_registers& regs, apsr_reg
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, rm, false, carry, overflow);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
@@ -425,8 +425,8 @@ static void exec(const cmp_highreg instruction, const core_registers& regs, apsr
 	bool overflow = false;
 	uint32_t result = alu::add_with_carry(rn, ~rm, true, carry, overflow);
 
-	status_reg.write_carry_flag(carry);
-	status_reg.write_overflow_flag(overflow);
+	status_reg.carry_flag() = carry;
+	status_reg.overflow_flag() = overflow;
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
