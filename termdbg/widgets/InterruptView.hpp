@@ -64,8 +64,6 @@ namespace {
 
 }
 
-using namespace micromachine::system;
-
 class InterruptView : public cppurses::layout::Vertical {
 private:
 	cpu& _cpu;
