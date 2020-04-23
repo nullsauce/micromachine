@@ -1,45 +1,71 @@
 
+
+
+
+
 set(SRCS
-	helpers/binops.hpp
-	types/types.hpp
-	instruction/instruction_pair.hpp
-	instruction/instructions.hpp
-	helpers/check.hpp
+	elfio/elf_types.hpp
+	elfio/elfio.hpp
+	elfio/elfio_dump.hpp
+	elfio/elfio_dynamic.hpp
+	elfio/elfio_header.hpp
+	elfio/elfio_note.hpp
+	elfio/elfio_relocation.hpp
+	elfio/elfio_section.hpp
+	elfio/elfio_segment.hpp
+	elfio/elfio_strings.hpp
+	elfio/elfio_symbols.hpp
+	elfio/elfio_utils.hpp
 	exception/exception.hpp
 	exception/exception_controller.hpp
+	exception/exception_return_handler.hpp
 	exception/exception_state.hpp
 	exception/exception_vector.hpp
-	exception/exception_return_handler.hpp
+	execution/alu.hpp
 	execution/context_switcher.hpp
 	execution/exec.hpp
-	execution/alu.hpp
-	registers/core_registers.hpp
-	registers/special_registers.hpp
-	registers/xpsr_reg.hpp
-	registers/apsr_reg.hpp
-	registers/ipsr_reg.hpp
-	registers/epsr_reg.hpp
-	registers/iregister.hpp
-	registers/pc_reg.hpp
-	registers/sp_reg.hpp
-	registers/standard_reg.hpp
-	registers/control_reg.hpp
+	execution/exec_dispatcher.hpp
+	execution/execution_mode.hpp
+	execution/interworking_brancher.hpp
+	helpers/binops.hpp
+	helpers/check.hpp
+	helpers/disassembler.hpp
+	helpers/string_format.hpp
+	instruction/instruction_decoder.hpp
+	instruction/instruction_pair.hpp
+	instruction/instructions.hpp
+	memory/mapping.hpp
+	memory/memory.hpp
+	registers/custom
+	registers/custom/generic_io_reg.hpp
+	registers/system_control
 	registers/system_control/cpuid_reg.hpp
 	registers/system_control/shpr2_reg.hpp
 	registers/system_control/shpr3_reg.hpp
 	registers/system_control/systick_control_reg.hpp
-	registers/custom/generic_io_reg.hpp
+	registers/apsr_reg.hpp
+	registers/control_reg.hpp
+	registers/core_registers.hpp
+	registers/epsr_reg.hpp
 	registers/event_register.hpp
-	memory/memory.hpp
-	nvic.hpp
-	helpers/string_format.hpp
-	execution/exec_dispatcher.hpp
-	execution/interworking_brancher.hpp
-	instruction/instruction_decoder.hpp
-	helpers/disassembler.hpp
+	registers/ipsr_reg.hpp
+	registers/iregister.hpp
+	registers/pc_reg.hpp
+	registers/primask_reg.hpp
+	registers/registers.hpp
+	registers/sp_reg.hpp
+	registers/special_registers.hpp
+	registers/standard_reg.hpp
+	registers/word_reg.hpp
+	registers/xpsr_reg.hpp
+	types/bits.hpp
+	types/types.hpp
 	cpu.hpp
-	mcu.hpp
 	mcu.cpp
+	mcu.hpp
+	nvic.hpp
+	programmer.hpp
+	systick.hpp
 )
 
 add_library(micromachine STATIC ${SRCS})
