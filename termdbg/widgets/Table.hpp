@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_TABLE_HPP
-#define MICROMACHINE_EMU_TABLE_HPP
+#pragma once
 
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/layouts/horizontal.hpp>
@@ -85,4 +84,3 @@ private:
 		return row;
 	}
 };
-#endif //MICROMACHINE_EMU_TABLE_HPP

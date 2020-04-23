@@ -7,13 +7,10 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EXECUTION_MODE_HPP
-#define MICROMACHINE_EXECUTION_MODE_HPP
+#pragma once
 
 namespace micromachine::system {
 
 enum class execution_mode { thread, handler };
 
 }
-
-#endif // MICROMACHINE_EXECUTION_MODE_HPP

@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_MEMORYMUTATIONPREDICATE_HPP
-#define MICROMACHINE_MEMORYMUTATIONPREDICATE_HPP
+#pragma once
 
 #include "CpuMutationPredicate.hpp"
 #include "cpu.hpp"
@@ -35,4 +34,3 @@ public:
 };
 
 
-#endif //MICROMACHINE_MEMORYMUTATIONPREDICATE_HPP

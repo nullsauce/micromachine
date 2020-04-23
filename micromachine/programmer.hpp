@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_PROGRAMMER_HPP
-#define MICROMACHINE_EMU_PROGRAMMER_HPP
+#pragma once
 
 #include "elfio/elfio.hpp"
 #include "memory/memory.hpp"
@@ -200,5 +199,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_PROGRAMMER_HPP

@@ -2,8 +2,7 @@
 // Created by fla on 17-5-4.
 //
 
-#ifndef THUMBEMU_EXEC_HPP
-#define THUMBEMU_EXEC_HPP
+#pragma once
 
 #include "alu.hpp"
 #include "binops.hpp"
@@ -988,5 +987,3 @@ exec(const wfe instruction, event_register& event_register, bool& enter_low_powe
 }
 static void exec(const yield instruction) {}
 } // namespace micromachine::system
-
-#endif // THUMBEMU_EXEC_HPP

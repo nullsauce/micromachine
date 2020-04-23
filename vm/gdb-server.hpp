@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_GDB_SERVER_HPP
-#define MICROMACHINE_EMU_GDB_SERVER_HPP
+#pragma once
 
 
 #include <unistd.h>
@@ -336,4 +335,3 @@ public:
 };
 
 
-#endif //MICROMACHINE_EMU_GDB_SERVER_HPP

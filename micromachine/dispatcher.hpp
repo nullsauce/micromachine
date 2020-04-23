@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_DISPATCH_HPP
-#define MICROMACHINE_DISPATCH_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "instruction_pair.hpp"
@@ -782,5 +781,3 @@ private:
 	virtual void dispatch(const isb instr) = 0;
 };
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_DISPATCH_HPP

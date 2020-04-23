@@ -2,8 +2,7 @@
 // Created by fla on 17-5-9.
 //
 
-#ifndef MICROMACHINE_REGISTER_TYPES_HPP
-#define MICROMACHINE_REGISTER_TYPES_HPP
+#pragma once
 
 #include "control_reg.hpp"
 #include "exception_return_handler.hpp"
@@ -130,5 +129,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_REGISTER_TYPES_HPP

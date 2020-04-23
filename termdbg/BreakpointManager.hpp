@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_BREAKPOINTMANAGER_HPP
-#define MICROMACHINE_EMU_BREAKPOINTMANAGER_HPP
+#pragma once
 
 #include <map>
 #include <signals/signal.hpp>
@@ -122,4 +121,3 @@ public:
 };
 
 
-#endif //MICROMACHINE_EMU_BREAKPOINTMANAGER_HPP

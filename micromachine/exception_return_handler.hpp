@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_EXCEPTION_RETURN_HANDLER_HPP
-#define MICROMACHINE_EMU_EXCEPTION_RETURN_HANDLER_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -19,5 +18,3 @@ struct exception_return_handler {
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_EXCEPTION_RETURN_HANDLER_HPP

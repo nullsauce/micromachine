@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_BINOPS_HPP
-#define MICROMACHINE_BINOPS_HPP
+#pragma once
 
 #include "precond.hpp"
 #include <assert.h>
@@ -225,5 +224,3 @@ std::string to_string(const u_type& value) {
 }
 
 } // namespace micromachine::system::binops
-
-#endif // MICROMACHINE_BINOPS_HPP

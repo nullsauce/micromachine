@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_CPUID_REG_HPP
-#define MICROMACHINE_CPUID_REG_HPP
+#pragma once
 
 #include "registers/word_reg.hpp"
 #include "types.hpp"
@@ -33,5 +32,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_CPUID_REG_HPP

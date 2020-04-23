@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_EMU_GENERIC_IO_REG_HPP
-#define MICROMACHINE_EMU_GENERIC_IO_REG_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "registers/word_reg.hpp"
@@ -34,5 +33,3 @@ protected:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_GENERIC_IO_REG_HPP

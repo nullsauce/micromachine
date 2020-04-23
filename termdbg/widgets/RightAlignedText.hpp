@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_RIGHTALIGNEDTEXT_HPP
-#define MICROMACHINE_EMU_RIGHTALIGNEDTEXT_HPP
+#pragma once
 
 #include <cppurses/widget/widgets/text_display.hpp>
 
@@ -20,4 +19,3 @@ public:
 };
 
 
-#endif //MICROMACHINE_EMU_RIGHTALIGNEDTEXT_HPP

@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_REGISTERMUTATIONPREDICATE_HPP
-#define MICROMACHINE_REGISTERMUTATIONPREDICATE_HPP
+#pragma once
 
 
 #include "CpuMutationPredicate.hpp"
@@ -36,4 +35,3 @@ public:
 
 
 
-#endif //MICROMACHINE_REGISTERMUTATIONPREDICATE_HPP

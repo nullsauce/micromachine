@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_TIMER_HPP
-#define MICROMACHINE_EMU_TIMER_HPP
+#pragma once
 
 #include "exception_controller.hpp"
 #include "registers/system_control/systick_control_reg.hpp"
@@ -82,5 +81,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_TIMER_HPP

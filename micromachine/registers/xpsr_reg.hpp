@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_XPSR_REG_HPP
-#define MICROMACHINE_XPSR_REG_HPP
+#pragma once
 
 #include "binops.hpp"
 #include "types.hpp"
@@ -27,5 +26,3 @@ protected:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_XPSR_REG_HPP

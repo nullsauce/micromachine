@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_EPSR_REGSITER_HPP
-#define MICROMACHINE_EPSR_REGSITER_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "types.hpp"
@@ -35,5 +34,3 @@ struct epsr_reg : public xpsr_reg {
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EPSR_REGSITER_HPP

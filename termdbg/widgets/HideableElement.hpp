@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_HIDEABLEELEMENT_HPP
-#define MICROMACHINE_EMU_HIDEABLEELEMENT_HPP
+#pragma once
 
 
 #include <memory>
@@ -65,4 +64,3 @@ public:
 
 };
 
-#endif //MICROMACHINE_EMU_HIDEABLEELEMENT_HPP

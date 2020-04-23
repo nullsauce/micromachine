@@ -2,8 +2,7 @@
 // Created by fla on 5/1/17.
 //
 
-#ifndef MICROMACHINE_STATUS_FLAGS_HPP
-#define MICROMACHINE_STATUS_FLAGS_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "xpsr_reg.hpp"
@@ -146,5 +145,3 @@ struct apsr_reg : public xpsr_reg {
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_STATUS_FLAGS_HPP

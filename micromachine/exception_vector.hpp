@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_EXCEPTION_STATE_HPP
-#define MICROMACHINE_EMU_EXCEPTION_STATE_HPP
+#pragma once
 
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
@@ -421,5 +420,3 @@ public:
 
 };
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_EXCEPTION_DEFS_HPP

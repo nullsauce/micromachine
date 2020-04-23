@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_INFOTABLE_HPP
-#define MICROMACHINE_EMU_INFOTABLE_HPP
+#pragma once
 
 #include <memory/mapping.hpp>
 
@@ -78,4 +77,3 @@ private:
 	}
 };
 
-#endif //MICROMACHINE_EMU_INFOTABLE_HPP

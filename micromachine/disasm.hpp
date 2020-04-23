@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_DISASM_HPP
-#define MICROMACHINE_DISASM_HPP
+#pragma once
 
 #include "binops.hpp"
 #include "registers/core_registers.hpp"
@@ -501,5 +500,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_DISASM_HPP
