@@ -14,7 +14,7 @@
 		std::terminate();                                                                          \
 	}
 
-#ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
+#ifdef MICROMACHINE_ENABLE_CHECKS
 #define micromachine_check(cond, message, ...)                                                                \
 	{                                                                                              \
 		if(!(cond)) {                                                                              \
