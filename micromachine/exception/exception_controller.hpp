@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "exception_defs.hpp"
+#include "exception.hpp"
 #include "exception_vector.hpp"
 
 namespace micromachine::system {

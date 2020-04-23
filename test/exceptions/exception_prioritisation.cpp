@@ -1,7 +1,7 @@
 
 
 #include "CpuTestHarness.hpp"
-#include "exception/exception_defs.hpp"
+#include "exception/exception.hpp"
 #include "mini_assembler.hpp"
 
 class ExceptionTestHarness : public CpuTestHarness {

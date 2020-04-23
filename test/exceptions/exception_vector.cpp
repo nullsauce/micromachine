@@ -3,8 +3,8 @@
 //
 
 #include "exception/exception_vector.hpp"
+#include "exception/exception.hpp"
 #include "exception/exception_controller.hpp"
-#include "exception/exception_defs.hpp"
 #include "nvic.hpp"
 #include <gtest/gtest.h>
 
