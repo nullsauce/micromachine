@@ -2,7 +2,7 @@
 // Created by fla
 //
 
-#include "helpers/disasm.hpp"
+#include "helpers/disassembler.hpp"
 #include "nvic.hpp"
 #include <fstream>
 #include <gtest/gtest.h>

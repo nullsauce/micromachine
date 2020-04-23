@@ -36,7 +36,7 @@ set(SRCS
 	execution/exec_dispatcher.hpp
 	execution/interworking_brancher.hpp
 	instruction/instruction_decoder.hpp
-	helpers/disasm.hpp
+	helpers/disassembler.hpp
 	cpu.hpp
 	mcu.hpp
 	mcu.cpp

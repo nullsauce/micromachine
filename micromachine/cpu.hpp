@@ -9,7 +9,7 @@
 #include "execution/context_switcher.hpp"
 #include "execution/exec.hpp"
 #include "execution/exec_dispatcher.hpp"
-#include "helpers/disasm.hpp"
+#include "helpers/disassembler.hpp"
 
 #include "exception/exception_controller.hpp"
 #include "instruction/instruction_pair.hpp"
