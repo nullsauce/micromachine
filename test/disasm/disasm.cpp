@@ -2,11 +2,10 @@
 // Created by fla
 //
 
-#include <gtest/gtest.h>
+#include "helpers/disasm.hpp"
 #include "nvic.hpp"
-#include "disasm.hpp"
 #include <fstream>
-
+#include <gtest/gtest.h>
 
 TEST(Disasm, DisamRegressionOf16bitInstructions)
 {
