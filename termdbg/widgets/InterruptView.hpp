@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_INTERRUPTVIEW_HPP
-#define MICROMACHINE_EMU_INTERRUPTVIEW_HPP
+#pragma once
 
 #include "cpu.hpp"
 #include "exception_defs.hpp"
@@ -123,4 +122,3 @@ public:
 	}
 };
 
-#endif //MICROMACHINE_EMU_INTERRUPTVIEW_HPP

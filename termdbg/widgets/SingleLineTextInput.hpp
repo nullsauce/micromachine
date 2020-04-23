@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_SINGLELINETEXTINPUT_HPP
-#define MICROMACHINE_EMU_SINGLELINETEXTINPUT_HPP
+#pragma once
 
 #include <cppurses/widget/widgets/textbox.hpp>
 
@@ -77,4 +76,3 @@ public:
 	}
 };
 
-#endif //MICROMACHINE_EMU_SINGLELINETEXTINPUT_HPP

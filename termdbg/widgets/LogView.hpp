@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_LOGVIEW_HPP
-#define MICROMACHINE_EMU_LOGVIEW_HPP
+#pragma once
 
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/widgets/text_display.hpp>
@@ -54,4 +53,3 @@ public:
 	}
 };
 
-#endif //MICROMACHINE_EMU_LOGVIEW_HPP

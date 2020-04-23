@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_STANDARD_REG_HPP_HPP
-#define MICROMACHINE_STANDARD_REG_HPP_HPP
+#pragma once
 
 #include "registers/iregister.hpp"
 
@@ -36,5 +35,3 @@ protected:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_STANDARD_REG_HPP_HPP

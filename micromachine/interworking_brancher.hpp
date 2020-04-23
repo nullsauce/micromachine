@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_INTERWORKING_BRANCHER_HPP
-#define MICROMACHINE_INTERWORKING_BRANCHER_HPP
+#pragma once
 
 #include "exception_return_handler.hpp"
 #include "execution_mode.hpp"
@@ -64,5 +63,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_INTERWORKING_BRANCHER_HPP

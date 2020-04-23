@@ -2,8 +2,7 @@
 // Created by fla on 5/1/17.
 //
 
-#ifndef MICROMACHINE_MEMORY_HPP
-#define MICROMACHINE_MEMORY_HPP
+#pragma once
 
 #include <vector>
 #include <algorithm>
@@ -218,5 +217,3 @@ private:
 
 };
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_MEMORY_HPP

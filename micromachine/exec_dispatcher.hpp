@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_INTRUCTION_DISPATCHER_HPP
-#define MICROMACHINE_INTRUCTION_DISPATCHER_HPP
+#pragma once
 
 #include "dispatcher.hpp"
 #include "exception_controller.hpp"
@@ -314,5 +313,3 @@ private:
 	}
 };
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_INTRUCTION_DISPATCHER_HPP

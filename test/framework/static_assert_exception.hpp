@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_STATIC_ASSERT_EXCEPTION_HPP
-#define MICROMACHINE_EMU_STATIC_ASSERT_EXCEPTION_HPP
+#pragma once
 
 #include <string>
 #include <stdexcept>
@@ -101,4 +100,3 @@ namespace testing {
 	};*/
 }
 
-#endif //MICROMACHINE_EMU_STATIC_ASSERT_EXCEPTION_HPP

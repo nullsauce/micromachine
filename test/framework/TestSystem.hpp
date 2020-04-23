@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_TESTSYSTEM_HPP
-#define MICROMACHINE_TESTSYSTEM_HPP
+#pragma once
 
 #include "cpu.hpp"
 #include "mcu.hpp"
@@ -87,4 +86,3 @@ public:
 
 
 
-#endif //MICROMACHINE_TESTSYSTEM_HPP

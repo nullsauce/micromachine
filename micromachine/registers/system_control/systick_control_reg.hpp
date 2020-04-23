@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_EMU_SYSTICK_HPP
-#define MICROMACHINE_EMU_SYSTICK_HPP
+#pragma once
 
 #include "registers/word_reg.hpp"
 #include "registers/word_reg.hpp"
@@ -163,5 +162,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_SYSTICK_HPP

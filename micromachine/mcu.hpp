@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_MCU_HPP
-#define MICROMACHINE_MCU_HPP
+#pragma once
 
 #include "cpu.hpp"
 #include "exception_controller.hpp"
@@ -125,4 +124,3 @@ public:
 
 }
 
-#endif // MICROMACHINE_MCU_HPP

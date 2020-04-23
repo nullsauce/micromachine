@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_BITS_HPP
-#define MICROMACHINE_EMU_BITS_HPP
+#pragma once
 
 #include <functional>
 #include "binops.hpp"
@@ -222,5 +221,3 @@ struct bits {
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_BITS_HPP

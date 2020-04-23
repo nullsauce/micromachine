@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_INSTRUCTION_PAIR_HPP
-#define MICROMACHINE_INSTRUCTION_PAIR_HPP
+#pragma once
 
 #include "types.hpp"
 #include "bits.hpp"
@@ -61,5 +60,3 @@ private:
 
 };
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_INSTRUCTION_PAIR_HPP

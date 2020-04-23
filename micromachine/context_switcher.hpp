@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_CONTEXT_SWITCHING_HPP
-#define MICROMACHINE_EMU_CONTEXT_SWITCHING_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "exception_defs.hpp"
@@ -285,5 +284,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_EMU_CONTEXT_SWITCHING_HPP

@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_MAINWINDOW_HPP
-#define MICROMACHINE_EMU_MAINWINDOW_HPP
+#pragma once
 
 
 #include <cppurses/widget/layouts/vertical.hpp>
@@ -170,4 +169,3 @@ public:
 };
 
 
-#endif //MICROMACHINE_EMU_MAINWINDOW_HPP

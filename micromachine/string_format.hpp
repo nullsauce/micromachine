@@ -2,8 +2,7 @@
 // Created by fla on 17-5-21.
 //
 
-#ifndef MICROMACHINE_STRINGPRINTF_HPP
-#define MICROMACHINE_STRINGPRINTF_HPP
+#pragma once
 
 #include <memory>
 #include <iostream>
@@ -21,5 +20,3 @@ std::string string_format( const std::string& format, Args ... args ){
 }
 
 } // namespace micomachine::utils
-
-#endif //MICROMACHINE_STRINGPRINTF_HPP

@@ -2,8 +2,7 @@
 // Created by fla on 4/30/17.
 //
 
-#ifndef THUMBEMU_DEBUG_HPP
-#define THUMBEMU_DEBUG_HPP
+#pragma once
 
 #include <cstdio>
 #include <exception>
@@ -23,5 +22,3 @@
 #else
 #define precond(...) (void)0
 #endif
-
-#endif //THUMBEMU_DEBUG_HPP

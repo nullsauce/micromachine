@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_PC_REG_HPP
-#define MICROMACHINE_PC_REG_HPP
+#pragma once
 
 #include "binops.hpp"
 #include "exception_return_handler.hpp"
@@ -51,5 +50,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_PC_REG_HPP

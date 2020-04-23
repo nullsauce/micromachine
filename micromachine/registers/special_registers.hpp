@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_SPECIAL_REGISTERS_HPP
-#define MICROMACHINE_SPECIAL_REGISTERS_HPP
+#pragma once
 
 #include "apsr_reg.hpp"
 #include "control_reg.hpp"
@@ -96,5 +95,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_SPECIAL_REGISTERS_HPP
