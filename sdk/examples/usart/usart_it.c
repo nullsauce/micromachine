@@ -129,6 +129,20 @@ void main() {
 	uint8_t data[] = "Hello usart world!\n";
 	usart_transmit_async(&dev, data, sizeof(data));
 	printf("transmit...\n");
-	while(*(int*)(dev.user_data) != 0x55);
-	printf("done!\n");
+	while (*(int*)(dev.user_data) != 0x55) {}
+	printf("transmit done!\n");
+
+	NVIC_DisableIRQ(USART_IRQn);
+	unsigned int len = 20;
+	while (len--) {
+		SET_BIT(dev.port->CR1, USART_CR1_RXNE);
+		while ((dev.port->ISR & USART_ISR_RXNE) == 0);
+//		printf("b : %x\n", dev.port->ISR);
+
+		CLEAR_BIT(dev.port->ICR, USART_ICR_RXNE);
+		uint32_t rx_data = dev.port->RX;
+		printf("%c", (char)(rx_data & 0xff));
+	}
+
+	printf("receive done!\n");
 }
