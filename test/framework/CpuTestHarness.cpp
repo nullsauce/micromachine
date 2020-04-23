@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "CpuTestHarness.hpp"
 #include "binops.hpp"
-#include "exception_defs.hpp"
+#include "exception/exception_defs.hpp"
 
 #define RETURN_TO_THREAD_FROM_SP_MAIN 0xFFFFFFF9
 

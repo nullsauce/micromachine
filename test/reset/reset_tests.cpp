@@ -8,8 +8,8 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "CpuTestFixture.hpp"
+#include "exception/exception_defs.hpp"
 #include "registers/core_registers.hpp"
-#include "exception_defs.hpp"
 
 using namespace micromachine::system;
 
