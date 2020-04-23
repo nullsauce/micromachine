@@ -687,7 +687,7 @@ static void exec(const uxtb instruction, core_registers& regs) {
 	regs.set(instruction.rd(), extended);
 }
 static void exec(const push instruction, core_registers& regs, memory& mem) {
-	precond(instruction.pushed_registers_count() > 0, "must push at least one register");
+	micromachine_check(instruction.pushed_registers_count() > 0, "must push at least one register");
 	const size_t stored_size = 4 * instruction.pushed_registers_count();
 	const uint32_t start_address = regs.get_sp() - stored_size;
 
@@ -710,7 +710,7 @@ static void exec(const pop instruction,
 				 core_registers& regs,
 				 memory& mem,
 				 interworking_brancher& _interworking_brancher) {
-	precond(instruction.pop_count() > 0, "must push at least one register");
+	micromachine_check(instruction.pop_count() > 0, "must push at least one register");
 	const uint32_t frame_start = regs.get_sp(); // sp
 	uint32_t sp_base = frame_start;
 	const uint32_t stored_size = 4 * instruction.pop_count();
