@@ -12,7 +12,7 @@
 */
 
 #include "CpuTestFixture.hpp"
-#include "binops.hpp"
+#include "helpers/binops.hpp"
 
 /* SYSm field values for MSR and MRS instructions. */
 #define SYS_APSR    0

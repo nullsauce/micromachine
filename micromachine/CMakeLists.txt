@@ -1,6 +1,6 @@
 
 set(SRCS
-	binops.hpp
+	helpers/binops.hpp
 	types/types.hpp
 	instruction/instruction_pair.hpp
 	instruction/instructions.hpp
