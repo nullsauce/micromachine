@@ -2,25 +2,27 @@
 #define MICROMACHINE_EMU_NVIC_HPP
 
 #include "bits.hpp"
-#include "registers/ireg.hpp"
+#include "registers/iregister.hpp"
 #include "registers/word_reg.hpp"
 #include "types.hpp"
 #include <array>
 
 namespace micromachine::system { // Interrupt Priority Registers
-class nvic_ipr_reg : public word_reg {
+
+class nvic_ipr_reg : public memory_mapped_reg {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 
 	template <size_t index>
 	using bits_for = bits<6 + (index * 8), 2>;
 
-	template<size_t index>
-	typename bits_for<index>::template const_integer_slice<uint32_t> priority_bits_for_nth_interrupt() const {
+	template <size_t index>
+	typename bits_for<index>::template const_integer_slice<uint32_t>
+	priority_bits_for_nth_interrupt() const {
 		return bits_for<index>::of(_word);
 	}
 
-	template<size_t index>
+	template <size_t index>
 	typename bits_for<index>::template integer_slice<uint32_t> priority_bits_for_nth_interrupt() {
 		return bits_for<index>::of(_word);
 	}
@@ -35,20 +37,30 @@ private:
 		return _word;
 	}
 };
-class nvic_status_reg : public iword_reg {
+
+class nvic_status_reg : public iregister {
 
 public:
-	nvic_status_reg(uint32_t& word) : _status(word) {}
+	using iregister::operator=;
+
+	nvic_status_reg(uint32_t& word)
+		: _status(word) {}
+
+	void reset() override {
+		*this = 0U;
+	}
 
 protected:
 	uint32_t& _status;
-}; /*
-	* On write 0: no effect
-	* On write 1: enable the associated bit
-	*/
+};
+
+/** Writing to this register is equivalent to OR'ing it with the value
+ * On write 0: no effect
+ * On write 1: enable the associated bit
+ */
 class nvic_enable_on_write_reg : public nvic_status_reg {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 	using nvic_status_reg::nvic_status_reg;
 
 private:
@@ -59,13 +71,15 @@ private:
 	uint32_t get() const override {
 		return _status;
 	}
-}; /*
-	* On write a 0 bit: no effect
-	* On write a 1 bit: disable the associated bit
-	*/
+};
+
+/**
+ * On write a 0 bit: no effect
+ * On write a 1 bit: disable the associated bit
+ */
 class nvic_disable_on_write_reg : public nvic_status_reg {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 	using nvic_status_reg::nvic_status_reg;
 
 private:
@@ -76,35 +90,47 @@ private:
 	uint32_t get() const override {
 		return _status;
 	}
-}; /* Interrupt Set-Enable Register
-	* Enables, or reads the enabled state of one or more exceptions.
-	*/
+};
+
+/**
+ * Interrupt Set-Enable Register
+ * Enables, or reads the enabled state of one or more exceptions.
+ */
 class nvic_iser_reg : public nvic_enable_on_write_reg {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 	using nvic_enable_on_write_reg::nvic_enable_on_write_reg;
-}; /* Interrupt Clear Enable Register
-	* Disables, or reads the enabled state of one or more exceptions.
-	*/
+};
+
+/**
+ * Interrupt Clear Enable Register
+ * Disables, or reads the enabled state of one or more exceptions.
+ */
 class nvic_icer_reg : public nvic_disable_on_write_reg {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 	using nvic_disable_on_write_reg::nvic_disable_on_write_reg;
-}; /* Interrupt Set-Pending Register
-	* On writes, sets the status of one or more exceptions to pending. On reads, shows the
-	* pending status of the exceptions.
-	*/
+};
+
+/**
+ * Interrupt Set-Pending Register
+ * On writes, sets the status of one or more exceptions to pending. On reads, shows the
+ * pending status of the exceptions.
+ */
 class nvic_ispr_reg : public nvic_enable_on_write_reg {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 	using nvic_enable_on_write_reg::nvic_enable_on_write_reg;
-}; /* Interrupt Clear-Pending Register
-	* On writes, clears the status of one or more exceptions to pending. On reads, shows
-	* the pending status of the exceptions.
-	*/
+};
+
+/**
+ * Interrupt Clear-Pending Register
+ * On writes, clears the status of one or more exceptions to pending. On reads, shows
+ * the pending status of the exceptions.
+ */
 class nvic_icpr_reg : public nvic_disable_on_write_reg {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 	using nvic_disable_on_write_reg::nvic_disable_on_write_reg;
 };
 class nvic {
@@ -140,11 +166,9 @@ private:
 		, _iser_reg(_interrupt_enable_statuses)
 		, _icer_reg(_interrupt_enable_statuses)
 		, _ispr_reg(_interrupt_pending_statuses)
-		, _icpr_reg(_interrupt_pending_statuses)
-	{}
+		, _icpr_reg(_interrupt_pending_statuses) {}
 
 public:
-
 	static constexpr uint32_t NVIC_ISER = 0xE000E100;
 	static constexpr uint32_t NVIC_ICER = 0xE000E180;
 	static constexpr uint32_t NVIC_ISPR = 0xE000E200;
@@ -158,9 +182,11 @@ public:
 	static constexpr uint32_t NVIC_IPR6 = 0xE000E414;
 	static constexpr uint32_t NVIC_IPR7 = 0xE000E418;
 
-	nvic() : nvic(0U, 0U) {}
+	nvic()
+		: nvic(0U, 0U) {}
 
-	nvic(const nvic& other) : nvic(other._interrupt_enable_statuses, other._interrupt_pending_statuses) {}
+	nvic(const nvic& other)
+		: nvic(other._interrupt_enable_statuses, other._interrupt_pending_statuses) {}
 
 	// This is used for testing purposes
 	static nvic with_enable_statuses(uint32_t statuses) {
@@ -201,34 +227,34 @@ public:
 	using status_bit = bits<exti_number, 1>;
 
 	// The nth bit matching the nth exti of a 32bit status register
-	template<size_t exti_number>
+	template <size_t exti_number>
 	using status_bit_ref = typename status_bit<exti_number>::template integer_slice<uint32_t>;
 
 	// The (const) nth bit matching the nth exti of a 32bit status register
-	template<size_t exti_number>
-	using status_bit_const_ref = typename status_bit<exti_number>::template const_integer_slice<uint32_t>;
-
+	template <size_t exti_number>
+	using status_bit_const_ref =
+		typename status_bit<exti_number>::template const_integer_slice<uint32_t>;
 
 	/// gets a mutable reference to the interrupt enable bit for a given external interrupt
-	template<size_t exti_number>
+	template <size_t exti_number>
 	status_bit_ref<exti_number> enable_bit_for() {
 		return status_bit_ref<exti_number>(_interrupt_enable_statuses);
 	}
 
 	/// gets an immutable reference to the interrupt enable bit for a given external interrupt
-	template<size_t exti_number>
+	template <size_t exti_number>
 	status_bit_const_ref<exti_number> enable_bit_for() const {
 		return status_bit_const_ref<exti_number>(_interrupt_enable_statuses);
 	}
 
 	/// gets a mutable reference to the interrupt pending bit for a given external interrupt
-	template<size_t exti_number>
+	template <size_t exti_number>
 	status_bit_ref<exti_number> pending_bit_for() {
 		return status_bit_ref<exti_number>(_interrupt_pending_statuses);
 	}
 
 	/// gets an immutable reference to the interrupt pending bit for a given external interrupt
-	template<size_t exti_number>
+	template <size_t exti_number>
 	status_bit_const_ref<exti_number> pending_bit_for() const {
 		return status_bit_const_ref<exti_number>(_interrupt_pending_statuses);
 	}
@@ -236,23 +262,27 @@ public:
 	/// Gets a mutable reference to the two priority bits for a given external interrupt
 	/// \tparam exti_number External interrupt number [0 - 15]
 	/// \return a mutable reference to the two priority bits of this external interrupt
-	template<size_t exti_number>
-	typename nvic_ipr_reg::bits_for<exti_number % 4>::template integer_slice<uint32_t> priority_bits_for() {
-		return priority_reg<exti_number / 4>().template priority_bits_for_nth_interrupt<exti_number % 4>();
+	template <size_t exti_number>
+	typename nvic_ipr_reg::bits_for<exti_number % 4>::template integer_slice<uint32_t>
+	priority_bits_for() {
+		return priority_reg<exti_number / 4>()
+			.template priority_bits_for_nth_interrupt<exti_number % 4>();
 	}
 
 	/// Gets an immutable reference to the two priority bits for a given external interrupt
 	/// \tparam exti_number External exception_controller number [0 - 15]
 	/// \return an immutable reference to the two priority bits of this external interrupt
-	template<size_t exti_number>
-	typename nvic_ipr_reg::bits_for<exti_number % 4>::template const_integer_slice<uint32_t> priority_bits_for() const {
-		return priority_reg<exti_number / 4>().template priority_bits_for_nth_interrupt<exti_number % 4>();
+	template <size_t exti_number>
+	typename nvic_ipr_reg::bits_for<exti_number % 4>::template const_integer_slice<uint32_t>
+	priority_bits_for() const {
+		return priority_reg<exti_number / 4>()
+			.template priority_bits_for_nth_interrupt<exti_number % 4>();
 	}
 
 	/// Gets a mutable reference to the nth interrupt priority register
 	/// \tparam index register index
 	/// \return a mutable reference to this interrupt priority register
-	template<size_t index>
+	template <size_t index>
 	nvic_ipr_reg& priority_reg() {
 		return _priority_regs[index];
 	}
@@ -260,18 +290,14 @@ public:
 	/// Gets an immutable reference to the nth interrupt priority register
 	/// \tparam index register index
 	/// \return an immutable reference to this interrupt priority register
-	template<size_t index>
+	template <size_t index>
 	const nvic_ipr_reg& priority_reg() const {
 		return _priority_regs[index];
 	}
 
-
-
-
 private:
-
 };
 
 } // namespace micromachine::system
 
-#endif //MICROMACHINE_EMU_NVIC_HPP
+#endif // MICROMACHINE_EMU_NVIC_HPP

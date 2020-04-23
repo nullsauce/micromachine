@@ -5,12 +5,12 @@
 #include "bits.hpp"
 #include "control_reg.hpp"
 #include "execution_mode.hpp"
-#include "registers/ireg.hpp"
+#include "registers/iregister.hpp"
 #include "standard_reg.hpp"
 
 namespace micromachine::system {
 
-class sp_reg : public ireg {
+class sp_reg : public iregister {
 private:
 	// Banked stack pointers
 	// 0: SP Main
@@ -32,7 +32,7 @@ public:
 		, _execution_mode(execution_mode)
 		, _control_reg(control_reg) {}
 
-	using ireg::operator=;
+	using iregister::operator=;
 
 	enum class StackType : size_t { Main = 0, Process = 1 };
 
