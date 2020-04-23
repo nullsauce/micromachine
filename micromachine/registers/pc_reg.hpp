@@ -2,7 +2,7 @@
 
 #include "binops.hpp"
 #include "exception/exception_return_handler.hpp"
-#include "execution_mode.hpp"
+#include "execution/execution_mode.hpp"
 #include "registers/epsr_reg.hpp"
 #include "registers/standard_reg.hpp"
 #include "standard_reg.hpp"
