@@ -15,8 +15,6 @@ and/or distributed without the express permission of Flavio Roth.
 #include <mcu.hpp>
 
 #include "FormatedText.hpp"
-#include "mapping.hpp"
-#include "memory.hpp"
 #include "widgets/CommandInput.hpp"
 #include "widgets/Helpers.hpp"
 #include "widgets/HideableElement.hpp"
