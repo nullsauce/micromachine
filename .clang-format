@@ -6,7 +6,7 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AlwaysBreakTemplateDeclarations: 'Yes'
 BreakConstructorInitializers: BeforeComma
-ColumnLimit: '100'
+ColumnLimit: '120'
 CompactNamespaces: 'false'
 IncludeBlocks: Preserve
 IndentCaseLabels: 'true'
