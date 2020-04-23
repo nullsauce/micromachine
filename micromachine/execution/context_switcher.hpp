@@ -15,8 +15,8 @@ and/or distributed without the express permission of Flavio Roth.
 #include "instruction/instruction_pair.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
-#include "registers/core_registers.hpp"
-#include "registers/special_registers.hpp"
+#include "registers/core_registers/core_registers.hpp"
+#include "registers/special_registers/special_registers.hpp"
 #include "types/bits.hpp"
 
 namespace micromachine::system {

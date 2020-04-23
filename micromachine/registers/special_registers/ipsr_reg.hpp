@@ -1,8 +1,8 @@
 #pragma once
 
-#include "exception/exception.hpp"
-#include "types/bits.hpp"
-#include "types/types.hpp"
+#include "../../exception/exception.hpp"
+#include "../../types/bits.hpp"
+#include "../../types/types.hpp"
 #include "xpsr_reg.hpp"
 
 namespace micromachine::system {
