@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "exception_return_handler.hpp"
+#include "exception/exception_return_handler.hpp"
 #include "execution_mode.hpp"
 #include "registers/epsr_reg.hpp"
 #include "registers/pc_reg.hpp"

@@ -2,9 +2,9 @@
 // Created by fla on 17-5-8.
 //
 
-#include "exception_vector.hpp"
-#include "exception_controller.hpp"
-#include "exception_defs.hpp"
+#include "exception/exception_vector.hpp"
+#include "exception/exception_controller.hpp"
+#include "exception/exception_defs.hpp"
 #include "nvic.hpp"
 #include <gtest/gtest.h>
 
