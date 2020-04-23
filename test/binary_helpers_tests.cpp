@@ -7,8 +7,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#include "bits.hpp"
 #include "framework/static_assert_exception.hpp"
+#include "types/bits.hpp"
 #include <gtest/gtest.h>
 #include <type_traits>
 

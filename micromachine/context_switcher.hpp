@@ -9,7 +9,6 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "bits.hpp"
 #include "exception/exception.hpp"
 #include "exception/exception_return_handler.hpp"
 #include "exception/exception_vector.hpp"
@@ -18,6 +17,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
 #include "registers/special_registers.hpp"
+#include "types/bits.hpp"
 
 namespace micromachine::system {
 

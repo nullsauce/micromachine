@@ -6,14 +6,14 @@
 
 #include "alu.hpp"
 #include "binops.hpp"
-#include "bits.hpp"
 #include "instruction/instructions.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
 #include "registers/event_register.hpp"
 #include "registers/special_registers.hpp"
-#include "types.hpp"
+#include "types/bits.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 

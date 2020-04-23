@@ -5,8 +5,8 @@
 #pragma once
 
 #include "binops.hpp"
-#include "bits.hpp"
-#include "types.hpp"
+#include "types/bits.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system::alu {
 

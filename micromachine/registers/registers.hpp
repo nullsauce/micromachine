@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "types.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system::registers {
 static constexpr reg_idx R0 = 0;

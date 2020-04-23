@@ -1,9 +1,9 @@
 #pragma once
 
-#include "bits.hpp"
 #include "registers/iregister.hpp"
 #include "registers/word_reg.hpp"
-#include "types.hpp"
+#include "types/bits.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 

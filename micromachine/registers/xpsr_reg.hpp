@@ -1,7 +1,7 @@
 #pragma once
 
 #include "binops.hpp"
-#include "types.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 
