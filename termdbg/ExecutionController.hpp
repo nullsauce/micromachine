@@ -10,12 +10,12 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EXECUTIONCONTROLLER_HPP
 #define MICROMACHINE_EXECUTIONCONTROLLER_HPP
 
-#include <cpu.hpp>
+#include <system.hpp>
 #include "BreakpointManager.hpp"
 
 class ExecutionController {
 private:
-	cpu& _cpu;
+	class system& _system;
 	uint32_t _entry_point;
 	BreakpointManager& _breakpoint_manager;
 	bool _process_steps;
@@ -24,8 +24,8 @@ private:
 public:
 	sig::Signal<void()> update_required;
 
-	ExecutionController(cpu& cpu, uint32_t entry_point, BreakpointManager& breakpoint_manager)
-		: _cpu(cpu)
+	ExecutionController(class system& system, uint32_t entry_point, BreakpointManager& breakpoint_manager)
+		: _system(system)
 		, _entry_point(entry_point)
 		, _breakpoint_manager(breakpoint_manager)
 		, _process_steps(false)
@@ -49,7 +49,7 @@ public:
 	}
 
 	void reset() {
-		_cpu.reset(_entry_point);
+		_system.reset(_entry_point);
 	}
 
 	bool key_press_event(const cppurses::Key::State& keyboard) {
@@ -97,13 +97,13 @@ public:
 
 		for(size_t i = 0; i < cpu_steps; i++) {
 
-			cpu::step_result state = _cpu.step();
+			cpu::step_result state = _system.step();
 			if(state == cpu::step_result::BREAK || state == cpu::step_result::FAULT) {
 				interrupted = true;
 				break;
 			}
 
-			uint32_t addr = _cpu.regs().get_pc();
+			uint32_t addr = _system.get_cpu().regs().get_pc();
 			BreakpointManager::MaybeBreakpoint bp = _breakpoint_manager.breakpoint_at(addr);
 			bool breakpoint_found = bp.second;
 			auto& breakpoint = bp.first->second;

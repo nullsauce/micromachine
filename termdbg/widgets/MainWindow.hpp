@@ -27,7 +27,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 class MainWindow : public cppurses::layout::Vertical {
 private:
-	cpu& _cpu;
+	class system& _system;
 	BreakpointManager _breakpoint_manager;
 	ExecutionController _execution_controller;
 	TopMenuView& _top_menu;
@@ -45,21 +45,21 @@ private:
 	LogView& _output_view;
 
 public:
-	MainWindow(cpu& cpu, uint32_t entry_point)
-		: _cpu(cpu)
-		, _execution_controller(_cpu, entry_point, _breakpoint_manager)
+	MainWindow(class system& system, uint32_t entry_point)
+		: _system(system)
+		, _execution_controller(_system, entry_point, _breakpoint_manager)
 		, _top_menu(this->make_child<TopMenuView>())
 		, _main_content_layout(this->make_child<cppurses::layout::Horizontal>())
 		, _first_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
 		, _second_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
 		, _third_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
 		, _fourth_col_layout(_main_content_layout.make_child<cppurses::layout::Vertical>())
-		, _disasm_view(_first_col_layout.make_child<DisasmView>(_cpu, _breakpoint_manager, _execution_controller))
+		, _disasm_view(_first_col_layout.make_child<DisasmView>(_system, _breakpoint_manager, _execution_controller))
 		, _help(_first_col_layout.make_child<cppurses::Text_display>())
-		, _registers_view(_second_col_layout.make_child<RegistersView>(_cpu))
+		, _registers_view(_second_col_layout.make_child<RegistersView>(system.get_cpu()))
 		, _breakpoint_manager_view(_second_col_layout.make_child<BreakPointManagerView>(_breakpoint_manager))
-		, _memory_browser(_third_col_layout.make_child<MemoryBrowser>(cpu))
-		, _interrupt_view(_third_col_layout.make_child<InterruptView>(cpu))
+		, _memory_browser(_third_col_layout.make_child<MemoryBrowser>(_system.get_memory()))
+		, _interrupt_view(_third_col_layout.make_child<InterruptView>(system.get_cpu()))
 		, _output_view(_fourth_col_layout.make_child<LogView>())
 	{
 
@@ -122,7 +122,7 @@ public:
 		_output_view.border.segments.disable_all();
 		_output_view.border.segments.north.enable();
 
-		_cpu.set_io_callback([this](uint8_t op, uint8_t data){
+		_system.set_io_callback([this](uint8_t op, uint8_t data){
 			_output_view.append_char((char)data);
 		});
 
