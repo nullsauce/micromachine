@@ -2,8 +2,8 @@
 // Created by fla on 17-5-8.
 //
 
+#include "exception/exception.hpp"
 #include "exception/exception_controller.hpp"
-#include "exception/exception_defs.hpp"
 #include "exception/exception_vector.hpp"
 #include "nvic.hpp"
 #include "registers/system_control/shpr2_reg.hpp"

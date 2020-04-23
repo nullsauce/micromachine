@@ -15,7 +15,7 @@
 #include "instruction_pair.hpp"
 #include "instructions.hpp"
 
-#include "exception/exception_defs.hpp"
+#include "exception/exception.hpp"
 #include "exception/exception_vector.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"

@@ -5,7 +5,7 @@ set(SRCS
 	instruction_pair.hpp
 	instructions.hpp
 	precond.hpp
-	exception/exception_defs.hpp
+	exception/exception.hpp
 	exception/exception_controller.hpp
 	exception/exception_state.hpp
 	exception/exception_vector.hpp

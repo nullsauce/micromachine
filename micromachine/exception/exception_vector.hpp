@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "exception_defs.hpp"
+#include "exception.hpp"
 #include "nvic.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
