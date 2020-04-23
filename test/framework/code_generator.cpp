@@ -43,7 +43,7 @@ void helpers::code_generator::emit_ins32(const char* encoding1,
 }
 
 void helpers::code_generator::write(uint16_t instruction) {
-	precond(_mem != nullptr, "mem can't be null");
+	micromachine_check(_mem != nullptr, "mem can't be null");
 	_mem->write16(_write_address, instruction);
 	_write_address += sizeof(uint16_t);
 }
