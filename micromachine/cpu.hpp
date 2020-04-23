@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "context_switcher.hpp"
 #include "disasm.hpp"
+#include "execution/context_switcher.hpp"
 #include "execution/exec.hpp"
 #include "execution/exec_dispatcher.hpp"
 
@@ -17,7 +17,7 @@
 
 #include "exception/exception.hpp"
 #include "exception/exception_vector.hpp"
-#include "interworking_brancher.hpp"
+#include "execution/interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
 #include "registers/special_registers.hpp"

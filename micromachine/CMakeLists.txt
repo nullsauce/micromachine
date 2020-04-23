@@ -10,6 +10,7 @@ set(SRCS
 	exception/exception_state.hpp
 	exception/exception_vector.hpp
 	exception/exception_return_handler.hpp
+	execution/context_switcher.hpp
 	execution/exec.hpp
 	alu.hpp
 	registers/core_registers.hpp
@@ -33,7 +34,7 @@ set(SRCS
 	nvic.hpp
 	string_format.hpp
 	execution/exec_dispatcher.hpp
-	interworking_brancher.hpp
+	execution/interworking_brancher.hpp
 	instruction/instruction_decoder.hpp
 	disasm.hpp
 	cpu.hpp
