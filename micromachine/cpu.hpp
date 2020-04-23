@@ -21,7 +21,7 @@
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
 #include "registers/special_registers.hpp"
-#include "types.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 

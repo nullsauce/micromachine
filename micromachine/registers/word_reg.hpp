@@ -9,10 +9,10 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "bits.hpp"
 #include "registers/iregister.hpp"
 #include "registers/standard_reg.hpp"
-#include "types.hpp"
+#include "types/bits.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 

@@ -5,11 +5,11 @@
 #pragma once
 
 #include "binops.hpp"
-#include "bits.hpp"
 #include "instruction_pair.hpp"
 #include "registers/core_registers.hpp"
 #include "string_format.hpp"
-#include "types.hpp"
+#include "types/bits.hpp"
+#include "types/types.hpp"
 #include <cstdint>
 #include <sstream>
 #include <string>

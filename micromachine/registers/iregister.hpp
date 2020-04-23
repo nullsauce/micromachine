@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 
