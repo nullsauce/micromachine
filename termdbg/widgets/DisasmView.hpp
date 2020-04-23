@@ -14,7 +14,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "BreakpointManager.hpp"
 #include "disasm.hpp"
-#include "instruction_pair.hpp"
+#include "instruction/instruction_pair.hpp"
 #include "widgets/FoldableWidgetHeader.hpp"
 
 class DisasmView : public cppurses::layout::Vertical {

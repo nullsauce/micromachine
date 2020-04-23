@@ -12,8 +12,8 @@
 #include "execution/exec_dispatcher.hpp"
 
 #include "exception/exception_controller.hpp"
-#include "instruction_pair.hpp"
-#include "instructions.hpp"
+#include "instruction/instruction_pair.hpp"
+#include "instruction/instructions.hpp"
 
 #include "exception/exception.hpp"
 #include "exception/exception_vector.hpp"

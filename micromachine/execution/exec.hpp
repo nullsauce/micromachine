@@ -7,7 +7,7 @@
 #include "alu.hpp"
 #include "binops.hpp"
 #include "bits.hpp"
-#include "instructions.hpp"
+#include "instruction/instructions.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
