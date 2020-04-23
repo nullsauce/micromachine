@@ -4,7 +4,7 @@ set(SRCS
 	types/types.hpp
 	instruction/instruction_pair.hpp
 	instruction/instructions.hpp
-	precond.hpp
+	helpers/check.hpp
 	exception/exception.hpp
 	exception/exception_controller.hpp
 	exception/exception_state.hpp
@@ -47,7 +47,7 @@ set_target_properties(micromachine PROPERTIES COMPILE_FLAGS "${BUILD_FLAGS} -Wal
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
 	message(STATUS "Enabling precondition checks")
-	add_definitions(-DMICROMACHINE_ENABLE_PRECOND_CHECKS)
+	add_definitions(-DMICROMACHINE_ENABLE_CHECKS)
 endif ()
 
 target_include_directories(micromachine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
