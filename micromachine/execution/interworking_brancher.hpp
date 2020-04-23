@@ -14,7 +14,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/epsr_reg.hpp"
 #include "registers/pc_reg.hpp"
 
-#include "binops.hpp"
+#include "helpers/binops.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
 
