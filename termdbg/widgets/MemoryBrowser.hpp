@@ -12,7 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 
 #include <cppurses/widget/layouts/vertical.hpp>
-#include <cpu.hpp>
+#include <system.hpp>
 
 #include "widgets/HideableElement.hpp"
 #include "widgets/CommandInput.hpp"
@@ -25,7 +25,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 class MemoryBrowser : public cppurses::layout::Vertical {
 public:
-	cpu& _cpu;
+	memory& _memory;
 	FoldableWidgetHeader& _header;
 	HidableElement<AddressInput> _goto_input;
 	HidableElement<MemorySegmentList> _memory_segments;
@@ -53,11 +53,11 @@ public:
 		.str();
 
 
-	MemoryBrowser(cpu& cpu)
-	 : _cpu(cpu)
+	MemoryBrowser(memory& memory)
+	 : _memory(memory)
 	 , _header(this->make_child<FoldableWidgetHeader>("Memory"))
 	 , _goto_input(this, 1)
-	 , _memory_segments(this, 2, cpu.mem())
+	 , _memory_segments(this, 2, _memory)
 	 , _segment_info(make_child<MemorySegmentInfo>())
  	 , _memview(make_child<MemoryView>()) {
 		_info_table.height_policy.fixed(6);
@@ -103,11 +103,11 @@ public:
 		});
 
 
-		_memory_segments.getWidget().height_policy.min_size(_cpu.mem().regions().size() + 2);
+		_memory_segments.getWidget().height_policy.min_size(_memory.regions().size() + 2);
 
 		_memory_segments.getWidget().segment_selected.connect([this](size_t segment_index){
 			_memory_segments.hide();
-			auto* segment = &_cpu.mem().regions()[segment_index];
+			auto* segment = &_memory.regions()[segment_index];
 			_memview.set_segment(segment);
 			_segment_info.set_segment(segment);
 			_info_table.set_segment(segment);
@@ -119,8 +119,8 @@ public:
 			cppurses::Focus::set_focus_to(*this);
 		});
 
-		if(!_cpu.mem().regions().empty()) {
-			auto* segment = &_cpu.mem().regions()[0];
+		if(!_memory.regions().empty()) {
+			auto* segment = &_memory.regions()[0];
 			_memview.set_segment(segment);
 			_segment_info.set_segment(segment);
 			_info_table.set_segment(segment);
@@ -210,7 +210,7 @@ public:
 	}
 
 	bool goto_address(uint32_t address) {
-		const memory_mapping* segment = _cpu.mem().find_const_region(address);
+		const memory_mapping* segment = _memory.find_const_region(address);
 		if(segment) {
 			_memview.set_segment(segment);
 			_segment_info.set_segment(segment);
