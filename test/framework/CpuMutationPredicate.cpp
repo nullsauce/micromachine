@@ -8,12 +8,16 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "CpuMutationPredicate.hpp"
-#include "RegisterMutationPredicate.hpp"
 #include "MemoryMutationPredicate.hpp"
+#include "RegisterMutationPredicate.hpp"
+#include "core_registers.hpp"
+#include "cpu.hpp"
+#include "exception_defs.hpp"
+#include "instruction_pair.hpp"
 
 #include <gtest/gtest.h>
 
-CpuMutationPredicate::CpuMutationPredicate(const cpu& previous, const cpu& current)
+CpuMutationPredicate::CpuMutationPredicate(const micromachine::system::cpu& previous, const micromachine::system::cpu& current)
 	: _previous(previous)
 	, _current(current)
 {}
@@ -29,7 +33,7 @@ CpuMutationPredicate& CpuMutationPredicate::PcDidNotChange() {
 }
 
 CpuMutationPredicate& CpuMutationPredicate::InstructionExecutedWithoutBranch() {
-	instruction_pair instruction = _previous.mem().read32_unchecked(_previous.regs().get_pc());
+	micromachine::system::instruction_pair instruction = _previous.mem().read32_unchecked(_previous.regs().get_pc());
 	PcWasIncrementedBy(instruction.size());
 	return *this;
 }
@@ -81,7 +85,7 @@ CpuMutationPredicate& CpuMutationPredicate::EPSRFlagsDidNotChange() {
 }
 
 CpuMutationPredicate& CpuMutationPredicate::RegistersDidNotChange() {
-	for (reg_idx r = 0; r < core_registers::NUM_GP_REGS; r++) {
+	for (reg_idx r = 0; r < micromachine::system::core_registers::NUM_GP_REGS; r++) {
 		Register(r).DidNotChange();
 	}
 	return *this;
@@ -94,32 +98,32 @@ CpuMutationPredicate& CpuMutationPredicate::NoInterruptIsPending() {
 
 CpuMutationPredicate& CpuMutationPredicate::NoInterruptIsActive() {
 	EXPECT_FALSE(_current.exceptions().any_active());
-	return IPSRExceptionNumberIs(exception::INVALID);
+	return IPSRExceptionNumberIs(micromachine::system::exception::INVALID);
 }
 
 CpuMutationPredicate& CpuMutationPredicate::NoInterruptIsActiveOrPending() {
 	return NoInterruptIsActive().NoInterruptIsPending();
 }
 
-CpuMutationPredicate& CpuMutationPredicate::ExceptionIsPending(exception::Type ex) {
+CpuMutationPredicate& CpuMutationPredicate::ExceptionIsPending(micromachine::system::exception::Type ex) {
 	EXPECT_TRUE(_current.exceptions().at(ex).is_pending());
 	return *this;
 }
 
-CpuMutationPredicate& CpuMutationPredicate::ExceptionIsActive(exception::Type ex) {
+CpuMutationPredicate& CpuMutationPredicate::ExceptionIsActive(micromachine::system::exception::Type ex) {
 	EXPECT_TRUE(_current.exceptions().at(ex).is_active());
 	return *this;
 }
 
-CpuMutationPredicate& CpuMutationPredicate::ExceptionHandlerReached(exception::Type ex) {
+CpuMutationPredicate& CpuMutationPredicate::ExceptionHandlerReached(micromachine::system::exception::Type ex) {
 	uint32_t handler_address = _current.mem().read32(ex * sizeof(uint32_t)) & ~1;
 	EXPECT_EQ(_current.regs().get_pc(), handler_address);
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::HardfaultHandlerReached() {
-	return ExceptionIsActive(exception::Type::HARDFAULT)
-		.ExceptionHandlerReached(exception::Type::HARDFAULT);
+	return ExceptionIsActive(micromachine::system::exception::Type::HARDFAULT)
+		.ExceptionHandlerReached(micromachine::system::exception::Type::HARDFAULT);
 }
 
 CpuMutationPredicate& CpuMutationPredicate::PrimaskStatusIs(bool value) {
@@ -127,7 +131,7 @@ CpuMutationPredicate& CpuMutationPredicate::PrimaskStatusIs(bool value) {
 	return *this;
 }
 
-CpuMutationPredicate& CpuMutationPredicate::IPSRExceptionNumberIs(exception::Type ex) {
+CpuMutationPredicate& CpuMutationPredicate::IPSRExceptionNumberIs(micromachine::system::exception::Type ex) {
 	EXPECT_EQ(ex, _current.special_regs().interrupt_status_register().exception_num());
 	return *this;
 }

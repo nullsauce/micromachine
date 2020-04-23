@@ -10,10 +10,10 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_PROGRAMMER_HPP
 #define MICROMACHINE_EMU_PROGRAMMER_HPP
 
-#include "memory/memory.hpp"
 #include "elfio/elfio.hpp"
+#include "memory/memory.hpp"
 
-
+namespace micromachine::system {
 class programmer {
 private:
 	// the byte used in lieu of zeroes when allocating segments
@@ -197,7 +197,8 @@ public:
 		return prog;
 	}
 
-
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_PROGRAMMER_HPP

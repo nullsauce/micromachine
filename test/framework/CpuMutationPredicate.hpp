@@ -11,6 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 #define MICROMACHINE_CPUMUTATIONPREDICATE_HPP
 
 #include "cpu.hpp"
+#include "exception_defs.hpp"
 
 class RegisterMutationPredicate;
 
@@ -29,11 +30,11 @@ class MemoryMutationPredicate<uint8_t>;
 
 class CpuMutationPredicate {
 protected:
-	const cpu& _previous;
-	const cpu& _current;
+	const micromachine::system::cpu& _previous;
+	const micromachine::system::cpu& _current;
 
 public:
-	CpuMutationPredicate(const cpu& previous, const cpu& current);
+	CpuMutationPredicate(const micromachine::system::cpu& previous, const micromachine::system::cpu& current);
 	CpuMutationPredicate& PcWasIncrementedBy(uint32_t amount);
 	CpuMutationPredicate& PcDidNotChange();
 	CpuMutationPredicate& InstructionExecutedWithoutBranch();
@@ -47,12 +48,12 @@ public:
 	CpuMutationPredicate& NoInterruptIsPending();
 	CpuMutationPredicate& NoInterruptIsActive();
 	CpuMutationPredicate& NoInterruptIsActiveOrPending();
-	CpuMutationPredicate& ExceptionIsPending(exception::Type ex);
-	CpuMutationPredicate& ExceptionIsActive(exception::Type ex);
-	CpuMutationPredicate& ExceptionHandlerReached(exception::Type ex);
+	CpuMutationPredicate& ExceptionIsPending(micromachine::system::exception::Type ex);
+	CpuMutationPredicate& ExceptionIsActive(micromachine::system::exception::Type ex);
+	CpuMutationPredicate& ExceptionHandlerReached(micromachine::system::exception::Type ex);
 	CpuMutationPredicate& HardfaultHandlerReached();
 	CpuMutationPredicate& PrimaskStatusIs(bool value);
-	CpuMutationPredicate& IPSRExceptionNumberIs(exception::Type ex);
+	CpuMutationPredicate& IPSRExceptionNumberIs(micromachine::system::exception::Type ex);
 	CpuMutationPredicate& ExecutionIsInHandlerMode();
 	CpuMutationPredicate& ExecutionIsInThreadMode();
 	CpuMutationPredicate& ThumbBitIsSet();

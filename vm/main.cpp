@@ -1,7 +1,8 @@
 
 #include <cxxopts.hpp>
 
-#include "system.hpp"
+#include "cpu.hpp"
+#include "mcu.hpp"
 #include "programmer.hpp"
 
 #include <chrono>
@@ -43,27 +44,27 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	class system sys;
-	programmer::program::ptr program = programmer::load_elf(executable_path.c_str(), sys.get_memory(), testing_enabled);
+	micromachine::system::mcu mcu;
+	micromachine::system::programmer::program::ptr program = micromachine::system::programmer::load_elf(executable_path.c_str(), mcu.get_memory(), testing_enabled);
 
 	if(program->is_null()) {
 		fprintf(stderr, "Error: Failed to load the given ELF file %s\n", argv[1]);
 		return EXIT_FAILURE;
 	}
 
-	sys.set_io_callback([](uint8_t op, uint8_t data){
+	mcu.set_io_callback([](uint8_t op, uint8_t data){
 		if(0 == write(STDOUT_FILENO, &data, 1)) {
 			fprintf(stderr, "failed to write to stdout\n");
 		}
 	});
 
-	sys.reset(program->entry_point());
+	mcu.reset(program->entry_point());
 
 	auto start = std::chrono::steady_clock::now();
 	decltype(start) end;
 	for(;;) {
-		cpu::step_result state = sys.step();
-		if(state == cpu::step_result::BREAK || state == cpu::step_result::FAULT) {
+		micromachine::system::cpu::step_result state = mcu.step();
+		if(state == micromachine::system::cpu::step_result::BREAK || state == micromachine::system::cpu::step_result::FAULT) {
 			end = std::chrono::steady_clock::now();
 			break;
 		}
@@ -72,7 +73,7 @@ int main(int argc, char** argv) {
 	double elapsed_secs = elapsed_ms/1000.0;
 	fprintf(stderr, "elapsed: %f seconds\n", elapsed_secs);
 
-	uint64_t instructions_executed = sys.get_cpu().debug_instruction_counter();
+	uint64_t instructions_executed = mcu.get_cpu().debug_instruction_counter();
 	double perf = instructions_executed / elapsed_secs;
 	fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
 	//c.regs().print();

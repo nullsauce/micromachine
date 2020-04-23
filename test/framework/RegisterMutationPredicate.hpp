@@ -12,7 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 
 #include "CpuMutationPredicate.hpp"
-
+#include "cpu.hpp"
 
 class RegisterMutationPredicate : public CpuMutationPredicate {
 private:
@@ -27,7 +27,7 @@ private:
 	}
 
 public:
-	RegisterMutationPredicate(const cpu& previous, const cpu& current, reg_idx regIdx);
+	RegisterMutationPredicate(const micromachine::system::cpu& previous, const micromachine::system::cpu& current, reg_idx regIdx);
 	RegisterMutationPredicate& Equals(uint32_t value);
 	RegisterMutationPredicate& DidNotChange();
 	RegisterMutationPredicate& Changed();

@@ -1,9 +1,12 @@
 #ifndef MICROMACHINE_IPSR_REGSITER_HPP
 #define MICROMACHINE_IPSR_REGSITER_HPP
 
+#include "bits.hpp"
+#include "exception_defs.hpp"
 #include "types.hpp"
 #include "xpsr_reg.hpp"
-#include "exception_defs.hpp"
+
+namespace micromachine::system {
 
 struct ipsr_reg : public xpsr_reg {
 
@@ -24,12 +27,10 @@ struct ipsr_reg : public xpsr_reg {
 	}
 
 private:
-
 	using ipsr_slice = ipsr_bits::integer_slice<uint32_t>;
 	using ipsr_const_slice = ipsr_bits::const_integer_slice<uint32_t>;
-
-
 };
 
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_IPSR_REGSITER_HPP

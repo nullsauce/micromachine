@@ -1,9 +1,14 @@
 #ifndef MICROMACHINE_SP_REG_HPP
 #define MICROMACHINE_SP_REG_HPP
 
+#include "binops.hpp"
+#include "bits.hpp"
 #include "control_reg.hpp"
 #include "execution_mode.hpp"
+#include "registers/ireg.hpp"
 #include "standard_reg.hpp"
+
+namespace micromachine::system {
 
 class sp_reg : public ireg {
 private:
@@ -76,5 +81,7 @@ private:
 		}
 	}
 };
+
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_SP_REG_HPP

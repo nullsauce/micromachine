@@ -10,6 +10,7 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_MEMORYSEGMENTLIST_HPP
 #define MICROMACHINE_EMU_MEMORYSEGMENTLIST_HPP
 
+#include "memory.hpp"
 #include <cppurses/painter/glyph_string.hpp>
 #include <cppurses/widget/widgets/menu.hpp>
 #include <memory/memory.hpp>

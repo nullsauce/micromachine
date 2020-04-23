@@ -10,15 +10,16 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_EXCEPTION_STATE_HPP
 #define MICROMACHINE_EMU_EXCEPTION_STATE_HPP
 
-
-#include <list>
-#include <memory>
-#include <algorithm>
-
-#include "exception_defs.hpp"
-#include "nvic.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
+#include "nvic.hpp"
+#include "exception_defs.hpp"
+
+#include <algorithm>
+#include <memory>
+#include <list>
+
+namespace micromachine::system {
 
 class exception_state {
 private:
@@ -71,7 +72,6 @@ public:
 		set_enable(other.is_enabled());
 	}
 };
-
 class internal_exception_state : public exception_state {
 private:
 	bool _pending;
@@ -101,7 +101,6 @@ public:
 	}
 
 };
-
 template<int8_t Priority>
 class fixed_priority_exception_state : public internal_exception_state {
 public:
@@ -115,7 +114,6 @@ public:
 		precond(false, "Can't set priority of a fixed priority exception");
 	}
 };
-
 class shpr2_exception_state : public internal_exception_state {
 protected:
 	shpr2_reg& _reg;
@@ -127,7 +125,6 @@ public:
 	{}
 
 };
-
 class shpr3_exception_state : public internal_exception_state {
 protected:
 	shpr3_reg& _reg;
@@ -138,7 +135,6 @@ public:
 		, _reg(reg)
 	{}
 };
-
 class pri11_exception_state : public shpr2_exception_state {
 public:
 	using shpr2_exception_state::shpr2_exception_state;
@@ -152,7 +148,6 @@ public:
 		_reg.pri11() = (uint8_t)priority;
 	}
 };
-
 class pri14_exception_state : public shpr3_exception_state {
 public:
 	using shpr3_exception_state::shpr3_exception_state;
@@ -165,7 +160,6 @@ public:
 		_reg.pri14() = (uint8_t)priority;
 	}
 };
-
 class pri15_exception_state : public shpr3_exception_state {
 public:
 	using shpr3_exception_state::shpr3_exception_state;
@@ -178,7 +172,6 @@ public:
 		_reg.pri15() = (uint8_t)priority;
 	}
 };
-
 template<size_t ExternalInterruptNumber>
 class nvic_based_exception_state : public exception_state {
 private:
@@ -213,7 +206,6 @@ public:
 		_nvic.enable_bit_for<ExternalInterruptNumber>() = enable;
 	}
 };
-
 class non_implemented_exception_state : public fixed_priority_exception_state<4> {
 public:
 	non_implemented_exception_state()
@@ -231,8 +223,6 @@ public:
 		precond(false, "Can't set priority of an unimplemented exception");
 	}
 };
-
-
 class exception_vector {
 public:
 
@@ -249,28 +239,28 @@ public:
 	}
 
 	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
-		: _reset(exception::Type::RESET)
-		, _nmi(exception::Type::NMI)
-		, _hard_fault(exception::Type::HARDFAULT)
-		, _svc(exception::Type::SVCALL, sph2)
-		, _pend_sv(exception::Type::PENDSV, sph3)
-		, _sys_tick(exception::Type::SYSTICK, sph3)
-		, _ext_interrupt_0(exception::Type::EXTI_00, nvic)
-		, _ext_interrupt_1(exception::Type::EXTI_01, nvic)
-		, _ext_interrupt_2(exception::Type::EXTI_02, nvic)
-		, _ext_interrupt_3(exception::Type::EXTI_03, nvic)
-		, _ext_interrupt_4(exception::Type::EXTI_04, nvic)
-		, _ext_interrupt_5(exception::Type::EXTI_05, nvic)
-		, _ext_interrupt_6(exception::Type::EXTI_06, nvic)
-		, _ext_interrupt_7(exception::Type::EXTI_07, nvic)
-		, _ext_interrupt_8(exception::Type::EXTI_08, nvic)
-		, _ext_interrupt_9(exception::Type::EXTI_09, nvic)
-		, _ext_interrupt_10(exception::Type::EXTI_10, nvic)
-		, _ext_interrupt_11(exception::Type::EXTI_11, nvic)
-		, _ext_interrupt_12(exception::Type::EXTI_12, nvic)
-		, _ext_interrupt_13(exception::Type::EXTI_13, nvic)
-		, _ext_interrupt_14(exception::Type::EXTI_14, nvic)
-		, _ext_interrupt_15(exception::Type::EXTI_15, nvic)
+		: _reset(exception::RESET)
+		, _nmi(exception::NMI)
+		, _hard_fault(exception::HARDFAULT)
+		, _svc(exception::SVCALL, sph2)
+		, _pend_sv(exception::PENDSV, sph3)
+		, _sys_tick(exception::SYSTICK, sph3)
+		, _ext_interrupt_0(exception::EXTI_00, nvic)
+		, _ext_interrupt_1(exception::EXTI_01, nvic)
+		, _ext_interrupt_2(exception::EXTI_02, nvic)
+		, _ext_interrupt_3(exception::EXTI_03, nvic)
+		, _ext_interrupt_4(exception::EXTI_04, nvic)
+		, _ext_interrupt_5(exception::EXTI_05, nvic)
+		, _ext_interrupt_6(exception::EXTI_06, nvic)
+		, _ext_interrupt_7(exception::EXTI_07, nvic)
+		, _ext_interrupt_8(exception::EXTI_08, nvic)
+		, _ext_interrupt_9(exception::EXTI_09, nvic)
+		, _ext_interrupt_10(exception::EXTI_10, nvic)
+		, _ext_interrupt_11(exception::EXTI_11, nvic)
+		, _ext_interrupt_12(exception::EXTI_12, nvic)
+		, _ext_interrupt_13(exception::EXTI_13, nvic)
+		, _ext_interrupt_14(exception::EXTI_14, nvic)
+		, _ext_interrupt_15(exception::EXTI_15, nvic)
 		, _indexed {{
 			_used_for_sp,
 			_reset,
@@ -430,6 +420,6 @@ public:
 	}
 
 };
-
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_EXCEPTION_DEFS_HPP

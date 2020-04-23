@@ -10,6 +10,8 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_INTERRUPTVIEW_HPP
 #define MICROMACHINE_EMU_INTERRUPTVIEW_HPP
 
+#include "cpu.hpp"
+#include "exception_defs.hpp"
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/widgets/text_display.hpp>
 #include <exception_vector.hpp>
@@ -61,6 +63,8 @@ namespace {
 	}};
 
 }
+
+using namespace micromachine::system;
 
 class InterruptView : public cppurses::layout::Vertical {
 private:

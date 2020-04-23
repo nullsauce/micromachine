@@ -1,5 +1,6 @@
 
 #include "code_generator.hpp"
+#include "memory.hpp"
 #include <cstring>
 
 code_generator::code_generator()
@@ -10,7 +11,7 @@ code_generator::code_generator()
 
 }
 
-void code_generator::set_mem(memory* mem) {
+void code_generator::set_mem(micromachine::system::memory* mem) {
 	_mem = mem;
 }
 

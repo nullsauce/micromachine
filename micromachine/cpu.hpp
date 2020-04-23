@@ -16,12 +16,15 @@
 #include "instructions.hpp"
 #include "interrupter.hpp"
 
+#include "exception_defs.hpp"
+#include "exception_vector.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
 #include "registers/special_registers.hpp"
-
 #include "types.hpp"
+
+namespace micromachine::system {
 
 class cpu {
 private:
@@ -78,12 +81,18 @@ public:
 		, _enter_low_power_mode_signal(false)
 		, _debug_instruction_counter(0) {}
 
-	cpu(memory& memory, exception_vector& exception_vector, interrupter& interrupter, const cpu& other)
+	cpu(memory& memory,
+		exception_vector& exception_vector,
+		interrupter& interrupter,
+		const cpu& other)
 		: _mem(memory)
 		, _exception_vector(exception_vector)
 		, _interrupter(interrupter)
 		, _special_registers(other._special_registers)
-		, _core_regs(_exec_mode, _special_registers.control_register(), _ctx_switcher, other._core_regs)
+		, _core_regs(_exec_mode,
+					 _special_registers.control_register(),
+					 _ctx_switcher,
+					 other._core_regs)
 		, _interworking_brancher(_exec_mode,
 								 _special_registers.execution_status_register(),
 								 _ctx_switcher,
@@ -134,7 +143,7 @@ public:
 
 	step_result step() {
 
-		if (_break_signal) {
+		if(_break_signal) {
 			return cpu::step_result::BREAK;
 		}
 		_debug_instruction_counter++;
@@ -142,7 +151,7 @@ public:
 		const uint32_t cur_instruction_address = _core_regs.get_pc();
 		instruction_pair cur_intruction = fetch_instruction(cur_instruction_address);
 
-		if (!_special_registers.execution_status_register().thumb_bit_set()) {
+		if(!_special_registers.execution_status_register().thumb_bit_set()) {
 			// Thumb bit not set
 			// all instructions in this state are UNDEFINED .
 			_interrupter.raise_hardfault();
@@ -151,7 +160,7 @@ public:
 		// check for asynchronous interrupt
 		exception_state* ex = next_exception_to_take();
 
-		if (nullptr == ex) {
+		if(nullptr == ex) {
 			// execute instruction at current PC
 			// simulate prefetch of 2 instructions during execution
 			_core_regs.set_pc(cur_instruction_address + 4);
@@ -165,7 +174,7 @@ public:
 		uint32_t next_instruction_address =
 			get_next_instruction_address(cur_instruction_address, cur_intruction);
 
-		if (ex) {
+		if(ex) {
 
 			// wake up event for wfe or wfi
 
@@ -231,22 +240,22 @@ public:
 		exception::priority_t prio = exception::THREAD_MODE_PRIORITY;
 		exception::priority_t boosted_prio = exception::THREAD_MODE_PRIORITY;
 
-		for (size_t i = 2; i < 32; i++) {
+		for(size_t i = 2; i < 32; i++) {
 			const exception_state& e = _exception_vector.at(i);
-			if (!e.is_active())
+			if(!e.is_active())
 				continue;
-			if (e.priority() < prio) {
+			if(e.priority() < prio) {
 				prio = e.priority();
 			}
 		}
 
 		// if primask is set, ignore all maskable exceptions by
 		// pretending the executing priority is now 0
-		if (_special_registers.primask_register().pm()) {
+		if(_special_registers.primask_register().pm()) {
 			prio = 0;
 		}
 
-		if (boosted_prio < prio) {
+		if(boosted_prio < prio) {
 			return boosted_prio;
 		} else {
 			return prio;
@@ -256,7 +265,7 @@ public:
 private:
 	exception_state* next_exception_to_take() {
 		exception_state* pending_exception = _exception_vector.top_pending();
-		if (nullptr == pending_exception) {
+		if(nullptr == pending_exception) {
 			// no exceptions to process
 			return nullptr;
 		}
@@ -266,7 +275,7 @@ private:
 		exception::priority_t pending_priority = pending_exception->priority();
 
 		// do we need to switch the context to a new exception ?
-		if (pending_priority < current_priority) {
+		if(pending_priority < current_priority) {
 			// instruction flow must be interrupted by this higher priority exception
 			return pending_exception;
 		}
@@ -279,12 +288,13 @@ private:
 	}
 
 	uint32_t get_next_instruction_address(uint32_t instr_addr, instruction_pair instruction) const {
-		if (!_core_regs.branch_occured()) {
+		if(!_core_regs.branch_occured()) {
 			return instr_addr + instruction.size();
 		} else {
 			return _core_regs.get_pc();
 		}
 	}
 };
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_CPU_HPP

@@ -1,9 +1,13 @@
 #ifndef MICROMACHINE_EMU_SYSTICK_HPP
 #define MICROMACHINE_EMU_SYSTICK_HPP
 
-#include "bits.hpp"
-#include "types.hpp"
 #include "registers/word_reg.hpp"
+#include "registers/word_reg.hpp"
+#include "bits.hpp"
+#include "binops.hpp"
+#include "types.hpp"
+
+namespace micromachine::system {
 
 class systick_control_reg : public word_reg {
 public:
@@ -26,7 +30,7 @@ public:
 
 	bool count_flag() {
 		// Reading the COUNTFLAG_BIT clears it to 0
-		bool flag = countflag_bit::of(_word);
+		bool flag = bits<16, 1>::of(_word);
 		set_count_flag(0);
 		return flag;
 	}
@@ -70,7 +74,6 @@ private:
 		return _word & _mask;
 	}
 };
-
 class systick_reload_value_reg : public word_reg {
 public:
 	using word_reg::operator=;
@@ -83,7 +86,6 @@ private:
 		return bits<0,24>::of(_word);
 	}
 };
-
 class systick_current_value_reg : public word_reg {
 public:
 	using word_reg::operator=;
@@ -114,7 +116,6 @@ private:
 protected:
 	systick_control_reg& _control_reg;
 };
-
 class systick_calib_value_reg : public word_reg {
 public:
 	using word_reg::operator=;
@@ -160,5 +161,7 @@ private:
 		return _word & _mask;
 	}
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_SYSTICK_HPP

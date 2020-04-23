@@ -7,9 +7,14 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#include "system.hpp"
+#include "mcu.hpp"
+#include "cpu.hpp"
 
-cpu::step_result system::step() {
+namespace micromachine::system {
+
+cpu::step_result mcu::step() {
 	_systick.tick();
 	return _cpu.step();
+}
+
 }

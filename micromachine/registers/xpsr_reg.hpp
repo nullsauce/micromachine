@@ -1,11 +1,14 @@
 #ifndef MICROMACHINE_XPSR_REG_HPP
 #define MICROMACHINE_XPSR_REG_HPP
 
+#include "binops.hpp"
 #include "types.hpp"
 
+namespace micromachine::system {
+
 /**
- * Used as a proxy for APSR IPSR AND ESPR implementeations
- */
+* Used as a proxy for APSR IPSR AND ESPR implementeations
+*/
 class xpsr_reg {
 
 public:
@@ -24,5 +27,7 @@ protected:
 
 	uint32_t& _xpsr;
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_XPSR_REG_HPP

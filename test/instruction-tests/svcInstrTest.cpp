@@ -12,18 +12,18 @@
 */
 
 #include "CpuTestFixture.hpp"
-
+#include "exception_defs.hpp"
 
 /* SVC
    Encoding: 1101 1111 Imm:8 */
 MICROMACHINE_TEST_F(svc, SmallestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("11011111iiiiiiii", 0);
 	Step();
-	ExpectThat().ExceptionIsActive(exception::SVCALL);
+	ExpectThat().ExceptionIsActive(micromachine::system::exception::SVCALL);
 }
 
 MICROMACHINE_TEST_F(svc, LargestImmediate, CpuTestFixture) {
 	code_gen().emit_ins16("11011111iiiiiiii", 255);
 	Step();
-	ExpectThat().ExceptionIsActive(exception::SVCALL);
+	ExpectThat().ExceptionIsActive(micromachine::system::exception::SVCALL);
 }

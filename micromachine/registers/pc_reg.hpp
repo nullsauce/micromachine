@@ -1,10 +1,14 @@
 #ifndef MICROMACHINE_PC_REG_HPP
 #define MICROMACHINE_PC_REG_HPP
 
+#include "binops.hpp"
 #include "exception_return_handler.hpp"
 #include "execution_mode.hpp"
 #include "registers/epsr_reg.hpp"
 #include "registers/standard_reg.hpp"
+#include "standard_reg.hpp"
+
+namespace micromachine::system {
 
 class pc_reg : public standard_reg {
 private:
@@ -45,5 +49,7 @@ private:
 		return VALUE_MASK & _word;
 	}
 };
+
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_PC_REG_HPP

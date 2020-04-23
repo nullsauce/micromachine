@@ -8,9 +8,10 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "RegisterMutationPredicate.hpp"
+#include "cpu.hpp"
 #include <gtest/gtest.h>
 
-RegisterMutationPredicate::RegisterMutationPredicate(const cpu& previous, const cpu& current, reg_idx regIdx)
+RegisterMutationPredicate::RegisterMutationPredicate(const micromachine::system::cpu& previous, const micromachine::system::cpu& current, reg_idx regIdx)
 	: CpuMutationPredicate(previous, current)
 	, _regIdx(regIdx)
 {}

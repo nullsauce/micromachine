@@ -12,16 +12,18 @@ and/or distributed without the express permission of Flavio Roth.
 
 
 #include <cppurses/widget/layouts/vertical.hpp>
-#include <system.hpp>
+#include <mcu.hpp>
 
-#include "widgets/HideableElement.hpp"
-#include "widgets/CommandInput.hpp"
-#include "widgets/MemorySegmentList.hpp"
-#include "widgets/MemorySegmentInfo.hpp"
-#include "widgets/MemoryView.hpp"
-#include "widgets/InfoTable.hpp"
-#include "widgets/Helpers.hpp"
 #include "FormatedText.hpp"
+#include "mapping.hpp"
+#include "memory.hpp"
+#include "widgets/CommandInput.hpp"
+#include "widgets/Helpers.hpp"
+#include "widgets/HideableElement.hpp"
+#include "widgets/InfoTable.hpp"
+#include "widgets/MemorySegmentInfo.hpp"
+#include "widgets/MemorySegmentList.hpp"
+#include "widgets/MemoryView.hpp"
 
 class MemoryBrowser : public cppurses::layout::Vertical {
 public:

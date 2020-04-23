@@ -3,11 +3,14 @@
 
 #include "dispatcher.hpp"
 #include "exec.hpp"
+#include "instruction_pair.hpp"
 #include "interrupter.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
-#include "registers/apsr_reg.hpp"
 #include "registers/core_registers.hpp"
+#include "registers/special_registers.hpp"
+
+namespace micromachine::system {
 
 class exec_dispatcher : public dispatcher {
 private:
@@ -310,5 +313,6 @@ private:
 		_interrupter.raise_hardfault();
 	}
 };
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_INTRUCTION_DISPATCHER_HPP

@@ -8,6 +8,9 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "CpuTestHarness.hpp"
+#include "binops.hpp"
+#include "exception_defs.hpp"
+#include "sp_reg.hpp"
 
 #define RETURN_TO_THREAD_FROM_SP_MAIN 0xFFFFFFF9
 
@@ -91,10 +94,10 @@ void CpuTestHarness::initContext()
 	for (uint32_t bit = 28; bit < 32; bit++) {
 		int setOrClear = rand() & 1;
 		if (setOrClear) {
-			binops::set_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
+			binops::micromachine::system::binops::set_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
 			m_expectedXPSRflags |= (1 << bit);
 		} else {
-			binops::clear_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
+			binops::micromachine::system::binops::clear_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
 			m_expectedXPSRflags &= ~(1 << bit);
 		}
 	}
@@ -254,7 +257,7 @@ void CpuTestHarness::pinkySimStep()
 void CpuTestHarness::validateSignaledException()
 {
 	if (CPU_STEP_HARDFAULT == m_expectedStepReturn) {
-		EXPECT_TRUE(_system.get_cpu().exceptions().interrupt_state<exception::Type::HARDFAULT>().is_active());
+		EXPECT_TRUE(_system.get_cpu().exceptions().interrupt_state<micromachine::system::exception::Type::HARDFAULT>().is_active());
 	} else {
 		assert("TODO implement");
 	}
@@ -293,7 +296,8 @@ void CpuTestHarness::validateRegisters()
 	for (int i = 0; i < 13; i++)
 		EXPECT_EQ(m_expectedRegisterValues[i], _system.get_cpu().regs().get(i));
 	EXPECT_EQ(m_expectedSPmain,
-			  _system.get_cpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
+			  _system.get_cpu().regs().sp_register().get_specific_banked_sp(
+				  micromachine::system::sp_reg::StackType::Main));
 	EXPECT_EQ(m_expectedLR, _system.get_cpu().regs().get_lr());
 	EXPECT_EQ(m_expectedPC, _system.get_cpu().regs().get_pc());
 }

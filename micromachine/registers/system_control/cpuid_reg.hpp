@@ -10,8 +10,10 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_CPUID_REG_HPP
 #define MICROMACHINE_CPUID_REG_HPP
 
-#include "types.hpp"
 #include "registers/word_reg.hpp"
+#include "types.hpp"
+
+namespace micromachine::system {
 
 class cpuid_reg	: public word_reg {
 public:
@@ -30,5 +32,6 @@ private:
 
 };
 
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_CPUID_REG_HPP

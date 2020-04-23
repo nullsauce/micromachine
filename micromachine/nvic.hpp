@@ -1,11 +1,13 @@
 #ifndef MICROMACHINE_EMU_NVIC_HPP
 #define MICROMACHINE_EMU_NVIC_HPP
 
-#include "types.hpp"
+#include "bits.hpp"
+#include "registers/ireg.hpp"
 #include "registers/word_reg.hpp"
+#include "types.hpp"
 #include <array>
 
-// Interrupt Priority Registers
+namespace micromachine::system { // Interrupt Priority Registers
 class nvic_ipr_reg : public word_reg {
 public:
 	using ireg::operator=;
@@ -33,7 +35,6 @@ private:
 		return _word;
 	}
 };
-
 class nvic_status_reg : public iword_reg {
 
 public:
@@ -41,12 +42,10 @@ public:
 
 protected:
 	uint32_t& _status;
-};
-
-/*
- * On write 0: no effect
- * On write 1: enable the associated bit
- */
+}; /*
+	* On write 0: no effect
+	* On write 1: enable the associated bit
+	*/
 class nvic_enable_on_write_reg : public nvic_status_reg {
 public:
 	using ireg::operator=;
@@ -60,12 +59,10 @@ private:
 	uint32_t get() const override {
 		return _status;
 	}
-};
-
-/*
- * On write a 0 bit: no effect
- * On write a 1 bit: disable the associated bit
- */
+}; /*
+	* On write a 0 bit: no effect
+	* On write a 1 bit: disable the associated bit
+	*/
 class nvic_disable_on_write_reg : public nvic_status_reg {
 public:
 	using ireg::operator=;
@@ -79,46 +76,37 @@ private:
 	uint32_t get() const override {
 		return _status;
 	}
-};
-
-/* Interrupt Set-Enable Register
- * Enables, or reads the enabled state of one or more exceptions.
- */
+}; /* Interrupt Set-Enable Register
+	* Enables, or reads the enabled state of one or more exceptions.
+	*/
 class nvic_iser_reg : public nvic_enable_on_write_reg {
 public:
 	using ireg::operator=;
 	using nvic_enable_on_write_reg::nvic_enable_on_write_reg;
-};
-
-/* Interrupt Clear Enable Register
- * Disables, or reads the enabled state of one or more exceptions.
- */
+}; /* Interrupt Clear Enable Register
+	* Disables, or reads the enabled state of one or more exceptions.
+	*/
 class nvic_icer_reg : public nvic_disable_on_write_reg {
 public:
 	using ireg::operator=;
 	using nvic_disable_on_write_reg::nvic_disable_on_write_reg;
-};
-
-/* Interrupt Set-Pending Register
- * On writes, sets the status of one or more exceptions to pending. On reads, shows the
- * pending status of the exceptions.
- */
+}; /* Interrupt Set-Pending Register
+	* On writes, sets the status of one or more exceptions to pending. On reads, shows the
+	* pending status of the exceptions.
+	*/
 class nvic_ispr_reg : public nvic_enable_on_write_reg {
 public:
 	using ireg::operator=;
 	using nvic_enable_on_write_reg::nvic_enable_on_write_reg;
-};
-
-/* Interrupt Clear-Pending Register
- * On writes, clears the status of one or more exceptions to pending. On reads, shows
- * the pending status of the exceptions.
- */
+}; /* Interrupt Clear-Pending Register
+	* On writes, clears the status of one or more exceptions to pending. On reads, shows
+	* the pending status of the exceptions.
+	*/
 class nvic_icpr_reg : public nvic_disable_on_write_reg {
 public:
 	using ireg::operator=;
 	using nvic_disable_on_write_reg::nvic_disable_on_write_reg;
 };
-
 class nvic {
 private:
 	// Interrupt Priority Registers (NVIC_IPR[0-7])
@@ -283,5 +271,7 @@ public:
 private:
 
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_NVIC_HPP
