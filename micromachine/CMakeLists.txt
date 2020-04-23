@@ -32,7 +32,7 @@ set(SRCS
 	registers/event_register.hpp
 	memory/memory.hpp
 	nvic.hpp
-	string_format.hpp
+	helpers/string_format.hpp
 	execution/exec_dispatcher.hpp
 	execution/interworking_brancher.hpp
 	instruction/instruction_decoder.hpp
