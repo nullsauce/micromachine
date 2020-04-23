@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "exception_controller.hpp"
+#include "exception/exception_controller.hpp"
 #include "mapping.hpp"
 #include "registers/iregister.hpp"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bits.hpp"
-#include "exception_defs.hpp"
+#include "exception/exception_defs.hpp"
 #include "types.hpp"
 #include "xpsr_reg.hpp"
 

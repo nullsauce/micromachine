@@ -12,7 +12,7 @@
 */
 
 #include "CpuTestFixture.hpp"
-#include "exception_defs.hpp"
+#include "exception/exception_defs.hpp"
 
 /* SVC
    Encoding: 1101 1111 Imm:8 */

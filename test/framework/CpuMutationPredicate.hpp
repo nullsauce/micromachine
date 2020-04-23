@@ -10,7 +10,7 @@ and/or distributed without the express permission of Flavio Roth.
 #pragma once
 
 #include "cpu.hpp"
-#include "exception_defs.hpp"
+#include "exception/exception_defs.hpp"
 
 class RegisterMutationPredicate;
 

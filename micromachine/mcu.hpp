@@ -10,8 +10,8 @@ and/or distributed without the express permission of Flavio Roth.
 #pragma once
 
 #include "cpu.hpp"
-#include "exception_controller.hpp"
-#include "exception_vector.hpp"
+#include "exception/exception_controller.hpp"
+#include "exception/exception_vector.hpp"
 #include "memory/memory.hpp"
 #include "nvic.hpp"
 #include "registers/custom/generic_io_reg.hpp"

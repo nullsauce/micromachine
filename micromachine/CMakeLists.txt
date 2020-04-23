@@ -29,8 +29,8 @@ set(SRCS
 	string_format.hpp
 	exec_dispatcher.hpp
 	interworking_brancher.hpp
-	exception_defs.hpp
-	exception_controller.hpp
+	exception/exception_defs.hpp
+	exception/exception_controller.hpp
 	instruction_decoder.hpp
 	disasm.hpp
 	cpu.hpp

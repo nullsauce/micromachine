@@ -11,12 +11,12 @@
 #include "exec.hpp"
 #include "exec_dispatcher.hpp"
 
-#include "exception_controller.hpp"
+#include "exception/exception_controller.hpp"
 #include "instruction_pair.hpp"
 #include "instructions.hpp"
 
-#include "exception_defs.hpp"
-#include "exception_vector.hpp"
+#include "exception/exception_defs.hpp"
+#include "exception/exception_vector.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"

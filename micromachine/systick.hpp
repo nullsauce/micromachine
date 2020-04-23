@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "exception_controller.hpp"
+#include "exception/exception_controller.hpp"
 #include "registers/system_control/systick_control_reg.hpp"
 
 namespace micromachine::system {
