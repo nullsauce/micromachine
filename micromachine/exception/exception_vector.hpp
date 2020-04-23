@@ -64,10 +64,15 @@ public:
 	}
 
 	void copy_state_from(const exception_state& other) {
-		_active = other._active;
+		set_active(other.is_active());
 		set_priority(other.priority());
 		set_pending(other.is_pending());
 		set_enable(other.is_enabled());
+	}
+
+protected:
+	void set_active(bool active) {
+		_active = active;
 	}
 };
 
@@ -94,7 +99,7 @@ public:
 	}
 
 	void set_enable(bool enable) override {
-		micromachine_fail("Can't disable an internal exception");
+		// Can't disable an internal exception
 	}
 };
 
@@ -107,8 +112,7 @@ public:
 	}
 
 	void set_priority(exception::priority_t priority) override {
-		// not supported
-		micromachine_fail("Can't set priority of a fixed priority exception");
+		// Can't set priority of a fixed priority exception
 	}
 };
 
@@ -234,9 +238,9 @@ public:
 		: exception_vector(nvic, sph2, sph3) {
 		// Initializes everything as usual.
 		// Then copy the exception states from the existing state
-		for(size_t i = 0; i < _indexed.size(); i++) {
-			auto& current = _indexed[i].get();
-			auto& existing = existing_state._indexed[i].get();
+		for(exception::Type type : _implemented_exception_types) {
+			auto& current = _indexed[type].get();
+			auto& existing = existing_state._indexed[type].get();
 			current.copy_state_from(existing);
 		}
 	}
@@ -264,6 +268,30 @@ public:
 		, _ext_interrupt_13(exception::EXTI_13, nvic)
 		, _ext_interrupt_14(exception::EXTI_14, nvic)
 		, _ext_interrupt_15(exception::EXTI_15, nvic)
+		, _implemented_exception_types{{
+			exception::RESET,
+			exception::NMI,
+			exception::HARDFAULT,
+			exception::SVCALL,
+			exception::PENDSV,
+			exception::SYSTICK,
+			exception::EXTI_00,
+			exception::EXTI_01,
+			exception::EXTI_02,
+			exception::EXTI_03,
+			exception::EXTI_04,
+			exception::EXTI_05,
+			exception::EXTI_06,
+			exception::EXTI_07,
+			exception::EXTI_08,
+			exception::EXTI_09,
+			exception::EXTI_10,
+			exception::EXTI_11,
+			exception::EXTI_12,
+			exception::EXTI_13,
+			exception::EXTI_14,
+			exception::EXTI_15,
+		}}
 		, _indexed{{_used_for_sp,
 					_reset,
 					_nmi,
@@ -341,6 +369,7 @@ private:
 	nvic_based_exception_state<14> _ext_interrupt_14;
 	nvic_based_exception_state<15> _ext_interrupt_15;
 
+	const std::array<exception::Type, 22> _implemented_exception_types;
 	std::array<std::reference_wrapper<exception_state>, 32> _indexed;
 
 public:
