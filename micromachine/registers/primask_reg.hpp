@@ -10,9 +10,12 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_PRIMASK_REG_HPP
 #define MICROMACHINE_EMU_PRIMASK_REG_HPP
 
+#include "bits.hpp"
+#include "standard_reg.hpp"
+namespace micromachine::system {
+
 class primask_reg : public standard_reg {
 public:
-
 	using standard_reg::standard_reg;
 	using standard_reg::operator=;
 	using pm_bit = bits<0>;
@@ -25,5 +28,7 @@ public:
 		pm_bit::of(_word) = pm;
 	}
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_PRIMASK_REG_HPP

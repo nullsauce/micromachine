@@ -17,10 +17,9 @@ and/or distributed without the express permission of Flavio Roth.
 #include <deque>
 
 #include "CpuMutationPredicate.hpp"
-#include "RegisterMutationPredicate.hpp"
 #include "MemoryMutationPredicate.hpp"
-
-
+#include "RegisterMutationPredicate.hpp"
+#include "cpu.hpp"
 
 /**
  * Utility macro to declare tests with a test_case_name different
@@ -36,7 +35,7 @@ private:
 	std::deque<TestSystem> _systems;
 	code_generator _code_generator;
 
-	const cpu& getPreviousCpu() {
+	const micromachine::system::cpu& getPreviousCpu() {
 		//ASSERT_TRUE((_systems.size() >= 2));
 		return _systems[_systems.size() - 2].getCpu();
 	}
@@ -51,7 +50,7 @@ private:
 
 protected:
 
-	cpu& getCpu() {
+	micromachine::system::cpu& getCpu() {
 		//ASSERT_FALSE((_systems.empty()));
 		return _systems.back().getCpu();
 	}

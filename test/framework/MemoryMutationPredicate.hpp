@@ -11,6 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 #define MICROMACHINE_MEMORYMUTATIONPREDICATE_HPP
 
 #include "CpuMutationPredicate.hpp"
+#include "cpu.hpp"
 
 template <typename uint_type>
 class MemoryMutationPredicate: public CpuMutationPredicate {
@@ -26,7 +27,7 @@ private:
 	}
 
 public:
-	MemoryMutationPredicate(const cpu& previous, const cpu& current, uint32_t address);
+	MemoryMutationPredicate(const micromachine::system::cpu& previous, const micromachine::system::cpu& current, uint32_t address);
 	MemoryMutationPredicate<uint_type>& Equals(uint32_t value);
 	MemoryMutationPredicate<uint_type>& DidNotChange();
 	MemoryMutationPredicate<uint_type>& Changed();

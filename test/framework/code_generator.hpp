@@ -1,6 +1,7 @@
 #ifndef MICROMACHINE_EMU_CODE_GENERATOR_HPP
 #define MICROMACHINE_EMU_CODE_GENERATOR_HPP
 
+#include "memory.hpp"
 #include "memory/memory.hpp"
 
 #include <cstdarg>
@@ -10,12 +11,12 @@ private:
 
 	uint32_t _write_address;
 	uint32_t _base_address;
-	memory* _mem;
+	micromachine::system::memory* _mem;
 
 public:
 	code_generator();
 
-	void set_mem(memory* mem);
+	void set_mem(micromachine::system::memory* mem);
 	void set_write_address(uint32_t address);
 	uint32_t write_address() const ;
 	void emit_ins16(const char* encoding, ...);

@@ -13,12 +13,16 @@ and/or distributed without the express permission of Flavio Roth.
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cpu.hpp>
 
-#include "widgets/FoldableWidgetHeader.hpp"
 #include "BreakpointManager.hpp"
+#include "disasm.hpp"
+#include "instruction_pair.hpp"
+#include "widgets/FoldableWidgetHeader.hpp"
+
+using namespace micromachine::system;
 
 class DisasmView : public cppurses::layout::Vertical {
 private:
-	class system& _system;
+	mcu& _mcu;
 	BreakpointManager& _breakpoint_manager;
 	ExecutionController& _execution_controller;
 	uint32_t _page_address;
@@ -42,8 +46,8 @@ private:
 	wchar_t _line_buffer[256] = {0};
 
 public:
-	DisasmView(class system& system, BreakpointManager& breakpoint_manager, ExecutionController& _execution_controller)
-		: _system(system)
+	DisasmView(mcu& mcu, BreakpointManager& breakpoint_manager, ExecutionController& _execution_controller)
+		: _mcu(mcu)
 		, _breakpoint_manager(breakpoint_manager)
 		, _execution_controller(_execution_controller)
 		, _page_address(0)
@@ -104,7 +108,7 @@ private:
 
 	uint32_t previous_instruction_address(uint32_t address) {
 		uint32_t look_behind_adress = address - sizeof(instruction_pair);
-		instruction_pair look_behind = _system.get_memory().read32_unchecked(look_behind_adress);
+		instruction_pair look_behind = _mcu.get_memory().read32_unchecked(look_behind_adress);
 		if(look_behind.is_wide()) {
 			return look_behind_adress;
 		} else {
@@ -117,7 +121,7 @@ private:
 	}
 
 	uint32_t next_intruction_address(uint32_t address) {
-		instruction_pair instruction_pair = _system.get_memory().read32_unchecked(address);
+		instruction_pair instruction_pair = _mcu.get_memory().read32_unchecked(address);
 		return address + instruction_pair.size();
 	}
 
@@ -156,7 +160,7 @@ private:
 
 		_text.clear();
 		const uint32_t lines_per_page = _text.height();
-		uint32_t pc = _system.get_cpu().regs().get_pc();
+		uint32_t pc = _mcu.get_cpu().regs().get_pc();
 		uint32_t address = pc;
 		if(address > _page_end || address < _page_address) {
 			_page_address = address;
@@ -166,7 +170,7 @@ private:
 
 		for(size_t i = 0; i < lines_per_page; i++) {
 
-			instruction_pair instruction = _system.get_memory().read32_unchecked(address);
+			instruction_pair instruction = _mcu.get_memory().read32_unchecked(address);
 			std::string disasm = disasm::disassemble_instruction(instruction, address);
 			auto maybe_breakpoint = _breakpoint_manager.breakpoint_at(address);
 			bool breakpoint_present = maybe_breakpoint.second;

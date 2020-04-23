@@ -1,8 +1,12 @@
 #ifndef MICROMACHINE_EMU_SPHR2_HPP
 #define MICROMACHINE_EMU_SPHR2_HPP
 
-#include "types.hpp"
+#include "bits.hpp"
+#include "registers/ireg.hpp"
 #include "registers/word_reg.hpp"
+#include "types.hpp"
+
+namespace micromachine::system {
 
 class shpr2_reg : public word_reg {
 public:
@@ -13,11 +17,11 @@ public:
 
 
 	pr11_bits::const_integer_slice<uint32_t> pri11() const {
-		return pr11_bits::of(_word);
+		return bits<30, 2>::of(_word);
 	}
 
 	pr11_bits::integer_slice<uint32_t> pri11() {
-		return pr11_bits::of(_word);
+		return bits<30, 2>::of(_word);
 	}
 
 
@@ -32,5 +36,7 @@ private:
 		return _word & _mask;
 	}
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_SPHR2_HPP

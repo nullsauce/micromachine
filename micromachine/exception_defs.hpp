@@ -10,6 +10,7 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_EXCEPTION_DEFS_HPP
 #define MICROMACHINE_EMU_EXCEPTION_DEFS_HPP
 
+namespace micromachine::system {
 class exception {
 public:
 	using priority_t = int8_t;
@@ -56,5 +57,6 @@ public:
 		return static_cast<Type>(number);
 	}
 };
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_EMU_EXCEPTION_DEFS_HPP

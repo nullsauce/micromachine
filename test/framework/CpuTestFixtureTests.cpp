@@ -10,6 +10,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "CpuTestFixture.hpp"
 #include "RegisterMutationPredicate.hpp"
+#include "core_registers.hpp"
 
 TEST_F(CpuTestFixture, CpuTestFixture_NothingChangesOnIdenticalState) {
 
@@ -34,15 +35,15 @@ TEST_F(CpuTestFixture, CpuTestFixture_ChangesAfterNopExecution) {
 
 TEST_F(CpuTestFixture, CpuTestFixture_SetRegisterValues) {
 
-	for (reg_idx r = 0; r < core_registers::NUM_GP_REGS; r++) {
+	for (reg_idx r = 0; r < micromachine::system::core_registers::NUM_GP_REGS; r++) {
 		getCpu().regs().set(r, 0x11111111U * (r + 1));
 	}
 
-	for (reg_idx r = 0; r < core_registers::NUM_GP_REGS; r++) {
+	for (reg_idx r = 0; r < micromachine::system::core_registers::NUM_GP_REGS; r++) {
 		ExpectThat().Register(r).Equals(0x11111111U * (r + 1));
 	}
 
-	for (reg_idx r = 0; r < core_registers::NUM_GP_REGS; r++) {
+	for (reg_idx r = 0; r < micromachine::system::core_registers::NUM_GP_REGS; r++) {
 		ExpectThat().Register(r).Changed();
 	}
 

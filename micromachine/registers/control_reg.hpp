@@ -4,9 +4,10 @@
 #include "standard_reg.hpp"
 #include "bits.hpp"
 
+namespace micromachine::system {
+
 class control_reg : public standard_reg {
 public:
-
 	using standard_reg::standard_reg;
 	using standard_reg::operator=;
 	using n_priv_bit = bits<0>;
@@ -29,5 +30,7 @@ public:
 	}
 
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_CONTROL_REG_HPP

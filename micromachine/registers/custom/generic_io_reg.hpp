@@ -1,9 +1,11 @@
 #ifndef MICROMACHINE_EMU_GENERIC_IO_REG_HPP
 #define MICROMACHINE_EMU_GENERIC_IO_REG_HPP
 
-#include "types.hpp"
+#include "bits.hpp"
 #include "registers/word_reg.hpp"
+#include "types.hpp"
 
+namespace micromachine::system {
 class generic_io_reg : public word_reg {
 public:
 	static constexpr uint32_t GIO_IO = 0xE000EF90;
@@ -28,5 +30,7 @@ private:
 protected:
 	const callback_t& _callback;
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_GENERIC_IO_REG_HPP

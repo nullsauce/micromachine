@@ -10,8 +10,10 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_INTERRUPTOR_HPP
 #define MICROMACHINE_EMU_INTERRUPTOR_HPP
 
+#include "exception_defs.hpp"
 #include "exception_vector.hpp"
 
+namespace micromachine::system {
 class interrupter {
 private:
 	exception_vector& _exception_vector;
@@ -28,39 +30,39 @@ public:
 	{}
 
 	void raise_nmi() {
-		raise<exception::Type::NMI>();
+		raise<exception::NMI>();
 	}
 
 	void raise_memory_hardfault() {
-		raise<exception::Type::HARDFAULT>();
+		raise<exception::HARDFAULT>();
 	}
 
 	void raise_hardfault() {
-		raise<exception::Type::HARDFAULT>();
+		raise<exception::HARDFAULT>();
 	}
 
 	void raise_svcall() {
-		raise<exception::Type::SVCALL>();
+		raise<exception::SVCALL>();
 	}
 
 	void raise_pendsv() {
-		raise<exception::Type::PENDSV>();
+		raise<exception::PENDSV>();
 	}
 
 	void raise_systick() {
-		raise<exception::Type::SYSTICK>();
+		raise<exception::SYSTICK>();
 	}
 
 	void raise_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(exception::Type::EXTI_00 + number).set_pending(true);
+		_exception_vector.interrupt_state(exception::EXTI_00 + number).set_pending(true);
 	}
 
 	void enable_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(exception::Type::EXTI_00 + number).set_enable(true);
+		_exception_vector.interrupt_state(exception::EXTI_00 + number).set_enable(true);
 	}
 
 	void disable_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(exception::Type::EXTI_00 + number).set_enable(false);
+		_exception_vector.interrupt_state(exception::EXTI_00 + number).set_enable(false);
 	}
 
 	template<exception::Type Ex>
@@ -75,5 +77,6 @@ public:
 
 
 };
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_INTERRUPTOR_HPP

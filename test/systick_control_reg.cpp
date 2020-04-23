@@ -2,17 +2,23 @@
 // Created by fla on 17-5-8.
 //
 
+#include "exception_defs.hpp"
+#include "exception_vector.hpp"
+#include "interrupter.hpp"
+#include "nvic.hpp"
+#include "shpr2_reg.hpp"
+#include "shpr3_reg.hpp"
 #include "systick.hpp"
 #include <gtest/gtest.h>
 
 class SystickTestBench : public ::testing::Test {
 protected:
 	nvic _nvic;
-	shpr2_reg _sph2;
+	micromachine::system::shpr2_reg _sph2;
 	shpr3_reg _sph3;
-	exception_vector _evec;
-	interrupter _interrupter;
-	systick syst;
+	micromachine::system::exception_vector _evec;
+	micromachine::system::interrupter _interrupter;
+	micromachine::system::systick syst;
 	SystickTestBench()
 		: _evec(_nvic, _sph2, _sph3)
 		, _interrupter(_evec)
@@ -123,7 +129,7 @@ TEST_F(SystickTestBench, SYSTICKIsPendingAfterCounterReachesZero) {
 	syst.reload_value_register() = 1;
 	syst.current_value_register().set_internal(1);
 	syst.tick();
-	EXPECT_TRUE(_evec.interrupt_state<exception::Type::SYSTICK>().is_pending());
+	EXPECT_TRUE(_evec.interrupt_state<micromachine::system::exception::Type::SYSTICK>().is_pending());
 }
 
 TEST_F(SystickTestBench, AwriteToSYST_CVRdoesNotTriggerTheSysTickExceptionLogic) {
@@ -131,5 +137,5 @@ TEST_F(SystickTestBench, AwriteToSYST_CVRdoesNotTriggerTheSysTickExceptionLogic)
 	syst.reload_value_register() = 1;
 	syst.current_value_register() = 100U;
 	syst.tick();
-	EXPECT_FALSE(_evec.interrupt_state<exception::Type::SYSTICK>().is_pending());
+	EXPECT_FALSE(_evec.interrupt_state<micromachine::system::exception::Type::SYSTICK>().is_pending());
 }

@@ -13,6 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <functional>
 #include "binops.hpp"
 
+namespace micromachine::system {
 template<size_t offset, size_t len, typename integer_type>
 struct slice {
 
@@ -34,9 +35,9 @@ struct slice {
 	template<typename other_integer_type>
 	using enable_only_if_const_differ = typename std::enable_if<!std::is_same<integer_type, other_integer_type>::value, same_type>::type;
 
-
 	template<typename other_integer_type>
-	using enable_only_if_source_has_less_or_equal_bits = typename std::enable_if<binops::binsize<other_integer_type>() <= len,
+	using enable_only_if_source_has_less_or_equal_bits = typename std::enable_if<
+		binops::binsize<other_integer_type>() <= len,
 	same_type>::type;
 
 	template<typename other_integer_type>
@@ -187,7 +188,6 @@ private:
 
 	std::reference_wrapper<integer_type> _val;
 };
-
 template<size_t offset, size_t len = 1>
 struct bits {
 
@@ -219,7 +219,8 @@ struct bits {
 					  "can't create a sub slice outside the parent slice bounds");
 		return slice<offset + slice_offset, len, integer_type>(existing_slice.val());
 	}
-
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_BITS_HPP

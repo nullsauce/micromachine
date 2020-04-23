@@ -5,7 +5,10 @@
 #ifndef MICROMACHINE_STATUS_FLAGS_HPP
 #define MICROMACHINE_STATUS_FLAGS_HPP
 
+#include "bits.hpp"
 #include "xpsr_reg.hpp"
+
+namespace micromachine::system {
 
 struct apsr_reg : public xpsr_reg {
 
@@ -140,7 +143,8 @@ struct apsr_reg : public xpsr_reg {
 			default: return true;
 		}
 	}
-
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_STATUS_FLAGS_HPP

@@ -10,12 +10,17 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_CONTEXT_SWITCHING_HPP
 #define MICROMACHINE_EMU_CONTEXT_SWITCHING_HPP
 
+#include "bits.hpp"
+#include "exception_defs.hpp"
+#include "exception_return_handler.hpp"
 #include "exception_vector.hpp"
 #include "instruction_pair.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
 #include "registers/special_registers.hpp"
+
+namespace micromachine::system {
 
 class context_switcher : public exception_return_handler {
 private:
@@ -151,13 +156,13 @@ public:
 		// 1. Compute the return address
 		switch(exception_state.number()) {
 			// address of the instruction causing fault
-			case exception::Type::HARDFAULT:
+			case exception::HARDFAULT:
 				return_address = instruction_address;
 				break;
-			case exception::Type::SVCALL:
+			case exception::SVCALL:
 				return_address = next_instruction_address;
 				break;
-			case exception::Type::PENDSV:
+			case exception::PENDSV:
 				return_address = next_instruction_address;
 				break;
 			default:
@@ -278,5 +283,7 @@ public:
 		}
 	}
 };
+
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_EMU_CONTEXT_SWITCHING_HPP

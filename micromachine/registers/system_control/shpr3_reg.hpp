@@ -1,8 +1,12 @@
 #ifndef MICROMACHINE_EMU_SPHR3_HPP
 #define MICROMACHINE_EMU_SPHR3_HPP
 
-#include "types.hpp"
+#include "bits.hpp"
+#include "registers/ireg.hpp"
 #include "registers/word_reg.hpp"
+#include "types.hpp"
+
+namespace micromachine::system {
 
 class shpr3_reg : public word_reg {
 public:
@@ -42,5 +46,7 @@ private:
 		return _word & _mask;
 	}
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_SPHR3_HPP

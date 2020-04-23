@@ -1,6 +1,7 @@
 
 
 #include "CpuTestHarness.hpp"
+#include "exception_defs.hpp"
 #include "mini_assembler.hpp"
 
 class ExceptionTestHarness : public CpuTestHarness {
@@ -11,7 +12,7 @@ class ExceptionTestHarness : public CpuTestHarness {
 		: _assembler(_code_gen)
 		{}
 
-		void install_handler(exception::Type ex, uint32_t address) {
+		void install_handler(micromachine::system::exception::Type ex, uint32_t address) {
 			_system.get_cpu().mem().write32(ex * sizeof(uint32_t), address);
 		}
 };
@@ -19,30 +20,30 @@ class ExceptionTestHarness : public CpuTestHarness {
 
 TEST_F(ExceptionTestHarness, DefaultPriorityIsThreadModeAtStartup)
 {
-	EXPECT_EQ(exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
+	EXPECT_EQ(micromachine::system::exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
 }
 
 
 
 TEST_F(ExceptionTestHarness, ExecutionPriorityChangesWhenExceptionIsTaken)
 {
-	EXPECT_EQ(exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
+	EXPECT_EQ(micromachine::system::exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
 	_system.get_cpu().interrupt().raise_hardfault();
 	setExpectedExceptionTaken(CPU_STEP_HARDFAULT);
 	step();
-	EXPECT_EQ(exception::HARDFAULT_PRIORITY, _system.get_cpu().current_execution_priority());
+	EXPECT_EQ(micromachine::system::exception::HARDFAULT_PRIORITY, _system.get_cpu().current_execution_priority());
 }
 
 TEST_F(ExceptionTestHarness, ExceptionPreAndPostState)
 {
 	// initially in thread mode
-	EXPECT_EQ(exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
+	EXPECT_EQ(micromachine::system::exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
 
 	// we are creating a fake exception handler at this address
 	const uint32_t exception_handler_stub = 0x2000;
 
 	// hardfault handler points to this address now
-	install_handler(exception::Type::HARDFAULT, exception_handler_stub | 1);
+	install_handler(micromachine::system::exception::Type::HARDFAULT, exception_handler_stub | 1);
 
 	// write a simple empty function in the hardfault handler.
 	// the function simply returns using BX LR
@@ -58,7 +59,7 @@ TEST_F(ExceptionTestHarness, ExceptionPreAndPostState)
 	step();
 
 	// check that the priority is set to hard fault priority
-	EXPECT_EQ(exception::HARDFAULT_PRIORITY, _system.get_cpu().current_execution_priority());
+	EXPECT_EQ(micromachine::system::exception::HARDFAULT_PRIORITY, _system.get_cpu().current_execution_priority());
 
 	// Check that the BX LR instruction was executed properly.
 	// PC should be back to its initial value
@@ -70,6 +71,6 @@ TEST_F(ExceptionTestHarness, ExceptionPreAndPostState)
 	// No exception should be running
 	setExpectNoExceptionTaken();
 	step();
-	EXPECT_EQ(exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
+	EXPECT_EQ(micromachine::system::exception::THREAD_MODE_PRIORITY, _system.get_cpu().current_execution_priority());
 }
 

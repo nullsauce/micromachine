@@ -1,21 +1,25 @@
 #ifndef MICROMACHINE_DISASM_HPP
 #define MICROMACHINE_DISASM_HPP
 
-
+#include "binops.hpp"
+#include "registers/core_registers.hpp"
 #include "dispatcher.hpp"
+#include "instruction_pair.hpp"
 #include "string_format.hpp"
 
 #include <numeric>
 
-#define DISASM_FMT_HEX				(1U << 0U)
-#define DISASM_FMT_HEX_NO_PREFIX	(1U << 1U)
-#define DISASM_FMT_STD_REG_NAMES	(1U << 2U)
-#define DISASM_FMT_BRANCH_IS_NARROW	(1U << 3U)
-#define DISASM_FMT_USE_ALT_ADR		(1U << 4U)
+#define DISASM_FMT_HEX (1U << 0U)
+#define DISASM_FMT_HEX_NO_PREFIX (1U << 1U)
+#define DISASM_FMT_STD_REG_NAMES (1U << 2U)
+#define DISASM_FMT_BRANCH_IS_NARROW (1U << 3U)
+#define DISASM_FMT_USE_ALT_ADR (1U << 4U)
+
+namespace micromachine::system {
+
 class disasm : public dispatcher {
 
 public:
-
 	static std::string disassemble_instruction(const instruction_pair instr, uint32_t address) {
 		disasm d(address, DISASM_FMT_HEX);
 		d.dispatch_instruction(instr);
@@ -23,12 +27,10 @@ public:
 	}
 
 private:
-
 	disasm(size_t address, uint32_t fmt)
-	 : instruction_string(128, '\0')
-	 , _addr(address)
-	 , format_options(fmt) {
-	}
+		: instruction_string(128, '\0')
+		, _addr(address)
+		, format_options(fmt) {}
 
 	std::string instruction_string;
 	uint32_t _addr;
@@ -38,25 +40,44 @@ private:
 		instruction_string = str;
 	}
 
-	template<typename ... Args>
-	void format(const std::string& format, Args&&... args ) {
-		write(string_format(format, std::forward<Args>(args)...));
+	template <typename... Args>
+	void format(const std::string& format, Args&&... args) {
+		write(micomachine::utils::string_format(format, std::forward<Args>(args)...));
 	}
 
+	const char* const reg_names_std[16] = {"r0",
+										   "r1",
+										   "r2",
+										   "r3",
+										   "r4",
+										   "r5",
+										   "r6",
+										   "r7",
+										   "r8",
+										   "r9",
+										   "r10",
+										   "r11",
+										   "r12",
+										   "sp",
+										   "lr",
+										   "pc"};
 
-	const char* const reg_names_std[16] = {
-		"r0","r1","r2","r3",
-		"r4","r5","r6","r7",
-		"r8","r9","r10","r11",
-		"r12","sp","lr","pc"
-	};
-
-	const char* const reg_names_ex[16] = {
-		"r0","r1","r2","r3",
-		"r4","r5","r6","r7",
-		"r8","r9","r10","r11",
-		"ip","sp","lr","pc"
-	};
+	const char* const reg_names_ex[16] = {"r0",
+										  "r1",
+										  "r2",
+										  "r3",
+										  "r4",
+										  "r5",
+										  "r6",
+										  "r7",
+										  "r8",
+										  "r9",
+										  "r10",
+										  "r11",
+										  "ip",
+										  "sp",
+										  "lr",
+										  "pc"};
 
 	const char* R(reg_idx i) {
 		if(format_use_std_reg_names()) {
@@ -98,9 +119,12 @@ private:
 	}
 
 	static std::string join(const std::vector<std::string>& strings, const char* delim = ", ") {
-		return std::accumulate(std::begin(strings), std::end(strings), std::string(), [=](const std::string &l, const std::string &r) {
-			return l.empty() ? r : l + delim + r;
-		});
+		return std::accumulate(std::begin(strings),
+							   std::end(strings),
+							   std::string(),
+							   [=](const std::string& l, const std::string& r) {
+								   return l.empty() ? r : l + delim + r;
+							   });
 	}
 
 	std::string reg_list_str(const register_list_t& reg_list) {
@@ -123,18 +147,30 @@ private:
 
 	static std::string special_register(special_reg_instr::SpecialRegister sr) {
 		switch(sr) {
-			case msr::SpecialRegister::APSR: 	return "apsr";
-			case msr::SpecialRegister::IAPSR: 	return "iapsr";
-			case msr::SpecialRegister::EAPSR: 	return "eapsr";
-			case msr::SpecialRegister::XPSR: 	return "xpsr";
-			case msr::SpecialRegister::IPSR: 	return "ipsr";
-			case msr::SpecialRegister::EPSR: 	return "epsr";
-			case msr::SpecialRegister::IEPSR: 	return "iepsr";
-			case msr::SpecialRegister::MSP: 	return "msp";
-			case msr::SpecialRegister::PSP: 	return "psp";
-			case msr::SpecialRegister::PRIMASK:	return "primask";
-			case msr::SpecialRegister::CONTROL:	return "control";
-			default: return "?";
+			case msr::SpecialRegister::APSR:
+				return "apsr";
+			case msr::SpecialRegister::IAPSR:
+				return "iapsr";
+			case msr::SpecialRegister::EAPSR:
+				return "eapsr";
+			case msr::SpecialRegister::XPSR:
+				return "xpsr";
+			case msr::SpecialRegister::IPSR:
+				return "ipsr";
+			case msr::SpecialRegister::EPSR:
+				return "epsr";
+			case msr::SpecialRegister::IEPSR:
+				return "iepsr";
+			case msr::SpecialRegister::MSP:
+				return "msp";
+			case msr::SpecialRegister::PSP:
+				return "psp";
+			case msr::SpecialRegister::PRIMASK:
+				return "primask";
+			case msr::SpecialRegister::CONTROL:
+				return "control";
+			default:
+				return "?";
 		}
 	}
 
@@ -150,7 +186,7 @@ private:
 		format("<UNDEFINED> instruction: 0x%08x", instr.first() << 16U | instr.second());
 	}
 
-	//TODO: refactor and avoid passing _regs.app_status_register() explicitely
+	// TODO: refactor and avoid passing _regs.app_status_register() explicitely
 	void dispatch(const nop) override {
 		write("nop");
 	}
@@ -167,13 +203,22 @@ private:
 		write("sev");
 	}
 	void dispatch(const lsl_imm instruction) override {
-		format("lsls %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5().extract());
+		format("lsls %s, %s, " + IMM(),
+			   R(instruction.rd()),
+			   R(instruction.rm()),
+			   instruction.imm5().extract());
 	}
 	void dispatch(const lsr_imm instruction) override {
-		format("lsrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5().extract());
+		format("lsrs %s, %s, " + IMM(),
+			   R(instruction.rd()),
+			   R(instruction.rm()),
+			   instruction.imm5().extract());
 	}
 	void dispatch(const asr_imm instruction) override {
-		format("asrs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rm()), instruction.imm5().extract());
+		format("asrs %s, %s, " + IMM(),
+			   R(instruction.rd()),
+			   R(instruction.rm()),
+			   instruction.imm5().extract());
 	}
 	void dispatch(const add_reg instruction) override {
 		format("adds %s, %s, %s", R(instruction.rd()), R(instruction.rn()), R(instruction.rm()));
@@ -182,10 +227,16 @@ private:
 		format("subs %s, %s, %s", R(instruction.rd()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const add_imm instruction) override {
-		format("adds %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3().extract());
+		format("adds %s, %s, " + IMM(),
+			   R(instruction.rd()),
+			   R(instruction.rn()),
+			   instruction.imm3().extract());
 	}
 	void dispatch(const subs_imm instruction) override {
-		format("subs %s, %s, " + IMM(), R(instruction.rd()), R(instruction.rn()), instruction.imm3().extract());
+		format("subs %s, %s, " + IMM(),
+			   R(instruction.rd()),
+			   R(instruction.rn()),
+			   instruction.imm3().extract());
 	}
 	void dispatch(const mov_imm instruction) override {
 		format("movs %s, " + IMM(), R(instruction.rd()), instruction.imm8().extract());
@@ -274,7 +325,7 @@ private:
 	}
 	void dispatch(const ldr_literal instruction) override {
 		// normal syntax
-		//format("ldr %s, %x", R(instruction.rt), instruction.imm32()+_addr);
+		// format("ldr %s, %x", R(instruction.rt), instruction.imm32()+_addr);
 		// alternative syntax
 		format("ldr %s, [pc, " + IMM() + "]", R(instruction.rt()), instruction.imm32());
 	}
@@ -303,22 +354,40 @@ private:
 		format("ldrsh %s, [%s, %s]", R(instruction.rt()), R(instruction.rn()), R(instruction.rm()));
 	}
 	void dispatch(const str_imm instruction) override {
-		format("str %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
+		format("str %s, [%s, " + IMM() + "]",
+			   R(instruction.rt()),
+			   R(instruction.rn()),
+			   instruction.imm32());
 	}
 	void dispatch(const ldr_imm instruction) override {
-		format("ldr %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
+		format("ldr %s, [%s, " + IMM() + "]",
+			   R(instruction.rt()),
+			   R(instruction.rn()),
+			   instruction.imm32());
 	}
 	void dispatch(const strb_imm instruction) override {
-		format("strb %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm5().extract());
+		format("strb %s, [%s, " + IMM() + "]",
+			   R(instruction.rt()),
+			   R(instruction.rn()),
+			   instruction.imm5().extract());
 	}
 	void dispatch(const ldrb_imm instruction) override {
-		format("ldrb %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm5().extract());
+		format("ldrb %s, [%s, " + IMM() + "]",
+			   R(instruction.rt()),
+			   R(instruction.rn()),
+			   instruction.imm5().extract());
 	}
 	void dispatch(const strh_imm instruction) override {
-		format("strh %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
+		format("strh %s, [%s, " + IMM() + "]",
+			   R(instruction.rt()),
+			   R(instruction.rn()),
+			   instruction.imm32());
 	}
 	void dispatch(const ldrh_imm instruction) override {
-		format("ldrh %s, [%s, " + IMM() + "]", R(instruction.rt()), R(instruction.rn()), instruction.imm32());
+		format("ldrh %s, [%s, " + IMM() + "]",
+			   R(instruction.rt()),
+			   R(instruction.rn()),
+			   instruction.imm32());
 	}
 	void dispatch(const str_sp_imm instruction) override {
 		format("str %s, [sp, " + IMM() + "]", R(instruction.rt()), instruction.imm32());
@@ -381,7 +450,7 @@ private:
 		int32_t offset = instruction.offset();
 		uint32_t label = (_addr + 4) + offset;
 		std::string narrow_suffix = format_use_narrow_branch() ? ".n" : "";
-		format("b%2.2s"+narrow_suffix+" "+IMM(), condition_string(instruction.cond()), label);
+		format("b%2.2s" + narrow_suffix + " " + IMM(), condition_string(instruction.cond()), label);
 	}
 	void dispatch(const unconditional_branch instruction) override {
 		int32_t offset = instruction.offset();
@@ -389,18 +458,16 @@ private:
 		format("b.n 0x%x", label);
 	}
 	void dispatch(const stm instruction) override {
-		format("stmia %s!, {%s}"
-			, R(instruction.rn())
-			, reg_list_str(instruction.register_list()).c_str()
-		);
+		format("stmia %s!, {%s}",
+			   R(instruction.rn()),
+			   reg_list_str(instruction.register_list()).c_str());
 	}
 	void dispatch(const ldm instruction) override {
 		bool list_contains_rn = binops::get_bit(instruction.register_list(), instruction.rn());
-		format("ldmia %s%s, {%s}"
-			, R(instruction.rn())
-			, list_contains_rn ? "" : "!"
-			, reg_list_str(instruction.register_list()).c_str()
-		);
+		format("ldmia %s%s, {%s}",
+			   R(instruction.rn()),
+			   list_contains_rn ? "" : "!",
+			   reg_list_str(instruction.register_list()).c_str());
 	}
 	void dispatch(const mrs instruction) override {
 		format("mrs %s, %s", R(instruction.rd), special_register(instruction.sysn).c_str());
@@ -433,4 +500,6 @@ private:
 	}
 };
 
-#endif //MICROMACHINE_DISASM_HPP
+} // namespace micromachine::system
+
+#endif // MICROMACHINE_DISASM_HPP

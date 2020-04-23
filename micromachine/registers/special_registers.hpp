@@ -10,11 +10,18 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_SPECIAL_REGISTERS_HPP
 #define MICROMACHINE_SPECIAL_REGISTERS_HPP
 
+#include "apsr_reg.hpp"
+#include "control_reg.hpp"
+#include "epsr_reg.hpp"
+#include "ipsr_reg.hpp"
+#include "primask_reg.hpp"
 #include "registers/apsr_reg.hpp"
 #include "registers/control_reg.hpp"
 #include "registers/epsr_reg.hpp"
 #include "registers/ipsr_reg.hpp"
 #include "registers/primask_reg.hpp"
+
+namespace micromachine::system {
 
 class special_registers {
 private:
@@ -87,5 +94,7 @@ public:
 		return _primask_register;
 	}
 };
+
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_SPECIAL_REGISTERS_HPP

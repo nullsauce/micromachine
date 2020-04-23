@@ -8,10 +8,11 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "MemoryMutationPredicate.hpp"
+#include "cpu.hpp"
 #include <gtest/gtest.h>
 
 template<typename uint_type>
-MemoryMutationPredicate<uint_type>::MemoryMutationPredicate(const cpu& previous, const cpu& current, uint32_t address)
+MemoryMutationPredicate<uint_type>::MemoryMutationPredicate(const micromachine::system::cpu& previous, const micromachine::system::cpu& current, uint32_t address)
 	: CpuMutationPredicate(previous, current)
 	, _address(address)
 {}

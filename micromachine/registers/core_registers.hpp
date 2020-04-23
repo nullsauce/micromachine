@@ -5,11 +5,17 @@
 #ifndef MICROMACHINE_REGISTER_TYPES_HPP
 #define MICROMACHINE_REGISTER_TYPES_HPP
 
+#include "control_reg.hpp"
 #include "exception_return_handler.hpp"
-#include "registers/registers.hpp"
+#include "pc_reg.hpp"
 #include "registers/pc_reg.hpp"
+#include "registers/registers.hpp"
 #include "registers/sp_reg.hpp"
 #include "registers/standard_reg.hpp"
+#include "sp_reg.hpp"
+#include "standard_reg.hpp"
+
+namespace micromachine::system {
 
 class core_registers {
 private:
@@ -122,5 +128,7 @@ public:
 		return _pc;
 	}
 };
+
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_REGISTER_TYPES_HPP
