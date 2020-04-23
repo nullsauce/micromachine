@@ -13,6 +13,12 @@ public:
 	xpsr_reg(uint32_t& xpsr)
 		: _xpsr(xpsr) {}
 
+	template <size_t flag>
+	using flag_bit_ref = typename bits<flag>::template integer_slice<uint32_t>;
+
+	template <size_t flag>
+	using flag_bit_const_ref = typename bits<flag>::template const_integer_slice<uint32_t>;
+
 protected:
 	void write_bit(size_t offset, bool value) {
 		binops::write_bit(_xpsr, offset, value);

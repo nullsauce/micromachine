@@ -41,8 +41,8 @@ CpuMutationPredicate& CpuMutationPredicate::InstructionExecutedWithoutBranch() {
 CpuMutationPredicate& CpuMutationPredicate::APSRFlagsMatches(const std::string& apsrFlags) {
 	for(char c : apsrFlags) {
 		switch(c) {
-			case 'n' : EXPECT_FALSE(_current.special_regs().app_status_register().neg_flag()); break;
-			case 'N' : EXPECT_TRUE(_current.special_regs().app_status_register().neg_flag()); break;
+			case 'n' : EXPECT_FALSE(_current.special_regs().app_status_register().negative_flag()); break;
+			case 'N' : EXPECT_TRUE(_current.special_regs().app_status_register().negative_flag()); break;
 			case 'z' : EXPECT_FALSE(_current.special_regs().app_status_register().zero_flag()); break;
 			case 'Z' : EXPECT_TRUE(_current.special_regs().app_status_register().zero_flag()); break;
 			case 'c' : EXPECT_FALSE(_current.special_regs().app_status_register().carry_flag()); break;
@@ -64,7 +64,7 @@ CpuMutationPredicate& CpuMutationPredicate::XPSRRegisterDidNotChange() {
 
 
 CpuMutationPredicate& CpuMutationPredicate::APSRFlagsDidNotChange() {
-	EXPECT_EQ(_previous.special_regs().app_status_register().neg_flag(), _current.special_regs().app_status_register().neg_flag());
+	EXPECT_EQ(_previous.special_regs().app_status_register().negative_flag(), _current.special_regs().app_status_register().negative_flag());
 	EXPECT_EQ(_previous.special_regs().app_status_register().zero_flag(), _current.special_regs().app_status_register().zero_flag());
 	EXPECT_EQ(_previous.special_regs().app_status_register().carry_flag(), _current.special_regs().app_status_register().carry_flag());
 	EXPECT_EQ(_previous.special_regs().app_status_register().overflow_flag(), _current.special_regs().app_status_register().overflow_flag());
