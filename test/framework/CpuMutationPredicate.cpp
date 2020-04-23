@@ -11,7 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "MemoryMutationPredicate.hpp"
 #include "RegisterMutationPredicate.hpp"
 #include "cpu.hpp"
-#include "exception/exception_defs.hpp"
+#include "exception/exception.hpp"
 #include "instruction_pair.hpp"
 
 #include <gtest/gtest.h>

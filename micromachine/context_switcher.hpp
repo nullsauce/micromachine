@@ -10,7 +10,7 @@ and/or distributed without the express permission of Flavio Roth.
 #pragma once
 
 #include "bits.hpp"
-#include "exception/exception_defs.hpp"
+#include "exception/exception.hpp"
 #include "exception/exception_return_handler.hpp"
 #include "exception/exception_vector.hpp"
 #include "instruction_pair.hpp"
