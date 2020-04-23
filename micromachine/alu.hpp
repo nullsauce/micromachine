@@ -175,8 +175,7 @@ static uint32_t add_with_carry(const uint32_t& a,
 							   bool& overflow_out) {
 
 	const uint64_t bigval = (uint64_t)a + (uint64_t)b + (uint64_t)carry_in;
-	const uint32_t lower32bits = binops::make_mask<uint32_t>(
-		binops::binsize<uint32_t>());
+	const uint32_t lower32bits = binops::make_mask<uint32_t>(binops::binsize<uint32_t>());
 	const uint32_t res = (uint32_t)(bigval & lower32bits);
 
 	const uint32_t a_xor_b = a ^ b;

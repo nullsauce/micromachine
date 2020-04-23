@@ -20,8 +20,7 @@ private:
 
 public:
 	exception_controller(exception_vector& exception_vector)
-		: _exception_vector(exception_vector)
-	{}
+		: _exception_vector(exception_vector) {}
 
 	void raise_nmi() {
 		raise<exception::NMI>();
@@ -59,12 +58,12 @@ public:
 		_exception_vector.interrupt_state(exception::EXTI_00 + number).set_enable(false);
 	}
 
-	template<exception::Type Ex>
+	template <exception::Type Ex>
 	void set_exception_priority(exception::priority_t priority) {
 		_exception_vector.interrupt_state<Ex>().set_priority(priority);
 	}
 
-	template<exception::Type Ex>
+	template <exception::Type Ex>
 	exception::priority_t exception_priority() {
 		return _exception_vector.interrupt_state<Ex>().priority();
 	}
@@ -74,6 +73,5 @@ private:
 	void raise() {
 		_exception_vector.interrupt_state<Ex>().set_pending(true);
 	}
-
 };
 } // namespace micromachine::system

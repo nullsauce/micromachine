@@ -52,7 +52,7 @@ private:
 
 	void set(uint32_t word) override {
 		// these two bits should always be zero, or UNPREDICTABLE
-		if (bits<0, 2>::of(word)) {
+		if(bits<0, 2>::of(word)) {
 			// unpredictable
 		}
 		current_banked_value() = word;
@@ -63,7 +63,7 @@ private:
 	}
 
 	uint32_t& current_banked_value() {
-		if (execution_mode::thread == _execution_mode) {
+		if(execution_mode::thread == _execution_mode) {
 			return _banked_stack_pointers[_control_reg.sp_sel()];
 		} else {
 			// handler mode
@@ -72,7 +72,7 @@ private:
 	}
 
 	const uint32_t& current_banked_value() const {
-		if (execution_mode::thread == _execution_mode) {
+		if(execution_mode::thread == _execution_mode) {
 			return _banked_stack_pointers[_control_reg.sp_sel()];
 		} else {
 			// handler mode

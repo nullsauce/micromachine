@@ -1,7 +1,7 @@
 #pragma once
 
-#include "standard_reg.hpp"
 #include "bits.hpp"
+#include "standard_reg.hpp"
 
 namespace micromachine::system {
 
@@ -27,7 +27,6 @@ public:
 	void set_sp_sel(bool sel) {
 		sp_selection_bit::of(_word) = sel;
 	}
-
 };
 
 } // namespace micromachine::system

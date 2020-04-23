@@ -11,13 +11,13 @@ namespace micromachine::system {
 
 struct apsr_reg : public xpsr_reg {
 
-	static const size_t FLAG_NEGATIVE 	= 31;
-	static const size_t FLAG_ZERO 		= 30;
-	static const size_t FLAG_CARRY 		= 29;
-	static const size_t FLAG_OVERFLOW 	= 28;
+	static const size_t FLAG_NEGATIVE = 31;
+	static const size_t FLAG_ZERO = 30;
+	static const size_t FLAG_CARRY = 29;
+	static const size_t FLAG_OVERFLOW = 28;
 
 	using xpsr_reg::xpsr_reg;
-	using flags_bits = bits<28,4>;
+	using flags_bits = bits<28, 4>;
 
 	flags_bits::integer_slice<uint32_t> flags() {
 		return flags_bits::of(_xpsr);
@@ -125,21 +125,36 @@ struct apsr_reg : public xpsr_reg {
 
 	bool condition_passed(uint8_t condition) {
 		switch(condition) {
-			case 0b0000: return is_eq();
-			case 0b0001: return is_ne();
-			case 0b0010: return is_cs();
-			case 0b0011: return is_cc();
-			case 0b0100: return is_mi();
-			case 0b0101: return is_pl();
-			case 0b0110: return is_vs();
-			case 0b0111: return is_vc();
-			case 0b1000: return is_hi();
-			case 0b1001: return is_ls();
-			case 0b1010: return is_ge();
-			case 0b1011: return is_lt();
-			case 0b1100: return is_gt();
-			case 0b1101: return is_le();
-			default: return true;
+			case 0b0000:
+				return is_eq();
+			case 0b0001:
+				return is_ne();
+			case 0b0010:
+				return is_cs();
+			case 0b0011:
+				return is_cc();
+			case 0b0100:
+				return is_mi();
+			case 0b0101:
+				return is_pl();
+			case 0b0110:
+				return is_vs();
+			case 0b0111:
+				return is_vc();
+			case 0b1000:
+				return is_hi();
+			case 0b1001:
+				return is_ls();
+			case 0b1010:
+				return is_ge();
+			case 0b1011:
+				return is_lt();
+			case 0b1100:
+				return is_gt();
+			case 0b1101:
+				return is_le();
+			default:
+				return true;
 		}
 	}
 };

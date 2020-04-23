@@ -1,14 +1,12 @@
 #pragma once
 
-#include "types.hpp"
 #include "bits.hpp"
+#include "types.hpp"
 
 namespace micromachine::system {
-static
-bool is_wide_thumb_encoding(const uint16_t& instruction) {
-	return 0b111 == bits<13,3>::of(instruction) &&
-	       0b00 !=  bits<11,2>::of(instruction) &&
-	       0b1 != bits<11, 1>::of(instruction);
+static bool is_wide_thumb_encoding(const uint16_t& instruction) {
+	return 0b111 == bits<13, 3>::of(instruction) && 0b00 != bits<11, 2>::of(instruction) &&
+		   0b1 != bits<11, 1>::of(instruction);
 }
 struct instruction_pair {
 
@@ -16,15 +14,14 @@ struct instruction_pair {
 	using second_intruction_bits = bits<16, 16>;
 
 	instruction_pair()
-		: _word(0){}
+		: _word(0) {}
 
 	instruction_pair(uint32_t word)
 		: _word(word) {}
 
-	instruction_pair(uint16_t a, uint16_t b){
+	instruction_pair(uint16_t a, uint16_t b) {
 		first_intruction_bits::of(_word) = a;
 		second_intruction_bits::of(_word) = b;
-
 	}
 
 	first_intruction_bits::integer_slice<uint32_t> first() {
@@ -57,6 +54,5 @@ struct instruction_pair {
 
 private:
 	uint32_t _word;
-
 };
 } // namespace micromachine::system

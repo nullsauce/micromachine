@@ -38,7 +38,7 @@ public:
 		, _pc_reg(pc_reg) {}
 
 	void branch_interworking(uint32_t address) {
-		if (_execution_mode == execution_mode::handler && 0b1111 == bits<28, 4>::of(address)) {
+		if(_execution_mode == execution_mode::handler && 0b1111 == bits<28, 4>::of(address)) {
 			uint32_t return_address = bits<0, 28>::of(address);
 			_exception_return_handler.exception_return(return_address);
 		} else {
