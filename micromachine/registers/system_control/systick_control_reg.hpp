@@ -9,7 +9,7 @@
 
 namespace micromachine::system {
 
-class systick_control_reg : public word_reg {
+class systick_control_reg : public memory_mapped_reg {
 public:
 
 	static constexpr uint32_t SYST_CSR = 0xE000E010;
@@ -17,7 +17,7 @@ public:
 	static constexpr uint32_t SYST_CVR = 0xE000E018;
 	static constexpr uint32_t SYST_CALIB = 0xE000E01C;
 
-	using word_reg::operator=;
+	using memory_mapped_reg::operator=;
 	static constexpr size_t COUNTFLAG_BIT = 16;
 	static constexpr size_t CLKSOURCE_BIT = 2;
 	static constexpr size_t TICKINT_BIT = 1;
@@ -74,9 +74,9 @@ private:
 		return _word & _mask;
 	}
 };
-class systick_reload_value_reg : public word_reg {
+class systick_reload_value_reg : public memory_mapped_reg {
 public:
-	using word_reg::operator=;
+	using memory_mapped_reg::operator=;
 private:
 	void set(uint32_t word) override {
 		bits<0,24>::of(_word) = word;
@@ -86,11 +86,11 @@ private:
 		return bits<0,24>::of(_word);
 	}
 };
-class systick_current_value_reg : public word_reg {
+class systick_current_value_reg : public memory_mapped_reg {
 public:
-	using word_reg::operator=;
+	using memory_mapped_reg::operator=;
 	systick_current_value_reg(systick_control_reg& control_reg)
-		: word_reg()
+		: memory_mapped_reg()
 		, _control_reg(control_reg) {
 	}
 	// this setter does NOT clear the register
@@ -116,9 +116,9 @@ private:
 protected:
 	systick_control_reg& _control_reg;
 };
-class systick_calib_value_reg : public word_reg {
+class systick_calib_value_reg : public memory_mapped_reg {
 public:
-	using word_reg::operator=;
+	using memory_mapped_reg::operator=;
 	static constexpr size_t SKEW_BIT = 30;
 	static constexpr size_t NOREF_BIT = 31;
 

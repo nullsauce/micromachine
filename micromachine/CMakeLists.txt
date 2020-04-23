@@ -13,7 +13,7 @@ set(SRCS
 	registers/apsr_reg.hpp
 	registers/ipsr_reg.hpp
 	registers/epsr_reg.hpp
-	registers/ireg.hpp
+	registers/iregister.hpp
 	registers/pc_reg.hpp
 	registers/sp_reg.hpp
 	registers/standard_reg.hpp

@@ -15,7 +15,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 namespace micromachine::system {
 
-class cpuid_reg	: public word_reg {
+class cpuid_reg	: public memory_mapped_reg {
 public:
 	static constexpr uint32_t CPUID = 0xE000ED00;
 
