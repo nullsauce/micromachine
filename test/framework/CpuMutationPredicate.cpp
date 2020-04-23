@@ -10,7 +10,6 @@ and/or distributed without the express permission of Flavio Roth.
 #include "CpuMutationPredicate.hpp"
 #include "MemoryMutationPredicate.hpp"
 #include "RegisterMutationPredicate.hpp"
-#include "core_registers.hpp"
 #include "cpu.hpp"
 #include "exception_defs.hpp"
 #include "instruction_pair.hpp"

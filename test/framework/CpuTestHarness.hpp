@@ -112,8 +112,8 @@ class CpuTestHarness : public ::testing::Test
 {
 protected:
 	const size_t MEMORY_SIZE = 0x8000;
-	class system _system;
-	code_generator _code_gen;
+	micromachine::system::mcu _mcu;
+	helpers::code_generator _code_gen;
 	std::vector<uint8_t> _memory;
 
 	int m_expectedStepReturn;
@@ -125,7 +125,7 @@ protected:
 	uint32_t m_expectedIPSR;
 	uint32_t PRIMASK;
 
-	code_generator& code_gen() {
+	helpers::code_generator& code_gen() {
 		return _code_gen;
 	}
 

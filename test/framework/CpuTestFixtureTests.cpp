@@ -10,7 +10,6 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "CpuTestFixture.hpp"
 #include "RegisterMutationPredicate.hpp"
-#include "core_registers.hpp"
 
 TEST_F(CpuTestFixture, CpuTestFixture_NothingChangesOnIdenticalState) {
 

@@ -12,10 +12,8 @@
 */
 
 #include "CpuTestFixture.hpp"
-#include "apsr_reg.hpp"
-#include "epsr_reg.hpp"
 #include "exception_defs.hpp"
-#include "ipsr_reg.hpp"
+
 
 #define IPSR_VAL 0x20
 
