@@ -8,6 +8,17 @@
 #include <chrono>
 #include <unistd.h>
 
+/**
+ * A dummy feeder for usart rx register
+ * @return the next dummy data
+ */
+static uint8_t usart_rx_feeder_next_data() {
+	static const std::string data = "I'm your feeder!\n";
+	static uint8_t index = 0;
+	uint8_t d = data[index];
+	index = (index + 1) % data.size();
+	return d;
+}
 
 int main(int argc, char** argv) {
 
@@ -62,6 +73,11 @@ int main(int argc, char** argv) {
 	  if(0 == write(STDOUT_FILENO, &data, 1)) {
 		  fprintf(stderr, "failed to write to stdout\n");
 	  }
+	});
+
+	mcu.set_usart_rx_callback([&mcu](uint8_t& data){
+		data = usart_rx_feeder_next_data();
+	  mcu.set_usart_rx_data(data);
 	});
 
 	mcu.reset(program->entry_point());

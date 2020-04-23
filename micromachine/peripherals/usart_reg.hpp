@@ -340,6 +340,7 @@ private:
 	const callback_t& _callback;
 };
 
+
 /**
  * USART rx register
  */
@@ -347,11 +348,13 @@ class usart_rx_reg : public memory_mapped_reg {
 public:
 	using memory_mapped_reg::operator=;
 	using memory_mapped_reg::operator uint32_t;
+	using callback_t = std::function<void(uint8_t& data)>;
 	static constexpr uint32_t USART_RX = usart::USART_BASE + 0x0c;
 
-	usart_rx_reg(usart_is_reg& isr, usart_cr1_reg& cr1)
+	usart_rx_reg(usart_is_reg& isr, usart_cr1_reg& cr1, callback_t& callback)
 		: _isr(isr)
-		, _cr1(cr1) {}
+		, _cr1(cr1)
+		, _callback(callback) {}
 
 private:
 	uint32_t get() const override {
@@ -359,24 +362,42 @@ private:
 			return 0;
 		}
 
+		if(!_isr.read_data_register_not_empty()) {
+			return 0;
+		}
+
 		uint32_t word = bits<0, 8>::of(_word);
 		_isr.set_read_data_register_not_empty(false);
+
+		if(_callback) {
+			// set next data to _word
+			// next get call will receive this value
+			uint8_t next_data = 0;
+			_callback(next_data);
+		}
+
 		return word;
 	}
 
+
 	void set(uint32_t word) override {
-		if(!_cr1.enable()) {
+//		if(!_cr1.enable()) {
+//			return;
+//		}
+
+		if(_isr.read_data_register_not_empty()) {
 			return;
 		}
 
 		bits<0, 8>::of(_word) = word;
-		if(_cr1.rx_not_empty_interrupt_enable()) {
-			_isr.set_read_data_register_not_empty(true);
-		}
+//		if(_cr1.rx_not_empty_interrupt_enable()) {
+		_isr.set_read_data_register_not_empty(true);
+//		}
 	}
 
 	usart_is_reg& _isr;
 	usart_cr1_reg& _cr1;
+	const callback_t& _callback;
 };
 }; //namespace micromachine::system
 

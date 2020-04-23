@@ -31,6 +31,7 @@ private:
 	cpuid_reg _cpuid_reg;
 	generic_io_reg::callback_t _io_reg_callback;
 	usart_tx_reg::callback_t _usart_tx_reg_callback;
+	usart_rx_reg::callback_t _usart_rx_reg_callback;
 	generic_io_reg _generic_io_reg;
 	systick _systick;
 
@@ -86,7 +87,7 @@ public:
 		, _usart_is_reg(_usart_control_reg)
 		, _usart_ic_reg(_usart_is_reg)
 		, _usart_tx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_tx_reg_callback))
-		, _usart_rx_reg(_usart_is_reg, _usart_control_reg)
+		, _usart_rx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_rx_reg_callback))
 		, _usart_ctrl(_usart_control_reg,
 					  _usart_is_reg,
 					  _usart_ic_reg,
@@ -109,7 +110,7 @@ public:
 		, _usart_is_reg(_usart_control_reg)
 		, _usart_ic_reg(_usart_is_reg)
 		, _usart_tx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_tx_reg_callback))
-		, _usart_rx_reg(_usart_is_reg, _usart_control_reg)
+		, _usart_rx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_rx_reg_callback))
 		, _usart_ctrl(_usart_control_reg,
 					  _usart_is_reg,
 					  _usart_ic_reg,
@@ -147,6 +148,14 @@ public:
 
 	void set_usart_tx_callback(usart_tx_reg::callback_t callback) {
 		_usart_tx_reg_callback = std::move(callback);
+	}
+
+	void set_usart_rx_callback(usart_rx_reg::callback_t callback) {
+		_usart_rx_reg_callback = std::move(callback);
+	}
+
+	void set_usart_rx_data(uint8_t data) {
+		_usart_ctrl.rx_push_data(data);
 	}
 
 	void reset(uint32_t program_entry_point) {
