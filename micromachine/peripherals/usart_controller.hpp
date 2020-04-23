@@ -26,14 +26,12 @@ public:
 		, _exception_controller(exception_controller) {}
 
 	void run() {
-		// TODO JJO totally wip
 
 		if (!_control_register.enable()) {
 			return;
 		}
 
 		// consume the current data
-		uint32_t rx_data = _rx_register;
 
 		// clear or set isr if any
 		_interrupt_status_register.set_transmit_data_register_empty(
@@ -45,7 +43,8 @@ public:
 
 		// raise interrupt if any
 		uint32_t isr = _interrupt_status_register;
-		if(isr) {
+		uint32_t cr1 = _control_register;
+		if(isr & cr1) {
 			// TODO find a way to map EXTI_00 to usart:
 			// https://github.com/flavioroth/micromachine/projects/1#card-36544071
 			_exception_controller.raise_external_interrupt(0 /*exception::Type::EXTI_00*/);
@@ -98,6 +97,10 @@ public:
 		_interrupt_clear_register.reset();
 		_rx_register.reset();
 		_tx_register.reset();
+	}
+
+	void rx_push_data(uint8_t data) {
+		_rx_register = data;
 	}
 
 private:
