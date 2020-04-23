@@ -2,9 +2,9 @@
 // Created by fla on 17-5-8.
 //
 
+#include "exception_controller.hpp"
 #include "exception_defs.hpp"
 #include "exception_vector.hpp"
-#include "interrupter.hpp"
 #include "nvic.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
@@ -20,7 +20,7 @@ protected:
 	micromachine::system::shpr2_reg _sph2;
 	shpr3_reg _sph3;
 	micromachine::system::exception_vector _evec;
-	micromachine::system::interrupter _interrupter;
+	micromachine::system::exception_controller _interrupter;
 	micromachine::system::systick syst;
 	SystickTestBench()
 		: _evec(_nvic, _sph2, _sph3)

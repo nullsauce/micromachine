@@ -2,9 +2,9 @@
 #define MICROMACHINE_INTRUCTION_DISPATCHER_HPP
 
 #include "dispatcher.hpp"
+#include "exception_controller.hpp"
 #include "exec.hpp"
 #include "instruction_pair.hpp"
-#include "interrupter.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
@@ -14,7 +14,7 @@ namespace micromachine::system {
 
 class exec_dispatcher : public dispatcher {
 private:
-	interrupter& _interrupter;
+	exception_controller& _exception_controller;
 	core_registers& _core_regs;
 	special_registers& _special_regs;
 	memory& _mem;
@@ -25,7 +25,7 @@ private:
 	bool& _enter_low_power_mode_signal;
 
 public:
-	exec_dispatcher(interrupter& interrupter,
+	exec_dispatcher(exception_controller& exception_controller,
 					core_registers& core_regs,
 					special_registers& special_regs,
 					memory& mem,
@@ -34,7 +34,7 @@ public:
 					event_register& event_register,
 					bool& break_signal,
 					bool& enter_low_power_mode_signal)
-		: _interrupter(interrupter)
+		: _exception_controller(exception_controller)
 		, _core_regs(core_regs)
 		, _special_regs(special_regs)
 		, _mem(mem)
@@ -47,12 +47,12 @@ public:
 private:
 	void invalid_instruction(const uint16_t instr) override {
 		(void)instr;
-		_interrupter.raise_hardfault();
+		_exception_controller.raise_hardfault();
 	}
 
 	void invalid_instruction(const instruction_pair instr) override {
 		(void)instr;
-		_interrupter.raise_hardfault();
+		_exception_controller.raise_hardfault();
 	}
 
 	void dispatch(const nop) override {
@@ -293,7 +293,7 @@ private:
 		exec(instruction, _core_regs);
 	}
 	void dispatch(const svc) override {
-		_interrupter.raise_svcall();
+		_exception_controller.raise_svcall();
 	}
 	void dispatch(const dmb instruction) override {
 		exec(instruction);
@@ -306,11 +306,11 @@ private:
 	}
 	void dispatch(const udf instr) override {
 		// undefined instruction
-		_interrupter.raise_hardfault();
+		_exception_controller.raise_hardfault();
 	}
 	void dispatch(const udfw) override {
 		// undefined instruction
-		_interrupter.raise_hardfault();
+		_exception_controller.raise_hardfault();
 	}
 };
 } // namespace micromachine::system

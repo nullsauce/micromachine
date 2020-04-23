@@ -10,16 +10,16 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_MCU_HPP
 #define MICROMACHINE_MCU_HPP
 
-#include "nvic.hpp"
-#include "systick.hpp"
 #include "cpu.hpp"
+#include "exception_controller.hpp"
 #include "exception_vector.hpp"
 #include "memory/memory.hpp"
-#include "interrupter.hpp"
+#include "nvic.hpp"
 #include "registers/custom/generic_io_reg.hpp"
 #include "registers/system_control/cpuid_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
+#include "systick.hpp"
 
 namespace micromachine::system {
 
@@ -34,7 +34,7 @@ private:
 	systick _systick;
 
 	exception_vector _exception_vector;
-	interrupter _interrupter;
+	exception_controller _exception_controller;
 	memory _memory;
 	cpu _cpu;
 
@@ -68,11 +68,11 @@ public:
 
 	mcu()
 		: _generic_io_reg(_io_reg_callback)
-		, _systick(_interrupter)
+		, _systick(_exception_controller)
 		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg)
-		, _interrupter(_exception_vector)
-		, _memory(_interrupter, generate_system_control_register_map())
-		, _cpu(_memory, _exception_vector, _interrupter) {}
+		, _exception_controller(_exception_vector)
+		, _memory(_exception_controller, generate_system_control_register_map())
+		, _cpu(_memory, _exception_vector, _exception_controller) {}
 
 	mcu(const mcu& other)
 		: _nvic(other._nvic)
@@ -81,11 +81,11 @@ public:
 		, _cpuid_reg(other._cpuid_reg)
 		, _io_reg_callback(other._io_reg_callback)
 		, _generic_io_reg(_io_reg_callback)
-		, _systick(_interrupter, other._systick)
+		, _systick(_exception_controller, other._systick)
 		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, other._exception_vector)
-		, _interrupter(_exception_vector)
-		, _memory(_interrupter, generate_system_control_register_map())
-		, _cpu(_memory, _exception_vector, _interrupter, other._cpu) {}
+		, _exception_controller(_exception_vector)
+		, _memory(_exception_controller, generate_system_control_register_map())
+		, _cpu(_memory, _exception_vector, _exception_controller, other._cpu) {}
 
 	const memory& get_memory() const {
 		return _memory;

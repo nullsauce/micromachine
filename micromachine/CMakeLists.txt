@@ -30,7 +30,7 @@ set(SRCS
 	exec_dispatcher.hpp
 	interworking_brancher.hpp
 	exception_defs.hpp
-	interrupter.hpp
+	exception_controller.hpp
 	dispatcher.hpp
 	disasm.hpp
 	cpu.hpp

@@ -12,9 +12,9 @@
 #include "exec.hpp"
 #include "exec_dispatcher.hpp"
 
+#include "exception_controller.hpp"
 #include "instruction_pair.hpp"
 #include "instructions.hpp"
-#include "interrupter.hpp"
 
 #include "exception_defs.hpp"
 #include "exception_vector.hpp"
@@ -30,7 +30,7 @@ class cpu {
 private:
 	memory& _mem;
 	exception_vector& _exception_vector;
-	interrupter& _interrupter;
+	exception_controller& _exception_controller;
 	special_registers _special_registers;
 	core_registers _core_regs;
 	interworking_brancher _interworking_brancher;
@@ -53,16 +53,16 @@ public:
 
 	cpu& operator=(const cpu& other) = delete;
 
-	cpu(memory& memory, exception_vector& exception_vector, interrupter& interrupter)
+	cpu(memory& memory, exception_vector& exception_vector, exception_controller& exception_controller)
 		: _mem(memory)
 		, _exception_vector(exception_vector)
-		, _interrupter(interrupter)
+		, _exception_controller(exception_controller)
 		, _core_regs(_exec_mode, _special_registers.control_register(), _ctx_switcher)
 		, _interworking_brancher(_exec_mode,
 								 _special_registers.execution_status_register(),
 								 _ctx_switcher,
 								 _core_regs.pc_register())
-		, _exec_dispatcher(_interrupter,
+		, _exec_dispatcher(_exception_controller,
 						   _core_regs,
 						   _special_registers,
 						   _mem,
@@ -83,11 +83,11 @@ public:
 
 	cpu(memory& memory,
 		exception_vector& exception_vector,
-		interrupter& interrupter,
+		exception_controller& exception_controller,
 		const cpu& other)
 		: _mem(memory)
 		, _exception_vector(exception_vector)
-		, _interrupter(interrupter)
+		, _exception_controller(exception_controller)
 		, _special_registers(other._special_registers)
 		, _core_regs(_exec_mode,
 					 _special_registers.control_register(),
@@ -97,7 +97,7 @@ public:
 								 _special_registers.execution_status_register(),
 								 _ctx_switcher,
 								 _core_regs.pc_register())
-		, _exec_dispatcher(_interrupter,
+		, _exec_dispatcher(_exception_controller,
 						   _core_regs,
 						   _special_registers,
 						   _mem,
@@ -154,7 +154,7 @@ public:
 		if(!_special_registers.execution_status_register().thumb_bit_set()) {
 			// Thumb bit not set
 			// all instructions in this state are UNDEFINED .
-			_interrupter.raise_hardfault();
+			_exception_controller.raise_hardfault();
 		}
 
 		// check for asynchronous interrupt
@@ -224,8 +224,8 @@ public:
 		return _debug_instruction_counter;
 	}
 
-	interrupter& interrupt() {
-		return _interrupter;
+	exception_controller& interrupt() {
+		return _exception_controller;
 	}
 
 	execution_mode get_execution_mode() const {
