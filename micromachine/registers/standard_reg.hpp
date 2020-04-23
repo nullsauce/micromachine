@@ -1,7 +1,9 @@
 #ifndef MICROMACHINE_STANDARD_REG_HPP_HPP
 #define MICROMACHINE_STANDARD_REG_HPP_HPP
 
-#include "ireg.hpp"
+#include "registers/ireg.hpp"
+
+namespace micromachine::system {
 
 class standard_reg : public ireg {
 public:
@@ -29,5 +31,7 @@ private:
 protected:
 	uint32_t _word;
 };
+
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_STANDARD_REG_HPP_HPP

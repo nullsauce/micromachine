@@ -34,9 +34,8 @@ set(SRCS
 	dispatcher.hpp
 	disasm.hpp
 	cpu.hpp
-	system.hpp
-	system.cpp
-
+	mcu.hpp
+	mcu.cpp
 )
 
 add_library(micromachine STATIC ${SRCS})

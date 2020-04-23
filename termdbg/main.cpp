@@ -9,9 +9,9 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <cppurses/cppurses_system.hpp>
 
-#include "widgets/MainWindow.hpp"
-#include "system.hpp"
+#include "mcu.hpp"
 #include "programmer.hpp"
+#include "widgets/MainWindow.hpp"
 
 #include <cstdlib>
 
@@ -22,20 +22,20 @@ int main(int argc, const char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	class system system;
+	micromachine::system::mcu mcu;
 
-	programmer::program::ptr program = programmer::load_elf(argv[1], system.get_memory(), false);
+	programmer::program::ptr program = programmer::load_elf(argv[1], mcu.get_memory(), false);
 
 	if(program->is_null()) {
 		fprintf(stderr, "Error: Failed to load the given ELF file %s\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
-	system.reset(program->entry_point());
+	mcu.reset(program->entry_point());
 
 	cppurses::System sys;
 
-	MainWindow main_window(system, program->entry_point());
+	MainWindow main_window(mcu, program->entry_point());
 	main_window.width_policy.min_size(100);
 	cppurses::System::set_initial_focus(&main_window.disasm_view());
 

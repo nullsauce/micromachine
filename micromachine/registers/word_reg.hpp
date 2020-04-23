@@ -10,9 +10,12 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_WORD_REG_HPP
 #define MICROMACHINE_EMU_WORD_REG_HPP
 
-#include "types.hpp"
-#include "registers/ireg.hpp"
 #include "bits.hpp"
+#include "registers/ireg.hpp"
+#include "registers/ireg.hpp"
+#include "types.hpp"
+
+namespace micromachine::system {
 
 class iword_reg : public ireg {
 	public:
@@ -22,7 +25,6 @@ class iword_reg : public ireg {
 			*this = 0U;
 		}
 };
-
 class word_reg : public iword_reg {
 public:
 	using ireg::operator=;
@@ -40,5 +42,6 @@ public:
 	uint32_t _word;
 };
 
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_WORD_REG_HPP

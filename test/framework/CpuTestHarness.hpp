@@ -14,8 +14,8 @@
 #include <cstdint>
 #include <cassert>
 
-#include "system.hpp"
 #include "code_generator.hpp"
+#include "mcu.hpp"
 #include "mini_assembler.hpp"
 
 // Include C++ headers for test harness.

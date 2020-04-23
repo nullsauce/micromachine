@@ -5,6 +5,8 @@
 #ifndef THUMBEMU_INSTRUCTIONS_HPP
 #define THUMBEMU_INSTRUCTIONS_HPP
 
+#include "binops.hpp"
+#include "bits.hpp"
 #include "instruction_pair.hpp"
 #include "registers/core_registers.hpp"
 #include "string_format.hpp"
@@ -12,6 +14,8 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+
+namespace micromachine::system {
 
 template <typename uint_type>
 class generic_instruction {
@@ -930,5 +934,7 @@ struct dmb : public standard_imm4 {
 struct isb : public standard_imm4 {
 	using standard_imm4::standard_imm4;
 };
+
+}
 
 #endif // THUMBEMU_INSTRUCTIONS_HPP

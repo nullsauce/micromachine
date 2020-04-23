@@ -12,7 +12,10 @@
 */
 
 #include "CpuTestFixture.hpp"
-
+#include "apsr_reg.hpp"
+#include "epsr_reg.hpp"
+#include "exception_defs.hpp"
+#include "ipsr_reg.hpp"
 
 #define IPSR_VAL 0x20
 
@@ -31,7 +34,7 @@
 
 namespace {
 
-	void set_apsr_flags(apsr_reg& reg, bool neg, bool zero, bool carry, bool overflow) {
+	void set_apsr_flags(micromachine::system::apsr_reg& reg, bool neg, bool zero, bool carry, bool overflow) {
 		reg.write_neg_flag(neg);
 		reg.write_zero_flag(zero);
 		reg.write_carry_flag(carry);
@@ -49,11 +52,12 @@ MICROMACHINE_TEST_F(mrs, FromAPSR, CpuTestFixture) {
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_APSR);
 
 	uint32_t expectedXpsr = 0;
-	apsr_reg expectedApsr(expectedXpsr);
+	micromachine::system::apsr_reg expectedApsr(expectedXpsr);
 	set_apsr_flags(expectedApsr, true, false, true, false);
 
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
-	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(
+		micromachine::system::exception::EXTI_08);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -62,7 +66,7 @@ MICROMACHINE_TEST_F(mrs, FromAPSR, CpuTestFixture) {
 		.Register(registers::R12).Equals(expectedXpsr)
 		.Register(registers::PC).WasIncrementedBy(4)
 		.APSRFlagsMatches("NzCv")
-		.IPSRExceptionNumberIs(exception::EXTI_08)
+		.IPSRExceptionNumberIs(micromachine::system::exception::EXTI_08)
 		.ThumbBitIsSet();
 }
 
@@ -72,13 +76,14 @@ MICROMACHINE_TEST_F(mrs, FromIAPSR, CpuTestFixture) {
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R0, SYS_IAPSR);
 
 	uint32_t expectedXpsr = 0;
-	apsr_reg expectedApsr(expectedXpsr);
-	ipsr_reg expectedIpsr(expectedXpsr);
+	micromachine::system::apsr_reg expectedApsr(expectedXpsr);
+	micromachine::system::ipsr_reg expectedIpsr(expectedXpsr);
 	set_apsr_flags(expectedApsr, true, false, true, false);
-	expectedIpsr.set_exception_number(exception::EXTI_08);
+	expectedIpsr.set_exception_number(micromachine::system::exception::EXTI_08);
 
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
-	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(
+		micromachine::system::exception::EXTI_08);
 	getCpu().regs().set(registers::R0, 0xFFFFFFFF);
 
 	Step();
@@ -88,7 +93,7 @@ MICROMACHINE_TEST_F(mrs, FromIAPSR, CpuTestFixture) {
 		.Register(registers::R0).Equals(expectedXpsr)
 		.Register(registers::PC).WasIncrementedBy(4)
 		.APSRFlagsMatches("NzCv")
-		.IPSRExceptionNumberIs(exception::EXTI_08)
+		.IPSRExceptionNumberIs(micromachine::system::exception::EXTI_08)
 		.ThumbBitIsSet();
 }
 
@@ -98,14 +103,15 @@ MICROMACHINE_TEST_F(mrs, FromEAPSR, CpuTestFixture) {
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_EAPSR);
 
 	uint32_t expectedXpsr = 0;
-	apsr_reg expectedApsr(expectedXpsr);
-	epsr_reg expectedEpsr(expectedXpsr);
+	micromachine::system::apsr_reg expectedApsr(expectedXpsr);
+	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
 	set_apsr_flags(expectedApsr, true, false, true, false);
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
 
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
-	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(
+		micromachine::system::exception::EXTI_08);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	Step();
@@ -114,7 +120,7 @@ MICROMACHINE_TEST_F(mrs, FromEAPSR, CpuTestFixture) {
 		.Register(registers::R12).Equals(expectedXpsr)
 		.Register(registers::PC).WasIncrementedBy(4)
 		.APSRFlagsMatches("NzCv")
-		.IPSRExceptionNumberIs(exception::EXTI_08)
+		.IPSRExceptionNumberIs(micromachine::system::exception::EXTI_08)
 		.ThumbBitIsSet();
 }
 
@@ -124,14 +130,15 @@ MICROMACHINE_TEST_F(mrs, FromXPSR, CpuTestFixture) {
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_XPSR);
 
 	uint32_t expectedXpsr = 0;
-	apsr_reg expectedApsr(expectedXpsr);
-	ipsr_reg expectedIpsr(expectedXpsr);
-	epsr_reg expectedEpsr(expectedXpsr);
+	micromachine::system::apsr_reg expectedApsr(expectedXpsr);
+	micromachine::system::ipsr_reg expectedIpsr(expectedXpsr);
+	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
 	set_apsr_flags(expectedApsr, true, false, true, false);
-	expectedIpsr.set_exception_number(exception::EXTI_08);
+	expectedIpsr.set_exception_number(micromachine::system::exception::EXTI_08);
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
-	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(
+		micromachine::system::exception::EXTI_08);
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -140,7 +147,7 @@ MICROMACHINE_TEST_F(mrs, FromXPSR, CpuTestFixture) {
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
 		.APSRFlagsMatches("NzCv")
-		.IPSRExceptionNumberIs(exception::EXTI_08)
+		.IPSRExceptionNumberIs(micromachine::system::exception::EXTI_08)
 		.ThumbBitIsSet();
 }
 
@@ -150,10 +157,11 @@ MICROMACHINE_TEST_F(mrs, FromIPSR, CpuTestFixture) {
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_IPSR);
 
 	uint32_t expectedXpsr = 0;
-	ipsr_reg expectedIpsr(expectedXpsr);
-	expectedIpsr.set_exception_number(exception::EXTI_08);
+	micromachine::system::ipsr_reg expectedIpsr(expectedXpsr);
+	expectedIpsr.set_exception_number(micromachine::system::exception::EXTI_08);
 
-	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(
+		micromachine::system::exception::EXTI_08);
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -162,7 +170,7 @@ MICROMACHINE_TEST_F(mrs, FromIPSR, CpuTestFixture) {
 	ExpectThat()
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
-		.IPSRExceptionNumberIs(exception::EXTI_08)
+		.IPSRExceptionNumberIs(micromachine::system::exception::EXTI_08)
 		.APSRFlagsMatches("NzCv")
 		.ThumbBitIsSet();
 }
@@ -175,10 +183,11 @@ MICROMACHINE_TEST_F(mrs, FromEPSR, CpuTestFixture) {
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
 	uint32_t expectedXpsr = 0;
-	epsr_reg expectedEpsr(expectedXpsr);
+	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
-	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(
+		micromachine::system::exception::EXTI_08);
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -187,7 +196,7 @@ MICROMACHINE_TEST_F(mrs, FromEPSR, CpuTestFixture) {
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
 		.APSRFlagsMatches("NzCv")
-		.IPSRExceptionNumberIs(exception::EXTI_08)
+		.IPSRExceptionNumberIs(micromachine::system::exception::EXTI_08)
 		.ThumbBitIsSet();
 }
 
@@ -198,12 +207,13 @@ MICROMACHINE_TEST_F(mrs, FromIEPSR, CpuTestFixture) {
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_IEPSR);
 
 	uint32_t expectedXpsr = 0;
-	ipsr_reg expectedIpsr(expectedXpsr);
-	epsr_reg expectedEpsr(expectedXpsr);
-	expectedIpsr.set_exception_number(exception::EXTI_08);
+	micromachine::system::ipsr_reg expectedIpsr(expectedXpsr);
+	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
+	expectedIpsr.set_exception_number(micromachine::system::exception::EXTI_08);
 	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
 
-	getCpu().special_regs().interrupt_status_register().set_exception_number(exception::EXTI_08);
+	getCpu().special_regs().interrupt_status_register().set_exception_number(
+		micromachine::system::exception::EXTI_08);
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -212,7 +222,7 @@ MICROMACHINE_TEST_F(mrs, FromIEPSR, CpuTestFixture) {
 		.Register(registers::PC).WasIncrementedBy(4)
 		.Register(registers::R12).Equals(expectedXpsr)
 		.APSRFlagsMatches("NzCv")
-		.IPSRExceptionNumberIs(exception::EXTI_08)
+		.IPSRExceptionNumberIs(micromachine::system::exception::EXTI_08)
 		.ThumbBitIsSet();
 }
 

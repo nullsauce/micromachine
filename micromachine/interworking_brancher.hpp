@@ -16,7 +16,10 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/pc_reg.hpp"
 
 #include "binops.hpp"
+#include "bits.hpp"
 #include "types.hpp"
+
+namespace micromachine::system {
 
 class interworking_brancher {
 private:
@@ -59,5 +62,7 @@ public:
 		_pc_reg.branch(address);
 	}
 };
+
+} // namespace micromachine::system
 
 #endif // MICROMACHINE_INTERWORKING_BRANCHER_HPP

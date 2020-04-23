@@ -10,7 +10,8 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_TESTSYSTEM_HPP
 #define MICROMACHINE_TESTSYSTEM_HPP
 
-#include "system.hpp"
+#include "cpu.hpp"
+#include "mcu.hpp"
 
 #include <array>
 
@@ -74,11 +75,11 @@ public:
 		return _system;
 	}
 
-	const cpu& getCpu() const {
+	const micromachine::system::cpu& getCpu() const {
 		return _system.get_cpu();
 	}
 
-	cpu& getCpu() {
+	micromachine::system::cpu& getCpu() {
 		return _system.get_cpu();
 	}
 };

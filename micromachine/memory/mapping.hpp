@@ -12,6 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <string>
 
+namespace micromachine::system {
 class memory_mapping {
 public:
 	memory_mapping(uint8_t* host_ptr, uint32_t start_addr, uint32_t size, const std::string& name = "")
@@ -57,5 +58,6 @@ public:
 	const uint32_t _end;
 	const std::string _name;
 };
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_MEM_MAPPING_HPP

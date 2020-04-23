@@ -22,7 +22,7 @@ and/or distributed without the express permission of Flavio Roth.
 class RegistersView : public cppurses::layout::Vertical {
 private:
 	FoldableWidgetHeader& _header;
-	cpu& _cpu;
+	micromachine::system::cpu& _cpu;
 	uint32_t _previous_values[16];
 	const char* const register_names[16] = {
 		"R0 ","R1 ","R2 ","R3 ",
@@ -35,7 +35,7 @@ public:
 
 	cppurses::Text_display& regs_text{this->make_child<cppurses::Text_display>()};
 
-	RegistersView(cpu& cpu)
+	RegistersView(micromachine::system::cpu& cpu)
 		: _header(make_child<FoldableWidgetHeader>("Registers"))
 		, _cpu(cpu) {
 		memset(_previous_values, 0, sizeof(_previous_values));

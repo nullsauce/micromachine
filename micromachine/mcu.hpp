@@ -7,24 +7,24 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_SYSTEM_HPP
-#define MICROMACHINE_SYSTEM_HPP
+#ifndef MICROMACHINE_MCU_HPP
+#define MICROMACHINE_MCU_HPP
 
 #include "nvic.hpp"
 #include "systick.hpp"
-
 #include "cpu.hpp"
 #include "exception_vector.hpp"
 #include "memory/memory.hpp"
-
+#include "interrupter.hpp"
 #include "registers/custom/generic_io_reg.hpp"
 #include "registers/system_control/cpuid_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
 
-class system {
-private:
+namespace micromachine::system {
 
+class mcu {
+private:
 	nvic _nvic;
 	shpr2_reg _shpr2_reg;
 	shpr3_reg _shpr3_reg;
@@ -66,7 +66,7 @@ private:
 public:
 	cpu& operator=(const cpu& other) = delete;
 
-	system()
+	mcu()
 		: _generic_io_reg(_io_reg_callback)
 		, _systick(_interrupter)
 		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg)
@@ -74,7 +74,7 @@ public:
 		, _memory(_interrupter, generate_system_control_register_map())
 		, _cpu(_memory, _exception_vector, _interrupter) {}
 
-	system(const system& other)
+	mcu(const mcu& other)
 		: _nvic(other._nvic)
 		, _shpr2_reg(other._shpr2_reg)
 		, _shpr3_reg(other._shpr3_reg)
@@ -120,8 +120,9 @@ public:
 		_cpu.reset(program_entry_point);
 	}
 
-
 	cpu::step_result step();
 };
 
-#endif // MICROMACHINE_SYSTEM_HPP
+}
+
+#endif // MICROMACHINE_MCU_HPP

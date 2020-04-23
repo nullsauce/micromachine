@@ -10,7 +10,9 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_REGISTERS_HPP
 #define MICROMACHINE_REGISTERS_HPP
 
-namespace registers {
+#include "types.hpp"
+
+namespace micromachine::system::registers {
 	static constexpr reg_idx R0 = 0;
 	static constexpr reg_idx R1 = 1;
 	static constexpr reg_idx R2 = 2;

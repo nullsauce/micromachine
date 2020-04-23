@@ -8,25 +8,27 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "CpuTestFixture.hpp"
+#include "core_registers.hpp"
+#include "exception_defs.hpp"
 
 class CpuResetTest : public CpuTestFixture {
 protected:
 	virtual void SetUp() override {
 		CpuTestFixture::SetUp();
-		for (reg_idx regIdx = 0; regIdx < core_registers::NUM_GP_REGS; regIdx++) {
+		for (reg_idx regIdx = 0; regIdx < micromachine::system::core_registers::NUM_GP_REGS; regIdx++) {
 			getCpu().regs().set(regIdx, 0x11111111U * (1U + regIdx));
 		}
 	}
 };
 
 MICROMACHINE_TEST_F(ResetBehavior, GeneralPurposeRegistersAreSetTozero, CpuResetTest) {
-	for (reg_idx regIdx = 0; regIdx < core_registers::NUM_GP_REGS; regIdx++) {
+	for (reg_idx regIdx = 0; regIdx < micromachine::system::core_registers::NUM_GP_REGS; regIdx++) {
 		ExpectThat().Register(regIdx).Equals(0x11111111U * (1U + regIdx));
 	}
 
 	getSystem().reset(0);
 
-	for (reg_idx regIdx = 0; regIdx < core_registers::NUM_GP_REGS; regIdx++) {
+	for (reg_idx regIdx = 0; regIdx < micromachine::system::core_registers::NUM_GP_REGS; regIdx++) {
 		ExpectThat().Register(regIdx).Equals(0);
 	}
 }
@@ -63,7 +65,7 @@ MICROMACHINE_TEST_F(ResetBehavior, PendingExternalInterruptIsCleared, CpuResetTe
 	getCpu().interrupt().enable_external_interrupt(7);
 	getCpu().interrupt().raise_external_interrupt(7);
 	Step();
-	ExpectThat().ExceptionHandlerReached(exception::EXTI_07);
+	ExpectThat().ExceptionHandlerReached(micromachine::system::exception::EXTI_07);
 	getSystem().reset(0x20);
 	ExpectThat().NoInterruptIsActiveOrPending();
 }
@@ -72,20 +74,21 @@ MICROMACHINE_TEST_F(ResetBehavior, ActiveExternalInterruptIsCleared, CpuResetTes
 	getCpu().interrupt().enable_external_interrupt(7);
 	getCpu().interrupt().raise_external_interrupt(7);
 	Step();
-	ExpectThat().ExceptionHandlerReached(exception::EXTI_07);
+	ExpectThat().ExceptionHandlerReached(micromachine::system::exception::EXTI_07);
 	getSystem().reset(0x20);
 	ExpectThat().NoInterruptIsActiveOrPending();
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, InterruptPrioritiesAreReset, CpuResetTest) {
-	getCpu().interrupt().set_exception_priority<exception::EXTI_07>(3);
-	getCpu().interrupt().set_exception_priority<exception::SVCALL>(1);
+	getCpu().interrupt().set_exception_priority<micromachine::system::exception::EXTI_07>(3);
+	getCpu().interrupt().set_exception_priority<micromachine::system::exception::SVCALL>(1);
 	getSystem().reset(0x20);
-	EXPECT_EQ(0U, getCpu().interrupt().exception_priority<exception::EXTI_07>());
-	EXPECT_EQ(0U, getCpu().interrupt().exception_priority<exception::SVCALL>());
-	EXPECT_EQ(exception::RESET_PRIORITY, getCpu().interrupt().exception_priority<exception::RESET>());
-	EXPECT_EQ(exception::NMI_PRIORITY, getCpu().interrupt().exception_priority<exception::NMI>());
-	EXPECT_EQ(exception::HARDFAULT_PRIORITY, getCpu().interrupt().exception_priority<exception::HARDFAULT>());
+	EXPECT_EQ(0U, getCpu().interrupt().exception_priority<micromachine::system::exception::EXTI_07>());
+	EXPECT_EQ(0U, getCpu().interrupt().exception_priority<micromachine::system::exception::SVCALL>());
+	EXPECT_EQ(micromachine::system::exception::RESET_PRIORITY, getCpu().interrupt().exception_priority<micromachine::system::exception::RESET>());
+	EXPECT_EQ(micromachine::system::exception::NMI_PRIORITY, getCpu().interrupt().exception_priority<micromachine::system::exception::NMI>());
+	EXPECT_EQ(
+		micromachine::system::exception::HARDFAULT_PRIORITY, getCpu().interrupt().exception_priority<micromachine::system::exception::HARDFAULT>());
 	ExpectThat().NoInterruptIsActiveOrPending();
 }
 

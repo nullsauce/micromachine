@@ -11,11 +11,10 @@
 #include <type_traits>
 
 #include "interrupter.hpp"
+#include "registers/ireg.hpp"
 #include "mapping.hpp"
 
-
-#define memory_hardfault(reason_fmt,...)\
-	_interrupter.raise_memory_hardfault();
+namespace micromachine::system {
 
 class memory {
 public:
@@ -142,14 +141,14 @@ private:
 		}
 
 		if(!is_aligned<access_t>(address)) {
-			memory_hardfault("unaligned memory access. write word at 0x%08X\n", address);
+			_interrupter.raise_memory_hardfault();
 			return false;
 		}
 
 		memory_mapping* region = find_region(address);
 
 		if(!region) {
-			memory_hardfault("invalid memory access (unmapped) when writing word at 0x%08X\n", address);
+			_interrupter.raise_memory_hardfault();
 			return false;
 		}
 
@@ -175,16 +174,15 @@ private:
 		}
 
 		if(!is_aligned<access_t>(address)) {
-			memory_hardfault("unaligned memory access. read word at 0x%08X\n", address);
+			_interrupter.raise_memory_hardfault();
 			ok = false;
 			return 0;
 		}
 
-		precond(is_aligned<access_t>(address),"unaligned memory access. read word at 0x%08X\n", address);
 		const memory_mapping* region = find_const_region(address);
 
 		if(!region) {
-			memory_hardfault("invalid memory access (unmapped) when reading word at 0x%08X\n", address);
+			_interrupter.raise_memory_hardfault();
 			ok = false;
 			return 0;
 		}
@@ -219,5 +217,6 @@ private:
 
 
 };
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_MEMORY_HPP

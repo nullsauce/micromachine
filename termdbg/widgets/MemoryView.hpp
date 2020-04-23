@@ -10,6 +10,7 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_MEMORYVIEW_HPP
 #define MICROMACHINE_EMU_MEMORYVIEW_HPP
 
+#include "mapping.hpp"
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/widgets/text_display.hpp>
 #include <memory/mapping.hpp>

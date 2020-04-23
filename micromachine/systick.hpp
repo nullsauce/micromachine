@@ -13,6 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "interrupter.hpp"
 #include "registers/system_control/systick_control_reg.hpp"
 
+namespace micromachine::system {
 class systick {
 private:
 	interrupter& _interrupter;
@@ -79,7 +80,8 @@ public:
 		return _calib_value;
 	}
 
-
 };
+
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_TIMER_HPP

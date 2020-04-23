@@ -12,9 +12,12 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <cstdint>
 
+namespace micromachine::system {
+
 struct exception_return_handler {
 	virtual void exception_return(uint32_t ret_address) = 0;
 };
 
+} // namespace micromachine::system
 
 #endif //MICROMACHINE_EMU_EXCEPTION_RETURN_HANDLER_HPP
