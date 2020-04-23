@@ -11,8 +11,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "exception/exception_return_handler.hpp"
 #include "execution/execution_mode.hpp"
-#include "registers/epsr_reg.hpp"
-#include "registers/pc_reg.hpp"
+#include "registers/core_registers/pc_reg.hpp"
+#include "registers/special_registers/epsr_reg.hpp"
 
 #include "helpers/binops.hpp"
 #include "types/bits.hpp"

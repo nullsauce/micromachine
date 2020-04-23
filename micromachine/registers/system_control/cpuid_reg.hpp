@@ -9,7 +9,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "registers/word_reg.hpp"
+#include "registers/memory_mapped_reg.hpp"
 #include "types/types.hpp"
 
 namespace micromachine::system {

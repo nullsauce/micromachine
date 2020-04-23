@@ -4,15 +4,12 @@
 
 #pragma once
 
-#include "control_reg.hpp"
-#include "exception/exception_return_handler.hpp"
+#include "../../exception/exception_return_handler.hpp"
+#include "../registers.hpp"
+#include "../standard_reg.hpp"
 #include "pc_reg.hpp"
-#include "registers/pc_reg.hpp"
-#include "registers/registers.hpp"
-#include "registers/sp_reg.hpp"
-#include "registers/standard_reg.hpp"
+#include "registers/special_registers/control_reg.hpp"
 #include "sp_reg.hpp"
-#include "standard_reg.hpp"
 
 namespace micromachine::system {
 

@@ -19,8 +19,8 @@
 #include "exception/exception_vector.hpp"
 #include "execution/interworking_brancher.hpp"
 #include "memory/memory.hpp"
-#include "registers/core_registers.hpp"
-#include "registers/special_registers.hpp"
+#include "registers/core_registers/core_registers.hpp"
+#include "registers/special_registers/special_registers.hpp"
 #include "types/types.hpp"
 
 namespace micromachine::system {

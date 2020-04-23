@@ -9,8 +9,9 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "standard_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/bits.hpp"
+
 namespace micromachine::system {
 
 class primask_reg : public standard_reg {

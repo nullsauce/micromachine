@@ -40,21 +40,21 @@ set(SRCS
 	registers/system_control/shpr2_reg.hpp
 	registers/system_control/shpr3_reg.hpp
 	registers/system_control/systick_control_reg.hpp
-	registers/apsr_reg.hpp
-	registers/control_reg.hpp
-	registers/core_registers.hpp
-	registers/epsr_reg.hpp
+	registers/special_registers/apsr_reg.hpp
+	registers/special_registers/control_reg.hpp
+	registers/core_registers/core_registers.hpp
+	registers/special_registers/epsr_reg.hpp
 	registers/event_register.hpp
-	registers/ipsr_reg.hpp
+	registers/special_registers/ipsr_reg.hpp
 	registers/iregister.hpp
-	registers/pc_reg.hpp
-	registers/primask_reg.hpp
+	registers/core_registers/pc_reg.hpp
+	registers/special_registers/primask_reg.hpp
 	registers/registers.hpp
-	registers/sp_reg.hpp
-	registers/special_registers.hpp
+	registers/core_registers/sp_reg.hpp
+	registers/special_registers/special_registers.hpp
 	registers/standard_reg.hpp
-	registers/word_reg.hpp
-	registers/xpsr_reg.hpp
+	registers/memory_mapped_reg.hpp
+	registers/special_registers/xpsr_reg.hpp
 	types/bits.hpp
 	types/types.hpp
 	cpu.hpp
