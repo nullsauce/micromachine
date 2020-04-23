@@ -87,7 +87,7 @@ public:
 
 
 		for(size_t interrupt_number : interrupts_of_interest) {
-			const exception::Type current_active = _cpu.regs().interrupt_status_register().exception_num();
+			const exception::Type current_active = _cpu.special_regs().interrupt_status_register().exception_num();
 			const exception_state& state = _cpu.exceptions().at(interrupt_number);
 			uint32_t vector_table_offset = sizeof(uint32_t) * state.number();
 			uint32_t handler_address = _cpu.mem().read32(vector_table_offset) & ~1;
