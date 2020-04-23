@@ -234,7 +234,7 @@ public:
 	}
 
 	/// Gets a mutable reference to the two priority bits for a given external interrupt
-	/// \tparam exti_number External interrupter number [0 - 15]
+	/// \tparam exti_number External interrupt number [0 - 15]
 	/// \return a mutable reference to the two priority bits of this external interrupt
 	template<size_t exti_number>
 	typename nvic_ipr_reg::bits_for<exti_number % 4>::template integer_slice<uint32_t> priority_bits_for() {
@@ -242,7 +242,7 @@ public:
 	}
 
 	/// Gets an immutable reference to the two priority bits for a given external interrupt
-	/// \tparam exti_number External interrupter number [0 - 15]
+	/// \tparam exti_number External exception_controller number [0 - 15]
 	/// \return an immutable reference to the two priority bits of this external interrupt
 	template<size_t exti_number>
 	typename nvic_ipr_reg::bits_for<exti_number % 4>::template const_integer_slice<uint32_t> priority_bits_for() const {

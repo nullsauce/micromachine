@@ -10,30 +10,29 @@ and/or distributed without the express permission of Flavio Roth.
 #ifndef MICROMACHINE_EMU_TIMER_HPP
 #define MICROMACHINE_EMU_TIMER_HPP
 
-#include "interrupter.hpp"
+#include "exception_controller.hpp"
 #include "registers/system_control/systick_control_reg.hpp"
 
 namespace micromachine::system {
 class systick {
 private:
-	interrupter& _interrupter;
+	exception_controller& _exception_controller;
 	systick_control_reg _control;
 	systick_current_value_reg _current_value;
 	systick_reload_value_reg _reload_value;
 	systick_calib_value_reg _calib_value;
 
 public:
-
-	systick(interrupter& interrupter, const systick& existing_state)
-		: _interrupter(interrupter)
+	systick(exception_controller& exception_controller, const systick& existing_state)
+		: _exception_controller(exception_controller)
 		, _control(existing_state._control)
 		, _current_value(existing_state._current_value)
 		, _reload_value(existing_state._reload_value)
 		, _calib_value(existing_state._calib_value)
 	{}
 
-	systick(interrupter& interrupter)
-		: _interrupter(interrupter)
+	systick(exception_controller& exception_controller)
+		: _exception_controller(exception_controller)
 		, _current_value(_control)
 	{}
 
@@ -59,7 +58,7 @@ public:
 			_current_value.decrement();
 			if(0U == _current_value) {
 				_control.set_count_flag(true);
-				_interrupter.raise_systick();
+				_exception_controller.raise_systick();
 			}
 		}
 	}

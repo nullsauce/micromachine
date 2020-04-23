@@ -3,8 +3,8 @@
 //
 
 #include "exception_vector.hpp"
+#include "exception_controller.hpp"
 #include "exception_defs.hpp"
-#include "interrupter.hpp"
 #include "nvic.hpp"
 #include <gtest/gtest.h>
 
@@ -16,7 +16,7 @@ protected:
 	micromachine::system::shpr2_reg _sph2;
 	shpr3_reg _sph3;
 	micromachine::system::exception_vector _evec;
-	micromachine::system::interrupter _interrupter;
+	micromachine::system::exception_controller _interrupter;
 	ExceptionVectorTestBench()
 		: _evec(_nvic, _sph2, _sph3)
 		, _interrupter(_evec)
