@@ -14,7 +14,10 @@ and/or distributed without the express permission of Flavio Roth.
 namespace micromachine::system {
 class memory_mapping {
 public:
-	memory_mapping(uint8_t* host_ptr, uint32_t start_addr, uint32_t size, const std::string& name = "")
+	memory_mapping(uint8_t* host_ptr,
+				   uint32_t start_addr,
+				   uint32_t size,
+				   const std::string& name = "")
 		: _host_mem(host_ptr)
 		, _start(start_addr)
 		, _end(start_addr + size)
@@ -42,7 +45,7 @@ public:
 
 	void* translate(uint32_t address) const {
 		if(address < start()) {
-			fprintf(stderr,"invalid address 0x%08X\n", address);
+			fprintf(stderr, "invalid address 0x%08X\n", address);
 			return nullptr;
 		}
 		return _host_mem + (address - start());

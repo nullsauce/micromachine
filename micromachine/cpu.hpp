@@ -52,7 +52,9 @@ public:
 
 	cpu& operator=(const cpu& other) = delete;
 
-	cpu(memory& memory, exception_vector& exception_vector, exception_controller& exception_controller)
+	cpu(memory& memory,
+		exception_vector& exception_vector,
+		exception_controller& exception_controller)
 		: _mem(memory)
 		, _exception_vector(exception_vector)
 		, _exception_controller(exception_controller)

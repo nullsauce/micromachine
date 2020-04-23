@@ -1,16 +1,14 @@
 #pragma once
 
-#include "registers/word_reg.hpp"
-#include "registers/word_reg.hpp"
-#include "bits.hpp"
 #include "binops.hpp"
+#include "bits.hpp"
+#include "registers/word_reg.hpp"
 #include "types.hpp"
 
 namespace micromachine::system {
 
 class systick_control_reg : public memory_mapped_reg {
 public:
-
 	static constexpr uint32_t SYST_CSR = 0xE000E010;
 	static constexpr uint32_t SYST_RVR = 0xE000E014;
 	static constexpr uint32_t SYST_CVR = 0xE000E018;
@@ -76,13 +74,14 @@ private:
 class systick_reload_value_reg : public memory_mapped_reg {
 public:
 	using memory_mapped_reg::operator=;
+
 private:
 	void set(uint32_t word) override {
-		bits<0,24>::of(_word) = word;
+		bits<0, 24>::of(_word) = word;
 	}
 
 	uint32_t get() const override {
-		return bits<0,24>::of(_word);
+		return bits<0, 24>::of(_word);
 	}
 };
 class systick_current_value_reg : public memory_mapped_reg {
@@ -90,11 +89,10 @@ public:
 	using memory_mapped_reg::operator=;
 	systick_current_value_reg(systick_control_reg& control_reg)
 		: memory_mapped_reg()
-		, _control_reg(control_reg) {
-	}
+		, _control_reg(control_reg) {}
 	// this setter does NOT clear the register
 	void set_internal(uint32_t word) {
-		bits<0,24>::of(_word) = word;
+		bits<0, 24>::of(_word) = word;
 	}
 
 	void decrement() {
@@ -104,12 +102,12 @@ public:
 private:
 	void set(uint32_t) override {
 		// Writing to SYST_CVR clears both the register and the COUNTFLAG status bit to zero
-		bits<0,24>::of(_word).clear();
+		bits<0, 24>::of(_word).clear();
 		_control_reg.set_count_flag(false);
 	}
 
 	uint32_t get() const override {
-		return bits<0,24>::of(_word);
+		return bits<0, 24>::of(_word);
 	}
 
 protected:
@@ -121,7 +119,7 @@ public:
 	static constexpr size_t SKEW_BIT = 30;
 	static constexpr size_t NOREF_BIT = 31;
 
-	using tenms_bits = bits<0,24>;
+	using tenms_bits = bits<0, 24>;
 	using skew_bit = bits<SKEW_BIT>;
 	using noref_bit = bits<NOREF_BIT>;
 

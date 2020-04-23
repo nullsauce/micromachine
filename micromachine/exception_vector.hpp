@@ -9,14 +9,14 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
+#include "exception_defs.hpp"
+#include "nvic.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
-#include "nvic.hpp"
-#include "exception_defs.hpp"
 
 #include <algorithm>
-#include <memory>
 #include <list>
+#include <memory>
 
 namespace micromachine::system {
 
@@ -28,8 +28,7 @@ private:
 public:
 	exception_state(exception::Type number)
 		: _active(false)
-		, _number(number)
-	{}
+		, _number(number) {}
 
 	virtual exception::priority_t priority() const = 0;
 	virtual void set_priority(exception::priority_t priority) = 0;
@@ -71,16 +70,15 @@ public:
 		set_enable(other.is_enabled());
 	}
 };
+
 class internal_exception_state : public exception_state {
 private:
 	bool _pending;
 
 public:
-
 	internal_exception_state(exception::Type number)
 		: exception_state(number)
-		, _pending(false)
-	{}
+		, _pending(false) {}
 
 	bool is_pending() const override {
 		return _pending;
@@ -98,9 +96,9 @@ public:
 	void set_enable(bool enable) override {
 		precond(false, "Can't disable an internal exception");
 	}
-
 };
-template<int8_t Priority>
+
+template <int8_t Priority>
 class fixed_priority_exception_state : public internal_exception_state {
 public:
 	using internal_exception_state::internal_exception_state;
@@ -113,6 +111,7 @@ public:
 		precond(false, "Can't set priority of a fixed priority exception");
 	}
 };
+
 class shpr2_exception_state : public internal_exception_state {
 protected:
 	shpr2_reg& _reg;
@@ -120,10 +119,9 @@ protected:
 public:
 	shpr2_exception_state(exception::Type number, shpr2_reg& reg)
 		: internal_exception_state(number)
-		, _reg(reg)
-	{}
-
+		, _reg(reg) {}
 };
+
 class shpr3_exception_state : public internal_exception_state {
 protected:
 	shpr3_reg& _reg;
@@ -131,9 +129,9 @@ protected:
 public:
 	shpr3_exception_state(exception::Type number, shpr3_reg& reg)
 		: internal_exception_state(number)
-		, _reg(reg)
-	{}
+		, _reg(reg) {}
 };
+
 class pri11_exception_state : public shpr2_exception_state {
 public:
 	using shpr2_exception_state::shpr2_exception_state;
@@ -147,6 +145,7 @@ public:
 		_reg.pri11() = (uint8_t)priority;
 	}
 };
+
 class pri14_exception_state : public shpr3_exception_state {
 public:
 	using shpr3_exception_state::shpr3_exception_state;
@@ -159,6 +158,7 @@ public:
 		_reg.pri14() = (uint8_t)priority;
 	}
 };
+
 class pri15_exception_state : public shpr3_exception_state {
 public:
 	using shpr3_exception_state::shpr3_exception_state;
@@ -171,15 +171,16 @@ public:
 		_reg.pri15() = (uint8_t)priority;
 	}
 };
-template<size_t ExternalInterruptNumber>
+
+template <size_t ExternalInterruptNumber>
 class nvic_based_exception_state : public exception_state {
 private:
 	nvic& _nvic;
+
 public:
 	nvic_based_exception_state(exception::Type number, nvic& nvic)
 		: exception_state(number)
-		, _nvic(nvic)
-	{}
+		, _nvic(nvic) {}
 
 	exception::priority_t priority() const override {
 		return _nvic.priority_bits_for<ExternalInterruptNumber>();
@@ -205,11 +206,11 @@ public:
 		_nvic.enable_bit_for<ExternalInterruptNumber>() = enable;
 	}
 };
+
 class non_implemented_exception_state : public fixed_priority_exception_state<4> {
 public:
 	non_implemented_exception_state()
-		: fixed_priority_exception_state(exception::INVALID)
-	{}
+		: fixed_priority_exception_state(exception::INVALID) {}
 
 	exception::priority_t priority() const override {
 		// not supported
@@ -222,11 +223,14 @@ public:
 		precond(false, "Can't set priority of an unimplemented exception");
 	}
 };
+
 class exception_vector {
 public:
-
 	// copy constructor
-	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, const exception_vector& existing_state)
+	exception_vector(nvic& nvic,
+					 shpr2_reg& sph2,
+					 shpr3_reg& sph3,
+					 const exception_vector& existing_state)
 		: exception_vector(nvic, sph2, sph3) {
 		// Initializes everything as usual.
 		// Then copy the exception states from the existing state
@@ -260,41 +264,38 @@ public:
 		, _ext_interrupt_13(exception::EXTI_13, nvic)
 		, _ext_interrupt_14(exception::EXTI_14, nvic)
 		, _ext_interrupt_15(exception::EXTI_15, nvic)
-		, _indexed {{
-			_used_for_sp,
-			_reset,
-			_nmi,
-			_hard_fault,
-			_reserved_0,
-			_reserved_1,
-			_reserved_2,
-			_reserved_3,
-			_reserved_4,
-			_reserved_5,
-			_reserved_6,
-			_svc,
-			_reserved_7,
-			_reserved_8,
-			_pend_sv,
-			_sys_tick,
-			_ext_interrupt_0,
-			_ext_interrupt_1,
-			_ext_interrupt_2,
-			_ext_interrupt_3,
-			_ext_interrupt_4,
-			_ext_interrupt_5,
-			_ext_interrupt_6,
-			_ext_interrupt_7,
-			_ext_interrupt_8,
-			_ext_interrupt_9,
-			_ext_interrupt_10,
-			_ext_interrupt_11,
-			_ext_interrupt_12,
-			_ext_interrupt_13,
-			_ext_interrupt_14,
-			_ext_interrupt_15
-		}}
-	{}
+		, _indexed{{_used_for_sp,
+					_reset,
+					_nmi,
+					_hard_fault,
+					_reserved_0,
+					_reserved_1,
+					_reserved_2,
+					_reserved_3,
+					_reserved_4,
+					_reserved_5,
+					_reserved_6,
+					_svc,
+					_reserved_7,
+					_reserved_8,
+					_pend_sv,
+					_sys_tick,
+					_ext_interrupt_0,
+					_ext_interrupt_1,
+					_ext_interrupt_2,
+					_ext_interrupt_3,
+					_ext_interrupt_4,
+					_ext_interrupt_5,
+					_ext_interrupt_6,
+					_ext_interrupt_7,
+					_ext_interrupt_8,
+					_ext_interrupt_9,
+					_ext_interrupt_10,
+					_ext_interrupt_11,
+					_ext_interrupt_12,
+					_ext_interrupt_13,
+					_ext_interrupt_14,
+					_ext_interrupt_15}} {}
 
 	size_t highest_accepted_exception_number() const {
 		return _indexed.size() - 1;
@@ -303,8 +304,6 @@ public:
 	size_t supported_exception_count() const {
 		return _indexed.size();
 	}
-
-
 
 private:
 	non_implemented_exception_state _used_for_sp;
@@ -345,17 +344,16 @@ private:
 	std::array<std::reference_wrapper<exception_state>, 32> _indexed;
 
 public:
-
 	const exception_state& at(size_t index) const {
 		return _indexed.at(index);
 	}
 
-	template<exception::Type Ex>
+	template <exception::Type Ex>
 	exception_state& interrupt_state() {
 		return _indexed[Ex];
 	}
 
-	template<exception::Type Ex>
+	template <exception::Type Ex>
 	const exception_state& interrupt_state() const {
 		return _indexed[Ex];
 	}
@@ -377,15 +375,21 @@ public:
 	}
 
 	size_t active_count() const {
-		return std::count_if(std::begin(_indexed), std::end(_indexed), [](const exception_state& e){ return e.is_active(); });
+		return std::count_if(std::begin(_indexed),
+							 std::end(_indexed),
+							 [](const exception_state& e) { return e.is_active(); });
 	}
 
 	bool any_active() const {
-		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const exception_state& e){ return e.is_active(); });
+		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const exception_state& e) {
+			return e.is_active();
+		});
 	}
 
 	bool any_pending() const {
-		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const exception_state& e){ return e.is_pending(); });
+		return std::any_of(std::begin(_indexed), std::end(_indexed), [](const exception_state& e) {
+			return e.is_pending();
+		});
 	}
 
 	exception_state* top_pending() {
@@ -393,17 +397,20 @@ public:
 		// Find the pending exception with the lowest priority
 		for(exception_state& e : _indexed) {
 			// ignore exception that are not pending
-			if(!e.is_pending()) continue;
+			if(!e.is_pending())
+				continue;
 
 			// ignore exception that are not enabled
-			if(!e.is_enabled()) continue;
+			if(!e.is_enabled())
+				continue;
 
 			// select any exception with lower priority value
 			if(top == nullptr || e.priority() < top->priority()) {
 				top = &e;
 			} else if(e.priority() == top->priority()) {
-				// When two pending exceptions have the same group priority, the lower pending exception number has
-				// priority over the higher pending number as part of the priority precedence rule
+				// When two pending exceptions have the same group priority, the lower pending
+				// exception number has priority over the higher pending number as part of the
+				// priority precedence rule
 				if(e.number() < top->number()) {
 					top = &e;
 				}
@@ -417,6 +424,5 @@ public:
 			e.reset();
 		}
 	}
-
 };
 } // namespace micromachine::system
