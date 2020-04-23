@@ -94,7 +94,7 @@ public:
 	}
 
 	void set_enable(bool enable) override {
-		precond(false, "Can't disable an internal exception");
+		micromachine_fail("Can't disable an internal exception");
 	}
 };
 
@@ -108,7 +108,7 @@ public:
 
 	void set_priority(exception::priority_t priority) override {
 		// not supported
-		precond(false, "Can't set priority of a fixed priority exception");
+		micromachine_fail("Can't set priority of a fixed priority exception");
 	}
 };
 
@@ -141,7 +141,7 @@ public:
 	}
 
 	void set_priority(exception::priority_t priority) override {
-		precond(priority > -1 && priority < 4, "priority not withing range");
+		micromachine_check(priority > -1 && priority < 4, "priority not withing range");
 		_reg.pri11() = (uint8_t)priority;
 	}
 };
@@ -214,13 +214,13 @@ public:
 
 	exception::priority_t priority() const override {
 		// not supported
-		precond(false, "Can't get priority of an unimplemented exception");
+		micromachine_fail("Can't get priority of an unimplemented exception");
 		return 126;
 	}
 
 	void set_priority(exception::priority_t priority) override {
 		// not supported
-		precond(false, "Can't set priority of an unimplemented exception");
+		micromachine_fail("Can't set priority of an unimplemented exception");
 	}
 };
 

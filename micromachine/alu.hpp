@@ -21,7 +21,7 @@ bool lsl_c(u_type& value, uint32_t offset, bool carry_in) {
 	// offset = offset & 31;
 	const size_t binsize = binops::binsize(value);
 
-	precond(offset > 0, "shift offset must be greater than 0");
+	micromachine_check(offset > 0, "shift offset must be greater than 0");
 
 	bool carry = false;
 
@@ -51,7 +51,7 @@ bool lsr_c(u_type& value, uint32_t offset, bool carry_in) {
 		return carry_in;
 	}
 
-	precond(offset > 0, "shift offset must be greater than 0");
+	micromachine_check(offset > 0, "shift offset must be greater than 0");
 
 	// If n is 32 or more, then all the bits in the result are cleared to 0.
 	// If n is 33 or more and the carry flag is updated, it is updated to 0.
@@ -87,7 +87,7 @@ bool asr_c(u_type& value, uint32_t offset, bool carry_in) {
 		return carry_in;
 	}
 
-	precond(offset > 0, "shift offset must be greater than 0");
+	micromachine_check(offset > 0, "shift offset must be greater than 0");
 	const size_t binsize = binops::binsize(value);
 	const bool msb = binops::get_bit(value, binsize - 1U);
 

@@ -51,7 +51,7 @@ public:
 	}
 
 	uint32_t get(reg_idx i) const {
-		precond(i < NUM_CORE_REGS, "register index too large %zu", i);
+		micromachine_check(i < NUM_CORE_REGS, "register index too large %zu", i);
 		if(i < NUM_GP_REGS) {
 			return _general_purpose_registers[i];
 		} else if(i == registers::SP) {
@@ -61,12 +61,12 @@ public:
 		} else if(i == registers::PC) {
 			return _pc;
 		} else {
-			precond_fail("invalid register index %lu", i);
+			micromachine_fail("invalid register index %lu", i);
 		}
 	}
 
 	void set(reg_idx i, uint32_t val) {
-		precond(i < NUM_CORE_REGS, "register index too large");
+		micromachine_check(i < NUM_CORE_REGS, "register index too large");
 		if(i < NUM_GP_REGS) {
 			_general_purpose_registers[i] = val;
 		} else if(i == registers::SP) {
@@ -76,7 +76,7 @@ public:
 		} else if(i == registers::PC) {
 			_pc = val;
 		} else {
-			precond_fail("invalid register index %lu", i);
+			micromachine_fail("invalid register index %lu", i);
 		}
 	}
 

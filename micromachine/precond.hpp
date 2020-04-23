@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <exception>
 
-#define precond_fail(message, ...)                                                                 \
+#define micromachine_fail(message, ...)                                                                 \
 	{                                                                                              \
 		fprintf(stderr, "where: %s line %d\n", __FILE__, __LINE__);                                \
 		fprintf(stderr, message, ##__VA_ARGS__);                                                   \
@@ -15,13 +15,13 @@
 	}
 
 #ifdef MICROMACHINE_ENABLE_PRECOND_CHECKS
-#define precond(cond, message, ...)                                                                \
+#define micromachine_check(cond, message, ...)                                                                \
 	{                                                                                              \
 		if(!(cond)) {                                                                              \
-			precond_fail("FATAL: " message "\n", ##__VA_ARGS__)                                    \
+			micromachine_fail("FATAL: " message "\n", ##__VA_ARGS__)                                    \
 		}                                                                                          \
 	}
 
 #else
-#define precond(...) (void)0
+#define micromachine_check(...) (void)0
 #endif

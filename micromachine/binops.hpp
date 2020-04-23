@@ -54,7 +54,7 @@ static u_type rlshift(const u_type& source, size_t right_offset, size_t left_off
 
 template <typename u_type>
 static bool get_bit(const u_type& source, size_t bit_offset) {
-	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
+	micromachine_check(bit_offset < binsize<u_type>(), "offset is outside destination bits");
 	return source & (1 << bit_offset);
 }
 
@@ -64,19 +64,19 @@ static bool get_sign_bit(const u_type& source) {
 }
 template <typename u_type>
 static void set_bit(u_type& dest, size_t bit_offset) {
-	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
+	micromachine_check(bit_offset < binsize<u_type>(), "offset is outside destination bits");
 	dest = dest | (1U << bit_offset);
 }
 
 template <typename u_type>
 void clear_bit(u_type& dest, size_t bit_offset) {
-	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
+	micromachine_check(bit_offset < binsize<u_type>(), "offset is outside destination bits");
 	dest = dest & ~(1U << bit_offset);
 }
 
 template <typename u_type>
 static void write_bit(u_type& dest, size_t bit_offset, bool value) {
-	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
+	micromachine_check(bit_offset < binsize<u_type>(), "offset is outside destination bits");
 	if(value) {
 		set_bit<u_type>(dest, bit_offset);
 	} else {
@@ -139,10 +139,10 @@ static u_type twos_complement(const u_type& source) {
 template <typename u_type>
 static u_type read_uint(const u_type& source, const size_t bit_offset, const size_t num_bits) {
 
-	precond(bit_offset < binsize<u_type>(), "offset out of range");
-	precond(num_bits <= binsize<u_type>(), "source value can't hold num_bits");
-	precond(bit_offset < binsize<u_type>(), "offset is outside destination bits");
-	precond((bit_offset + num_bits) <= binsize<u_type>(), "source is to small");
+	micromachine_check(bit_offset < binsize<u_type>(), "offset out of range");
+	micromachine_check(num_bits <= binsize<u_type>(), "source value can't hold num_bits");
+	micromachine_check(bit_offset < binsize<u_type>(), "offset is outside destination bits");
+	micromachine_check((bit_offset + num_bits) <= binsize<u_type>(), "source is to small");
 
 	return (source >> bit_offset) & make_mask<u_type>(num_bits);
 }
@@ -150,7 +150,7 @@ static u_type read_uint(const u_type& source, const size_t bit_offset, const siz
 template <typename u_type>
 static u_type read_sint(const u_type& source, const size_t bit_offset, const size_t num_bits) {
 
-	precond(num_bits > 1, "signed integer must have more than one bit");
+	micromachine_check(num_bits > 1, "signed integer must have more than one bit");
 
 	const u_type unsigned_val = read_uint<u_type>(source, bit_offset, num_bits);
 	return binops::sign<u_type>(unsigned_val, num_bits);
@@ -207,7 +207,7 @@ static u_type swap(const u_type& value) {
 		case 64U:
 			return swap64(value);
 		default:
-			precond_fail("No known swap conversion");
+			micromachine_fail("No known swap conversion");
 	}
 }
 
