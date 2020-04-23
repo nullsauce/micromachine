@@ -8,8 +8,8 @@
 
 #include "context_switcher.hpp"
 #include "disasm.hpp"
-#include "exec.hpp"
-#include "exec_dispatcher.hpp"
+#include "execution/exec.hpp"
+#include "execution/exec_dispatcher.hpp"
 
 #include "exception/exception_controller.hpp"
 #include "instruction_pair.hpp"
