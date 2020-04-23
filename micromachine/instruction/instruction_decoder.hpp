@@ -1,8 +1,8 @@
 #pragma once
 
-#include "bits.hpp"
 #include "instruction_pair.hpp"
 #include "instructions.hpp"
+#include "types/bits.hpp"
 
 namespace {
 

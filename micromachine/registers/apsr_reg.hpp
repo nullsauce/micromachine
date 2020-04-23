@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "bits.hpp"
+#include "types/bits.hpp"
 #include "xpsr_reg.hpp"
 
 namespace micromachine::system {

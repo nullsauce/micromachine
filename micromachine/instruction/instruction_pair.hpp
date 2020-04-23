@@ -1,7 +1,7 @@
 #pragma once
 
-#include "bits.hpp"
-#include "types.hpp"
+#include "types/bits.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 static bool is_wide_thumb_encoding(const uint16_t& instruction) {

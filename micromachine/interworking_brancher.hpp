@@ -15,8 +15,8 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/pc_reg.hpp"
 
 #include "binops.hpp"
-#include "bits.hpp"
-#include "types.hpp"
+#include "types/bits.hpp"
+#include "types/types.hpp"
 
 namespace micromachine::system {
 
