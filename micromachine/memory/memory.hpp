@@ -10,9 +10,9 @@
 #include <unordered_map>
 #include <type_traits>
 
-#include "interrupter.hpp"
-#include "registers/ireg.hpp"
+#include "exception_controller.hpp"
 #include "mapping.hpp"
+#include "registers/ireg.hpp"
 
 namespace micromachine::system {
 
@@ -23,12 +23,12 @@ public:
 
 private:
 	region_vec _regions;
-	interrupter& _interrupter;
+	exception_controller& _exception_controller;
 	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers;
 
 public:
-	memory(interrupter& interrupter, system_control_register_map scr_map)
-		: _interrupter(interrupter)
+	memory(exception_controller& exception_controller, system_control_register_map scr_map)
+		: _exception_controller(exception_controller)
 		, _system_control_registers(std::move(scr_map)) {
 	}
 
@@ -141,14 +141,14 @@ private:
 		}
 
 		if(!is_aligned<access_t>(address)) {
-			_interrupter.raise_memory_hardfault();
+			_exception_controller.raise_memory_hardfault();
 			return false;
 		}
 
 		memory_mapping* region = find_region(address);
 
 		if(!region) {
-			_interrupter.raise_memory_hardfault();
+			_exception_controller.raise_memory_hardfault();
 			return false;
 		}
 
@@ -174,7 +174,7 @@ private:
 		}
 
 		if(!is_aligned<access_t>(address)) {
-			_interrupter.raise_memory_hardfault();
+			_exception_controller.raise_memory_hardfault();
 			ok = false;
 			return 0;
 		}
@@ -182,7 +182,7 @@ private:
 		const memory_mapping* region = find_const_region(address);
 
 		if(!region) {
-			_interrupter.raise_memory_hardfault();
+			_exception_controller.raise_memory_hardfault();
 			ok = false;
 			return 0;
 		}

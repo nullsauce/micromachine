@@ -14,18 +14,13 @@ and/or distributed without the express permission of Flavio Roth.
 #include "exception_vector.hpp"
 
 namespace micromachine::system {
-class interrupter {
+
+class exception_controller {
 private:
 	exception_vector& _exception_vector;
 
-	template<exception::Type Ex>
-	void raise() {
-		_exception_vector.interrupt_state<Ex>().set_pending(true);
-	}
-
 public:
-
-	interrupter(exception_vector& exception_vector)
+	exception_controller(exception_vector& exception_vector)
 		: _exception_vector(exception_vector)
 	{}
 
@@ -75,6 +70,11 @@ public:
 		return _exception_vector.interrupt_state<Ex>().priority();
 	}
 
+private:
+	template <exception::Type Ex>
+	void raise() {
+		_exception_vector.interrupt_state<Ex>().set_pending(true);
+	}
 
 };
 } // namespace micromachine::system
