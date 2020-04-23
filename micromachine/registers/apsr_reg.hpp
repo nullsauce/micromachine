@@ -11,16 +11,55 @@ namespace micromachine::system {
 
 struct apsr_reg : public xpsr_reg {
 
-	static const size_t FLAG_NEGATIVE = 31;
-	static const size_t FLAG_ZERO = 30;
-	static const size_t FLAG_CARRY = 29;
-	static const size_t FLAG_OVERFLOW = 28;
+	using xpsr_reg::flag_bit_ref;
+	using xpsr_reg::flag_bit_const_ref;
+
+	static constexpr size_t FLAG_NEGATIVE = 31;
+	static constexpr size_t FLAG_ZERO = 30;
+	static constexpr size_t FLAG_CARRY = 29;
+	static constexpr size_t FLAG_OVERFLOW = 28;
 
 	using xpsr_reg::xpsr_reg;
 	using flags_bits = bits<28, 4>;
 
+	flag_bit_ref<FLAG_NEGATIVE> negative_flag() {
+		return flag_bit_ref<FLAG_NEGATIVE>(_xpsr);
+	}
+
+	flag_bit_const_ref<FLAG_NEGATIVE> negative_flag() const {
+		return flag_bit_const_ref<FLAG_NEGATIVE>(_xpsr);
+	}
+
+	flag_bit_ref<FLAG_ZERO> zero_flag() {
+		return flag_bit_ref<FLAG_ZERO>(_xpsr);
+	}
+
+	flag_bit_const_ref<FLAG_ZERO> zero_flag() const {
+		return flag_bit_const_ref<FLAG_ZERO>(_xpsr);
+	}
+
+	flag_bit_ref<FLAG_CARRY> carry_flag() {
+		return flag_bit_ref<FLAG_CARRY>(_xpsr);
+	}
+
+	flag_bit_const_ref<FLAG_CARRY> carry_flag() const {
+		return flag_bit_const_ref<FLAG_CARRY>(_xpsr);
+	}
+
+	flag_bit_ref<FLAG_OVERFLOW> overflow_flag() {
+		return flag_bit_ref<FLAG_OVERFLOW>(_xpsr);
+	}
+
+	flag_bit_const_ref<FLAG_OVERFLOW> overflow_flag() const {
+		return flag_bit_const_ref<FLAG_OVERFLOW>(_xpsr);
+	}
+
+	flags_bits::const_integer_slice<uint32_t> flags() const {
+		return flags_bits::const_integer_slice<uint32_t>(_xpsr);
+	}
+
 	flags_bits::integer_slice<uint32_t> flags() {
-		return flags_bits::of(_xpsr);
+		return flags_bits::integer_slice<uint32_t>(_xpsr);
 	}
 
 	void reset() {
@@ -28,43 +67,27 @@ struct apsr_reg : public xpsr_reg {
 	}
 
 	void apply_zero(const uint32_t& val) {
-		write_zero_flag(val == 0);
+		zero_flag() = (0U == val);
 	}
 
 	void apply_neg(const uint32_t& val) {
-		write_neg_flag(bits<31>::of(val));
+		negative_flag() = bits<31>::of(val);
 	}
 
 	void write_neg_flag(bool status) {
 		write_bit(FLAG_NEGATIVE, status);
 	}
 
-	bool neg_flag() const {
-		return bit(FLAG_NEGATIVE);
-	}
-
 	void write_zero_flag(bool status) {
 		write_bit(FLAG_ZERO, status);
-	}
-
-	bool zero_flag() const {
-		return bit(FLAG_ZERO);
 	}
 
 	void write_carry_flag(bool status) {
 		write_bit(FLAG_CARRY, status);
 	}
 
-	bool carry_flag() const {
-		return bit(FLAG_CARRY);
-	}
-
 	void write_overflow_flag(bool status) {
 		write_bit(FLAG_OVERFLOW, status);
-	}
-
-	bool overflow_flag() const {
-		return bit(FLAG_OVERFLOW);
 	}
 
 	bool is_eq() const {
@@ -84,7 +107,7 @@ struct apsr_reg : public xpsr_reg {
 	}
 
 	bool is_mi() const {
-		return neg_flag();
+		return negative_flag();
 	}
 
 	bool is_pl() const {
@@ -108,7 +131,7 @@ struct apsr_reg : public xpsr_reg {
 	}
 
 	bool is_ge() const {
-		return neg_flag() == overflow_flag();
+		return negative_flag() == overflow_flag();
 	}
 
 	bool is_lt() const {
@@ -116,7 +139,7 @@ struct apsr_reg : public xpsr_reg {
 	}
 
 	bool is_gt() const {
-		return (neg_flag() == overflow_flag()) && !zero_flag();
+		return (negative_flag() == overflow_flag()) && !zero_flag();
 	}
 
 	bool is_le() const {
