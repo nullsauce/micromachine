@@ -1,7 +1,7 @@
 #pragma once
 
 #include "binops.hpp"
-#include "dispatcher.hpp"
+#include "instruction_decoder.hpp"
 #include "instruction_pair.hpp"
 #include "registers/core_registers.hpp"
 #include "string_format.hpp"
@@ -16,12 +16,12 @@
 
 namespace micromachine::system {
 
-class disasm : public dispatcher {
+class disasm : public instruction_decoder {
 
 public:
 	static std::string disassemble_instruction(const instruction_pair instr, uint32_t address) {
 		disasm d(address, DISASM_FMT_HEX);
-		d.dispatch_instruction(instr);
+		d.decode_instruction(instr);
 		return d.instruction_string;
 	}
 

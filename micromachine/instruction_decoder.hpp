@@ -368,9 +368,9 @@ bool is_undefined32(const instruction_pair instr) {
 } // namespace
 
 namespace micromachine::system {
-class dispatcher {
+class instruction_decoder {
 public:
-	void dispatch_instruction(const instruction_pair instruction_pair) {
+	void decode_instruction(const instruction_pair instruction_pair) {
 		const uint16_t instr = instruction_pair.first();
 		if(is_nop(instr)) {
 			dispatch(nop());
