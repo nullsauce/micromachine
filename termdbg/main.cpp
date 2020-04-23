@@ -11,6 +11,9 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "mcu.hpp"
 #include "programmer.hpp"
+
+using namespace micromachine::system;
+
 #include "widgets/MainWindow.hpp"
 
 #include <cstdlib>

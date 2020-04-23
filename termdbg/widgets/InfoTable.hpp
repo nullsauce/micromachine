@@ -12,7 +12,6 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <memory/mapping.hpp>
 
-#include "mapping.hpp"
 #include "widgets/RightAlignedText.hpp"
 #include "widgets/Table.hpp"
 

@@ -25,8 +25,6 @@ and/or distributed without the express permission of Flavio Roth.
 #include "widgets/InterruptView.hpp"
 #include "widgets/LogView.hpp"
 
-using namespace micromachine::system;
-
 class MainWindow : public cppurses::layout::Vertical {
 private:
 	mcu& _mcu;

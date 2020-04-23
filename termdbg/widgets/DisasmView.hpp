@@ -18,8 +18,6 @@ and/or distributed without the express permission of Flavio Roth.
 #include "instruction_pair.hpp"
 #include "widgets/FoldableWidgetHeader.hpp"
 
-using namespace micromachine::system;
-
 class DisasmView : public cppurses::layout::Vertical {
 private:
 	mcu& _mcu;
