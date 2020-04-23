@@ -2,17 +2,17 @@
 #define MICROMACHINE_EMU_SPHR3_HPP
 
 #include "bits.hpp"
-#include "registers/ireg.hpp"
+#include "registers/iregister.hpp"
 #include "registers/word_reg.hpp"
 #include "types.hpp"
 
 namespace micromachine::system {
 
-class shpr3_reg : public word_reg {
+class shpr3_reg : public memory_mapped_reg {
 public:
 	static constexpr uint32_t SHPR3 = 0xE000ED20;
 
-	using ireg::operator=;
+	using iregister::operator=;
 
 	using pr14_bits = bits<22, 2>;
 	using pr15_bits = bits<30, 2>;

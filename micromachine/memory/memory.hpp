@@ -12,19 +12,19 @@
 
 #include "exception_controller.hpp"
 #include "mapping.hpp"
-#include "registers/ireg.hpp"
+#include "registers/iregister.hpp"
 
 namespace micromachine::system {
 
 class memory {
 public:
 	using region_vec = std::vector<memory_mapping>;
-	using system_control_register_map = std::unordered_map<uint32_t, std::reference_wrapper<ireg>>;
+	using system_control_register_map = std::unordered_map<uint32_t, std::reference_wrapper<iregister>>;
 
 private:
 	region_vec _regions;
 	exception_controller& _exception_controller;
-	const std::unordered_map<uint32_t, std::reference_wrapper<ireg>> _system_control_registers;
+	const std::unordered_map<uint32_t, std::reference_wrapper<iregister>> _system_control_registers;
 
 public:
 	memory(exception_controller& exception_controller, system_control_register_map scr_map)

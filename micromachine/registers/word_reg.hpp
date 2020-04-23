@@ -11,35 +11,28 @@ and/or distributed without the express permission of Flavio Roth.
 #define MICROMACHINE_EMU_WORD_REG_HPP
 
 #include "bits.hpp"
-#include "registers/ireg.hpp"
-#include "registers/ireg.hpp"
+#include "registers/iregister.hpp"
+#include "registers/standard_reg.hpp"
 #include "types.hpp"
 
 namespace micromachine::system {
 
-class iword_reg : public ireg {
-	public:
-		using ireg::operator=;
-		using ireg::operator uint32_t;
-		void reset() override {
-			*this = 0U;
-		}
-};
-class word_reg : public iword_reg {
+class memory_mapped_reg : public standard_reg {
 public:
-	using ireg::operator=;
-	using ireg::operator uint32_t;
-	word_reg() : _word(0) {}
+	using standard_reg::operator=;
+	using standard_reg::operator uint32_t;
+	using standard_reg::reset;
+	using standard_reg::standard_reg;
+
 	template<typename bits_t>
-	auto self() {
+	constexpr auto self() {
 		return bits_t::of(_word);
 	}
 
 	template<typename bits_t>
-	auto self() const {
+	constexpr auto self() const {
 		return bits_t::of(_word);
 	}
-	uint32_t _word;
 };
 
 } // namespace micromachine::system

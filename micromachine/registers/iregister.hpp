@@ -1,13 +1,17 @@
-#ifndef MICROMACHINE_IREG_HPP
-#define MICROMACHINE_IREG_HPP
+#ifndef MICROMACHINE_IREGISTER_HPP
+#define MICROMACHINE_IREGISTER_HPP
 
 #include "types.hpp"
 
 namespace micromachine::system {
 
-class ireg {
+/**
+ * An object that can be converted to and from uint32_t and reset to
+ * an initial value.
+ */
+class iregister {
 public:
-	ireg& operator=(uint32_t word) {
+	iregister& operator=(uint32_t word) {
 		set(word);
 		return *this;
 	}
@@ -26,4 +30,4 @@ private:
 
 } // namespace micromachine::system
 
-#endif //MICROMACHINE_IREG_HPP
+#endif // MICROMACHINE_IREGISTER_HPP

@@ -2,19 +2,18 @@
 #define MICROMACHINE_EMU_SPHR2_HPP
 
 #include "bits.hpp"
-#include "registers/ireg.hpp"
+#include "registers/iregister.hpp"
 #include "registers/word_reg.hpp"
 #include "types.hpp"
 
 namespace micromachine::system {
 
-class shpr2_reg : public word_reg {
+class shpr2_reg : public memory_mapped_reg {
 public:
 	static constexpr uint32_t SHPR2 = 0xE000ED1C;
 
-	using ireg::operator=;
+	using iregister::operator=;
 	using pr11_bits = bits<30, 2>;
-
 
 	pr11_bits::const_integer_slice<uint32_t> pri11() const {
 		return bits<30, 2>::of(_word);

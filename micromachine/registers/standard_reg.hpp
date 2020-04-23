@@ -1,13 +1,16 @@
 #ifndef MICROMACHINE_STANDARD_REG_HPP_HPP
 #define MICROMACHINE_STANDARD_REG_HPP_HPP
 
-#include "registers/ireg.hpp"
+#include "registers/iregister.hpp"
 
 namespace micromachine::system {
 
-class standard_reg : public ireg {
+/**
+ * A zero-initialized 32 bit register value that can be reset to zero.
+ */
+class standard_reg : public iregister {
 public:
-	using ireg::operator=;
+	using iregister::operator=;
 
 	standard_reg()
 		: _word(0) {}

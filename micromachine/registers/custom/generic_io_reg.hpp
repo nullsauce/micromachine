@@ -6,7 +6,7 @@
 #include "types.hpp"
 
 namespace micromachine::system {
-class generic_io_reg : public word_reg {
+class generic_io_reg : public memory_mapped_reg {
 public:
 	static constexpr uint32_t GIO_IO = 0xE000EF90;
 
@@ -25,9 +25,11 @@ private:
 
 	uint32_t get() const override {
 		return 0U;
+		_word++;
 	}
 
 protected:
+	mutable uint32_t _word;
 	const callback_t& _callback;
 };
 
