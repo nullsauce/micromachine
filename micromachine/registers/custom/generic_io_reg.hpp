@@ -1,6 +1,6 @@
 #pragma once
 
-#include "registers/word_reg.hpp"
+#include "registers/memory_mapped_reg.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
 
