@@ -19,7 +19,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "CpuMutationPredicate.hpp"
 #include "MemoryMutationPredicate.hpp"
 #include "RegisterMutationPredicate.hpp"
-#include "cpu.hpp"
+#include "mcu.hpp"
 
 /**
  * Utility macro to declare tests with a test_case_name different
@@ -33,7 +33,7 @@ and/or distributed without the express permission of Flavio Roth.
 class CpuTestFixture : public ::testing::Test {
 private:
 	std::deque<TestSystem> _systems;
-	code_generator _code_generator;
+	helpers::code_generator _code_generator;
 
 	const micromachine::system::cpu& getPreviousCpu() {
 		//ASSERT_TRUE((_systems.size() >= 2));
@@ -55,12 +55,12 @@ protected:
 		return _systems.back().getCpu();
 	}
 
-	class system& getSystem() {
+	micromachine::system::mcu& getSystem() {
 		//ASSERT_FALSE((_systems.empty()));
 		return _systems.back().getSystem();
 	}
 
-	code_generator& code_gen() {
+	helpers::code_generator& code_gen() {
 		return _code_generator;
 	}
 
