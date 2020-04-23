@@ -5,9 +5,9 @@
 #pragma once
 
 #include "helpers/binops.hpp"
+#include "helpers/string_format.hpp"
 #include "instruction_pair.hpp"
 #include "registers/core_registers.hpp"
-#include "string_format.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
 #include <cstdint>
