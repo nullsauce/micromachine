@@ -166,7 +166,7 @@ public:
 			// simulate prefetch of 2 instructions during execution
 			_core_regs.set_pc(cur_instruction_address + 4);
 			_core_regs.reset_pc_dirty_status();
-			_exec_dispatcher.dispatch_instruction(cur_intruction);
+			_exec_dispatcher.decode_instruction(cur_intruction);
 
 			// check for synchronous exception that might
 			// have been raised during the execution

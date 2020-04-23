@@ -31,7 +31,7 @@ set(SRCS
 	interworking_brancher.hpp
 	exception_defs.hpp
 	exception_controller.hpp
-	dispatcher.hpp
+	instruction_decoder.hpp
 	disasm.hpp
 	cpu.hpp
 	mcu.hpp

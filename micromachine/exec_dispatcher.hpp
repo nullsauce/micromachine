@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dispatcher.hpp"
 #include "exception_controller.hpp"
 #include "exec.hpp"
+#include "instruction_decoder.hpp"
 #include "instruction_pair.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
@@ -11,7 +11,7 @@
 
 namespace micromachine::system {
 
-class exec_dispatcher : public dispatcher {
+class exec_dispatcher : public instruction_decoder {
 private:
 	exception_controller& _exception_controller;
 	core_registers& _core_regs;
