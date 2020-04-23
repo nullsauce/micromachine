@@ -2,8 +2,8 @@
 
 #include "exception/exception_controller.hpp"
 #include "exec.hpp"
-#include "instruction_decoder.hpp"
-#include "instruction_pair.hpp"
+#include "instruction/instruction_decoder.hpp"
+#include "instruction/instruction_pair.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"

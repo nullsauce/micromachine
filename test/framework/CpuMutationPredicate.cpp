@@ -12,7 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "RegisterMutationPredicate.hpp"
 #include "cpu.hpp"
 #include "exception/exception.hpp"
-#include "instruction_pair.hpp"
+#include "instruction/instruction_pair.hpp"
 
 #include <gtest/gtest.h>
 

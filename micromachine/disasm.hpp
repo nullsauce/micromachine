@@ -1,8 +1,8 @@
 #pragma once
 
 #include "binops.hpp"
-#include "instruction_decoder.hpp"
-#include "instruction_pair.hpp"
+#include "instruction/instruction_decoder.hpp"
+#include "instruction/instruction_pair.hpp"
 #include "registers/core_registers.hpp"
 #include "string_format.hpp"
 

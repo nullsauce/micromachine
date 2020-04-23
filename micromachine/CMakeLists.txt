@@ -2,8 +2,8 @@
 set(SRCS
 	binops.hpp
 	types.hpp
-	instruction_pair.hpp
-	instructions.hpp
+		instruction/instruction_pair.hpp
+		instruction/instructions.hpp
 	precond.hpp
 	exception/exception.hpp
 	exception/exception_controller.hpp
@@ -34,7 +34,7 @@ set(SRCS
 	string_format.hpp
 	execution/exec_dispatcher.hpp
 	interworking_brancher.hpp
-	instruction_decoder.hpp
+		instruction/instruction_decoder.hpp
 	disasm.hpp
 	cpu.hpp
 	mcu.hpp

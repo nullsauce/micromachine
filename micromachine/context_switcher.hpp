@@ -13,7 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "exception/exception.hpp"
 #include "exception/exception_return_handler.hpp"
 #include "exception/exception_vector.hpp"
-#include "instruction_pair.hpp"
+#include "instruction/instruction_pair.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers.hpp"
