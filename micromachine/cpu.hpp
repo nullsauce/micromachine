@@ -129,7 +129,7 @@ public:
 		_core_regs.set_lr(0);
 
 		_special_registers.app_status_register().reset();
-		_special_registers.execution_status_register().set_thumb_bit(true);
+		_special_registers.execution_status_register().thumb_flag() = true;
 		_special_registers.interrupt_status_register().reset();
 		_special_registers.primask_register().reset();
 		_special_registers.control_register().reset();
@@ -152,7 +152,7 @@ public:
 		const uint32_t cur_instruction_address = _core_regs.get_pc();
 		instruction_pair cur_intruction = fetch_instruction(cur_instruction_address);
 
-		if(!_special_registers.execution_status_register().thumb_bit_set()) {
+		if(!_special_registers.execution_status_register().thumb_flag()) {
 			// Thumb bit not set
 			// all instructions in this state are UNDEFINED .
 			_exception_controller.raise_hardfault();

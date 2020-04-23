@@ -44,7 +44,7 @@ public:
 		} else {
 
 			// trigger a hard fault on next instruction if Thumb bit is not set
-			_epsr_reg.set_thumb_bit(bits<0>::of(address));
+			_epsr_reg.thumb_flag() = bits<0>::of(address);
 
 			// Inter-working branch, thumb bit is always cleared
 			_pc_reg.branch(address);
@@ -54,7 +54,7 @@ public:
 	void branch_link_interworking(uint32_t address) {
 		// if the thumb bit is not set, a hard fault must be taken on the next instruction
 		// copy the last bit of jump_addr to allow this to happen
-		_epsr_reg.set_thumb_bit(bits<0>::of(address));
+		_epsr_reg.thumb_flag() = bits<0>::of(address);
 
 		// Inter-working branch, thumb bit is always cleared
 		bits<0>::of(address) = false;

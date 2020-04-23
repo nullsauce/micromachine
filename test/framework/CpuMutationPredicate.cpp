@@ -78,7 +78,8 @@ CpuMutationPredicate& CpuMutationPredicate::IPSRFlagsDidNotChange() {
 }
 
 CpuMutationPredicate& CpuMutationPredicate::EPSRFlagsDidNotChange() {
-	EXPECT_EQ(_previous.special_regs().execution_status_register().thumb_bit_set(), _current.special_regs().execution_status_register().thumb_bit_set());
+	EXPECT_EQ(_previous.special_regs().execution_status_register().thumb_flag(),
+			  _current.special_regs().execution_status_register().thumb_flag());
 	EXPECT_EQ(_previous.special_regs().execution_status_register().stack_alignment(),_current.special_regs().execution_status_register().stack_alignment());
 	return *this;
 }
@@ -146,12 +147,12 @@ CpuMutationPredicate& CpuMutationPredicate::ExecutionIsInThreadMode() {
 }
 
 CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsSet() {
-	EXPECT_TRUE(_current.special_regs().execution_status_register().thumb_bit_set());
+	EXPECT_TRUE(_current.special_regs().execution_status_register().thumb_flag());
 	return *this;
 }
 
 CpuMutationPredicate& CpuMutationPredicate::ThumbBitIsNotSet() {
-	EXPECT_FALSE(_current.special_regs().execution_status_register().thumb_bit_set());
+	EXPECT_FALSE(_current.special_regs().execution_status_register().thumb_flag());
 	return *this;
 }
 
