@@ -232,7 +232,7 @@ public:
 		// And secondly, optionally zeroing the IPSR exception number.
 		const uint32_t reserved_bits_mask = apsr_reg::flags_bits::as_mask<uint32_t>() |
 											ipsr_reg::ipsr_bits::as_mask<uint32_t>() |
-											epsr_reg::thumb_bit::as_mask<uint32_t>() |
+											epsr_reg::epsr_bits::as_mask<uint32_t>() |
 											epsr_reg::stack_align_bit::as_mask<uint32_t>();
 		// Zero out reserved bits for good measure.
 		// Note that the stack alignment value is ignored.
