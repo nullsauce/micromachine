@@ -8,16 +8,25 @@ namespace micromachine::system {
 
 struct epsr_reg : public xpsr_reg {
 
-	static const size_t THUMB_BIT = 24;
+	using xpsr_reg::flag_bit_ref;
+	using xpsr_reg::flag_bit_const_ref;
+
+	static const size_t FLAG_THUMB = 24;
 	static const size_t STACK_ALIGNMENT = 9;
 
 	using xpsr_reg::xpsr_reg;
 
-	using thumb_bit = bits<24>;
+	// when querying epsr bits, we consider only the thumb bit
+	using epsr_bits = bits<FLAG_THUMB>;
+
 	using stack_align_bit = bits<9>;
 
-	bool thumb_bit_set() const {
-		return bits<24>::of(_xpsr);
+	flag_bit_const_ref<FLAG_THUMB> thumb_flag() const {
+		return flag_bit_const_ref<FLAG_THUMB>(_xpsr);
+	}
+
+	flag_bit_ref<FLAG_THUMB> thumb_flag() {
+		return flag_bit_ref<FLAG_THUMB>(_xpsr);
 	}
 
 	void set_thumb_bit(bool set) {

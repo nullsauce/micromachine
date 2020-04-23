@@ -103,7 +103,7 @@ MICROMACHINE_TEST_F(mrs, FromEAPSR, CpuTestFixture) {
 	micromachine::system::apsr_reg expectedApsr(expectedXpsr);
 	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
 	set_apsr_flags(expectedApsr, true, false, true, false);
-	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
+	expectedEpsr.thumb_flag() = false; // EPSR bits must read as zero
 
 
 	set_apsr_flags(getCpu().special_regs().app_status_register(), true, false, true, false);
@@ -132,7 +132,7 @@ MICROMACHINE_TEST_F(mrs, FromXPSR, CpuTestFixture) {
 	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
 	set_apsr_flags(expectedApsr, true, false, true, false);
 	expectedIpsr.set_exception_number(micromachine::system::exception::EXTI_08);
-	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
+	expectedEpsr.thumb_flag() = false; // EPSR bits must read as zero
 
 	getCpu().special_regs().interrupt_status_register().set_exception_number(
 		micromachine::system::exception::EXTI_08);
@@ -181,7 +181,7 @@ MICROMACHINE_TEST_F(mrs, FromEPSR, CpuTestFixture) {
 
 	uint32_t expectedXpsr = 0;
 	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
-	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
+	expectedEpsr.thumb_flag() = false; // EPSR bits must read as zero
 
 	getCpu().special_regs().interrupt_status_register().set_exception_number(
 		micromachine::system::exception::EXTI_08);
@@ -207,7 +207,7 @@ MICROMACHINE_TEST_F(mrs, FromIEPSR, CpuTestFixture) {
 	micromachine::system::ipsr_reg expectedIpsr(expectedXpsr);
 	micromachine::system::epsr_reg expectedEpsr(expectedXpsr);
 	expectedIpsr.set_exception_number(micromachine::system::exception::EXTI_08);
-	expectedEpsr.set_thumb_bit(false); // EPSR bits must read as zero
+	expectedEpsr.thumb_flag() = false; // EPSR bits must read as zero
 
 	getCpu().special_regs().interrupt_status_register().set_exception_number(
 		micromachine::system::exception::EXTI_08);

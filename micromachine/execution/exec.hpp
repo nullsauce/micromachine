@@ -842,7 +842,7 @@ exec(const mrs instruction, core_registers& core_regs, special_registers& specia
 			}
 			if(bits<1>::of(instruction.sysn)) { // add EPSR bits
 				// T-bit reads as zero
-				bits<epsr_reg::THUMB_BIT>::of(val) = false;
+				bits<epsr_reg::FLAG_THUMB>::of(val) = false;
 			}
 			if(!bits<2>::of(instruction.sysn)) { // add APSR bits
 				// T-bit reads as zero
