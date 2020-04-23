@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_EXCEPTION_DEFS_HPP
-#define MICROMACHINE_EMU_EXCEPTION_DEFS_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -62,5 +61,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_EMU_EXCEPTION_DEFS_HPP

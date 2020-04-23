@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_WORD_REG_HPP
-#define MICROMACHINE_EMU_WORD_REG_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "registers/iregister.hpp"
@@ -36,5 +35,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_WORD_REG_HPP

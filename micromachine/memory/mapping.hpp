@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_MEM_MAPPING_HPP
-#define MICROMACHINE_EMU_MEM_MAPPING_HPP
+#pragma once
 
 #include <string>
 
@@ -59,5 +58,3 @@ public:
 	const std::string _name;
 };
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_MEM_MAPPING_HPP

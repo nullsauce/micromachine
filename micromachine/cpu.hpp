@@ -2,8 +2,7 @@
 // Created by fla on 17-5-9.
 //
 
-#ifndef MICROMACHINE_CPU_HPP
-#define MICROMACHINE_CPU_HPP
+#pragma once
 
 #include <utility>
 
@@ -296,5 +295,3 @@ private:
 	}
 };
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_CPU_HPP

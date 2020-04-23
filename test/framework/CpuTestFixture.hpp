@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_CPUTESTFIXTURE_HPP
-#define MICROMACHINE_CPUTESTFIXTURE_HPP
+#pragma once
 
 #include "TestSystem.hpp"
 #include "code_generator.hpp"
@@ -91,4 +90,3 @@ protected:
 	}
 };
 
-#endif //MICROMACHINE_CPUTESTFIXTURE_HPP

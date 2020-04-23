@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_CPUMUTATIONPREDICATE_HPP
-#define MICROMACHINE_CPUMUTATIONPREDICATE_HPP
+#pragma once
 
 #include "cpu.hpp"
 #include "exception_defs.hpp"
@@ -68,4 +67,3 @@ public:
 };
 
 
-#endif //MICROMACHINE_CPUMUTATIONPREDICATE_HPP

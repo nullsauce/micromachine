@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EXECUTIONCONTROLLER_HPP
-#define MICROMACHINE_EXECUTIONCONTROLLER_HPP
+#pragma once
 
 #include "BreakpointManager.hpp"
 #include "cpu.hpp"
@@ -122,4 +121,3 @@ public:
 };
 
 
-#endif //MICROMACHINE_EXECUTIONCONTROLLER_HPP

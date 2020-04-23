@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_MEMORYSEGMENTLIST_HPP
-#define MICROMACHINE_EMU_MEMORYSEGMENTLIST_HPP
+#pragma once
 
 #include <cppurses/painter/glyph_string.hpp>
 #include <cppurses/widget/widgets/menu.hpp>
@@ -39,4 +38,3 @@ public:
 	}
 };
 
-#endif //MICROMACHINE_EMU_MEMORYSEGMENTLIST_HPP

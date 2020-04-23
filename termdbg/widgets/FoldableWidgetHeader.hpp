@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_FOLDABLEWIDGETHEADER_HPP
-#define MICROMACHINE_EMU_FOLDABLEWIDGETHEADER_HPP
+#pragma once
 
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/widgets/label.hpp>
@@ -69,4 +68,3 @@ public:
 	}
 };
 
-#endif //MICROMACHINE_EMU_FOLDABLEWIDGETHEADER_HPP

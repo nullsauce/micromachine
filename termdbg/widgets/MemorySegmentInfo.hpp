@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_MEMORYSEGMENTINFO_HPP
-#define MICROMACHINE_EMU_MEMORYSEGMENTINFO_HPP
+#pragma once
 
 #include <cppurses/widget/layouts/horizontal.hpp>
 #include <cppurses/widget/widgets/text_display.hpp>
@@ -78,4 +77,3 @@ public:
 
 };
 
-#endif //MICROMACHINE_EMU_MEMORYSEGMENTINFO_HPP

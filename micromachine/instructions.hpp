@@ -2,8 +2,7 @@
 // Created by fla on 4/30/17.
 //
 
-#ifndef THUMBEMU_INSTRUCTIONS_HPP
-#define THUMBEMU_INSTRUCTIONS_HPP
+#pragma once
 
 #include "binops.hpp"
 #include "bits.hpp"
@@ -937,4 +936,3 @@ struct isb : public standard_imm4 {
 
 }
 
-#endif // THUMBEMU_INSTRUCTIONS_HPP

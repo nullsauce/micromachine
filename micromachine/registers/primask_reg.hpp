@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_PRIMASK_REG_HPP
-#define MICROMACHINE_EMU_PRIMASK_REG_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "standard_reg.hpp"
@@ -30,5 +29,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_PRIMASK_REG_HPP

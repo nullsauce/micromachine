@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_EMU_SPHR2_HPP
-#define MICROMACHINE_EMU_SPHR2_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "registers/iregister.hpp"
@@ -23,7 +22,6 @@ public:
 		return bits<30, 2>::of(_word);
 	}
 
-
 private:
 	static constexpr uint32_t _mask = (0b11 << 30);
 
@@ -37,5 +35,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_SPHR2_HPP

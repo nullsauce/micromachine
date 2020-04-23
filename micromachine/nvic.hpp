@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_EMU_NVIC_HPP
-#define MICROMACHINE_EMU_NVIC_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "registers/iregister.hpp"
@@ -299,5 +298,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_EMU_NVIC_HPP

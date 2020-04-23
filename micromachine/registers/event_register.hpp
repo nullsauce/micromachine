@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EVENT_REGISTER_HPP
-#define MICROMACHINE_EVENT_REGISTER_HPP
+#pragma once
 
 namespace micromachine::system {
 
@@ -44,5 +43,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EVENT_REGISTER_HPP

@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_EMU_SPHR3_HPP
-#define MICROMACHINE_EMU_SPHR3_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "registers/iregister.hpp"
@@ -48,5 +47,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_SPHR3_HPP

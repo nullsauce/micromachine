@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_FORMATEDTEXT_HPP
-#define MICROMACHINE_FORMATEDTEXT_HPP
+#pragma once
 
 #include <cppurses/painter/brush.hpp>
 #include <cppurses/cppurses_painter.hpp>
@@ -112,4 +111,3 @@ private:
 	}
 };
 
-#endif //MICROMACHINE_FORMATEDTEXT_HPP

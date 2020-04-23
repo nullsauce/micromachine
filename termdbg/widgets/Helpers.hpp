@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_HELPERS_HPP
-#define MICROMACHINE_EMU_HELPERS_HPP
+#pragma once
 
 
 #include <cppurses/widget/border.hpp>
@@ -38,4 +37,3 @@ namespace helpers {
 
 }
 
-#endif //MICROMACHINE_EMU_HELPERS_HPP

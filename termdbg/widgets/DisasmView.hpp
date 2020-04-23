@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_DISASMVIEW_HPP
-#define MICROMACHINE_EMU_DISASMVIEW_HPP
+#pragma once
 
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cpu.hpp>
@@ -197,4 +196,3 @@ private:
 
 };
 
-#endif //MICROMACHINE_EMU_DISASMVIEW_HPP

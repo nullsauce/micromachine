@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_COMMANDINPUT_HPP
-#define MICROMACHINE_EMU_COMMANDINPUT_HPP
+#pragma once
 
 #include "widgets/SingleLineTextInput.hpp"
 
@@ -52,4 +51,3 @@ private:
 	}
 };
 
-#endif //MICROMACHINE_EMU_COMMANDINPUT_HPP

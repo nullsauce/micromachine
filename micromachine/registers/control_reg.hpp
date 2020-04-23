@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_CONTROL_REG_HPP
-#define MICROMACHINE_CONTROL_REG_HPP
+#pragma once
 
 #include "standard_reg.hpp"
 #include "bits.hpp"
@@ -32,5 +31,3 @@ public:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_CONTROL_REG_HPP

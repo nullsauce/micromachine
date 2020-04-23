@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_EXECUTIONCONTROLVIEW_HPP
-#define MICROMACHINE_EMU_EXECUTIONCONTROLVIEW_HPP
+#pragma once
 
 #include <cppurses/widget/layouts/vertical.hpp>
 #include <cppurses/widget/widgets/push_button.hpp>
@@ -47,4 +46,3 @@ public:
 
 };
 
-#endif //MICROMACHINE_EMU_EXECUTIONCONTROLVIEW_HPP

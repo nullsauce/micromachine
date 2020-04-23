@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_EMU_CODE_GENERATOR_HPP
-#define MICROMACHINE_EMU_CODE_GENERATOR_HPP
+#pragma once
 
 #include "memory/memory.hpp"
 
@@ -55,4 +54,3 @@ private:
 
 } // namespace micromachine::system::helpers
 
-#endif //MICROMACHINE_EMU_CODE_GENERATOR_HPP

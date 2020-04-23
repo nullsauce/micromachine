@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_IPSR_REGSITER_HPP
-#define MICROMACHINE_IPSR_REGSITER_HPP
+#pragma once
 
 #include "bits.hpp"
 #include "exception_defs.hpp"
@@ -32,5 +31,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_IPSR_REGSITER_HPP

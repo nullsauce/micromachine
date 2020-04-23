@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_INTERRUPTOR_HPP
-#define MICROMACHINE_EMU_INTERRUPTOR_HPP
+#pragma once
 
 #include "exception_defs.hpp"
 #include "exception_vector.hpp"
@@ -78,5 +77,3 @@ private:
 
 };
 } // namespace micromachine::system
-
-#endif //MICROMACHINE_EMU_INTERRUPTOR_HPP

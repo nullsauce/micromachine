@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_MINI_ASSEMBLER_HPP
-#define MICROMACHINE_EMU_MINI_ASSEMBLER_HPP
+#pragma once
 
 #include "code_generator.hpp"
 #include "instructions.hpp"
@@ -64,4 +63,3 @@ public:
 
 };
 
-#endif //MICROMACHINE_EMU_MINI_ASSEMBLER_HPP

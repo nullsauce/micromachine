@@ -2,8 +2,7 @@
 // Created by fla on 17-5-8.
 //
 
-#ifndef MICROMACHINE_ALU_HPP_HPP
-#define MICROMACHINE_ALU_HPP_HPP
+#pragma once
 
 #include "binops.hpp"
 #include "bits.hpp"
@@ -205,5 +204,3 @@ static uint32_t add_with_carry(const uint32_t& a, const uint32_t& b, const bool&
 }
 
 } // namespace micromachine::system::alu
-
-#endif // MICROMACHINE_ALU_HPP_HPP

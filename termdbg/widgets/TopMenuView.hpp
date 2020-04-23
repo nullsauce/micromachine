@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_EMU_TOPMENUVIEW_HPP
-#define MICROMACHINE_EMU_TOPMENUVIEW_HPP
+#pragma once
 
 #include <cppurses/widget/layouts/horizontal.hpp>
 #include <cppurses/widget/widgets/label.hpp>
@@ -36,4 +35,3 @@ public:
 
 };
 
-#endif //MICROMACHINE_EMU_TOPMENUVIEW_HPP

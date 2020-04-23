@@ -1,5 +1,4 @@
-#ifndef MICROMACHINE_SP_REG_HPP
-#define MICROMACHINE_SP_REG_HPP
+#pragma once
 
 #include "binops.hpp"
 #include "bits.hpp"
@@ -83,5 +82,3 @@ private:
 };
 
 } // namespace micromachine::system
-
-#endif // MICROMACHINE_SP_REG_HPP

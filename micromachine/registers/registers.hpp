@@ -7,8 +7,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-#ifndef MICROMACHINE_REGISTERS_HPP
-#define MICROMACHINE_REGISTERS_HPP
+#pragma once
 
 #include "types.hpp"
 
@@ -30,5 +29,3 @@ namespace micromachine::system::registers {
 	static constexpr reg_idx LR = 14;
 	static constexpr reg_idx PC = 15;
 }
-
-#endif // MICROMACHINE_REGISTERS_HPP

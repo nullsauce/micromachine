@@ -2,8 +2,7 @@
 // Created by fla on 17-5-8.
 //
 
-#ifndef MICROMACHINE_TYPES_HPP
-#define MICROMACHINE_TYPES_HPP
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -19,5 +18,3 @@ namespace micromachine::system {
 	using register_list_t = uint16_t;
 
 }
-
-#endif //MICROMACHINE_TYPES_HPP
