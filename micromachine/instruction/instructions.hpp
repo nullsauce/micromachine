@@ -102,15 +102,7 @@ struct standard_3_fields : public standard_2_fields<uint_type, f0, f1, f2, f3> {
 /// \tparam f5 size (in bits) of the third field
 /// \tparam f6 offset (in bits) of the fourth field
 /// \tparam f7 size (in bits) of the fourth field
-template <typename uint_type,
-		  size_t f0,
-		  size_t f1,
-		  size_t f2,
-		  size_t f3,
-		  size_t f4,
-		  size_t f5,
-		  size_t f6,
-		  size_t f7>
+template <typename uint_type, size_t f0, size_t f1, size_t f2, size_t f3, size_t f4, size_t f5, size_t f6, size_t f7>
 struct standard_4_fields : public standard_3_fields<uint_type, f0, f1, f2, f3, f4, f5> {
 	using standard_3_fields<uint_type, f0, f1, f2, f3, f4, f5>::standard_3_fields;
 	using field3_bits = bits<f6, f7>;
@@ -124,40 +116,16 @@ struct standard_4_fields : public standard_3_fields<uint_type, f0, f1, f2, f3, f
 	}
 };
 
-template <typename uint_type,
-		  size_t f0,
-		  size_t f1,
-		  size_t f2,
-		  size_t f3,
-		  size_t f4,
-		  size_t f5,
-		  size_t f6,
-		  size_t f7,
-		  size_t f8,
-		  size_t f9>
-struct standard_5_fields : public standard_4_fields<uint_type, f0, f1, f2, f3, f4, f5, f6, f7> {
-	using standard_4_fields<uint_type, f0, f1, f2, f3, f4, f5, f6, f7>::standard_3_fields;
-	using field4_bits = bits<f8, f9>;
-
-	typename generic_instruction<uint_type>::template slice_of<field4_bits> field3() {
-		return field4_bits::of(generic_instruction<uint_type>::_word);
-	}
-
-	typename generic_instruction<uint_type>::template const_slice_of<field4_bits> field3() const {
-		return field4_bits::of(generic_instruction<uint_type>::_word);
-	}
-};
-
 /// Helper macro to declare mutable and const accessor to a standard field
 /// \param name the name of the field
 /// \param field_no the number of the field (zero-based)
-#define define_instruction_field(name, field_no)                                                   \
-	using name##_bits = field##field_no##_bits;                                                    \
-	slice_of<name##_bits> name() {                                                                 \
-		return field##field_no();                                                                  \
-	}                                                                                              \
-	const_slice_of<name##_bits> name() const {                                                     \
-		return field##field_no();                                                                  \
+#define define_instruction_field(name, field_no)                                                                       \
+	using name##_bits = field##field_no##_bits;                                                                        \
+	slice_of<name##_bits> name() {                                                                                     \
+		return field##field_no();                                                                                      \
+	}                                                                                                                  \
+	const_slice_of<name##_bits> name() const {                                                                         \
+		return field##field_no();                                                                                      \
 	}
 
 // standard instruction binary layouts re-used across instructions
@@ -389,8 +357,7 @@ struct standard_imm11 : public layout_16_011 {
 struct standard_push_register_list : public generic_instruction<uint16_t> {
 
 	standard_push_register_list(uint16_t field)
-		: generic_instruction((binops::read_uint(field, 0, 8)) |
-							  (binops::get_bit(field, 8) << 14)) {}
+		: generic_instruction((binops::read_uint(field, 0, 8)) | (binops::get_bit(field, 8) << 14)) {}
 
 	bool is_set(reg_idx reg) const {
 		return binops::get_bit(_word, reg);
@@ -405,8 +372,7 @@ struct standard_push_register_list : public generic_instruction<uint16_t> {
 struct standard_pop_register_list : public generic_instruction<uint16_t> {
 
 	standard_pop_register_list(uint16_t field)
-		: generic_instruction((binops::read_uint(field, 0, 8)) |
-							  (binops::get_bit(field, 8) << 15)) {}
+		: generic_instruction((binops::read_uint(field, 0, 8)) | (binops::get_bit(field, 8) << 15)) {}
 
 	bool is_set(reg_idx reg) const {
 		return binops::get_bit(_word, reg);
@@ -601,22 +567,8 @@ struct eor_reg : public standard_rdn_rm {
 };
 
 static std::string reglist(uint8_t mask) {
-	static const char* reg_names[] = {"r0",
-									  "r1",
-									  "r2",
-									  "r3",
-									  "r4",
-									  "r5",
-									  "r6",
-									  "r7",
-									  "r8",
-									  "r9",
-									  "r10",
-									  "r11",
-									  "r12",
-									  "sp",
-									  "lr",
-									  "pc"};
+	static const char* reg_names[] =
+		{"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "sp", "lr", "pc"};
 	std::stringstream ss;
 	ss << "{";
 	for(reg_idx i = 0; i < 16; i++) {
