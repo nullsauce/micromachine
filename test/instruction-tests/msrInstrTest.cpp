@@ -13,7 +13,6 @@
 
 #include "CpuTestFixture.hpp"
 #include "binops.hpp"
-#include "sp_reg.hpp"
 
 /* SYSm field values for MSR and MRS instructions. */
 #define SYS_APSR    0
@@ -129,7 +128,7 @@ MICROMACHINE_TEST_F(msr, ToMSP, CpuTestFixture) {
 	getCpu().regs().set(registers::R12, spValue);
 
 	// the sp value is aligned to lowest 4 bytes address boundary
-	uint32_t expectedSpValue = binops::micromachine::system::binops::aligned<4>(spValue);
+	uint32_t expectedSpValue = binops::aligned<4>(spValue);
 
 	Step();
 	EXPECT_EQ(expectedSpValue, getCpu().regs().sp_register().get_specific_banked_sp(
@@ -148,7 +147,7 @@ MICROMACHINE_TEST_F(msr, ToPSP, CpuTestFixture) {
 	getCpu().regs().set(registers::R12, spValue);
 
 	// the sp value is aligned to lowest 4 bytes address boundary
-	uint32_t expectedSpValue = binops::micromachine::system::binops::aligned<4>(spValue);
+	uint32_t expectedSpValue = binops::aligned<4>(spValue);
 
 	Step();
 	EXPECT_EQ(expectedSpValue, getCpu().regs().sp_register().get_specific_banked_sp(

@@ -10,26 +10,27 @@ and/or distributed without the express permission of Flavio Roth.
 #include "CpuTestHarness.hpp"
 #include "binops.hpp"
 #include "exception_defs.hpp"
-#include "sp_reg.hpp"
 
 #define RETURN_TO_THREAD_FROM_SP_MAIN 0xFFFFFFF9
+
+using namespace micromachine::system;
 
 uint32_t CpuTestHarness::interrupt_handler_address(uint32_t exception_number)
 {
 	uint32_t vector_table_offset = exception_number * sizeof(uint32_t);
 	// clears the thumb bit from the address
-	uint32_t address = _system.get_memory().read32(vector_table_offset) & ~1;
+	uint32_t address = _mcu.get_memory().read32(vector_table_offset) & ~1;
 	return address;
 }
 
 void CpuTestHarness::memory_write_32(uint32_t address, uint32_t value)
 {
-	_system.get_memory().write32(address, value);
+	_mcu.get_memory().write32(address, value);
 }
 
 uint32_t CpuTestHarness::memory_read_32(uint32_t address)
 {
-	return _system.get_memory().read32(address);
+	return _mcu.get_memory().read32(address);
 }
 
 void CpuTestHarness::step()
@@ -46,10 +47,10 @@ void CpuTestHarness::SetUp()
 	_memory.resize(MEMORY_SIZE);
 
 	// map host memory
-	_system.get_memory().map(_memory.data(), 0, _memory.size());
+	_mcu.get_memory().map(_memory.data(), 0, _memory.size());
 
 	// expose cpu memory to assembler
-	_code_gen.set_mem(&_system.get_memory());
+	_code_gen.set_mem(&_mcu.get_memory());
 
 	initContext();
 }
@@ -60,7 +61,7 @@ void CpuTestHarness::initContext()
 	// zero memory
 	std::fill(_memory.begin(), _memory.end(), 0);
 
-	_system.reset(INITIAL_PC);
+	_mcu.reset(INITIAL_PC);
 
 	// assembler will start emiting instructions at the initial code position
 	_code_gen.set_write_address(INITIAL_PC);
@@ -79,9 +80,9 @@ void CpuTestHarness::initContext()
 	// fake vector table
 	for (uint32_t i = 1; i < 32; i++) {
 		uint32_t vt_offset = i * sizeof(uint32_t);
-		_system.get_memory().write32(vt_offset, (0x1000 + (vt_offset * 32)) | 1);
+		_mcu.get_memory().write32(vt_offset, (0x1000 + (vt_offset * 32)) | 1);
 	}
-	_system.get_memory().write32(INITIAL_PC, 0);
+	_mcu.get_memory().write32(INITIAL_PC, 0);
 
 	// all tests are expected to run in thumb mode
 	m_expectedXPSRflags |= EPSR_T;
@@ -94,10 +95,12 @@ void CpuTestHarness::initContext()
 	for (uint32_t bit = 28; bit < 32; bit++) {
 		int setOrClear = rand() & 1;
 		if (setOrClear) {
-			binops::micromachine::system::binops::set_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
+			binops::set_bit(
+				_mcu.get_cpu().special_regs().xpsr_register(), bit);
 			m_expectedXPSRflags |= (1 << bit);
 		} else {
-			binops::micromachine::system::binops::clear_bit(_system.get_cpu().special_regs().xpsr_register(), bit);
+			binops::clear_bit(
+				_mcu.get_cpu().special_regs().xpsr_register(), bit);
 			m_expectedXPSRflags &= ~(1 << bit);
 		}
 	}
@@ -106,7 +109,7 @@ void CpuTestHarness::initContext()
 	uint32_t value = 0;
 
 	for (int i = 0; i < 13; i++) {
-		_system.get_cpu().regs().set(i, value);
+		_mcu.get_cpu().regs().set(i, value);
 		m_expectedRegisterValues[i] = value;
 		value += 0x11111111;
 	}
@@ -160,42 +163,42 @@ void CpuTestHarness::setExpectedXPSRflags(const char *pExpectedFlags)
 		switch (*pExpectedFlags) {
 			case 'n':
 				m_expectedXPSRflags &= ~APSR_N;
-				_system.get_cpu().special_regs().app_status_register().write_neg_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(true);
 				//apsr |= APSR_N;
 				break;
 			case 'N':
 				m_expectedXPSRflags |= APSR_N;
-				_system.get_cpu().special_regs().app_status_register().write_neg_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(false);
 				//apsr &= ~APSR_N;
 				break;
 			case 'z':
 				m_expectedXPSRflags &= ~APSR_Z;
-				_system.get_cpu().special_regs().app_status_register().write_zero_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(true);
 				//apsr |= APSR_Z;
 				break;
 			case 'Z':
 				m_expectedXPSRflags |= APSR_Z;
-				_system.get_cpu().special_regs().app_status_register().write_zero_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(false);
 				//apsr &= ~APSR_Z;
 				break;
 			case 'c':
 				m_expectedXPSRflags &= ~APSR_C;
-				_system.get_cpu().special_regs().app_status_register().write_carry_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(true);
 				//apsr |= APSR_C;
 				break;
 			case 'C':
 				m_expectedXPSRflags |= APSR_C;
-				_system.get_cpu().special_regs().app_status_register().write_carry_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(false);
 				//apsr &= ~APSR_C;
 				break;
 			case 'v':
 				m_expectedXPSRflags &= ~APSR_V;
-				_system.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
 				//apsr |= APSR_V;
 				break;
 			case 'V':
 				m_expectedXPSRflags |= APSR_V;
-				_system.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
 				//apsr &= ~APSR_V;
 				break;
 			case 't':
@@ -236,7 +239,7 @@ void CpuTestHarness::setRegisterValue(reg_idx index, uint32_t value)
 	assert (index <= registers::PC);
 
 	setExpectedRegisterValue(index, value);
-	_system.get_cpu().regs().set(index, value);
+	_mcu.get_cpu().regs().set(index, value);
 
 	if (index == registers::PC) {
 		setExpectedRegisterValue(index, value + 2);
@@ -246,18 +249,18 @@ void CpuTestHarness::setRegisterValue(reg_idx index, uint32_t value)
 void CpuTestHarness::pinkySimStep()
 {
 	// TODO: why do we have a PRIMASK variable here ?
-	_system.get_cpu().special_regs().primask_register() = PRIMASK;
-	_system.step();
+	_mcu.get_cpu().special_regs().primask_register() = PRIMASK;
+	_mcu.step();
 	validateXPSR();
 	validateRegisters();
 	validateSignaledException();
-	PRIMASK = _system.get_cpu().special_regs().primask_register();
+	PRIMASK = _mcu.get_cpu().special_regs().primask_register();
 }
 
 void CpuTestHarness::validateSignaledException()
 {
 	if (CPU_STEP_HARDFAULT == m_expectedStepReturn) {
-		EXPECT_TRUE(_system.get_cpu().exceptions().interrupt_state<micromachine::system::exception::Type::HARDFAULT>().is_active());
+		EXPECT_TRUE(_mcu.get_cpu().exceptions().interrupt_state<exception::Type::HARDFAULT>().is_active());
 	} else {
 		assert("TODO implement");
 	}
@@ -276,73 +279,73 @@ void CpuTestHarness::validateXPSR()
 	};
 
 	char currentFlagsStr[6] = {
-		(_system.get_cpu().special_regs().xpsr_register() & APSR_N) ? 'N' : 'n',
-		(_system.get_cpu().special_regs().xpsr_register() & APSR_Z) ? 'Z' : 'z',
-		(_system.get_cpu().special_regs().xpsr_register() & APSR_C) ? 'C' : 'c',
-		(_system.get_cpu().special_regs().xpsr_register() & APSR_V) ? 'V' : 'v',
-		(_system.get_cpu().special_regs().xpsr_register() & EPSR_T) ? 'T' : 't',
+		(_mcu.get_cpu().special_regs().xpsr_register() & APSR_N) ? 'N' : 'n',
+		(_mcu.get_cpu().special_regs().xpsr_register() & APSR_Z) ? 'Z' : 'z',
+		(_mcu.get_cpu().special_regs().xpsr_register() & APSR_C) ? 'C' : 'c',
+		(_mcu.get_cpu().special_regs().xpsr_register() & APSR_V) ? 'V' : 'v',
+		(_mcu.get_cpu().special_regs().xpsr_register() & EPSR_T) ? 'T' : 't',
 		0
 	};
 
 	//fprintf(stderr, "%s, %s\n", expectedFlagsStr, currentFlagsStr);
 
 	EXPECT_STREQ(expectedFlagsStr, currentFlagsStr);
-	EXPECT_EQ(m_expectedXPSRflags, _system.get_cpu().special_regs().xpsr_register() & (APSR_NZCV | EPSR_T));
-	EXPECT_EQ(m_expectedIPSR, _system.get_cpu().special_regs().xpsr_register() & IPSR_MASK);
+	EXPECT_EQ(m_expectedXPSRflags,
+			  _mcu.get_cpu().special_regs().xpsr_register() & (APSR_NZCV | EPSR_T));
+	EXPECT_EQ(m_expectedIPSR, _mcu.get_cpu().special_regs().xpsr_register() & IPSR_MASK);
 }
 
 void CpuTestHarness::validateRegisters()
 {
 	for (int i = 0; i < 13; i++)
-		EXPECT_EQ(m_expectedRegisterValues[i], _system.get_cpu().regs().get(i));
+		EXPECT_EQ(m_expectedRegisterValues[i], _mcu.get_cpu().regs().get(i));
 	EXPECT_EQ(m_expectedSPmain,
-			  _system.get_cpu().regs().sp_register().get_specific_banked_sp(
-				  micromachine::system::sp_reg::StackType::Main));
-	EXPECT_EQ(m_expectedLR, _system.get_cpu().regs().get_lr());
-	EXPECT_EQ(m_expectedPC, _system.get_cpu().regs().get_pc());
+			  _mcu.get_cpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
+	EXPECT_EQ(m_expectedLR, _mcu.get_cpu().regs().get_lr());
+	EXPECT_EQ(m_expectedPC, _mcu.get_cpu().regs().get_pc());
 }
 
 void CpuTestHarness::setCarry()
 {
-	_system.get_cpu().special_regs().app_status_register().write_carry_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(true);
 }
 
 void CpuTestHarness::clearCarry()
 {
-	_system.get_cpu().special_regs().app_status_register().write_carry_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(false);
 }
 
 void CpuTestHarness::setZero()
 {
-	_system.get_cpu().special_regs().app_status_register().write_zero_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(true);
 }
 
 void CpuTestHarness::clearZero()
 {
-	_system.get_cpu().special_regs().app_status_register().write_zero_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(false);
 }
 
 void CpuTestHarness::setNegative()
 {
-	_system.get_cpu().special_regs().app_status_register().write_neg_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(true);
 }
 
 void CpuTestHarness::clearNegative()
 {
-	_system.get_cpu().special_regs().app_status_register().write_neg_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(false);
 }
 
 void CpuTestHarness::setOverflow()
 {
-	_system.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
 }
 
 void CpuTestHarness::clearOverflow()
 {
-	_system.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
 }
 
 void CpuTestHarness::setIPSR(uint32_t ipsr)
 {
-	_system.get_cpu().special_regs().xpsr_register() = (_system.get_cpu().special_regs().xpsr_register() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
+	_mcu.get_cpu().special_regs().xpsr_register() = (_mcu.get_cpu().special_regs().xpsr_register() & ~IPSR_MASK) | (ipsr & IPSR_MASK);
 }

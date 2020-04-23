@@ -6,9 +6,9 @@
 #include "exception_defs.hpp"
 #include "interrupter.hpp"
 #include "nvic.hpp"
-#include "shpr2_reg.hpp"
-#include "shpr3_reg.hpp"
 #include <gtest/gtest.h>
+
+using namespace micromachine::system;
 
 class ExceptionVectorTestBench : public ::testing::Test {
 protected:

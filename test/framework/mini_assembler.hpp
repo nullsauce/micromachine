@@ -15,10 +15,10 @@ and/or distributed without the express permission of Flavio Roth.
 
 class mini_assembler {
 private:
-	code_generator& _code_gen;
+	helpers::code_generator& _code_gen;
 
 public:
-	mini_assembler(code_generator& code_gen)
+	mini_assembler(helpers::code_generator& code_gen)
 		: _code_gen(code_gen)
 
 	{}

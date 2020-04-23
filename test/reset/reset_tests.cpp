@@ -8,8 +8,10 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "CpuTestFixture.hpp"
-#include "core_registers.hpp"
+#include "registers/core_registers.hpp"
 #include "exception_defs.hpp"
+
+using namespace micromachine::system;
 
 class CpuResetTest : public CpuTestFixture {
 protected:

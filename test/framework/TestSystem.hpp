@@ -27,7 +27,7 @@ public:
 
 private:
 	std::vector<uint8_t> _memoryStorage;
-	class system _system;
+	micromachine::system::mcu _system;
 
 	void initializeInterruptVectorTableWithStubs() {
 		constexpr uint32_t handlers_base = 0x3000;
@@ -67,11 +67,11 @@ public:
 		_system.get_memory().map(_memoryStorage.data(), 0, _memoryStorage.size());
 	}
 
-	const class system& getSystem() const {
+	const micromachine::system::mcu& getSystem() const {
 		return _system;
 	}
 
-	class system& getSystem() {
+	micromachine::system::mcu& getSystem() {
 		return _system;
 	}
 
