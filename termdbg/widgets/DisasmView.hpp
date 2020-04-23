@@ -13,7 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <cpu.hpp>
 
 #include "BreakpointManager.hpp"
-#include "helpers/disasm.hpp"
+#include "helpers/disassembler.hpp"
 #include "instruction/instruction_pair.hpp"
 #include "widgets/FoldableWidgetHeader.hpp"
 
@@ -168,7 +168,7 @@ private:
 		for(size_t i = 0; i < lines_per_page; i++) {
 
 			instruction_pair instruction = _mcu.get_memory().read32_unchecked(address);
-			std::string disasm = disasm::disassemble_instruction(instruction, address);
+			std::string disasm = disassembler::disassemble_instruction(instruction, address);
 			auto maybe_breakpoint = _breakpoint_manager.breakpoint_at(address);
 			bool breakpoint_present = maybe_breakpoint.second;
 			wchar_t breakpoint_symbol = L' ';
