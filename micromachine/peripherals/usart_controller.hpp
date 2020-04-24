@@ -31,8 +31,6 @@ public:
 			return;
 		}
 
-		// consume the current data
-
 		// clear or set isr if any
 		_interrupt_status_register.set_transmit_data_register_empty(
 			_control_register.tx_empty_interrupt_enable());

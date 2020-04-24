@@ -13,7 +13,7 @@
  * @return the next dummy data
  */
 static uint8_t usart_rx_feeder_next_data() {
-	static const std::string data = "I'm your feeder!\n";
+	static const std::string data = "I'm your feeder! ";
 	static uint8_t index = 0;
 	uint8_t d = data[index];
 	index = (index + 1) % data.size();
