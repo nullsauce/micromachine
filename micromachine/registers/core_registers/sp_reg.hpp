@@ -39,7 +39,7 @@ public:
 		_banked_stack_pointers[(size_t)type] = word;
 	}
 
-	uint32_t get_specific_banked_sp(StackType type) {
+	uint32_t get_specific_banked_sp(StackType type) const {
 		return _banked_stack_pointers[(size_t)type];
 	}
 

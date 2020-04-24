@@ -34,7 +34,7 @@ jobs:
         run: |
           make -j $(nproc) all_tests
       - name: Run micromachine tests
-        working-directory: build/test
+        working-directory: build/micromachine-test
         run: |
           ctest -V
       - name: Install SDK dependencies
