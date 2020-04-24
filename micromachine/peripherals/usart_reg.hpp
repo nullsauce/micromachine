@@ -2,10 +2,10 @@
 // Created by joel on 15/04/2020.
 //
 
-#ifndef MICROMACHINE_usart_base_reg_HPP
-#define MICROMACHINE_usart_base_reg_HPP
+#ifndef MICROMACHINE_USART_REG_HPP
+#define MICROMACHINE_USART_REG_HPP
 
-#include "registers/word_reg.hpp"
+#include "registers/memory_mapped_reg.hpp"
 #include <memory>
 namespace micromachine::system {
 
@@ -408,4 +408,4 @@ private:
 };
 }; //namespace micromachine::system
 
-#endif // MICROMACHINE_usart_base_reg_HPP
+#endif // MICROMACHINE_USART_REG_HPP
