@@ -356,6 +356,13 @@ public:
 		, _cr1(cr1)
 		, _callback(callback) {}
 
+
+	void reset() override {
+		set(0);
+		// reset RXNE flag to skip the previous set
+		_isr.set_read_data_register_not_empty(false);
+	}
+
 private:
 	uint32_t get() const override {
 		if(!_cr1.enable()) {

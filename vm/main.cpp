@@ -69,18 +69,21 @@ int main(int argc, char** argv) {
 		}
 	});
 
-	mcu.set_usart_tx_callback([](uint8_t op, uint8_t data){
-	  if(0 == write(STDOUT_FILENO, &data, 1)) {
-		  fprintf(stderr, "failed to write to stdout\n");
-	  }
+	mcu.set_usart_tx_callback([](uint8_t op, uint8_t data) {
+		if(0 == write(STDOUT_FILENO, &data, 1)) {
+			fprintf(stderr, "failed to write to stdout\n");
+		}
 	});
 
-	mcu.set_usart_rx_callback([&mcu](uint8_t& data){
+	mcu.set_usart_rx_callback([&mcu](uint8_t& data) {
 		data = usart_rx_feeder_next_data();
-	  mcu.set_usart_rx_data(data);
+		mcu.set_usart_rx_data(data);
 	});
 
 	mcu.reset(program->entry_point());
+
+	// Setup the first byte in usart RX register
+	mcu.set_usart_rx_data(usart_rx_feeder_next_data());
 
 	auto start = std::chrono::steady_clock::now();
 	decltype(start) end;

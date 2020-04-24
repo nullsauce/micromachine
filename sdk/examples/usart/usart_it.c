@@ -126,7 +126,7 @@ static void wait_xfer_is_completed() {
 
 static void tx_example() {
 	uint8_t data[] = "Hello usart world!\n";
-	usart_transmit_async(&dev, data, sizeof(data));
+	usart_transmit_async(&dev, data, sizeof(data) - 1);
 	wait_xfer_is_completed();
 }
 
