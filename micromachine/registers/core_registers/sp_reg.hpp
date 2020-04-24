@@ -63,7 +63,7 @@ private:
 	}
 
 	uint32_t& current_banked_value() {
-		if(execution_mode::thread == _execution_mode) {
+		if(_execution_mode.is_in_thread_mode()) {
 			return _banked_stack_pointers[_control_reg.sp_sel()];
 		} else {
 			// handler mode
@@ -72,7 +72,7 @@ private:
 	}
 
 	const uint32_t& current_banked_value() const {
-		if(execution_mode::thread == _execution_mode) {
+		if(_execution_mode.is_in_thread_mode()) {
 			return _banked_stack_pointers[_control_reg.sp_sel()];
 		} else {
 			// handler mode

@@ -78,6 +78,7 @@ public:
 						_mem,
 						_exception_vector,
 						_interworking_brancher)
+		, _exec_mode(execution_mode::thread)
 		, _break_signal(false)
 		, _enter_low_power_mode_signal(false)
 		, _debug_instruction_counter(0) {}
@@ -121,7 +122,7 @@ public:
 	void reset(uint32_t initial_pc) {
 		uint32_t initial_sp_main = _mem.read32_unchecked(0U) & 0xFFFFFFFC;
 
-		_exec_mode = execution_mode::thread;
+		_exec_mode.enter_thread_mode();
 
 		_core_regs.reset();
 		_core_regs.set_sp(initial_sp_main);
@@ -229,12 +230,12 @@ public:
 		return _exception_controller;
 	}
 
-	execution_mode get_execution_mode() const {
-		return _exec_mode;
+	execution_mode::mode get_execution_mode() const {
+		return _exec_mode.current_mode();
 	}
 
-	void set_execution_mode(execution_mode execution_mode) {
-		_exec_mode = execution_mode;
+	void set_execution_mode(execution_mode::mode mode) {
+		_exec_mode.enter_mode(mode);
 	}
 
 	exception::priority_t current_execution_priority() const {

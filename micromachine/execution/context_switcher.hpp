@@ -45,7 +45,7 @@ public:
 		, _interworking_brancher(interworking_brancher) {}
 
 	void exception_return(uint32_t ret_address) override {
-		assert(execution_mode::handler == _execution_mode);
+		assert(_execution_mode.is_in_handler_mode());
 
 		if(!bits<4, 24>::of(ret_address).are_set()) {
 			// unpredictable
@@ -79,7 +79,7 @@ public:
 				} else {
 					frame_ptr =
 						_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
-					_execution_mode = execution_mode::handler;
+					_execution_mode.enter_handler_mode();
 					_special_regs.control_register().set_sp_sel(0);
 				}
 				break;
@@ -92,7 +92,7 @@ public:
 				} else {
 					frame_ptr =
 						_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
-					_execution_mode = execution_mode::thread;
+					_execution_mode.enter_thread_mode();
 					_special_regs.control_register().set_sp_sel(0);
 				}
 				break;
@@ -105,7 +105,7 @@ public:
 				} else {
 					frame_ptr =
 						_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
-					_execution_mode = execution_mode::thread;
+					_execution_mode.enter_thread_mode();
 					_special_regs.control_register().set_sp_sel(1);
 					// Assigning CurrentMode to Mode_Thread causes a drop in privilege
 					// if CONTROL.nPRIV is set to 1
@@ -122,7 +122,7 @@ public:
 		//_active_exception_count--;
 		pop_stack(frame_ptr, ret_address);
 
-		if(execution_mode::handler == _execution_mode) {
+		if(_execution_mode.is_in_handler_mode()) {
 			if(0U == _special_regs.interrupt_status_register().exception_num()) {
 				// unpredictable
 				fprintf(stderr,
@@ -174,7 +174,7 @@ public:
 		// 3. Take exception
 
 		// enter handler mode
-		_execution_mode = execution_mode::handler;
+		_execution_mode.enter_handler_mode();
 
 		// set ipsr with exception number
 		_special_regs.interrupt_status_register().set_exception_number(exception_state.number());
@@ -238,8 +238,7 @@ public:
 		// Note that the stack alignment value is ignored.
 		_special_regs.xpsr_register() = xpsr_status & reserved_bits_mask;
 
-		bool force_thread =
-			execution_mode::thread == _execution_mode && _special_regs.control_register().n_priv();
+		bool force_thread = _execution_mode.is_in_thread_mode() && _special_regs.control_register().n_priv();
 		// If force_thread is true, the IPSR (interrupt status register)
 		// exception number is zeroed.
 		if(force_thread) {
@@ -273,7 +272,7 @@ public:
 		_mem.write32(frame_ptr + 24, return_address);
 		_mem.write32(frame_ptr + 28, xpsr_status);
 
-		if(execution_mode::handler == _execution_mode) {
+		if(_execution_mode.is_in_handler_mode()) {
 			_core_regs.set_lr(0xFFFFFFF1); // return to handler
 		} else if(0 == _special_regs.control_register().sp_sel()) {
 			_core_regs.set_lr(0xFFFFFFF9); // return to thread using main stack
