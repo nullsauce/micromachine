@@ -925,7 +925,7 @@ static void exec(const msr instruction,
 			special_regs.primask_register().set_pm(bits<0>::of(regs.get(instruction.rn)));
 		} break;
 		case msr::SpecialRegister::CONTROL: {
-			if(execution_mode::thread == execution_mode) {
+			if(execution_mode.is_in_thread_mode()) {
 				uint32_t val = regs.get(instruction.rn);
 				special_regs.control_register().set_n_priv(bits<0>::of(val));
 				special_regs.control_register().set_sp_sel(bits<1>::of(val));
