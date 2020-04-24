@@ -63,6 +63,8 @@ set(SRCS
 	nvic.hpp
 	programmer.hpp
 	systick.hpp
+    peripherals/usart_reg.hpp
+    peripherals/usart_controller.hpp
 )
 
 add_library(micromachine STATIC ${SRCS})
