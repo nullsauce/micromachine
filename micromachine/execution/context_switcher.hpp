@@ -203,7 +203,7 @@ public:
 		_core_regs.lr() = _mem.read32(frame_ptr + 20);
 		_core_regs.pc() = _mem.read32(frame_ptr + 24);
 		uint32_t xpsr_status = _mem.read32(frame_ptr + 28);
-		uint32_t stack_align = bits<8>::of(xpsr_status) << 2;
+		uint32_t stack_align = bits<9>::of(xpsr_status) << 2;
 
 		switch((uint8_t)bits<0, 4>::of(return_address).extract()) {
 			case 0b0001: /* return to handler */
@@ -250,18 +250,22 @@ public:
 	void push_stack(uint32_t return_address) {
 
 		const size_t stack_frame_size = 32;
+
+		// The 3rd bit of SP is zeroed to ensure proper 8-byte alignment of the
+		// stack frame
+		// It is moved into the 10th bit of the saved XPSR value to be later
+		// restored as 3rd bit of SP when the stack is popped.
 		const uint32_t sp_mask = ~((uint32_t)0b100);
 		const bool frame_ptr_align = bits<2>::of<uint32_t>(_core_regs.sp());
 
-		// TODO: Check docs for conditional stack switch
 		uint32_t frame_ptr = (_core_regs.sp() - stack_frame_size) & sp_mask;
 
 		_core_regs.sp() = frame_ptr;
 
-		// the 9th bit of XPSR status is set with the stack alignment indicator.
+		// the 10th bit of XPSR status is set with the stack alignment indicator.
 		// We copy its value and overwrite the bit at index 8.
 		uint32_t xpsr_status = _special_regs.xpsr_register();
-		bits<8>::of(xpsr_status) = (bool)(frame_ptr_align & 1);
+		bits<9>::of(xpsr_status) = frame_ptr_align;
 
 		_mem.write32(frame_ptr + 0, _core_regs.get(0));
 		_mem.write32(frame_ptr + 4, _core_regs.get(1));

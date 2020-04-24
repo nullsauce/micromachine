@@ -122,6 +122,10 @@ public:
 		return _exception_vector;
 	}
 
+	exception_vector& get_exception_vector() {
+		return _exception_vector;
+	}
+
 	void set_io_callback(generic_io_reg::callback_t callback) {
 		_io_reg_callback = std::move(callback);
 	}

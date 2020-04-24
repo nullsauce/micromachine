@@ -745,9 +745,7 @@ static void exec(const pop instruction,
 
 		// here sp base points to saved value of PC
 		uint32_t address = mem.read32(sp_base);
-		if(address == 0xFFFFFFF9) {
-			int k = 0;
-		}
+
 		// fprintf(stderr, "pop pc: %08x\n", address);
 		// address.set_bit(0); // fix thumb bit ??'
 		_interworking_brancher.branch_interworking(address);
@@ -788,6 +786,7 @@ static void exec(const branch instruction, core_registers& regs, apsr_reg& flags
 	uint32_t pc = regs.pc();
 	regs.pc() = pc + delta;
 }
+
 static void exec(const unconditional_branch instruction, core_registers& regs) {
 	int32_t delta = instruction.offset();
 	uint32_t pc = regs.pc();

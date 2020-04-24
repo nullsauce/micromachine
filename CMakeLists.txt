@@ -15,7 +15,7 @@ include(cotire)
 add_subdirectory(micromachine)
 add_subdirectory(vm)
 add_subdirectory(termdbg)
-add_subdirectory(test)
+add_subdirectory(micromachine-test)
 add_subdirectory(benchmark)
 
 ExternalProject_Add(micromachine_sdk_project

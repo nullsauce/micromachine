@@ -70,7 +70,6 @@ public:
 		set_enable(other.is_enabled());
 	}
 
-protected:
 	void set_active(bool active) {
 		_active = active;
 	}
@@ -218,13 +217,11 @@ public:
 
 	exception::priority_t priority() const override {
 		// not supported
-		micromachine_fail("Can't get priority of an unimplemented exception");
-		return 126;
+		return exception::MAX_PRIORITY;
 	}
 
 	void set_priority(exception::priority_t priority) override {
 		// not supported
-		micromachine_fail("Can't set priority of an unimplemented exception");
 	}
 };
 
