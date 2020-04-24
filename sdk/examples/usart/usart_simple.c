@@ -20,6 +20,11 @@ int usart_init(struct usart_device* dev) {
 	return 0;
 }
 
+int usart_deinit(struct usart_device* dev) {
+	CLEAR_BIT(dev->port->CR1, USART_CR1_UE);
+	return 0;
+}
+
 static void usart_transmit(struct usart_device* dev, uint8_t* data, size_t len) {
 
 	size_t transmitted = 0;
@@ -43,4 +48,6 @@ void main() {
 
 	uint8_t data[] = "Hello usart world!\n";
 	usart_transmit(&dev, data, sizeof(data));
+
+	usart_deinit(&dev);
 }
