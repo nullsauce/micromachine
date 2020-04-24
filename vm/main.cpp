@@ -58,6 +58,12 @@ int main(int argc, char** argv) {
 		}
 	});
 
+	mcu.set_usart_tx_callback([](uint8_t op, uint8_t data){
+	  if(0 == write(STDOUT_FILENO, &data, 1)) {
+		  fprintf(stderr, "failed to write to stdout\n");
+	  }
+	});
+
 	mcu.reset(program->entry_point());
 
 	auto start = std::chrono::steady_clock::now();
