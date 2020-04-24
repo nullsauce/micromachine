@@ -47,7 +47,7 @@ void main() {
 	usart_init(&dev);
 
 	uint8_t data[] = "Hello usart world!\n";
-	usart_transmit(&dev, data, sizeof(data));
+	usart_transmit(&dev, data, sizeof(data) - 1);
 
 	usart_deinit(&dev);
 }
