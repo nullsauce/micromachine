@@ -198,6 +198,10 @@ public:
 		return _exception_vector;
 	}
 
+	exception_vector& exceptions() {
+		return _exception_vector;
+	}
+
 	memory& mem() {
 		return _mem;
 	}
