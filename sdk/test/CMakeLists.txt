@@ -3,6 +3,7 @@ add_subdirectory(timer_test)
 add_subdirectory(arithmetic_test)
 add_subdirectory(static_initialization)
 add_subdirectory(cpuid_test)
+add_subdirectory(usart_test)
 
 # pass the --testing flag to the vm to enable various testing behaviors
 # such as filling uninitialized memory with non-zero values
@@ -63,3 +64,14 @@ add_test_command(
 	${CMAKE_CURRENT_SOURCE_DIR}/cpuid_test/expected_stdout.txt
 )
 
+add_test_command(
+		usart_simple_test
+		${CMAKE_CURRENT_BINARY_DIR}/usart_test/usart_simple_test
+		${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_simple_expected_stdout.txt
+)
+
+add_test_command(
+		usart_it_test
+		${CMAKE_CURRENT_BINARY_DIR}/usart_test/usart_it_test
+		${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_it_expected_stdout.txt
+)
