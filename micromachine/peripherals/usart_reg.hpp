@@ -61,10 +61,10 @@ public:
 	* An interrupt is generated if @ref usart_cr1_reg::rx_not_empty_interrupt_enable_bit is
 	* set.
 	*
-	* @see set_read_data_register_not_empty
-	* @see read_data_register_not_empty
+	* @see set_rx_not_empty
+	* @see rx_not_empty
 	*/
-	using read_data_register_not_empty_bit = bits<1>;
+	using rx_not_empty_bit = bits<1>;
 
 	/**
 	 * Transmission complete
@@ -72,7 +72,7 @@ public:
 	 * This bit is set by hardware if the transmission of a frame containing data is complete
 	 * and if @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is set. An interrupt is generated if
 	 * @ref usart_cr1_reg::tx_complete_interrupt_enable_bit is set. It is cleared by software
-	 * writing a 1 to @ref usart_icr::transmission_complete_bit or by a write to the usart_tx
+	 * writing a 1 to @ref usart_icr::tx_complete_bit or by a write to the usart_tx
 	 * register.
 	 *
 	 * An interrupt is generated if TCIE is set
@@ -80,10 +80,10 @@ public:
 	 * 1: Transmission is complete
 	 *
 	 * @see usart_cr1_reg::tx_complete_interrupt_enable_bit
-	 * @see transmission_complete
-	 * @see set_transmission_complete
+	 * @see tx_complete
+	 * @see set_tx_complete
 	 */
-	using transmission_complete_bit = bits<2>;
+	using tx_complete_bit = bits<2>;
 
 	/**
 	 * This bit is set when the content of @ref usart_tx register has been
@@ -97,33 +97,33 @@ public:
 	 *
 	 * @see usart_cr1_reg::tx_empty_interrupt_enable_bit
 	 * @see transmit_data_register_empty
-	 * @see set_transmit_data_register_empty
+	 * @see set_tx_empty
 	 */
-	using transmit_data_register_empty_bit = bits<3>;
+	using tx_empty_bit = bits<3>;
 
 
-	bool transmit_data_register_empty() {
-		return self<transmit_data_register_empty_bit>();
+	bool tx_empty() {
+		return self<tx_empty_bit>();
 	}
 
-	void set_transmit_data_register_empty(bool flag) {
-		self<transmit_data_register_empty_bit>() = flag;
+	void set_tx_empty(bool flag) {
+		self<tx_empty_bit>() = flag;
 	}
 
-	bool transmission_complete() {
-		return self<transmission_complete_bit>();
+	bool tx_complete() {
+		return self<tx_complete_bit>();
 	}
 
-	void set_transmission_complete(bool flag) {
-		self<transmission_complete_bit>() = flag;
+	void set_tx_complete(bool flag) {
+		self<tx_complete_bit>() = flag;
 	}
 
-	bool read_data_register_not_empty() {
-		return self<read_data_register_not_empty_bit>();
+	bool rx_not_empty() {
+		return self<rx_not_empty_bit>();
 	}
 
-	void set_read_data_register_not_empty(bool flag) {
-		self<read_data_register_not_empty_bit>() = flag;
+	void set_rx_not_empty(bool flag) {
+		self<rx_not_empty_bit>() = flag;
 	}
 
 	uint32_t read() override {
@@ -197,7 +197,7 @@ public:
 	 * transmit data register empty interrupt enable.
 	 * This bit is set and cleared by software.
 	 * 0: Interrupt is inhibited
-	 * 1: A USART interrupt is generated whenever @ref transmit_data_register_empty_bit = 1 in the
+	 * 1: A USART interrupt is generated whenever @ref tx_empty_bit = 1 in the
 	 * USART_ISR register.
 	 *
 	 * @see tx_empty_interrupt_enable
@@ -255,8 +255,8 @@ private:
 		/*
 		 * Ensure that the interrupt is set or cleared depending of txe/txc option bits in cr1.
 		 */
-		_isr.set_transmit_data_register_empty(tx_empty_interrupt_enable());
-		_isr.set_transmission_complete(tx_complete_interrupt_enable());
+		_isr.set_tx_empty(tx_empty_interrupt_enable());
+		_isr.set_tx_complete(tx_complete_interrupt_enable());
 	}
 
 	usart_is_reg& _isr;
@@ -275,32 +275,32 @@ public:
 	usart_ic_reg(usart_is_reg& isr)
 		: _isr(isr) {}
 
-	using read_data_register_not_empty_bit = bits<1>;
+	using rx_not_empty_bit = bits<1>;
 
 	/**
 	 * Transmission complete clear flag.
-	 * Clears @ref usart_is_reg::transmission_complete_bit bit.
-	 * @see transmission_complete
-	 * @see set_transmission_complete
+	 * Clears @ref usart_is_reg::tx_complete_bit bit.
+	 * @see tx_complete
+	 * @see set_tx_complete
 	 */
-	using transmission_complete_bit = bits<2>;
+	using tx_complete_bit = bits<2>;
 
-	bool read_data_register_not_empty() {
-		return self<read_data_register_not_empty_bit>();
+	bool rx_not_empty() {
+		return self<rx_not_empty_bit>();
 	}
 
-	void set_read_data_register_not_empty(bool flag) {
-		self<read_data_register_not_empty_bit>() = flag;
+	void set_rx_not_empty(bool flag) {
+		self<rx_not_empty_bit>() = flag;
 	}
 
-	bool transmission_complete() const {
-		return self<transmission_complete_bit>();
+	bool tx_complete() const {
+		return self<tx_complete_bit>();
 	}
 
-	void set_transmission_complete(bool flag) {
-		self<transmission_complete_bit>() = flag;
+	void set_tx_complete(bool flag) {
+		self<tx_complete_bit>() = flag;
 		if(flag) {
-			_isr.set_transmission_complete(false);
+			_isr.set_tx_complete(false);
 		}
 	}
 
@@ -319,8 +319,8 @@ private:
 
 	void set(uint32_t word) override {
 		_word = (word & MASK);
-		if(_word & _isr.transmission_complete()) {
-			_isr.set_transmission_complete(false);
+		if(_word & _isr.tx_complete()) {
+			_isr.set_tx_complete(false);
 		}
 	}
 
@@ -364,8 +364,8 @@ private:
 		bits<0, 8>::of(_word) = word;
 
 		// clear txc and txe
-		_isr.set_transmit_data_register_empty(false);
-		_isr.set_transmission_complete(false);
+		_isr.set_tx_empty(false);
+		_isr.set_tx_complete(false);
 
 		// transmit data
 		uint8_t data = static_cast<uint8_t>(bits<0, 8>::of(_word));
@@ -379,10 +379,10 @@ private:
 
 		// set interrupt if needed
 		if(_cr1.tx_empty_interrupt_enable()) {
-			_isr.set_transmit_data_register_empty(true);
+			_isr.set_tx_empty(true);
 		}
 		if(_cr1.tx_complete_interrupt_enable()) {
-			_isr.set_transmission_complete(true);
+			_isr.set_tx_complete(true);
 		}
 	}
 
@@ -411,7 +411,7 @@ public:
 	void reset() override {
 		set(0);
 		// reset RXNE flag to skip the previous set
-		_isr.set_read_data_register_not_empty(false);
+		_isr.set_rx_not_empty(false);
 	}
 
 	uint32_t read() override {
@@ -427,12 +427,12 @@ private:
 			return 0;
 		}
 
-		if(!_isr.read_data_register_not_empty()) {
+		if(!_isr.rx_not_empty()) {
 			return 0;
 		}
 
 		uint32_t word = bits<0, 8>::of(_word);
-		_isr.set_read_data_register_not_empty(false);
+		_isr.set_rx_not_empty(false);
 
 		if(_callback) {
 			// set next data to _word
@@ -450,13 +450,13 @@ private:
 //			return;
 //		}
 
-		if(_isr.read_data_register_not_empty()) {
+		if(_isr.rx_not_empty()) {
 			return;
 		}
 
 		bits<0, 8>::of(_word) = word;
 //		if(_cr1.rx_not_empty_interrupt_enable()) {
-		_isr.set_read_data_register_not_empty(true);
+		_isr.set_rx_not_empty(true);
 //		}
 	}
 
