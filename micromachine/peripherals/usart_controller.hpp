@@ -31,8 +31,8 @@ public:
 
 		static uint32_t old_isr = 0;
 		static uint32_t old_cr1 = 0;
-		uint32_t isr = _interrupt_status_register;
-		uint32_t cr1 = _control_register;
+		uint32_t isr = _interrupt_status_register.read();
+		uint32_t cr1 = _control_register.read();
 
 		// make sure exception is raised only on changed rather than on each tick
 		if (old_cr1 != cr1 || old_isr != isr) {
