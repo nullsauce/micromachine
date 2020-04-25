@@ -31,7 +31,9 @@ public:
 			return;
 		}
 
-		// clear or set isr if any
+		/*
+		 * Ensure that the interrupt is set or cleared depending of txe/txc option bits in cr1.
+		 */
 		_interrupt_status_register.set_transmit_data_register_empty(
 			_control_register.tx_empty_interrupt_enable());
 

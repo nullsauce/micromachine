@@ -86,8 +86,8 @@ public:
 		, _systick(_exception_controller)
 		, _usart_is_reg(_usart_control_reg)
 		, _usart_ic_reg(_usart_is_reg)
-		, _usart_tx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_tx_reg_callback))
-		, _usart_rx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_rx_reg_callback))
+		, _usart_tx_reg(_usart_is_reg, _usart_control_reg, _usart_tx_reg_callback)
+		, _usart_rx_reg(_usart_is_reg, _usart_control_reg, _usart_rx_reg_callback)
 		, _usart_ctrl(_usart_control_reg,
 					  _usart_is_reg,
 					  _usart_ic_reg,
