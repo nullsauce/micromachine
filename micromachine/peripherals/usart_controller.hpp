@@ -31,16 +31,6 @@ public:
 			return;
 		}
 
-		/*
-		 * Ensure that the interrupt is set or cleared depending of txe/txc option bits in cr1.
-		 */
-		_interrupt_status_register.set_transmit_data_register_empty(
-			_control_register.tx_empty_interrupt_enable());
-
-		_interrupt_status_register.set_transmission_complete(
-			_control_register.tx_complete_interrupt_enable()
-		);
-
 		// raise interrupt if any
 		uint32_t isr = _interrupt_status_register;
 		uint32_t cr1 = _control_register;
