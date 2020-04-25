@@ -35,13 +35,7 @@ private:
 	generic_io_reg _generic_io_reg;
 	systick _systick;
 
-	// TODO usart_controller should create internal register
-	usart_cr1_reg		_usart_control_reg;
-	usart_is_reg		_usart_is_reg;
-	usart_ic_reg		_usart_ic_reg;
-	usart_tx_reg		_usart_tx_reg;
-	usart_rx_reg		_usart_rx_reg;
-	usart_controller	_usart_ctrl;
+	usart_controller _usart_controller;
 
 	exception_vector _exception_vector;
 	exception_controller _exception_controller;
@@ -70,11 +64,11 @@ private:
 			{nvic::NVIC_IPR5, _nvic.priority_reg<5>()},
 			{nvic::NVIC_IPR6, _nvic.priority_reg<6>()},
 			{nvic::NVIC_IPR7, _nvic.priority_reg<7>()},
-			{usart_cr1_reg::USART_CR1, _usart_control_reg},
-			{usart_is_reg::USART_ISR, _usart_is_reg},
-			{usart_ic_reg::USART_ICR, _usart_ic_reg},
-			{usart_rx_reg::USART_RX, _usart_rx_reg},
-			{usart_tx_reg::USART_TX, _usart_tx_reg},
+			{usart_cr1_reg::USART_CR1, _usart_controller.control_register()},
+			{usart_is_reg::USART_ISR, _usart_controller.interrupt_status_register()},
+			{usart_ic_reg::USART_ICR, _usart_controller.interrupt_clear_register()},
+			{usart_rx_reg::USART_RX, _usart_controller.rx_register()},
+			{usart_tx_reg::USART_TX, _usart_controller.tx_register()},
 		};
 	}
 
@@ -84,16 +78,9 @@ public:
 	mcu()
 		: _generic_io_reg(_io_reg_callback)
 		, _systick(_exception_controller)
-		, _usart_control_reg(_usart_is_reg)
-		, _usart_ic_reg(_usart_is_reg)
-		, _usart_tx_reg(_usart_is_reg, _usart_control_reg, _usart_tx_reg_callback)
-		, _usart_rx_reg(_usart_is_reg, _usart_control_reg, _usart_rx_reg_callback)
-		, _usart_ctrl(_usart_control_reg,
-					  _usart_is_reg,
-					  _usart_ic_reg,
-					  _usart_rx_reg,
-					  _usart_tx_reg,
-					  _exception_controller)
+		, _usart_controller(_exception_controller,
+					  _usart_rx_reg_callback,
+					  _usart_tx_reg_callback)
 		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg)
 		, _exception_controller(_exception_vector)
 		, _memory(_exception_controller, generate_system_control_register_map())
@@ -107,16 +94,9 @@ public:
 		, _io_reg_callback(other._io_reg_callback)
 		, _generic_io_reg(_io_reg_callback)
 		, _systick(_exception_controller, other._systick)
-		, _usart_control_reg(_usart_is_reg)
-		, _usart_ic_reg(_usart_is_reg)
-		, _usart_tx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_tx_reg_callback))
-		, _usart_rx_reg(_usart_is_reg, _usart_control_reg, std::ref(_usart_rx_reg_callback))
-		, _usart_ctrl(_usart_control_reg,
-					  _usart_is_reg,
-					  _usart_ic_reg,
-					  _usart_rx_reg,
-					  _usart_tx_reg,
-					  _exception_controller)
+		, _usart_controller(_exception_controller,
+					  _usart_rx_reg_callback,
+					  _usart_tx_reg_callback)
 		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, other._exception_vector)
 		, _exception_controller(_exception_vector)
 		, _memory(_exception_controller, generate_system_control_register_map())
@@ -155,11 +135,11 @@ public:
 	}
 
 	void set_usart_rx_data(uint8_t data) {
-		_usart_ctrl.rx_push_data(data);
+		_usart_controller.rx_push_data(data);
 	}
 
 	void reset(uint32_t program_entry_point) {
-		_usart_ctrl.reset();
+		_usart_controller.reset();
 		_systick.reset();
 		_shpr2_reg.reset();
 		_shpr3_reg.reset();
