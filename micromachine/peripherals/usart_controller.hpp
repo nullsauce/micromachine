@@ -12,18 +12,16 @@ namespace micromachine::system {
 
 class usart_controller {
 public:
-	usart_controller(usart_cr1_reg& control_register,
-					 usart_is_reg& interrupt_status_register,
-					 usart_ic_reg& interrupt_clear_register,
-					 usart_rx_reg& rx_register,
-					 usart_tx_reg& tx_register,
-					 exception_controller& exception_controller)
-		: _control_register(control_register)
-		, _interrupt_status_register(interrupt_status_register)
-		, _interrupt_clear_register(interrupt_clear_register)
-		, _rx_register(rx_register)
-		, _tx_register(tx_register)
-		, _exception_controller(exception_controller) {}
+	usart_controller(exception_controller& exception_controller,
+					 const usart_rx_reg::callback_t& rx_callback,
+					 const usart_tx_reg::callback_t& tx_callback
+					 )
+		: _control_register(_interrupt_status_register)
+		, _interrupt_clear_register(_interrupt_status_register)
+		, _rx_register(_interrupt_status_register, _control_register, rx_callback)
+		, _tx_register(_interrupt_status_register, _control_register, tx_callback)
+		, _exception_controller(exception_controller)
+	{}
 
 	void run() {
 
@@ -103,12 +101,11 @@ public:
 	}
 
 private:
-	usart_cr1_reg& _control_register;
-	usart_is_reg& _interrupt_status_register;
-	usart_ic_reg& _interrupt_clear_register;
-	usart_rx_reg& _rx_register;
-	usart_tx_reg& _tx_register;
-
+	usart_cr1_reg _control_register;
+	usart_is_reg _interrupt_status_register;
+	usart_ic_reg _interrupt_clear_register;
+	usart_rx_reg _rx_register;
+	usart_tx_reg _tx_register;
 	exception_controller& _exception_controller;
 };
 }; //namespace micromachine::system
