@@ -23,6 +23,100 @@ class usart_tx_reg;
 
 class usart_rx_reg;
 
+
+/**
+ * Usart Interrupt Status register
+ */
+class usart_is_reg : public memory_mapped_reg {
+public:
+	using memory_mapped_reg::operator=;
+	using memory_mapped_reg::operator uint32_t;
+
+	static constexpr uint32_t USART_ISR = usart::USART_BASE + 0x04;
+	static constexpr uint32_t MASK = 0b1110;
+
+	/**
+	* This bit is set by hardware when the data has been transferred to the usart_rx register. It
+	* is cleared by a read to the usart_rx_reg register.
+	*
+	* An interrupt is generated if @ref usart_cr1_reg::rx_not_empty_interrupt_enable_bit is
+	* set.
+	*
+	* @see set_read_data_register_not_empty
+	* @see read_data_register_not_empty
+	*/
+	using read_data_register_not_empty_bit = bits<1>;
+
+	/**
+	 * Transmission complete
+	 *
+	 * This bit is set by hardware if the transmission of a frame containing data is complete
+	 * and if @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is set. An interrupt is generated if
+	 * @ref usart_cr1_reg::tx_complete_interrupt_enable_bit is set. It is cleared by software
+	 * writing a 1 to @ref usart_icr::transmission_complete_bit or by a write to the usart_tx
+	 * register.
+	 *
+	 * An interrupt is generated if TCIE is set
+	 * 0: Transmission is not complete
+	 * 1: Transmission is complete
+	 *
+	 * @see usart_cr1_reg::tx_complete_interrupt_enable_bit
+	 * @see transmission_complete
+	 * @see set_transmission_complete
+	 */
+	using transmission_complete_bit = bits<2>;
+
+	/**
+	 * This bit is set when the content of @ref usart_tx register has been
+	 * transferred to the VM. It is cleared by a write to the @ref usart_tx register.
+	 *
+	 * An interrupt is generated if the @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is
+	 * set.
+	 *
+	 * 0: data is not transferred.
+	 * 1: data is transferred.
+	 *
+	 * @see usart_cr1_reg::tx_empty_interrupt_enable_bit
+	 * @see transmit_data_register_empty
+	 * @see set_transmit_data_register_empty
+	 */
+	using transmit_data_register_empty_bit = bits<3>;
+
+
+	bool transmit_data_register_empty() {
+		return self<transmit_data_register_empty_bit>();
+	}
+
+	void set_transmit_data_register_empty(bool flag) {
+		self<transmit_data_register_empty_bit>() = flag;
+	}
+
+	bool transmission_complete() {
+		return self<transmission_complete_bit>();
+	}
+
+	void set_transmission_complete(bool flag) {
+		self<transmission_complete_bit>() = flag;
+	}
+
+	bool read_data_register_not_empty() {
+		return self<read_data_register_not_empty_bit>();
+	}
+
+	void set_read_data_register_not_empty(bool flag) {
+		self<read_data_register_not_empty_bit>() = flag;
+	}
+
+private:
+	uint32_t get() const override {
+		return _word & MASK;
+	}
+
+	void set(uint32_t word) override {
+		_word = (word & MASK);
+	}
+};
+
 /**
  * Control register 1
  */
@@ -33,6 +127,7 @@ public:
 	static constexpr uint32_t USART_CR1 = usart::USART_BASE + 0x00;
 	static constexpr uint32_t MASK = 0b1111;
 
+	usart_cr1_reg(usart_is_reg& isr) : _isr(isr){}
 	/**
 	 * USART enable
 	 *
@@ -122,107 +217,14 @@ private:
 
 	void set(uint32_t word) override {
 		_word = (word & MASK);
-	}
-};
-
-/**
- * Usart Interrupt Status register
- */
-class usart_is_reg : public memory_mapped_reg {
-public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
-
-	static constexpr uint32_t USART_ISR = usart::USART_BASE + 0x04;
-	static constexpr uint32_t MASK = 0b1110;
-
-
-	usart_is_reg(usart_cr1_reg& control_register)
-		: _control_register(control_register) {}
-
-
-	/**
-	* This bit is set by hardware when the data has been transferred to the usart_rx register. It
-	* is cleared by a read to the usart_rx_reg register.
-	*
-	* An interrupt is generated if @ref usart_cr1_reg::rx_not_empty_interrupt_enable_bit is
-	* set.
-	*
-	* @see set_read_data_register_not_empty
-	* @see read_data_register_not_empty
-	*/
-	using read_data_register_not_empty_bit = bits<1>;
-
-	/**
-	 * Transmission complete
-	 *
-	 * This bit is set by hardware if the transmission of a frame containing data is complete
-	 * and if @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is set. An interrupt is generated if
-	 * @ref usart_cr1_reg::tx_complete_interrupt_enable_bit is set. It is cleared by software
-	 * writing a 1 to @ref usart_icr::transmission_complete_bit or by a write to the usart_tx
-	 * register.
-	 *
-	 * An interrupt is generated if TCIE is set
-	 * 0: Transmission is not complete
-	 * 1: Transmission is complete
-	 *
-	 * @see usart_cr1_reg::tx_complete_interrupt_enable_bit
-	 * @see transmission_complete
-	 * @see set_transmission_complete
-	 */
-	using transmission_complete_bit = bits<2>;
-
-	/**
-	 * This bit is set when the content of @ref usart_tx register has been
-	 * transferred to the VM. It is cleared by a write to the @ref usart_tx register.
-	 *
-	 * An interrupt is generated if the @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is
-	 * set.
-	 *
-	 * 0: data is not transferred.
-	 * 1: data is transferred.
-	 *
-	 * @see usart_cr1_reg::tx_empty_interrupt_enable_bit
-	 * @see transmit_data_register_empty
-	 * @see set_transmit_data_register_empty
-	 */
-	using transmit_data_register_empty_bit = bits<3>;
-
-
-	bool transmit_data_register_empty() {
-		return self<transmit_data_register_empty_bit>();
+		/*
+		 * Ensure that the interrupt is set or cleared depending of txe/txc option bits in cr1.
+		 */
+		_isr.set_transmit_data_register_empty(tx_empty_interrupt_enable());
+		_isr.set_transmission_complete(tx_complete_interrupt_enable());
 	}
 
-	void set_transmit_data_register_empty(bool flag) {
-		self<transmit_data_register_empty_bit>() = flag;
-	}
-
-	bool transmission_complete() {
-		return self<transmission_complete_bit>();
-	}
-
-	void set_transmission_complete(bool flag) {
-		self<transmission_complete_bit>() = flag;
-	}
-
-	bool read_data_register_not_empty() {
-		return self<read_data_register_not_empty_bit>();
-	}
-
-	void set_read_data_register_not_empty(bool flag) {
-		self<read_data_register_not_empty_bit>() = flag;
-	}
-
-private:
-	uint32_t get() const override {
-		return _word & MASK;
-	}
-
-	void set(uint32_t word) override {
-		_word = (word & MASK);
-	}
-
-	usart_cr1_reg& _control_register;
+	usart_is_reg& _isr;
 };
 
 /**
