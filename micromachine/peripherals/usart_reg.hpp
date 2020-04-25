@@ -5,8 +5,9 @@
 #ifndef MICROMACHINE_USART_REG_HPP
 #define MICROMACHINE_USART_REG_HPP
 
-#include "registers/memory_mapped_reg.hpp"
 #include <memory>
+#include "registers/memory_mapped_reg.hpp"
+
 namespace micromachine::system {
 
 namespace usart {
@@ -24,13 +25,31 @@ class usart_tx_reg;
 class usart_rx_reg;
 
 
-/**
- * Usart Interrupt Status register
- */
-class usart_is_reg : public memory_mapped_reg {
+class iusart_reg :public memory_mapped_reg{
 public:
 	using memory_mapped_reg::operator=;
 	using memory_mapped_reg::operator uint32_t;
+
+	/**
+	 * Return the underlying word.
+	 * @details the virtual machine (vm) should use this function instead of memory_mapped_reg::operator uint32_t
+	 */
+	virtual uint32_t read() = 0;
+
+	/**
+	 * Write value to the underlying word.
+	 * @details the virtual machine (vm) should use this function instead of memory_mapped_reg::operator=
+	 */
+	virtual void write(uint32_t word) = 0;
+};
+
+/**
+ * Usart Interrupt Status register
+ */
+class usart_is_reg : public iusart_reg {
+public:
+	using iusart_reg::operator=;
+	using iusart_reg::operator uint32_t;
 
 	static constexpr uint32_t USART_ISR = usart::USART_BASE + 0x04;
 	static constexpr uint32_t MASK = 0b1110;
@@ -107,6 +126,14 @@ public:
 		self<read_data_register_not_empty_bit>() = flag;
 	}
 
+	uint32_t read() override {
+		return get();
+	}
+
+	void write(uint32_t word) override {
+		set(word);
+	}
+
 private:
 	uint32_t get() const override {
 		return _word & MASK;
@@ -120,10 +147,10 @@ private:
 /**
  * Control register 1
  */
-class usart_cr1_reg : public memory_mapped_reg {
+class usart_cr1_reg : public iusart_reg {
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using iusart_reg::operator=;
+	using iusart_reg::operator uint32_t;
 	static constexpr uint32_t USART_CR1 = usart::USART_BASE + 0x00;
 	static constexpr uint32_t MASK = 0b1111;
 
@@ -210,6 +237,14 @@ public:
 		self<enable_bit>() = flag;
 	}
 
+	uint32_t read() override {
+		return get();
+	}
+
+	void write(uint32_t word) override {
+		set(word);
+	}
+
 private:
 	uint32_t get() const override {
 		return _word & MASK;
@@ -230,10 +265,10 @@ private:
 /**
  * USART interrupt clear register
  */
-class usart_ic_reg : public memory_mapped_reg {
+class usart_ic_reg : public iusart_reg {
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using iusart_reg::operator=;
+	using iusart_reg::operator uint32_t;
 	static constexpr uint32_t USART_ICR = usart::USART_BASE + 0x08;
 	static constexpr uint32_t MASK = 0b0110;
 
@@ -269,6 +304,14 @@ public:
 		}
 	}
 
+	uint32_t read() override {
+		return get();
+	}
+
+	void write(uint32_t word) override {
+		set(word);
+	}
+
 private:
 	uint32_t get() const override {
 		return _word & MASK;
@@ -287,10 +330,10 @@ private:
 /**
  * USART tx register
  */
-class usart_tx_reg : public memory_mapped_reg {
+class usart_tx_reg : public iusart_reg {
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using iusart_reg::operator=;
+	using iusart_reg::operator uint32_t;
 	static constexpr uint32_t USART_TX = usart::USART_BASE + 0x10;
 	using callback_t = std::function<void(uint8_t op, uint8_t data)>;
 
@@ -299,6 +342,13 @@ public:
 		, _cr1(cr1)
 		, _callback(callback) {}
 
+	uint32_t read() override {
+		return 0;
+	}
+
+	void write(uint32_t word) override {
+		set(word);
+	}
 
 private:
 	uint32_t get() const override {
@@ -306,7 +356,6 @@ private:
 	}
 
 	void set(uint32_t word) override {
-
 		if(!_cr1.enable()) {
 			return;
 		}
@@ -346,10 +395,10 @@ private:
 /**
  * USART rx register
  */
-class usart_rx_reg : public memory_mapped_reg {
+class usart_rx_reg : public iusart_reg {
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using iusart_reg::operator=;
+	using iusart_reg::operator uint32_t;
 	using callback_t = std::function<void(uint8_t& data)>;
 	static constexpr uint32_t USART_RX = usart::USART_BASE + 0x0c;
 
@@ -363,6 +412,13 @@ public:
 		set(0);
 		// reset RXNE flag to skip the previous set
 		_isr.set_read_data_register_not_empty(false);
+	}
+
+	uint32_t read() override {
+		return get();
+	}
+	void write(uint32_t word) override {
+		set(word);
 	}
 
 private:
