@@ -24,8 +24,7 @@ class usart_tx_reg;
 
 class usart_rx_reg;
 
-
-class iusart_reg :public memory_mapped_reg{
+class iusart_reg : public memory_mapped_reg {
 public:
 	using memory_mapped_reg::operator=;
 	using memory_mapped_reg::operator uint32_t;
@@ -55,21 +54,21 @@ public:
 	static constexpr uint32_t MASK = 0b1110;
 
 	/**
-	* This bit is set by hardware when the data has been transferred to the usart_rx register. It
-	* is cleared by a read to the usart_rx_reg register.
-	*
-	* An interrupt is generated if @ref usart_cr1_reg::rx_not_empty_interrupt_enable_bit is
-	* set.
-	*
-	* @see set_rx_not_empty
-	* @see rx_not_empty
-	*/
+	 * This bit is set when the data has been transferred to the usart_rx register. It
+	 * is cleared by a read to the usart_rx_reg register.
+	 *
+	 * An interrupt is generated if @ref usart_cr1_reg::rx_not_empty_interrupt_enable_bit is
+	 * set.
+	 *
+	 * @see set_rx_not_empty
+	 * @see rx_not_empty
+	 */
 	using rx_not_empty_bit = bits<1>;
 
 	/**
 	 * Transmission complete
 	 *
-	 * This bit is set by hardware if the transmission of a frame containing data is complete
+	 * This bit is set if the transmission of a frame containing data is complete
 	 * and if @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is set. An interrupt is generated if
 	 * @ref usart_cr1_reg::tx_complete_interrupt_enable_bit is set. It is cleared by software
 	 * writing a 1 to @ref usart_icr::tx_complete_bit or by a write to the usart_tx
@@ -100,7 +99,6 @@ public:
 	 * @see set_tx_empty
 	 */
 	using tx_empty_bit = bits<3>;
-
 
 	bool tx_empty() {
 		return self<tx_empty_bit>();
@@ -145,7 +143,8 @@ private:
 };
 
 /**
- * Control register 1
+ * Control register 1.
+ * This register allows user to configure the usart peripheral and register for interrupts.
  */
 class usart_cr1_reg : public iusart_reg {
 public:
@@ -154,14 +153,16 @@ public:
 	static constexpr uint32_t USART_CR1 = usart::USART_BASE + 0x00;
 	static constexpr uint32_t MASK = 0b1111;
 
-	usart_cr1_reg(usart_is_reg& isr) : _isr(isr){}
+	explicit usart_cr1_reg(usart_is_reg& isr)
+		: _isr(isr) {}
+
 	/**
 	 * USART enable
 	 *
 	 * When this bit is cleared, output is stopped immediately, and
 	 * current operations are discarded. The configuration of the USART is kept, but all the
 	 * status flags, in the USART_ISR are set to their default values. This bit is set and
-	 * cleared by software. 0: USART prescaler and outputs disabled. 1: USART enabled.
+	 * cleared by software. 0: USART disabled. 1: USART enabled.
 	 *
 	 * @see enable
 	 * @see set_enable
@@ -172,7 +173,7 @@ public:
 	 * Read data register not empty interrupt enable.
 	 * This bit is set and cleared by software.
 	 * 0: Interrupt is inhibited
-	 * 1: A USART interrupt is generated whenever @ref rx_not_empty_int_status = 1 in the
+	 * 1: A USART interrupt is generated whenever @ref usart_is_reg::rx_not_empty_bit = 1 in the
 	 * USART_ISR register.
 	 *
 	 * @see rx_not_empty_interrupt_enable
@@ -184,7 +185,7 @@ public:
 	 * transmission complete interrupt enable.
 	 * This bit is set and cleared by software.
 	 * 0: Interrupt is inhibited
-	 * 1: A USART interrupt is generated whenever @ref tx_complete_int_status = 1 in the
+	 * 1: A USART interrupt is generated whenever @ref tx_complete_bit = 1 in the
 	 * USART_ISR register.
 	 *
 	 * @see tx_complete_interrupt_enable
@@ -252,6 +253,10 @@ private:
 
 	void set(uint32_t word) override {
 		_word = (word & MASK);
+		if((_word & enable()) == 0) {
+			_isr.write(0);
+			return;
+		}
 		/*
 		 * Ensure that the interrupt is set or cleared depending of txe/txc option bits in cr1.
 		 */
@@ -363,7 +368,7 @@ private:
 		// consume the byte to send
 		bits<0, 8>::of(_word) = word;
 
-		// clear txc and txe
+		// clear txe and txc
 		_isr.set_tx_empty(false);
 		_isr.set_tx_complete(false);
 
@@ -391,7 +396,6 @@ private:
 	const callback_t& _callback;
 };
 
-
 /**
  * USART rx register
  */
@@ -406,7 +410,6 @@ public:
 		: _isr(isr)
 		, _cr1(cr1)
 		, _callback(callback) {}
-
 
 	void reset() override {
 		set(0);
@@ -443,7 +446,6 @@ private:
 
 		return word;
 	}
-
 
 	void set(uint32_t word) override {
 //		if(!_cr1.enable()) {
