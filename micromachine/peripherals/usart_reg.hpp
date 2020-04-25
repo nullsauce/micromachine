@@ -174,7 +174,7 @@ public:
 
 	/**
 	 * This bit is set when the content of @ref usart_tx register has been
-	 * transferred to the client. It is cleared by a write to the @ref usart_tx register.
+	 * transferred to the VM. It is cleared by a write to the @ref usart_tx register.
 	 *
 	 * An interrupt is generated if the @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is
 	 * set.
@@ -332,7 +332,7 @@ private:
 		}
 		if(_cr1.tx_complete_interrupt_enable()) {
 			_isr.set_transmission_complete(true);
-		};
+		}
 	}
 
 	usart_is_reg& _isr;
@@ -351,7 +351,7 @@ public:
 	using callback_t = std::function<void(uint8_t& data)>;
 	static constexpr uint32_t USART_RX = usart::USART_BASE + 0x0c;
 
-	usart_rx_reg(usart_is_reg& isr, usart_cr1_reg& cr1, callback_t& callback)
+	usart_rx_reg(usart_is_reg& isr, usart_cr1_reg& cr1, const callback_t& callback)
 		: _isr(isr)
 		, _cr1(cr1)
 		, _callback(callback) {}

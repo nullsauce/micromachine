@@ -128,7 +128,7 @@ private:
 	//  (maybe the cpu should do it  automatically ? )
 	//  https://github.com/flavioroth/micromachine/projects/1#card-36578520
 	template <typename access_t>
-	static bool address_is_valid(uint32_t address) {
+	static bool is_memory_mapped_register_address(uint32_t address) {
 		return (std::is_same<uint32_t, access_t>::value) &&
 			   ((address >= 0xE0000000) || ((address >= 0x40000000) && (address <= 0x5FFFFFFF)));
 	}
@@ -137,7 +137,7 @@ private:
 	bool write(uint32_t address, access_t value) {
 		// Only check if this is a system control register
 		// access when access_t is uint32_t
-		if (address_is_valid<access_t>(address)) {
+		if (is_memory_mapped_register_address<access_t>(address)) {
 			auto reg_it = _system_control_registers.find(address);
 			if (_system_control_registers.end() != reg_it) {
 				reg_it->second.get() = value;
@@ -166,7 +166,7 @@ private:
 	access_t read(uint32_t address, bool& ok) const {
 		// Only check if this is a system control register
 		// on 32-bit memory accesses
-		if (address_is_valid<access_t>(address)) {
+		if (is_memory_mapped_register_address<access_t>(address)) {
 			auto reg_it = _system_control_registers.find(address);
 			if (_system_control_registers.end() != reg_it) {
 				ok = true;
