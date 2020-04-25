@@ -31,13 +31,22 @@ public:
 			return;
 		}
 
-		// raise interrupt if any
+		static uint32_t old_isr = 0;
+		static uint32_t old_cr1 = 0;
 		uint32_t isr = _interrupt_status_register;
 		uint32_t cr1 = _control_register;
-		if(isr & cr1) {
-			// TODO find a way to map EXTI_00 to usart:
-			// https://github.com/flavioroth/micromachine/projects/1#card-36544071
-			_exception_controller.raise_external_interrupt(0 /*exception::Type::EXTI_00*/);
+
+		// make sure exception is raised only on changed rather than on each tick
+		if (old_cr1 != cr1 || old_isr != isr) {
+
+			// raise interrupt if any
+			if(isr & cr1) {
+				// TODO find a way to map EXTI_00 to usart:
+				// https://github.com/flavioroth/micromachine/projects/1#card-36544071
+				_exception_controller.raise_external_interrupt(0 /*exception::Type::EXTI_00*/);
+			}
+			old_isr = isr;
+			old_cr1 = cr1;
 		}
 	}
 
