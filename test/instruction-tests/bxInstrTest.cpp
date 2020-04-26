@@ -19,7 +19,7 @@
 MICROMACHINE_TEST_F(bx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbModeAndHardFaultOnNextInstr,
 					CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("010001110mmmm000", registers::R0);
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
 	Step();
@@ -32,7 +32,7 @@ MICROMACHINE_TEST_F(bx, UseLowestRegisterToBranchToEvenAddressWhichClearsThumbMo
 
 MICROMACHINE_TEST_F(bx, UseHighestRegisterToBranchToOddAddressWhichIsRequiredForThumb, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 
 	code_gen().emit_ins16("010001110mmmm000", registers::LR);
 	getCpu().regs().set(registers::LR, (INITIAL_PC + 16) | 1);

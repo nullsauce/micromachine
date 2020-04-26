@@ -18,7 +18,7 @@
    Encoding: 0101 010 Rm:3 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(strbRegister, UseAMixOfRegistersWordAligned, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 4);
@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(strbRegister, UseAMixOfRegistersWordAligned, CpuTestFixture)
 
 MICROMACHINE_TEST_F(strbRegister, UseAnotherMixOfRegistersSecondByteInWord, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R1, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
@@ -41,7 +41,7 @@ MICROMACHINE_TEST_F(strbRegister, UseAnotherMixOfRegistersSecondByteInWord, CpuT
 
 MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersThirdByteInWord, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R0, registers::R7, registers::R4);
 	getCpu().regs().set(registers::R4, 0x44444444U);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
@@ -53,7 +53,7 @@ MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersThirdByteInWord, CpuTe
 
 MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersFourthByteInWord, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R0, registers::R7, registers::R5);
 	getCpu().regs().set(registers::R5, 0x55555555U);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
@@ -65,7 +65,7 @@ MICROMACHINE_TEST_F(strbRegister, YetAnotherMixOfRegistersFourthByteInWord, CpuT
 
 MICROMACHINE_TEST_F(strbRegister, AttemptStoreToInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101010mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
 	getCpu().regs().set(registers::R7, 0);

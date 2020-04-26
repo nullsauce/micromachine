@@ -19,7 +19,7 @@
              10 (0) 0 (1)(1)(1)(1) 0101 option:4 */
 MICROMACHINE_TEST_F(dmb, OptionSetTo15, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 15);
 	Step();
 	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
@@ -27,7 +27,7 @@ MICROMACHINE_TEST_F(dmb, OptionSetTo15, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(dmb, OptionSetTo0, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001110111111", "100011110101oooo", 0);
 	Step();
 	ExpectThat().Register(registers::PC).WasIncrementedBy(4);

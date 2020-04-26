@@ -18,7 +18,7 @@
    Encoding: 0101 111 Rm:3 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(ldrshRegister, UseAMixOfRegistersWordAligned_NegativeValue, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 4);
@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(ldrshRegister, UseAMixOfRegistersWordAligned_NegativeValue, 
 
 MICROMACHINE_TEST_F(ldrshRegister, UseAnotherMixOfRegistersWordAligned_NegativeValue, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R1, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
 	getCpu().regs().set(registers::R1, 4);
@@ -40,7 +40,7 @@ MICROMACHINE_TEST_F(ldrshRegister, UseAnotherMixOfRegistersWordAligned_NegativeV
 
 MICROMACHINE_TEST_F(ldrshRegister, YetAnotherMixOfRegistersNotWordAligned_NegativeValue, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R0, registers::R7, registers::R4);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 6);
@@ -51,7 +51,7 @@ MICROMACHINE_TEST_F(ldrshRegister, YetAnotherMixOfRegistersNotWordAligned_Negati
 
 MICROMACHINE_TEST_F(ldrshRegister, LoadPositiveHalfWord, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R0, registers::R7, registers::R4);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 4);
@@ -62,7 +62,7 @@ MICROMACHINE_TEST_F(ldrshRegister, LoadPositiveHalfWord, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(ldrshRegister, AttemptUnalignedLoad, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0101111mmmnnnttt", registers::R7, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC);

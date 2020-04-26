@@ -103,7 +103,7 @@ public:
 				break;
 			}
 
-			uint32_t addr = _mcu.get_cpu().regs().get_pc();
+			uint32_t addr = _mcu.get_cpu().regs().pc();
 			BreakpointManager::MaybeBreakpoint bp = _breakpoint_manager.breakpoint_at(addr);
 			bool breakpoint_found = bp.second;
 			auto& breakpoint = bp.first->second;

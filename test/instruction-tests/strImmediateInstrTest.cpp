@@ -18,7 +18,7 @@
    Encoding: 011 0 0 Imm:5 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(strImmediate, T1UseAMixOfRegistersWithSmallestImmediateOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("01100iiiiinnnttt", 0, registers::R7, registers::R0);
 	getCpu().regs().set(registers::R7, INITIAL_PC + 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -28,7 +28,7 @@ MICROMACHINE_TEST_F(strImmediate, T1UseAMixOfRegistersWithSmallestImmediateOffse
 
 MICROMACHINE_TEST_F(strImmediate, T1UseAnotherMixOfRegistersWithLargestImmediateOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("01100iiiiinnnttt", 31, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(strImmediate, T1UseAnotherMixOfRegistersWithLargestImmediate
 
 MICROMACHINE_TEST_F(strImmediate, T1AttemptUnalignedStore, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("01100iiiiinnnttt", 0, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC + 2);
@@ -49,7 +49,7 @@ MICROMACHINE_TEST_F(strImmediate, T1AttemptUnalignedStore, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(strImmediate, T1AttemptStoreToInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("01100iiiiinnnttt", 16, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC - 16 * 4);
@@ -63,7 +63,7 @@ MICROMACHINE_TEST_F(strImmediate, T1AttemptStoreToInvalidAddress, CpuTestFixture
    Encoding: 1001 0 Rt:3 Imm:8 */
 MICROMACHINE_TEST_F(strImmediate, T2HighestRegisterWithSmallestImmediateOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("10010tttiiiiiiii", registers::R7, 0);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
@@ -74,7 +74,7 @@ MICROMACHINE_TEST_F(strImmediate, T2HighestRegisterWithSmallestImmediateOffset, 
 
 MICROMACHINE_TEST_F(strImmediate, T2LowestRegisterWithLargestImmediateOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("10010tttiiiiiiii", registers::R0, 255);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
 	getCpu().mem().write32(INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED);
@@ -87,13 +87,13 @@ MICROMACHINE_TEST_F(strImmediate, T2LowestRegisterWithLargestImmediateOffset, Cp
  * from holding an unaligned address. However, the doc clearly states that
  * unaligned STR instructions should raise a hard fault.
  *
- * TODO: Remove the pedantic forced alignment of the value returned by get_sp()
+ * TODO: Remove the pedantic forced alignment of the value returned by sp()
  * and allow the error to happen. This might have side effects on other parts
  * of the code that wrongly expect that sp wont hold an unaligned value.
  *
 MICROMACHINE_TEST_F(strImmediate, T2AttemptUnalignedStore, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("10010tttiiiiiiii", registers::R2, 0);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1026);

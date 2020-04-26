@@ -45,7 +45,7 @@ MICROMACHINE_TEST_F(movRegister, MoveLowRegisterToLHighRegister, CpuTestFixture)
 
 MICROMACHINE_TEST_F(movRegister, MoveOddAddressIntoPCAndMakeSureLSbitIsCleared, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, registers::R1);
 	getCpu().regs().set(registers::R1, INITIAL_PC + 1025);
 	Step();
@@ -54,7 +54,7 @@ MICROMACHINE_TEST_F(movRegister, MoveOddAddressIntoPCAndMakeSureLSbitIsCleared, 
 
 MICROMACHINE_TEST_F(movRegister, MoveEvenAddressIntoPC, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	getCpu().regs().set(registers::R2, INITIAL_PC + 1024);
 	code_gen().emit_ins16("01000110dmmmmddd", registers::PC, registers::R2);
@@ -64,7 +64,7 @@ MICROMACHINE_TEST_F(movRegister, MoveEvenAddressIntoPC, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(movRegister, MovePCintoOtherRegister, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("01000110dmmmmddd", registers::R3, registers::PC);
 	Step();
 	ExpectThat().Register(registers::R3).Equals(INITIAL_PC + 4);

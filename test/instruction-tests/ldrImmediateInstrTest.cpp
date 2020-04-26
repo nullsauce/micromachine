@@ -18,7 +18,7 @@
    Encoding: 011 0 1 Imm:5 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(ldrImmediate, T1UseAMixOfRegistersWithSmallestOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("01101iiiiinnnttt", 0, registers::R7, registers::R0);
 	getCpu().regs().set(registers::R7, INITIAL_PC + 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -28,7 +28,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1UseAMixOfRegistersWithSmallestOffset, CpuTes
 
 MICROMACHINE_TEST_F(ldrImmediate, T1UseAnotherMixOfRegistersWithLargestOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R7, 0x77777777U);
 	code_gen().emit_ins16("01101iiiiinnnttt", 31, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1UseAnotherMixOfRegistersWithLargestOffset, C
 
 MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("01101iiiiinnnttt", 0, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC + 2);
@@ -50,7 +50,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1AttemptUnalignedLoad, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(ldrImmediate, T1AttemptLoadFromInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("01101iiiiinnnttt", 16, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC - 16 * 4);
@@ -63,7 +63,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T1AttemptLoadFromInvalidAddress, CpuTestFixtur
    Encoding: 1001 1 Rt:3 Imm:8 */
 MICROMACHINE_TEST_F(ldrImmediate, T2UseHighestRegisterWithSmallestOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R7, 0);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
 	getCpu().mem().write32(INITIAL_PC + 1024, 0xBAADFEED);
@@ -73,7 +73,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T2UseHighestRegisterWithSmallestOffset, CpuTes
 
 MICROMACHINE_TEST_F(ldrImmediate, T2UseLowestRegisterWithLargestOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R0, 255);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
 	getCpu().mem().write32(INITIAL_PC + 1024 + 255 * 4, 0xBAADFEED);
@@ -86,7 +86,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T2UseLowestRegisterWithLargestOffset, CpuTestF
  *
 MICROMACHINE_TEST_F(ldrImmediate, T2AttemptUnalignedLoad, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1026);
 	getCpu().mem().write32(INITIAL_PC + 1024, 0xBAADFEED);
@@ -97,7 +97,7 @@ MICROMACHINE_TEST_F(ldrImmediate, T2AttemptUnalignedLoad, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(ldrImmediate, T2AttemptLoadFromInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("10011tttiiiiiiii", registers::R2, 0);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);

@@ -47,7 +47,7 @@ MICROMACHINE_TEST_F(addSP, T1UseIntermediateValues, CpuTestFixture) {
    Encoding: 1011 0000 0 Imm:7 */
 MICROMACHINE_TEST_F(addSP, T2SmallestImmediate, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
 
 	code_gen().emit_ins16("101100000iiiiiii", 0);
@@ -58,7 +58,7 @@ MICROMACHINE_TEST_F(addSP, T2SmallestImmediate, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(addSP, T2LargestImmediate, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
 
 	code_gen().emit_ins16("101100000iiiiiii", 127);
@@ -69,7 +69,7 @@ MICROMACHINE_TEST_F(addSP, T2LargestImmediate, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(addSP, T2IntermediateValues, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::SP, INITIAL_PC + 1024);
 
 	code_gen().emit_ins16("101100000iiiiiii", 64);

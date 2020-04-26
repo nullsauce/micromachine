@@ -18,7 +18,7 @@
    Encoding: 1010 0 Rd:3 Imm:8 */
 MICROMACHINE_TEST_F(adr, LowestRegisterWithLargestOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 
 	code_gen().emit_ins16("10100dddiiiiiiii", registers::R0, 255);
 	Step();
@@ -27,7 +27,7 @@ MICROMACHINE_TEST_F(adr, LowestRegisterWithLargestOffset, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(adr, HighesttRegisterWithSmallestOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 
 	code_gen().emit_ins16("10100dddiiiiiiii", registers::R7, 0);
 	Step();
@@ -36,7 +36,7 @@ MICROMACHINE_TEST_F(adr, HighesttRegisterWithSmallestOffset, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(adr, pcWillNeedToBeWordAlignedBeforeAdd, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::PC, INITIAL_PC + 2);
 
 	// Emit UNDEFINED 16-bit instruction.
