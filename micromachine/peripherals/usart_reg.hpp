@@ -421,7 +421,18 @@ public:
 		return get();
 	}
 	void write(uint32_t word) override {
-		set(word);
+//		if(!_cr1.enable()) {
+//			return;
+//		}
+
+		if(_isr.rx_not_empty()) {
+			return;
+		}
+
+		bits<0, 8>::of(_word) = word;
+//		if(_cr1.rx_not_empty_interrupt_enable()) {
+		_isr.set_rx_not_empty(true);
+//		}
 	}
 
 private:
@@ -448,18 +459,7 @@ private:
 	}
 
 	void set(uint32_t word) override {
-//		if(!_cr1.enable()) {
-//			return;
-//		}
-
-		if(_isr.rx_not_empty()) {
-			return;
-		}
-
-		bits<0, 8>::of(_word) = word;
-//		if(_cr1.rx_not_empty_interrupt_enable()) {
-		_isr.set_rx_not_empty(true);
-//		}
+		return;
 	}
 
 	usart_is_reg& _isr;
