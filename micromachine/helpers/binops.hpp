@@ -196,7 +196,7 @@ static constexpr uint16_t swap16(const uint16_t val) {
 }
 
 template <typename u_type>
-static u_type swap(const u_type& value) {
+static constexpr u_type swap(const u_type& value) {
 	switch(binsize<u_type>()) {
 		case 8U:
 			return value;
