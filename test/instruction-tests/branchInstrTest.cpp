@@ -43,7 +43,7 @@ MICROMACHINE_TEST_F(b, BEQ_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BEQ_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 0);
 	getCpu().special_regs().app_status_register().write_zero_flag(true);
 	Step();
@@ -60,7 +60,7 @@ MICROMACHINE_TEST_F(b, BNE_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BNE_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_NE, 0);
 	getCpu().special_regs().app_status_register().write_zero_flag(false);
 	Step();
@@ -77,7 +77,7 @@ MICROMACHINE_TEST_F(b, BCS_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BCS_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_CS, 0);
 	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
@@ -87,7 +87,7 @@ MICROMACHINE_TEST_F(b, BCS_Taken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BCC_NotTaken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_CC, 0);
 	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	Step();
@@ -96,7 +96,7 @@ MICROMACHINE_TEST_F(b, BCC_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BCC_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_CC, 0);
 	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	Step();
@@ -113,7 +113,7 @@ MICROMACHINE_TEST_F(b, BMI_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BMI_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_MI, 0);
 	getCpu().special_regs().app_status_register().write_neg_flag(true);
 	Step();
@@ -130,7 +130,7 @@ MICROMACHINE_TEST_F(b, BPL_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BPL_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_PL, 0);
 	getCpu().special_regs().app_status_register().write_neg_flag(false);
 	Step();
@@ -147,7 +147,7 @@ MICROMACHINE_TEST_F(b, BVS_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BVS_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_VS, 0);
 	getCpu().special_regs().app_status_register().write_overflow_flag(true);
 	Step();
@@ -164,7 +164,7 @@ MICROMACHINE_TEST_F(b, BVC_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BVC_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_VC, 0);
 	getCpu().special_regs().app_status_register().write_overflow_flag(false);
 	Step();
@@ -182,7 +182,7 @@ MICROMACHINE_TEST_F(b, BHI_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BHI_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_HI, 0);
 	getCpu().special_regs().app_status_register().write_carry_flag(true);
 	getCpu().special_regs().app_status_register().write_zero_flag(false);
@@ -201,7 +201,7 @@ MICROMACHINE_TEST_F(b, BLS_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BLS_Taken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LS, 0);
 	getCpu().special_regs().app_status_register().write_carry_flag(false);
 	getCpu().special_regs().app_status_register().write_zero_flag(true);
@@ -220,7 +220,7 @@ MICROMACHINE_TEST_F(b, BGE_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BGE_Taken1, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
 	getCpu().special_regs().app_status_register().write_neg_flag(true);
 	getCpu().special_regs().app_status_register().write_overflow_flag(true);
@@ -231,7 +231,7 @@ MICROMACHINE_TEST_F(b, BGE_Taken1, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BGE_Taken2, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GE, 0);
 	getCpu().special_regs().app_status_register().write_neg_flag(false);
 	getCpu().special_regs().app_status_register().write_overflow_flag(false);
@@ -250,7 +250,7 @@ MICROMACHINE_TEST_F(b, BLT_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BLT_Taken1, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
 	getCpu().special_regs().app_status_register().write_neg_flag(true);
 	getCpu().special_regs().app_status_register().write_overflow_flag(false);
@@ -261,7 +261,7 @@ MICROMACHINE_TEST_F(b, BLT_Taken1, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BLT_Taken2, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LT, 0);
 	getCpu().special_regs().app_status_register().write_neg_flag(false);
 	getCpu().special_regs().app_status_register().write_overflow_flag(true);
@@ -281,7 +281,7 @@ MICROMACHINE_TEST_F(b, BGT_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BGT_Taken1, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
 	getCpu().special_regs().app_status_register().write_zero_flag(false);
 	getCpu().special_regs().app_status_register().write_neg_flag(false);
@@ -293,7 +293,7 @@ MICROMACHINE_TEST_F(b, BGT_Taken1, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BGT_Taken2, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_GT, 0);
 	getCpu().special_regs().app_status_register().write_zero_flag(false);
 	getCpu().special_regs().app_status_register().write_neg_flag(true);
@@ -305,7 +305,7 @@ MICROMACHINE_TEST_F(b, BGT_Taken2, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BLE_NotTaken, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
 	getCpu().special_regs().app_status_register().write_zero_flag(false);
 	getCpu().special_regs().app_status_register().write_neg_flag(true);
@@ -316,7 +316,7 @@ MICROMACHINE_TEST_F(b, BLE_NotTaken, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BLE_Taken1, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
 	getCpu().special_regs().app_status_register().write_zero_flag(true);
 	getCpu().special_regs().app_status_register().write_neg_flag(true);
@@ -328,7 +328,7 @@ MICROMACHINE_TEST_F(b, BLE_Taken1, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BLE_Taken2, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_LE, 0);
 	getCpu().special_regs().app_status_register().write_zero_flag(true);
 	getCpu().special_regs().app_status_register().write_neg_flag(false);
@@ -340,7 +340,7 @@ MICROMACHINE_TEST_F(b, BLE_Taken2, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BEQ_TakenWithLargestPositiveOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, 127);
 	getCpu().special_regs().app_status_register().write_zero_flag(true);
 	Step();
@@ -350,7 +350,7 @@ MICROMACHINE_TEST_F(b, BEQ_TakenWithLargestPositiveOffset, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BEQ_TakenWithLargesNegativeOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("1101cccciiiiiiii", COND_EQ, -128);
 	getCpu().special_regs().app_status_register().write_zero_flag(true);
 	Step();
@@ -364,7 +364,7 @@ MICROMACHINE_TEST_F(b, BEQ_TakenWithLargesNegativeOffset, CpuTestFixture) {
    Encoding: 11100 Imm:11 */
 MICROMACHINE_TEST_F(b, BAL_ZeroOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("11100iiiiiiiiiii", 0);
 	Step();
 	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
@@ -372,7 +372,7 @@ MICROMACHINE_TEST_F(b, BAL_ZeroOffset, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BAL_LargestPositiveOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("11100iiiiiiiiiii", 1023);
 	Step();
 	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 + 1023 * 2);
@@ -380,7 +380,7 @@ MICROMACHINE_TEST_F(b, BAL_LargestPositiveOffset, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(b, BAL_LargestNegativeOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("11100iiiiiiiiiii", -1024);
 	Step();
 	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 - 1024 * 2);

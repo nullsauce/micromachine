@@ -81,30 +81,28 @@ public:
 		_pc.branch(address);
 	}
 
-	// TODO Below replace set(REG, val) and get(REG) by a direct call the appropriate reg (ie: _sp =
-	// val)
-	uint32_t get_sp() const {
-		return get(registers::SP);
+	const sp_reg& sp() const {
+		return _sp;
 	}
 
-	void set_sp(uint32_t val) {
-		set(registers::SP, val);
+	sp_reg& sp() {
+		return _sp;
 	}
 
-	uint32_t get_lr() const {
-		return get(registers::LR);
+	const standard_reg& lr() const {
+		return _lr;
 	}
 
-	void set_lr(uint32_t val) {
-		set(registers::LR, val);
+	standard_reg& lr() {
+		return _lr;
 	}
 
-	uint32_t get_pc() const {
-		return get(registers::PC);
+	const pc_reg& pc() const {
+		return _pc;
 	}
 
-	void set_pc(uint32_t val) {
-		set(registers::PC, val);
+	pc_reg& pc() {
+		return _pc;
 	}
 
 	void reset_pc_dirty_status() {

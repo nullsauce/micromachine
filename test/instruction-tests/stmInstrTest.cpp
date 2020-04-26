@@ -18,7 +18,7 @@
    Encoding: 1100 0 Rn:3 RegisterList:8 */
 MICROMACHINE_TEST_F(stm, JustPushR0WithR7AsAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("11000nnnrrrrrrrr", registers::R7, (1 << 0));
 	getCpu().regs().set(registers::R7, INITIAL_PC + 16);
 	getCpu().mem().write32(INITIAL_PC + 16, 0xFFFFFFFF);
@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(stm, JustPushR0WithR7AsAddress, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(stm, JustPushR7WithR0AsAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R7, 0x77777777);
 	code_gen().emit_ins16("11000nnnrrrrrrrr", registers::R0, (1 << 7));
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
@@ -41,7 +41,7 @@ MICROMACHINE_TEST_F(stm, JustPushR7WithR0AsAddress, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(stm, PushAllWithR0AsAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("11000nnnrrrrrrrr", registers::R0, 0xFF);
 	getCpu().regs().set(registers::R0, INITIAL_PC + 16);
 
@@ -63,7 +63,7 @@ MICROMACHINE_TEST_F(stm, PushAllWithR0AsAddress, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(stm, PushAllButR7WithR7AsAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("11000nnnrrrrrrrr", registers::R7, 0x7F);
 	getCpu().regs().set(registers::R7, INITIAL_PC + 16);
 

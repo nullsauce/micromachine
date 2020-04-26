@@ -22,8 +22,8 @@ CpuMutationPredicate::CpuMutationPredicate(const micromachine::system::cpu& prev
 {}
 
 CpuMutationPredicate& CpuMutationPredicate::PcWasIncrementedBy(uint32_t amount) {
-	uint32_t expected_pc = _previous.regs().get_pc() + amount;
-	EXPECT_EQ(expected_pc, _current.regs().get_pc());
+	uint32_t expected_pc = _previous.regs().pc() + amount;
+	EXPECT_EQ(expected_pc, _current.regs().pc());
 	return *this;
 }
 
@@ -32,7 +32,7 @@ CpuMutationPredicate& CpuMutationPredicate::PcDidNotChange() {
 }
 
 CpuMutationPredicate& CpuMutationPredicate::InstructionExecutedWithoutBranch() {
-	micromachine::system::instruction_pair instruction = _previous.mem().read32_unchecked(_previous.regs().get_pc());
+	micromachine::system::instruction_pair instruction = _previous.mem().read32_unchecked(_previous.regs().pc());
 	PcWasIncrementedBy(instruction.size());
 	return *this;
 }
@@ -117,7 +117,7 @@ CpuMutationPredicate& CpuMutationPredicate::ExceptionIsActive(micromachine::syst
 
 CpuMutationPredicate& CpuMutationPredicate::ExceptionHandlerReached(micromachine::system::exception::Type ex) {
 	uint32_t handler_address = _current.mem().read32(ex * sizeof(uint32_t)) & ~1;
-	EXPECT_EQ(_current.regs().get_pc(), handler_address);
+	EXPECT_EQ(_current.regs().pc(), handler_address);
 	return *this;
 }
 

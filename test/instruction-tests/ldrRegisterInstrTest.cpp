@@ -19,7 +19,7 @@
 MICROMACHINE_TEST_F(ldrRegister, UseAMixOfRegisters, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R7, registers::R3, registers::R0);
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -30,7 +30,7 @@ MICROMACHINE_TEST_F(ldrRegister, UseAMixOfRegisters, CpuTestFixture) {
 MICROMACHINE_TEST_F(ldrRegister, UseAnotherMixOfRegisters, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R1, registers::R0, registers::R7);
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R0, INITIAL_PC);
 	getCpu().regs().set(registers::R1, 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -41,7 +41,7 @@ MICROMACHINE_TEST_F(ldrRegister, UseAnotherMixOfRegisters, CpuTestFixture) {
 MICROMACHINE_TEST_F(ldrRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R0, registers::R7, registers::R4);
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 4);
 	getCpu().mem().write32(INITIAL_PC + 4, 0xBAADFEED);
@@ -51,7 +51,7 @@ MICROMACHINE_TEST_F(ldrRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(ldrRegister, AttemptUnalignedLoad, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0101100mmmnnnttt", registers::R7, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC);

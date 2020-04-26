@@ -18,7 +18,7 @@
    Encoding: 0101 101 Rm:3 Rn:3 Rt:3 */
 MICROMACHINE_TEST_F(ldrhRegister, UseAMixOfRegistersWordAligned, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101101mmmnnnttt", registers::R7, registers::R3, registers::R0);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
 	getCpu().regs().set(registers::R7, 4);
@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(ldrhRegister, UseAMixOfRegistersWordAligned, CpuTestFixture)
 
 MICROMACHINE_TEST_F(ldrhRegister, UseAnotherMixOfRegistersWordAligned, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101101mmmnnnttt", registers::R1, registers::R0, registers::R7);
 	getCpu().regs().set(registers::R0, INITIAL_PC);
 	getCpu().regs().set(registers::R1, 4);
@@ -40,7 +40,7 @@ MICROMACHINE_TEST_F(ldrhRegister, UseAnotherMixOfRegistersWordAligned, CpuTestFi
 
 MICROMACHINE_TEST_F(ldrhRegister, YetAnotherMixOfRegistersNotWordAligned, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins16("0101101mmmnnnttt", registers::R0, registers::R7, registers::R4);
 	getCpu().regs().set(registers::R7, INITIAL_PC);
 	getCpu().regs().set(registers::R0, 6);
@@ -51,7 +51,7 @@ MICROMACHINE_TEST_F(ldrhRegister, YetAnotherMixOfRegistersNotWordAligned, CpuTes
 
 MICROMACHINE_TEST_F(ldrhRegister, AttemptUnalignedLoad, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0101101mmmnnnttt", registers::R7, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, INITIAL_PC);
@@ -63,7 +63,7 @@ MICROMACHINE_TEST_F(ldrhRegister, AttemptUnalignedLoad, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(ldrhRegister, AttemptLoadFromInvalidAddress, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	getCpu().regs().set(registers::R2, 0x22222222U);
 	code_gen().emit_ins16("0101101mmmnnnttt", registers::R7, registers::R3, registers::R2);
 	getCpu().regs().set(registers::R3, 0xFFFFFFFC);
