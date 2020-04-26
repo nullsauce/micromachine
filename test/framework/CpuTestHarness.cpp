@@ -301,8 +301,8 @@ void CpuTestHarness::validateRegisters()
 		EXPECT_EQ(m_expectedRegisterValues[i], _mcu.get_cpu().regs().get(i));
 	EXPECT_EQ(m_expectedSPmain,
 			  _mcu.get_cpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
-	EXPECT_EQ(m_expectedLR, _mcu.get_cpu().regs().get_lr());
-	EXPECT_EQ(m_expectedPC, _mcu.get_cpu().regs().get_pc());
+	EXPECT_EQ(m_expectedLR, _mcu.get_cpu().regs().lr());
+	EXPECT_EQ(m_expectedPC, _mcu.get_cpu().regs().pc());
 }
 
 void CpuTestHarness::setCarry()

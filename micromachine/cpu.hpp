@@ -125,9 +125,9 @@ public:
 		_exec_mode.enter_thread_mode();
 
 		_core_regs.reset();
-		_core_regs.set_sp(initial_sp_main);
-		_core_regs.set_pc(initial_pc);
-		_core_regs.set_lr(0);
+		_core_regs.sp() = initial_sp_main;
+		_core_regs.pc() = initial_pc;
+		_core_regs.lr() = 0;
 
 		_special_registers.app_status_register().reset();
 		_special_registers.execution_status_register().thumb_flag() = true;
@@ -150,7 +150,7 @@ public:
 		}
 		_debug_instruction_counter++;
 
-		const uint32_t cur_instruction_address = _core_regs.get_pc();
+		const uint32_t cur_instruction_address = _core_regs.pc();
 		instruction_pair cur_intruction = fetch_instruction(cur_instruction_address);
 
 		if(!_special_registers.execution_status_register().thumb_flag()) {
@@ -165,7 +165,7 @@ public:
 		if(nullptr == ex) {
 			// execute instruction at current PC
 			// simulate prefetch of 2 instructions during execution
-			_core_regs.set_pc(cur_instruction_address + 4);
+			_core_regs.pc() = cur_instruction_address + 4;
 			_core_regs.reset_pc_dirty_status();
 			_exec_dispatcher.decode_instruction(cur_intruction);
 
@@ -181,14 +181,14 @@ public:
 			// wake up event for wfe or wfi
 
 			// an exception to be taken is pending
-			_core_regs.set_pc(cur_instruction_address);
+			_core_regs.pc() = cur_instruction_address;
 			_ctx_switcher.exception_entry(*ex,
 										  cur_instruction_address,
 										  cur_intruction,
 										  next_instruction_address);
 		} else {
 			// no exception taken, execution will continue at next address
-			_core_regs.set_pc(next_instruction_address);
+			_core_regs.pc() = next_instruction_address;
 		}
 
 		return cpu::step_result::OK;
@@ -293,7 +293,7 @@ private:
 		if(!_core_regs.branch_occured()) {
 			return instr_addr + instruction.size();
 		} else {
-			return _core_regs.get_pc();
+			return _core_regs.pc();
 		}
 	}
 };

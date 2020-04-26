@@ -18,7 +18,7 @@
    Encoding: 1011 0000 1 Imm:7 */
 MICROMACHINE_TEST_F(subSP, SmallestImmediate, CpuTestFixture) {
 	constexpr uint32_t INITIAL_SP = 0x00002000;
-	getCpu().regs().set_sp(INITIAL_SP);
+	getCpu().regs().sp() = INITIAL_SP;
 	code_gen().emit_ins16("101100001iiiiiii", 0);
 	Step();
 	ExpectThat().Register(registers::SP).Equals(INITIAL_SP - 0);
@@ -26,7 +26,7 @@ MICROMACHINE_TEST_F(subSP, SmallestImmediate, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(subSP, LargestImmediate, CpuTestFixture) {
 	constexpr uint32_t INITIAL_SP = 0x00002000;
-	getCpu().regs().set_sp(INITIAL_SP);
+	getCpu().regs().sp() = INITIAL_SP;
 	code_gen().emit_ins16("101100001iiiiiii", 127);
 	Step();
 	ExpectThat().Register(registers::SP).Equals(INITIAL_SP - 127 * 4);
@@ -34,7 +34,7 @@ MICROMACHINE_TEST_F(subSP, LargestImmediate, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(subSP, UseIntermediateValues, CpuTestFixture) {
 	constexpr uint32_t INITIAL_SP = 0x00002000;
-	getCpu().regs().set_sp(INITIAL_SP);
+	getCpu().regs().sp() = INITIAL_SP;
 	code_gen().emit_ins16("101100001iiiiiii", 64);
 	Step();
 	ExpectThat().Register(registers::SP).Equals(INITIAL_SP - 64 * 4);

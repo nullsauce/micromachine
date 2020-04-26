@@ -36,14 +36,14 @@ MICROMACHINE_TEST_F(ResetBehavior, GeneralPurposeRegistersAreSetTozero, CpuReset
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, PcIsSetToGivenPosition, CpuResetTest) {
-	getCpu().regs().set_pc(0x10);
+	getCpu().regs().pc() = 0x10;
 	getSystem().reset(0x20);
 	ExpectThat().Register(registers::PC).Equals(0x20);
 }
 
 
 MICROMACHINE_TEST_F(ResetBehavior, LrIsReset, CpuResetTest) {
-	getCpu().regs().set_lr(0xdeed00aa);
+	getCpu().regs().lr() = 0xdeed00aa;
 	getSystem().reset(0x20);
 	ExpectThat().Register(registers::LR).Equals(0);
 }

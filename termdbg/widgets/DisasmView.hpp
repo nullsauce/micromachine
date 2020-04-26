@@ -157,7 +157,7 @@ private:
 
 		_text.clear();
 		const uint32_t lines_per_page = _text.height();
-		uint32_t pc = _mcu.get_cpu().regs().get_pc();
+		uint32_t pc = _mcu.get_cpu().regs().pc();
 		uint32_t address = pc;
 		if(address > _page_end || address < _page_address) {
 			_page_address = address;

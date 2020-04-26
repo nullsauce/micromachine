@@ -464,7 +464,7 @@ exec(const blx instruction, core_registers& regs, interworking_brancher& interwo
 	}
 
 	// Compute the return address. PC is two instruction ahead because of prefetch
-	uint32_t next_instr_addr = regs.get_pc() - 2; // 16386
+	uint32_t next_instr_addr = regs.pc() - 2; // 16386
 
 	// force thumb bit on return address
 	bits<0>::of(next_instr_addr) = true;
@@ -473,14 +473,14 @@ exec(const blx instruction, core_registers& regs, interworking_brancher& interwo
 	uint32_t jump_addr = regs.get(instruction.rm()); // jump_addr 16401
 
 	// write return address to link register
-	regs.set_lr(next_instr_addr);
+	regs.lr() = next_instr_addr;
 
 	// jump
 	interworking_brancher.branch_link_interworking(jump_addr);
 }
 static void exec(const ldr_literal instruction, core_registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm32();
-	uint32_t base = binops::aligned<4>(regs.get_pc());
+	uint32_t base = binops::aligned<4, uint32_t>(regs.pc());
 	uint32_t address = base + offset;
 	uint32_t value = mem.read32(address);
 	regs.set(instruction.rt(), value);
@@ -623,44 +623,44 @@ static void exec(const ldrh_imm instruction, core_registers& regs, const memory&
 }
 static void exec(const str_sp_imm instruction, const core_registers& regs, memory& mem) {
 	uint32_t offset = instruction.imm32();
-	uint32_t base = regs.get_sp(); // SP
+	uint32_t base = regs.sp(); // SP
 	uint32_t address = base + offset;
 	uint32_t value = regs.get(instruction.rt());
 	mem.write32(address, value);
 }
 static void exec(const ldr_sp_imm instruction, core_registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm8() << 2U;
-	uint32_t base = regs.get_sp(); // SP
+	uint32_t base = regs.sp(); // SP
 	uint32_t address = base + offset;
 	uint32_t value = mem.read32(address);
 	regs.set(instruction.rt(), value);
 }
 static void exec(const adr instruction, core_registers& regs) {
 	uint32_t offset = instruction.imm32();
-	uint32_t base = binops::aligned<4>(regs.get_pc()); // PC
+	uint32_t base = binops::aligned<4, uint32_t>(regs.pc()); // PC
 	uint32_t address = base + offset;
 	regs.set(instruction.rd(), address);
 }
 static void exec(const add_sp_imm instruction, core_registers& regs) {
 	// TODO check if other instructions should go here
 	uint32_t imm32 = instruction.imm32();
-	uint32_t sp = regs.get_sp();
+	uint32_t sp = regs.sp();
 	uint32_t result = alu::add_with_carry(sp, imm32, false);
 	regs.set(instruction.rd(), result);
 }
 static void exec(const add_sp_imm_t2 instruction, core_registers& regs) {
 	// TODO check if other instructions should go here
 	uint32_t imm32 = instruction.imm32();
-	uint32_t sp = regs.get_sp();
+	uint32_t sp = regs.sp();
 	uint32_t result = alu::add_with_carry(sp, imm32, false);
-	regs.set_sp(result);
+	regs.sp() = result;
 }
 static void exec(const sub_sp_imm instruction, core_registers& regs) {
 	// TODO check if other instructions should go here
 	uint32_t imm32 = instruction.imm32();
-	uint32_t sp = regs.get_sp();
+	uint32_t sp = regs.sp();
 	uint32_t result = alu::add_with_carry(sp, ~imm32, true);
-	regs.set_sp(result);
+	regs.sp() = result;
 }
 static void exec(const sxth instruction, core_registers& regs) {
 	// Note: ROR(0) is omitted here
@@ -689,7 +689,7 @@ static void exec(const uxtb instruction, core_registers& regs) {
 static void exec(const push instruction, core_registers& regs, memory& mem) {
 	micromachine_check(instruction.pushed_registers_count() > 0, "must push at least one register");
 	const size_t stored_size = 4 * instruction.pushed_registers_count();
-	const uint32_t start_address = regs.get_sp() - stored_size;
+	const uint32_t start_address = regs.sp() - stored_size;
 
 	size_t count = 0;
 	// TODO This loop can be optimized to check only the appropriate bits 0,1,2,3,4,5,6,7,14 of the
@@ -701,7 +701,7 @@ static void exec(const push instruction, core_registers& regs, memory& mem) {
 			count++;
 		}
 	}
-	regs.set_sp(start_address);
+	regs.sp() = start_address;
 }
 static void exec(const cps instruction, special_registers& special_regs) {
 	special_regs.primask_register().set_pm(instruction.im);
@@ -711,7 +711,7 @@ static void exec(const pop instruction,
 				 memory& mem,
 				 interworking_brancher& _interworking_brancher) {
 	micromachine_check(instruction.pop_count() > 0, "must push at least one register");
-	const uint32_t frame_start = regs.get_sp(); // sp
+	const uint32_t frame_start = regs.sp(); // sp
 	uint32_t sp_base = frame_start;
 	const uint32_t stored_size = 4 * instruction.pop_count();
 	// fprintf(stderr, "pop stack %08X - %08X\n", frame_start, frame_start + stored_size);
@@ -734,7 +734,7 @@ static void exec(const pop instruction,
 	// loading the SP.
 
 	// increment sp by stored_size (=pop the stack)
-	regs.set_sp(frame_start + stored_size);
+	regs.sp() = frame_start + stored_size;
 
 	if(instruction.is_set(registers::PC)) {
 
@@ -785,13 +785,13 @@ static void exec(const branch instruction, core_registers& regs, apsr_reg& flags
 	}
 
 	int32_t delta = instruction.offset();
-	uint32_t pc = regs.get_pc();
-	regs.set_pc(pc + delta);
+	uint32_t pc = regs.pc();
+	regs.pc() = pc + delta;
 }
 static void exec(const unconditional_branch instruction, core_registers& regs) {
 	int32_t delta = instruction.offset();
-	uint32_t pc = regs.get_pc();
-	regs.set_pc(pc + delta);
+	uint32_t pc = regs.pc();
+	regs.pc() = pc + delta;
 }
 static void exec(const stm instruction, core_registers& regs, memory& mem) {
 	uint32_t address = regs.get(instruction.rn());
@@ -939,12 +939,12 @@ static void exec(const msr instruction,
 }
 static void exec(const bl_imm instruction, core_registers& regs) {
 	// pc is 4 bytes ahead, so already poiting to the next instruction
-	uint32_t next_instr_addr = regs.get_pc();
+	uint32_t next_instr_addr = regs.pc();
 	bits<0>::of(next_instr_addr) = true; // force thumb mode
-	regs.set_lr(next_instr_addr);
+	regs.lr() = next_instr_addr;
 	int32_t offset = instruction.offset();
-	int32_t new_pc = regs.get_pc() + offset;
-	regs.set_pc(new_pc);
+	int32_t new_pc = regs.pc() + offset;
+	regs.pc() = new_pc;
 }
 static void exec(const dsb instruction) {}
 static void exec(const dmb instruction) {}

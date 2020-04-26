@@ -200,8 +200,8 @@ public:
 		_core_regs.set(2, _mem.read32(frame_ptr + 8));
 		_core_regs.set(3, _mem.read32(frame_ptr + 12));
 		_core_regs.set(12, _mem.read32(frame_ptr + 16));
-		_core_regs.set_lr(_mem.read32(frame_ptr + 20));
-		_core_regs.set_pc(_mem.read32(frame_ptr + 24));
+		_core_regs.lr() = _mem.read32(frame_ptr + 20);
+		_core_regs.pc() = _mem.read32(frame_ptr + 24);
 		uint32_t xpsr_status = _mem.read32(frame_ptr + 28);
 		uint32_t stack_align = bits<8>::of(xpsr_status) << 2;
 
@@ -251,12 +251,12 @@ public:
 
 		const size_t stack_frame_size = 32;
 		const uint32_t sp_mask = ~((uint32_t)0b100);
-		const bool frame_ptr_align = bits<2>::of(_core_regs.get_sp());
+		const bool frame_ptr_align = bits<2>::of<uint32_t>(_core_regs.sp());
 
 		// TODO: Check docs for conditional stack switch
-		uint32_t frame_ptr = (_core_regs.get_sp() - stack_frame_size) & sp_mask;
+		uint32_t frame_ptr = (_core_regs.sp() - stack_frame_size) & sp_mask;
 
-		_core_regs.set_sp(frame_ptr);
+		_core_regs.sp() = frame_ptr;
 
 		// the 9th bit of XPSR status is set with the stack alignment indicator.
 		// We copy its value and overwrite the bit at index 8.
@@ -268,16 +268,16 @@ public:
 		_mem.write32(frame_ptr + 8, _core_regs.get(2));
 		_mem.write32(frame_ptr + 12, _core_regs.get(3));
 		_mem.write32(frame_ptr + 16, _core_regs.get(12));
-		_mem.write32(frame_ptr + 20, _core_regs.get_lr());
+		_mem.write32(frame_ptr + 20, _core_regs.lr());
 		_mem.write32(frame_ptr + 24, return_address);
 		_mem.write32(frame_ptr + 28, xpsr_status);
 
 		if(_execution_mode.is_in_handler_mode()) {
-			_core_regs.set_lr(0xFFFFFFF1); // return to handler
+			_core_regs.lr() = 0xFFFFFFF1; // return to handler
 		} else if(0 == _special_regs.control_register().sp_sel()) {
-			_core_regs.set_lr(0xFFFFFFF9); // return to thread using main stack
+			_core_regs.lr() = 0xFFFFFFF9; // return to thread using main stack
 		} else {
-			_core_regs.set_lr(0xFFFFFFFD); // return to thread using process stack
+			_core_regs.lr() = 0xFFFFFFFD; // return to thread using process stack
 		}
 	}
 };

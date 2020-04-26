@@ -45,7 +45,7 @@ namespace {
              10 (0) 0 Rd:4 SYSm:8 */
 MICROMACHINE_TEST_F(mrs, FromAPSR, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_APSR);
 
 	uint32_t expectedXpsr = 0;
@@ -69,7 +69,7 @@ MICROMACHINE_TEST_F(mrs, FromAPSR, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromIAPSR, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R0, SYS_IAPSR);
 
 	uint32_t expectedXpsr = 0;
@@ -96,7 +96,7 @@ MICROMACHINE_TEST_F(mrs, FromIAPSR, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromEAPSR, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_EAPSR);
 
 	uint32_t expectedXpsr = 0;
@@ -123,7 +123,7 @@ MICROMACHINE_TEST_F(mrs, FromEAPSR, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromXPSR, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_XPSR);
 
 	uint32_t expectedXpsr = 0;
@@ -150,7 +150,7 @@ MICROMACHINE_TEST_F(mrs, FromXPSR, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromIPSR, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_IPSR);
 
 	uint32_t expectedXpsr = 0;
@@ -175,7 +175,7 @@ MICROMACHINE_TEST_F(mrs, FromIPSR, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromEPSR, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_EPSR);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -200,7 +200,7 @@ MICROMACHINE_TEST_F(mrs, FromEPSR, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromIEPSR, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_IEPSR);
 
 	uint32_t expectedXpsr = 0;
@@ -226,7 +226,7 @@ MICROMACHINE_TEST_F(mrs, FromIEPSR, CpuTestFixture) {
 MICROMACHINE_TEST_F(mrs, FromMSP, CpuTestFixture) {
 	constexpr uint32_t INITIAL_SP = 0x00002000;
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_MSP);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -238,7 +238,7 @@ MICROMACHINE_TEST_F(mrs, FromMSP, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromPSP, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_PSP);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -250,7 +250,7 @@ MICROMACHINE_TEST_F(mrs, FromPSP, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromPRIMASKsetTo1, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_PRIMASK);
 	getCpu().regs().set(registers::R12, 0);
 	getCpu().special_regs().primask_register().set_pm(true);
@@ -264,7 +264,7 @@ MICROMACHINE_TEST_F(mrs, FromPRIMASKsetTo1, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, PRIMASKto0, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_PRIMASK);
 	getCpu().regs().set(registers::R12, 0xFFFFFFFF);
 
@@ -279,7 +279,7 @@ MICROMACHINE_TEST_F(mrs, PRIMASKto0, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(mrs, FromCONTROL, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("1111001111101111", "1000ddddssssssss", registers::R12, SYS_CONTROL);
 	getCpu().regs().set(registers::R12, 0);
 	getCpu().special_regs().control_register().set_n_priv(true);

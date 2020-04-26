@@ -20,7 +20,7 @@
     Note: J1 and J2 are translated to immediate bits via I? = NOT(J? XOR S) */
 MICROMACHINE_TEST_F(bl, OffsetOf0, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0, 1, 1, 0);
 	Step();
 	ExpectThat().Register(registers::PC).WasIncrementedBy(4);
@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(bl, OffsetOf0, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(bl, MaximumPositiveOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 0, 0x3FF, 0, 0, 0x7FF);
 	Step();
 	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 + 16777214);
@@ -38,7 +38,7 @@ MICROMACHINE_TEST_F(bl, MaximumPositiveOffset, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(bl, MaximumNegativeOffset, CpuTestFixture) {
 	const uint32_t INITIAL_PC = code_gen().write_address();
-	getCpu().regs().set_pc(INITIAL_PC);
+	getCpu().regs().pc() = INITIAL_PC;
 	code_gen().emit_ins32("11110Siiiiiiiiii", "11j1kiiiiiiiiiii", 1, 0, 0, 0, 0);
 	Step();
 	ExpectThat().Register(registers::PC).Equals(INITIAL_PC + 4 - 16777216);
