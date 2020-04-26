@@ -29,13 +29,11 @@ public:
 			return;
 		}
 
-		static uint32_t old_isr = 0;
-		static uint32_t old_cr1 = 0;
 		uint32_t isr = _interrupt_status_register.read();
 		uint32_t cr1 = _control_register.read();
 
 		// make sure exception is raised only on changed rather than on each tick
-		if (old_cr1 != cr1 || old_isr != isr) {
+		if (_old_cr1 != cr1 || _old_isr != isr) {
 
 			// raise interrupt if any
 			if(isr & cr1) {
@@ -43,8 +41,8 @@ public:
 				// https://github.com/flavioroth/micromachine/projects/1#card-36544071
 				_exception_controller.raise_external_interrupt(0 /*exception::Type::EXTI_00*/);
 			}
-			old_isr = isr;
-			old_cr1 = cr1;
+			_old_isr = isr;
+			_old_cr1 = cr1;
 		}
 	}
 
@@ -107,6 +105,9 @@ private:
 	usart_rx_reg _rx_register;
 	usart_tx_reg _tx_register;
 	exception_controller& _exception_controller;
+
+	uint32_t _old_isr{0};
+	uint32_t _old_cr1{0};
 };
 }; //namespace micromachine::system
 
