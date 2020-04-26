@@ -95,7 +95,7 @@ public:
 	}
 
 	void rx_push_data(uint8_t data) {
-		_rx_register = data;
+		_rx_register.write(data);
 	}
 
 private:
