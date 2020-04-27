@@ -174,7 +174,7 @@ constexpr bool is_powerof2(u_type source) {
 }
 
 template <size_t align, typename u_type>
-static u_type aligned(const u_type& source) {
+static constexpr u_type aligned(const u_type& source) {
 	static_assert(is_powerof2(align), "Can't align on non power of two values");
 	return (source / align) * align;
 }
