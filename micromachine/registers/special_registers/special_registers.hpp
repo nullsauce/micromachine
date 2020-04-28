@@ -28,7 +28,8 @@ private:
 
 public:
 	special_registers()
-		: _app_status_register(_xpsr_register)
+		: _xpsr_register(0)
+		, _app_status_register(_xpsr_register)
 		, _interrupt_status_register(_xpsr_register)
 		, _execution_status_register(_xpsr_register) {}
 
