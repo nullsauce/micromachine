@@ -24,6 +24,7 @@ add_library(test_common STATIC
 	framework/Predicates.cpp
 	framework/PredicateHelpers.hpp
 	framework/PredicateHelpers.cpp
+	framework/TestHelpers.hpp
 
 )
 target_include_directories(test_common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/framework")
@@ -133,6 +134,8 @@ declare_test(exceptions/exception_vector.cpp)
 declare_test(systick_control_reg.cpp)
 declare_test(nvic.cpp)
 declare_test(reset/reset_tests.cpp)
+declare_test(peripherals/usart-tests.cpp)
+
 
 
 
