@@ -6,7 +6,7 @@
 
 #pragma once
 
-
+#include "TestHelpers.hpp"
 #include "TestMachine.hpp"
 #include "CodeGenerator.hpp"
 #include "Predicates.hpp"
