@@ -14,7 +14,7 @@ namespace micromachine::system {
 
 cpu::step_result mcu::step() {
 	_systick.tick();
-	_usart_controller.run();
+	_usart_controller.step();
 	return _cpu.step();
 }
 

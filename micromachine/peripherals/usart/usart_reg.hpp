@@ -1,0 +1,319 @@
+//
+// Created by joel on 15/04/2020.
+//
+
+#ifndef MICROMACHINE_USART_REG_HPP
+#define MICROMACHINE_USART_REG_HPP
+
+#include <memory>
+#include "registers/memory_mapped_reg.hpp"
+
+namespace micromachine::system {
+
+
+/**
+ * Usart Interrupt Status register.
+ * The USART interrupt events are connected to the same interrupt vector. This
+ * register indicate which interrupt are to be serviced by the software.
+ */
+class usart_is_reg : public memory_mapped_reg {
+public:
+	using memory_mapped_reg::operator=;
+	using memory_mapped_reg::operator uint32_t;
+
+	/**
+	 * This bit is set when the data has been transferred to the usart_rx register. It
+	 * is cleared by a read to the usart_rx_reg register.
+	 *
+	 * An interrupt is generated if @ref usart_cr1_reg::rx_not_empty_interrupt_enable_bit is
+	 * set.
+	 *
+	 * @see set_rx_not_empty
+	 * @see rx_not_empty
+	 */
+	using rx_not_empty_bit = bits<1>;
+
+	/**
+	 * Transmission complete
+	 *
+	 * This bit is set if the transmission of a frame containing data is complete
+	 * and if @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is set. An interrupt is generated if
+	 * @ref usart_cr1_reg::tx_complete_interrupt_enable_bit is set. It is cleared by software
+	 * writing a 1 to @ref usart_icr::tx_complete_bit or by a write to the usart_tx
+	 * register.
+	 *
+	 * An interrupt is generated if TCIE is set
+	 * 0: Transmission is not complete
+	 * 1: Transmission is complete
+	 *
+	 * @see usart_cr1_reg::tx_complete_interrupt_enable_bit
+	 * @see tx_complete
+	 * @see set_tx_complete
+	 */
+	using tx_complete_bit = bits<2>;
+
+	/**
+	 * This bit is set when the content of @ref usart_tx register has been
+	 * transferred to the VM. It is cleared by a write to the @ref usart_tx register.
+	 *
+	 * An interrupt is generated if the @ref usart_cr1_reg::tx_empty_interrupt_enable_bit is
+	 * set.
+	 *
+	 * 0: data is not transferred.
+	 * 1: data is transferred.
+	 *
+	 * @see usart_cr1_reg::tx_empty_interrupt_enable_bit
+	 * @see transmit_data_register_empty
+	 * @see set_tx_empty
+	 */
+	using tx_empty_bit = bits<3>;
+
+	bool tx_empty() {
+		return self<tx_empty_bit>();
+	}
+
+	void set_tx_empty(bool flag) {
+		self<tx_empty_bit>() = flag;
+	}
+
+	bool rx_not_empty() {
+		return self<rx_not_empty_bit>();
+	}
+
+	void set_rx_not_empty(bool flag) {
+		self<rx_not_empty_bit>() = flag;
+	}
+
+	void reset() override {
+		_word = 0;
+	}
+
+private:
+	uint32_t get() const override {
+		return _word;
+	}
+
+	void set(uint32_t word) override {}
+};
+
+/**
+ * Control register 1.
+ * This register allows user to configure the usart peripheral and register for interrupts.
+ */
+class usart_cr1_reg : public memory_mapped_reg {
+public:
+	using memory_mapped_reg::operator=;
+	using memory_mapped_reg::operator uint32_t;
+	using reset_requested = std::function<void()>;
+private:
+	const reset_requested _reset_requested;
+
+public:
+	usart_cr1_reg(reset_requested reset_requested)
+		: _reset_requested(std::move(reset_requested))
+	{}
+
+	/**
+	 * USART enable
+	 *
+	 * When this bit is cleared, output is stopped immediately, and
+	 * current operations are discarded. The configuration of the USART is kept, but all the
+	 * status flags, in the USART_ISR are set to their default values. This bit is set and
+	 * cleared by software. 0: USART disabled. 1: USART enabled.
+	 *
+	 * @see enable
+	 * @see set_enable
+	 */
+	using enable_bit = bits<0>;
+
+	/**
+	 * Read data register not empty interrupt enable.
+	 * This bit is set and cleared by software.
+	 * 0: Interrupt is inhibited
+	 * 1: A USART interrupt is generated whenever @ref usart_is_reg::rx_not_empty_bit = 1 in the
+	 * USART_ISR register.
+	 *
+	 * @see rx_not_empty_interrupt_enabled
+	 * @see set_rx_not_empty_interrupt_enable
+	 */
+	using rx_not_empty_interrupt_enable_bit = bits<1>;
+
+	/**
+	 *
+	 * transmit data register empty interrupt enable.
+	 * This bit is set and cleared by software.
+	 * 0: Interrupt is inhibited
+	 * 1: A USART interrupt is generated whenever @ref tx_empty_bit = 1 in the
+	 * USART_ISR register.
+	 *
+	 * @see tx_empty_interrupt_enabled
+	 * @see set_tx_empty_interrupt_enable
+	 */
+	using tx_empty_interrupt_enable_bit = bits<3>;
+
+	bool tx_empty_interrupt_enabled() const {
+		return self<tx_empty_interrupt_enable_bit>();
+	}
+
+	bool rx_not_empty_interrupt_enabled() const {
+		return self<rx_not_empty_interrupt_enable_bit>();
+	}
+
+	bool enabled() const {
+		return self<enable_bit>();
+	}
+
+	void reset() override {
+		_word = 0;
+	}
+
+private:
+	uint32_t get() const override {
+		return _word;
+	}
+
+	void set(uint32_t word) override {
+
+		// On disable, reset the interrupt statuses
+		if(detect_transition_of<enable_bit>(word, false)) {
+			_reset_requested();
+		}
+
+		_word = word;
+	}
+};
+
+/**
+ * USART interrupt clear register
+ */
+class usart_ic_reg : public memory_mapped_reg {
+public:
+	using memory_mapped_reg::operator=;
+	using memory_mapped_reg::operator uint32_t;
+
+	usart_ic_reg(usart_is_reg& isr)
+		: _usart_is_reg(isr) {}
+
+	/**
+	 * RX register not empty clear flag.
+	 * Clears @ref usart_is_reg::rx_not_empty_bit bit.
+	 * @see tx_complete
+	 * @see set_tx_complete
+	 */
+	using clear_rx_not_empty_bit = bits<1>;
+
+	/**
+	 * TX register empty clear flag.
+	 * Clears @ref usart_is_reg::tx_empty_bit bit.
+	 * @see tx_complete
+	 * @see set_tx_complete
+	 */
+	using clear_tx_empty_bit = bits<2>;
+
+private:
+	uint32_t get() const override {
+		return 0;
+	}
+
+	void set(uint32_t word) override {
+
+		if(clear_rx_not_empty_bit::of(word)) {
+			_usart_is_reg.set_rx_not_empty(false);
+		}
+
+		if(clear_tx_empty_bit::of(word)) {
+			_usart_is_reg.set_tx_empty(false);
+		}
+	}
+
+	usart_is_reg& _usart_is_reg;
+};
+
+/**
+ * USART tx register
+ */
+class usart_tx_reg : public memory_mapped_reg {
+private:
+	usart_is_reg& _usart_isr_reg;
+
+public:
+	using memory_mapped_reg::operator=;
+	using memory_mapped_reg::operator uint32_t;
+	using data_bits = bits<0, 8>;
+
+	usart_tx_reg(usart_is_reg& usart_is_reg)
+		: _usart_isr_reg(usart_is_reg)
+	{}
+
+	/**
+	 * Gets a byte from the tx register
+	 * @details This function is to be used by the virtual machine.
+	 */
+	uint8_t read() {
+		uint8_t byte = self<data_bits>();
+		_usart_isr_reg.set_tx_empty(true);
+		return byte;
+	}
+
+	void reset() override {
+		_word = 0;
+		_usart_isr_reg.set_tx_empty(true);
+	}
+
+private:
+	uint32_t get() const override {
+		return 0;
+	}
+
+	void set(uint32_t word) override {
+		self<data_bits>() = word;
+		_usart_isr_reg.set_tx_empty(false);
+	}
+};
+
+/**
+ * USART rx register
+ */
+class usart_rx_reg : public memory_mapped_reg {
+private:
+	usart_is_reg& _usart_isr_reg;
+
+public:
+	using memory_mapped_reg::operator=;
+	using memory_mapped_reg::operator uint32_t;
+	using data_bits = bits<0, 8>;
+
+	usart_rx_reg(usart_is_reg& usart_is_reg)
+		: _usart_isr_reg(usart_is_reg)
+	{}
+
+	/**
+	 * Write a byte to the rx register
+	 * @details This function is to be used by the virtual machine.
+	 */
+	void write(uint8_t byte) {
+		self<data_bits>() = byte;
+		_usart_isr_reg.set_rx_not_empty(true);
+	}
+
+private:
+	uint32_t get() const override {
+
+		// return zero if there's no data available for reading
+		if(!_usart_isr_reg.rx_not_empty()) {
+			return 0;
+		}
+
+		// otherwise just return whatever data is in there and mark the register as empty
+		uint32_t word = self<data_bits>();
+		_usart_isr_reg.set_rx_not_empty(false);
+
+		return word;
+	}
+
+	void set(uint32_t word) override {}
+
+};
+}; //namespace micromachine::system
+
+#endif // MICROMACHINE_USART_REG_HPP

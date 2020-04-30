@@ -14,12 +14,12 @@ and/or distributed without the express permission of Flavio Roth.
 #include "exception/exception_vector.hpp"
 #include "memory/memory.hpp"
 #include "nvic.hpp"
+#include "peripherals/usart/usart_controller.hpp"
 #include "registers/custom/generic_io_reg.hpp"
 #include "registers/system_control/cpuid_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
 #include "systick.hpp"
-#include "peripherals/usart_controller.hpp"
 
 namespace micromachine::system {
 
@@ -30,8 +30,6 @@ private:
 	shpr3_reg _shpr3_reg;
 	cpuid_reg _cpuid_reg;
 	generic_io_reg::callback_t _io_reg_callback;
-	usart_tx_reg::callback_t _usart_tx_reg_callback;
-	usart_rx_reg::callback_t _usart_rx_reg_callback;
 	generic_io_reg _generic_io_reg;
 	systick _systick;
 
@@ -64,11 +62,11 @@ private:
 			{nvic::NVIC_IPR5, _nvic.priority_reg<5>()},
 			{nvic::NVIC_IPR6, _nvic.priority_reg<6>()},
 			{nvic::NVIC_IPR7, _nvic.priority_reg<7>()},
-			{usart_cr1_reg::USART_CR1, _usart_controller.control_register()},
-			{usart_is_reg::USART_ISR, _usart_controller.interrupt_status_register()},
-			{usart_ic_reg::USART_ICR, _usart_controller.interrupt_clear_register()},
-			{usart_rx_reg::USART_RX, _usart_controller.rx_register()},
-			{usart_tx_reg::USART_TX, _usart_controller.tx_register()},
+			{usart_controller::USART_CR1, _usart_controller.control_register()},
+			{usart_controller::USART_ISR, _usart_controller.interrupt_status_register()},
+			{usart_controller::USART_ICR, _usart_controller.interrupt_clear_register()},
+			{usart_controller::USART_RX, _usart_controller.rx_register()},
+			{usart_controller::USART_TX, _usart_controller.tx_register()},
 		};
 	}
 
@@ -78,9 +76,7 @@ public:
 	mcu()
 		: _generic_io_reg(_io_reg_callback)
 		, _systick(_exception_controller)
-		, _usart_controller(_exception_controller,
-					  _usart_rx_reg_callback,
-					  _usart_tx_reg_callback)
+		, _usart_controller(_exception_controller)
 		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg)
 		, _exception_controller(_exception_vector)
 		, _memory(_exception_controller, generate_system_control_register_map())
@@ -94,9 +90,7 @@ public:
 		, _io_reg_callback(other._io_reg_callback)
 		, _generic_io_reg(_io_reg_callback)
 		, _systick(_exception_controller, other._systick)
-		, _usart_controller(_exception_controller,
-					  _usart_rx_reg_callback,
-					  _usart_tx_reg_callback)
+		, _usart_controller(_exception_controller)
 		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, other._exception_vector)
 		, _exception_controller(_exception_vector)
 		, _memory(_exception_controller, generate_system_control_register_map())
@@ -126,21 +120,14 @@ public:
 		return _exception_vector;
 	}
 
+	usart_controller& get_usart_controller() {
+		return _usart_controller;
+	}
+
 	void set_io_callback(generic_io_reg::callback_t callback) {
 		_io_reg_callback = std::move(callback);
 	}
 
-	void set_usart_tx_callback(usart_tx_reg::callback_t callback) {
-		_usart_tx_reg_callback = std::move(callback);
-	}
-
-	void set_usart_rx_callback(usart_rx_reg::callback_t callback) {
-		_usart_rx_reg_callback = std::move(callback);
-	}
-
-	void set_usart_rx_data(uint8_t data) {
-		_usart_controller.rx_push_data(data);
-	}
 
 	void reset(uint32_t program_entry_point) {
 		_usart_controller.reset();

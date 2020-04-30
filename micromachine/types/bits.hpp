@@ -184,11 +184,14 @@ private:
 
 	std::reference_wrapper<integer_type> _val;
 };
-template <size_t offset, size_t len = 1>
+template <size_t _offset, size_t _len = 1>
 struct bits {
 
+	static constexpr size_t length = _len;
+	static constexpr size_t offset = _offset;
+
 	template <typename integer_type>
-	using integer_slice = slice<offset, len, integer_type>;
+	using integer_slice = slice<offset, _len, integer_type>;
 
 	template <typename integer_type>
 	using const_integer_slice = typename integer_slice<integer_type>::const_type;
@@ -205,15 +208,15 @@ struct bits {
 
 	template <typename integer_type>
 	static integer_type as_mask() {
-		return binops::make_mask<integer_type>(len) << offset;
+		return binops::make_mask<integer_type>(_len) << _offset;
 	}
 
-	template <typename integer_type, size_t slice_offset, size_t slice_len>
-	static slice<offset + slice_offset, len, integer_type>
-	of(slice<slice_offset, slice_len, integer_type> existing_slice) {
-		static_assert(offset + slice_offset + len <= slice_offset + slice_len,
+	template <typename integer_type, size_t _slice_offset, size_t _slice_len>
+	static slice<_offset + _slice_offset, _len, integer_type>
+	of(slice<_slice_offset, _slice_len, integer_type> existing_slice) {
+		static_assert(_offset + _slice_offset + _len <= _slice_offset + _slice_len,
 					  "can't create a sub slice outside the parent slice bounds");
-		return slice<offset + slice_offset, len, integer_type>(existing_slice.val());
+		return slice<_offset + _slice_offset, _len, integer_type>(existing_slice.val());
 	}
 };
 
