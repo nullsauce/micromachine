@@ -55,6 +55,8 @@ set(SRCS
 	registers/standard_reg.hpp
 	registers/memory_mapped_reg.hpp
 	registers/special_registers/xpsr_reg.hpp
+	peripherals/usart/usart_reg.hpp
+	peripherals/usart/usart_controller.hpp
 	types/bits.hpp
 	types/types.hpp
 	cpu.hpp
@@ -63,8 +65,6 @@ set(SRCS
 	nvic.hpp
 	programmer.hpp
 	systick.hpp
-    peripherals/usart_reg.hpp
-    peripherals/usart_controller.hpp
 )
 
 add_library(micromachine STATIC ${SRCS})
