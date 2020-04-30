@@ -40,7 +40,7 @@ public:
 		_calib_value.reset();
 	}
 
-	void tick() {
+	void step() {
 		if(!_control.enabled()) {
 			return;
 		}

@@ -123,7 +123,9 @@ MICROMACHINE_TEST_F(USART_Peripheral, StepMovesTxRegisterIntoTxBuffer, USARTCont
 	usart().tx_register() = 0xcd;
 	usart().step();
 	uint8_t expectedTxData = 0xcd;
-	EXPECT_EQ(expectedTxData, usart().receive());
+	uint8_t actualData = 0;
+	usart().receive(actualData);
+	EXPECT_EQ(expectedTxData, actualData);
 }
 
 MICROMACHINE_TEST_F(USART_Peripheral, StepMovesRxBufferIntoRxRegister, USARTControllerTestHarness) {
@@ -167,4 +169,10 @@ MICROMACHINE_TEST_F(USART_Peripheral, StepDoesNotMoveRxBufferIntoRxRegisterWhenD
 	usart().step();
 	EXPECT_FALSE(usart().interrupt_status_register().rx_not_empty());
 	EXPECT_EQ(0, usart().rx_register());
+}
+
+MICROMACHINE_TEST_F(USART_Peripheral, ICREnableTxEmptyInterruptTriggersAnInterrupt, USARTControllerTestHarness) {
+	binops::set_bit(usart().control_register(), usart_cr1_reg::tx_empty_interrupt_enable_bit::offset);
+	usart().step();
+	EXPECT_TRUE(mcu().get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
 }
