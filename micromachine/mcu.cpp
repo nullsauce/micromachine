@@ -13,7 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 namespace micromachine::system {
 
 cpu::step_result mcu::step() {
-	_systick.tick();
+	_systick.step();
 	_usart_controller.step();
 	return _cpu.step();
 }
