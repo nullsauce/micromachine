@@ -29,6 +29,7 @@ private:
 	usart_tx_reg _tx_register;
 	data_channel _rx_buffer;
 	data_channel _tx_buffer;
+	const exception::Type _external_interrupt;
 
 public:
 	static constexpr uint32_t USART_BASE = 0x40000000;
@@ -38,12 +39,13 @@ public:
 	static constexpr uint32_t USART_RX = USART_BASE + 0x0c;
 	static constexpr uint32_t USART_TX = USART_BASE + 0x10;
 
-	usart_controller(exception_controller& exception_controller)
+	usart_controller(exception_controller& exception_controller, exception::Type external_interrupt)
 		: _exception_controller(exception_controller)
 		, _interrupt_clear_register(_interrupt_status_register)
 		, _control_register(std::bind(&usart_controller::reset, this))
 		, _rx_register(_interrupt_status_register)
 		, _tx_register(_interrupt_status_register)
+		, _external_interrupt(external_interrupt)
 	{}
 
 	void reset() {
@@ -95,7 +97,7 @@ public:
 
 		if(interrupt_requested) {
 			// TODO find a way to map EXTI_00 to usart:
-			_exception_controller.raise_external_interrupt(0 /*exception::Type::EXTI_00*/);
+			_exception_controller.raise_external_interrupt(_external_interrupt);
 		}
 	}
 

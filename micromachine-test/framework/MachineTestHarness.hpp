@@ -76,9 +76,9 @@ protected:
 	uint32_t memRead32(uint32_t address);
 	void resetMachine(uint32_t initialPc);
 	void raiseHardfault();
-	void raiseExternalInterrupt(uint8_t number);
-	void enableExternalInterrupt(uint8_t number);
-	void enabledAndRaiseExternalInterrupt(uint8_t number);
+	void raiseExternalInterrupt(exception::Type ex);
+	void enableExternalInterrupt(exception::Type ex);
+	void enabledAndRaiseExternalInterrupt(exception::Type ex);
 	void setExceptionPriority(exception::Type ex, exception::priority_t priority);
 	void setXPSR(uint32_t xpsr);
 	void enterHandlerMode();
