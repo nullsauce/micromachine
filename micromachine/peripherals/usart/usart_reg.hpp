@@ -17,9 +17,16 @@ namespace micromachine::system {
  * register indicate which interrupt are to be serviced by the software.
  */
 class usart_is_reg : public memory_mapped_reg {
+private:
+	bool& _interrupt_event;
+
 public:
 	using memory_mapped_reg::operator=;
 	using memory_mapped_reg::operator uint32_t;
+
+	usart_is_reg(bool& interrupt_event)
+		: _interrupt_event(interrupt_event)
+	{}
 
 	/**
 	 * This bit is set when the data has been transferred to the usart_rx register. It
@@ -74,6 +81,11 @@ public:
 
 	void set_tx_empty(bool flag) {
 		self<tx_empty_bit>() = flag;
+
+		// signaling tx as empty generates an interrupt event
+		if(flag) {
+			_interrupt_event = true;
+		}
 	}
 
 	bool rx_not_empty() {
@@ -82,6 +94,11 @@ public:
 
 	void set_rx_not_empty(bool flag) {
 		self<rx_not_empty_bit>() = flag;
+
+		// signaling rs as not empty generates an interrupt event
+		if(flag) {
+			_interrupt_event = true;
+		}
 	}
 
 	void reset() override {
@@ -105,12 +122,15 @@ public:
 	using memory_mapped_reg::operator=;
 	using memory_mapped_reg::operator uint32_t;
 	using reset_requested = std::function<void()>;
+
 private:
-	const reset_requested _reset_requested;
+	bool& _interrupt_event;
+	const reset_requested _request_reset;
 
 public:
-	usart_cr1_reg(reset_requested reset_requested)
-		: _reset_requested(std::move(reset_requested))
+	usart_cr1_reg(bool& interrupt_event, reset_requested request_reset)
+		: _interrupt_event(interrupt_event)
+		, _request_reset(std::move(request_reset))
 	{}
 
 	/**
@@ -174,9 +194,16 @@ private:
 
 	void set(uint32_t word) override {
 
-		// On disable, reset the interrupt statuses
+		// trigger an interrupt when interrupt are enabled for these signals
+		if(detect_transition_of<tx_empty_interrupt_enable_bit>(word, true)) {
+			_interrupt_event = true;
+		} else if(detect_transition_of<rx_not_empty_interrupt_enable_bit>(word, true)) {
+			_interrupt_event = true;
+		}
+
+		// On disable, reset the controller
 		if(detect_transition_of<enable_bit>(word, false)) {
-			_reset_requested();
+			_request_reset();
 		}
 
 		_word = word;
@@ -251,6 +278,9 @@ public:
 	 */
 	uint8_t read() {
 		uint8_t byte = self<data_bits>();
+
+		// Signals tx as empty which triggers an interrupt event
+		// and maybe an interrupt request.
 		_usart_isr_reg.set_tx_empty(true);
 		return byte;
 	}
@@ -293,6 +323,9 @@ public:
 	 */
 	void write(uint8_t byte) {
 		self<data_bits>() = byte;
+
+		// Signals rx as not empty which triggers an interrupt event
+		// and maybe an interrupt request.
 		_usart_isr_reg.set_rx_not_empty(true);
 	}
 

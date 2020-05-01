@@ -174,7 +174,7 @@ MICROMACHINE_TEST_F(USART_Peripheral, StepDoesNotMoveRxBufferIntoRxRegisterWhenD
 MICROMACHINE_TEST_F(USART_Peripheral, ICREnableTxEmptyInterruptTriggersAnInterrupt, USARTControllerTestHarness) {
 	binops::set_bit(usart().control_register(), usart_cr1_reg::tx_empty_interrupt_enable_bit::offset);
 	usart().step();
-	EXPECT_TRUE(mcu().get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	EXPECT_TRUE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
 }
 
 MICROMACHINE_TEST_F(USART_Peripheral, ResetDoeNotTriggersAnInterrupt, USARTControllerTestHarness) {
