@@ -1,4 +1,0 @@
-Hello usart world!
-[+] Transfer in progress...
-[+] Transfer is done!
-[+] Data received : 'I'm your feeder! I'm'

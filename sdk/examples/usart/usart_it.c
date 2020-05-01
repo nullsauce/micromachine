@@ -63,7 +63,7 @@ void usart_transmit_async(struct usart_device* dev, uint8_t* data, size_t len) {
 // shared data between isr and main task
 static int dummy = 42;
 static struct usart_device dev = {
-	.port = USART,
+	.port = USART0,
 	.conf =
 		{
 			.enable = true,
@@ -104,8 +104,8 @@ static void usart_end_transmit_it(struct usart_device* dev) {
 }
 
 void _isr_usart() {
-	uint32_t isr_flags = USART->ISR;
-	uint32_t cr1_flags = USART->CR1;
+	uint32_t isr_flags = USART0->ISR;
+	uint32_t cr1_flags = USART0->CR1;
 
 	if((isr_flags & USART_ISR_TXE) && (cr1_flags & USART_CR1_TXE)) {
 		usart_transmit_it(&dev);
