@@ -11,6 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <cstdint>
 #include <string>
+#include <limits>
 
 namespace micromachine::system {
 
