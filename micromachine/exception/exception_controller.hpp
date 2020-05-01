@@ -46,16 +46,32 @@ public:
 		raise<exception::SYSTICK>();
 	}
 
-	void raise_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(exception::EXTI_00 + number).set_pending(true);
+	void raise_external_interrupt(exception::Type ex) {
+		assert(ex >= exception::Type::EXTI_00 && "Can't raise an interrupt lower than EXTI_00");
+		_exception_vector.interrupt_state(exception::EXTI_00).set_pending(true);
 	}
 
-	void enable_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(exception::EXTI_00 + number).set_enable(true);
+	template <exception::Type Ex>
+	void raise_external_interrupt() {
+		static_assert(Ex >= exception::EXTI_00, "Can't raise an interrupt lower than EXTI_00");
+		_exception_vector.interrupt_state<Ex>().set_pending(true);
 	}
 
-	void disable_external_interrupt(uint8_t number) {
-		_exception_vector.interrupt_state(exception::EXTI_00 + number).set_enable(false);
+	template <exception::Type Ex>
+	void disable_external_interrupt() {
+		static_assert(Ex >= exception::EXTI_00, "Can't raise an interrupt lower than EXTI_00");
+		_exception_vector.interrupt_state<Ex>().set_enable(false);
+	}
+
+	template <exception::Type Ex>
+	void enable_external_interrupt() {
+		static_assert(Ex >= exception::EXTI_00, "Can't raise an interrupt lower than EXTI_00");
+		_exception_vector.interrupt_state<Ex>().set_enable(true);
+	}
+
+	void enable_external_interrupt(exception::Type ex) {
+		assert(ex >= exception::Type::EXTI_00 && "Can't raise an interrupt lower than EXTI_00");
+		_exception_vector.interrupt_state(exception::EXTI_00).set_enable(true);
 	}
 
 	template <exception::Type Ex>

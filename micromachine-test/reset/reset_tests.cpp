@@ -60,13 +60,13 @@ MICROMACHINE_TEST_F(ResetBehavior, ActiveInternalExceptionIsCleared, CpuTestFixt
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, PendingExternalInterruptIsCleared, CpuTestFixture) {
-	raiseExternalInterrupt(7);
+	raiseExternalInterrupt(exception::EXTI_07);
 	resetMachine(0x20);
 	CheckThat(noExceptionIsActiveOrPending());
 }
 
 MICROMACHINE_TEST_F(ResetBehavior, ActiveExternalInterruptIsCleared, CpuTestFixture) {
-	enabledAndRaiseExternalInterrupt(7);
+	enabledAndRaiseExternalInterrupt(exception::EXTI_07);
 	resetMachine(0x20);
 	CheckThat(noExceptionIsActiveOrPending());
 }

@@ -101,34 +101,34 @@ TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 
 TEST_F(ExceptionVectorTestBench, RaiseExternalInterrupt)
 {
-	_interrupter.enable_external_interrupt(12);
-	_interrupter.raise_external_interrupt(12);
+	_interrupter.enable_external_interrupt<exception::EXTI_12>();
+	_interrupter.raise_external_interrupt<exception::EXTI_12>();
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(micromachine::system::exception::Type::EXTI_12, _evec.top_pending()->number());
 }
 
 TEST_F(ExceptionVectorTestBench, RaiseDisabledExternalInterrupt)
 {
-	_interrupter.disable_external_interrupt(12);
-	_interrupter.raise_external_interrupt(12);
+	_interrupter.disable_external_interrupt<exception::EXTI_12>();
+	_interrupter.raise_external_interrupt<exception::EXTI_12>();
 	ASSERT_EQ(nullptr, _evec.top_pending());
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithLowerNumberTakesPrecedenceOnExceptionWithSamePriority)
 {
-	_interrupter.enable_external_interrupt(13);
-	_interrupter.enable_external_interrupt(12);
-	_interrupter.raise_external_interrupt(13);
-	_interrupter.raise_external_interrupt(12);
+	_interrupter.enable_external_interrupt<exception::EXTI_13>();
+	_interrupter.enable_external_interrupt<exception::EXTI_12>();
+	_interrupter.raise_external_interrupt<exception::EXTI_13>();
+	_interrupter.raise_external_interrupt<exception::EXTI_12>();
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(micromachine::system::exception::Type::EXTI_12, _evec.top_pending()->number());
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithHigherNumberTakesPrecedenceOnDisabledException) {
-	_interrupter.enable_external_interrupt(13);
-	_interrupter.disable_external_interrupt(12);
-	_interrupter.raise_external_interrupt(13);
-	_interrupter.raise_external_interrupt(12);
+	_interrupter.enable_external_interrupt<exception::EXTI_13>();
+	_interrupter.disable_external_interrupt<exception::EXTI_12>();
+	_interrupter.raise_external_interrupt<exception::EXTI_13>();
+	_interrupter.raise_external_interrupt<exception::EXTI_12>();
 	ASSERT_NE(nullptr, _evec.top_pending());
 	EXPECT_EQ(micromachine::system::exception::Type::EXTI_13, _evec.top_pending()->number());
 }
