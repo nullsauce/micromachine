@@ -13,6 +13,11 @@ public:
 	virtual void send(uint8_t byte) = 0;
 	virtual bool receive(uint8_t& byte) = 0;
 	virtual void shutdown() = 0;
+	void write_string(const std::string& string) {
+		for(char c : string) {
+			send(c);
+		}
+	}
 };
 
 class iopump {
