@@ -21,6 +21,7 @@ class usart_controller : public iodev {
 private:
 	using data_channel = blocking_bounded_channel<uint8_t, 1024>;
 
+	bool _interrupt_event;
 	exception_controller& _exception_controller;
 	usart_is_reg _interrupt_status_register;
 	usart_ic_reg _interrupt_clear_register;
@@ -40,22 +41,23 @@ public:
 	static constexpr uint32_t USART_TX = USART_BASE + 0x10;
 
 	usart_controller(exception_controller& exception_controller, exception::Type external_interrupt)
-		: _exception_controller(exception_controller)
+		: _interrupt_event(false)
+		, _exception_controller(exception_controller)
+		, _interrupt_status_register(_interrupt_event)
 		, _interrupt_clear_register(_interrupt_status_register)
-		, _control_register(std::bind(&usart_controller::reset, this))
+		, _control_register(_interrupt_event, std::bind(&usart_controller::reset, this))
 		, _rx_register(_interrupt_status_register)
 		, _tx_register(_interrupt_status_register)
 		, _external_interrupt(external_interrupt)
 	{}
 
 	void reset() {
+		clear_interrupt_event();
 		_control_register.reset();
 		_interrupt_status_register.reset();
 		_interrupt_clear_register.reset();
 		_rx_register.reset();
 		_tx_register.reset();
-		_rx_buffer.clear();
-		_tx_buffer.clear();
 	}
 
 	void step() {
@@ -63,8 +65,6 @@ public:
 		if (!_control_register.enabled()) {
 			return;
 		}
-
-		bool interrupt_requested = false;
 
 		// do we have data to sent to the application ?
 		if(_rx_buffer.size()) {
@@ -74,30 +74,26 @@ public:
 				uint8_t byte = 0;
 				if(data_channel::success == _rx_buffer.pop(byte)) {
 					_rx_register.write(byte);
-					// and trigger an event, if enabled
-					if(_control_register.rx_not_empty_interrupt_enabled()) {
-						interrupt_requested = true;
-					}
-				} else {
-					// failed to retrieve data from rx buffer
 				}
 			}
 		}
 
 		// is there data to be read from the application ?
 		if(!_interrupt_status_register.tx_empty()) {
-
 			_tx_buffer.force_push(_tx_register.read());
-
-			// and trigger an event, if enabled
-			if(_control_register.tx_empty_interrupt_enabled()) {
-				interrupt_requested = true;
-			}
 		}
 
-		if(interrupt_requested) {
-			// TODO find a way to map EXTI_00 to usart:
-			_exception_controller.raise_external_interrupt(_external_interrupt);
+		if(_interrupt_event) {
+			// check if any interrupt should be fired.
+
+			bool should_interrupt_because_tx_empty = _interrupt_status_register.tx_empty() && _control_register.tx_empty_interrupt_enabled();
+			bool should_interrupt_because_rx_not_empty = _interrupt_status_register.rx_not_empty() && _control_register.rx_not_empty_interrupt_enabled();
+			bool should_interrupt = should_interrupt_because_tx_empty || should_interrupt_because_rx_not_empty;
+
+			if(should_interrupt) {
+				_exception_controller.raise_external_interrupt(_external_interrupt);
+				clear_interrupt_event();
+			}
 		}
 	}
 
@@ -157,7 +153,10 @@ public:
 		return _tx_register;
 	}
 
-
+private:
+	void clear_interrupt_event() {
+		_interrupt_event = false;
+	}
 
 };
 }; //namespace micromachine::system
