@@ -7,9 +7,9 @@
 
 actual_stdout_file="$(mktemp)"
 expected_stdout_file="$1"
-command_to_run="${@:2}"
-${command_to_run} > ${actual_stdout_file}
+command_to_run="${@:2} > ${actual_stdout_file}"
 echo "running test: $command_to_run"
+eval "${command_to_run}"
 if cmp --silent ${expected_stdout_file} ${actual_stdout_file}; then
     exit 0
 else

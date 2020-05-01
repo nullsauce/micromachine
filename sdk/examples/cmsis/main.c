@@ -8,7 +8,7 @@ void main() {
 
 	// External peripherals
 	//  TODO USART has to be mapped in the vm
-	USART_TypeDef* usart = USART;
+	USART_TypeDef* usart = USART0;
 //	usart->CR1 = 2;
 
 	// internal register
