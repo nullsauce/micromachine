@@ -182,3 +182,12 @@ MICROMACHINE_TEST_F(USART_Peripheral, ResetDoeNotTriggersAnInterrupt, USARTContr
 	usart().reset();
 	EXPECT_FALSE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
 }
+
+MICROMACHINE_TEST_F(USART_Peripheral, ICREnableRxNotEmptyInterruptTriggersAnInterrupt, USARTControllerTestHarness) {
+	usart().send(0xdf);
+	usart().step();
+	EXPECT_FALSE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	binops::set_bit(usart().control_register(), usart_cr1_reg::rx_not_empty_interrupt_enable_bit::offset);
+	usart().step();
+	EXPECT_TRUE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+}
