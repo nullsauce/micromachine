@@ -1,0 +1,3 @@
+<app> Hello vm!
+...
+<vm> Hello app!

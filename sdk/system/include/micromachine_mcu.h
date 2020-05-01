@@ -188,7 +188,7 @@ typedef struct
   * @{
   */
 
-#define USART       ((USART_TypeDef *) USART_BASE)
+#define USART0       ((USART_TypeDef *) USART_BASE)
 /** @} */ /* End of group Device_Peripheral_declaration */
 
 /** @addtogroup Peripheral_Registers_Bits_Definition
