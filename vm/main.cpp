@@ -14,11 +14,13 @@ int main(int argc, char** argv) {
 
 	bool testing_enabled = false;
 	std::string executable_path;
+	std::string usart_input_string;
 
 	cxxopts::Options options("micromachine", "ARMv6-M emulator");
 	options.add_options()
 		("t,testing", "Enable testing", cxxopts::value<bool>()->default_value("false"))
 		("executable", "Executable path", cxxopts::value<std::string>())
+		("usart-input-string", "usart input data to be passed to the application", cxxopts::value<std::string>())
 		("h,help", "Print usage")
 	;
 
@@ -36,6 +38,10 @@ int main(int argc, char** argv) {
 			return EXIT_FAILURE;
 		}
 
+		if(result.count("usart-input-string")) {
+			usart_input_string = result["usart-input-string"].as<std::string>();
+		}
+
 		testing_enabled = result["testing"].as<bool>();
 		executable_path = result["executable"].as<std::string>();
 
@@ -51,6 +57,10 @@ int main(int argc, char** argv) {
 	if(program->is_null()) {
 		fprintf(stderr, "Error: Failed to load the given ELF file %s\n", argv[1]);
 		return EXIT_FAILURE;
+	}
+
+	if(usart_input_string.size()) {
+		mcu.get_usart_controller().write_string(usart_input_string);
 	}
 
 	iopump iopump(mcu.get_usart_controller(), [](uint8_t byte){
