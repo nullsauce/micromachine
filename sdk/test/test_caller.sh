@@ -15,7 +15,14 @@ if cmp --silent ${expected_stdout_file} ${actual_stdout_file}; then
 else
     echo "Test failed:"
     echo "Expected stdout file: ${expected_stdout_file}"
+    echo "--BEGIN-FILE-CONTENT--"
+    cat ${expected_stdout_file}
+    echo "--END-FILE-CONTENT--"
     echo "Actual stdout file: ${actual_stdout_file}"
+    echo "--BEGIN-FILE-CONTENT--"
+    cat ${actual_stdout_file}
+    echo "--END-FILE-CONTENT--"
+    echo "diff:"
     diff ${expected_stdout_file} ${actual_stdout_file}
 fi
 
