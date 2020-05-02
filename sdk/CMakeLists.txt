@@ -1,6 +1,6 @@
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/micromachine.toolchain")
 project(micromachine-sdk)
-enable_testing()
+
 set(MICROMACHINE_VM CACHE STRING "MICROMACHINE_VM-NOTFOUND")
 cmake_minimum_required(VERSION 3.2)
 
