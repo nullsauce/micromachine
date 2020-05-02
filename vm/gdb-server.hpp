@@ -210,14 +210,21 @@ public:
 			client.send_packet("OK");
 		} else if(packet[0] == 'Z') {
 			client.send_packet("");
+		} else if(packet[0] == 'z') {
+			client.send_packet("");
 		} else if(packet[0] == 'X') {
 			uint32_t address = 0;
 			uint32_t size = 0;
-			sscanf(packet.data(), "%u,%u:", &address, &size);
+			sscanf(packet.data(), "X%x,%x:", &address, &size);
 			fprintf(stderr, "write memory address=%u, size=%u\n", address, size);
 			size_t data_begin = packet.find(':') + 1;
 			for(size_t i = 0; i < size; i++) {
-				_cpu.mem().write8(address + i, packet.data()[data_begin + i]);
+				uint32_t byte_address = address + i;
+				uint8_t byte_value = packet.data()[data_begin + i];
+				fprintf(stderr, "write byte address=%08x val=%02x\n", byte_address, byte_value);
+				if(!_cpu.mem().write8(byte_address, byte_value)) {
+					fprintf(stderr, "memory write failed: address=%08x, value=%02x\n", byte_address, byte_value);
+				}
 			}
 			client.send_packet("OK");
 
@@ -227,7 +234,14 @@ public:
 			client.send_packet("vCont;c;C;s;S;t");
 		} else if(packet.rfind("vCont", 0) == 0) {
 			_cpu.step();
-			client.send_packet("T05");
+			std::stringstream ss;
+			for(int i = 0; i < 16; i++) {
+				char buff[32];
+				sprintf(buff, "%02x:%08x;", i, binops::swap32(_cpu.regs().get(i)));
+				ss << std::string(buff);
+			}
+			//ss << "thread:0;";
+			client.send_packet("T05" + ss.str());
 		} else if(packet.compare("?") == 0) {
 			client.send_packet("S05");
 		} else if(packet.compare("qfThreadInfo") == 0) {
@@ -266,12 +280,13 @@ public:
 		} else if(packet[0] == 'm') {
 			uint32_t address = 0;
 			uint32_t size = 0;
-			if(2 == sscanf(packet.data(), "m%08X,%d", &address, &size)) {
+			if(2 == sscanf(packet.data(), "m%X,%d", &address, &size)) {
 				std::string hexbuf(size*2, '0');
 				for(uint32_t i = 0; i < size; i++) {
 					static const char* hex = "0123456789ABCDEF";
- 					uint8_t byte = _cpu.mem().read8_unchecked(address + i);
- 					char* str_data = ((char*)hexbuf.data());
+					uint8_t byte = _cpu.mem().read8_unchecked(address + i);
+					fprintf(stderr, "read byte address=%08x val=%02x\n", address + i, byte);
+					char* str_data = ((char*)hexbuf.data());
 					str_data[i*2+0] = hex[(byte >> 4)];
 					str_data[i*2+1] = hex[(byte & 0xf)];
 				}
@@ -292,7 +307,7 @@ public:
 				}
 			}
 		} else if(packet.rfind("qXfer:exec-file:read:", 0) == 0) {
-			client.send_packet("l/" + _program->path());
+			client.send_packet("l" + _program->path());
 		} else if(packet.rfind("vFile:setfs:", 0) == 0) {
 			client.send_packet("");
 		} else if(packet.rfind("vFile:fstat", 0) == 0) {
