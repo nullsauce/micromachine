@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 		("t,testing", "Enable testing", cxxopts::value<bool>()->default_value("false"))
 		("executable", "Executable path", cxxopts::value<std::string>())
 		("usart-input-string", "usart input data to be passed to the application", cxxopts::value<std::string>())
-		("gdb-server", "Enable gdb server debugging", cxxopts::value<bool>()->default_value("true"))
+		("gdb-server", "Enable gdb server debugging", cxxopts::value<bool>()->default_value("false"))
 		("gdb-server-port", "sets the gdb server port (implies gdb-server)", cxxopts::value<uint16_t>()->default_value("2345"))
 		("h,help", "Print usage")
 	;
