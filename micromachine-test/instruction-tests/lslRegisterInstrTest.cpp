@@ -20,7 +20,7 @@ MICROMACHINE_TEST_F(lslRegister, ShiftR7by0_MinimumShift_CarryShouldBeUnmodified
 
 	emitInstruction16("0100000010mmmddd", registers::R0, registers::R7);
 	setCarryFlag(true);
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R7).equals(0x77777777U));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R7).equals(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(lslRegister, ShiftValue1by31_NegativeResult, CpuTestFixture) {

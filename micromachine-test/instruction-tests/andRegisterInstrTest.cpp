@@ -28,13 +28,13 @@ MICROMACHINE_TEST_F(andRegister, UseHighestRegisterForBothArgs, CpuTestFixture) 
 
 	// check that carry remains set
 	setCarryFlag(true);
-	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R7).equals(0x77777777), apsrFlagsEquals("nzCv"));
+	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R7).equals(INITIAL_R7), apsrFlagsEquals("nzCv"));
 }
 
 MICROMACHINE_TEST_F(andRegister, AndR3andR7, CpuTestFixture) {
 	emitInstruction16("0100000000mmmddd", registers::R3, registers::R7);
 
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(0x33333333));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(INITIAL_R3));
 }
 
 MICROMACHINE_TEST_F(andRegister, UseAndToJustKeepNegativeSignBit, CpuTestFixture) {

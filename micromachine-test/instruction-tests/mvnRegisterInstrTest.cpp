@@ -30,7 +30,7 @@ MICROMACHINE_TEST_F(mvnRegister, UseHigestRegisterForAllArgs, CpuTestFixture) {
 	emitInstruction16("0100001111mmmddd", registers::R7, registers::R7);
 	setCarryFlag(false);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("Nzcv"),
-	reg(registers::R7).equals(~0x77777777U));
+	reg(registers::R7).equals(~INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(mvnRegister, UseDifferentRegistersForEachArg, CpuTestFixture) {
@@ -38,7 +38,7 @@ MICROMACHINE_TEST_F(mvnRegister, UseDifferentRegistersForEachArg, CpuTestFixture
 
 	emitInstruction16("0100001111mmmddd", registers::R2, registers::R1);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("Nzcv"),
-	reg(registers::R1).equals(~0x22222222U));
+	reg(registers::R1).equals(~INITIAL_R2));
 }
 
 MICROMACHINE_TEST_F(mvnRegister, MoveANegationOfNegativeOne_ClearsNegativeFlagAndSetsZeroFlag, CpuTestFixture) {

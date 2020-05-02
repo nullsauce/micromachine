@@ -26,7 +26,7 @@ MICROMACHINE_TEST_F(subImmediate, T1UseHigestRegisterOnly_LargestImmediate, CpuT
 	emitInstruction16("0001111iiinnnddd", 7, registers::R7, registers::R7);
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"),
-	reg(registers::R7).equals(0x77777777U - 7U));
+	reg(registers::R7).equals(INITIAL_R7 - 7U));
 }
 
 MICROMACHINE_TEST_F(subImmediate, T1UseDifferentRegistersForEachArg, CpuTestFixture) {
@@ -54,7 +54,7 @@ MICROMACHINE_TEST_F(subImmediate, T2HigestRegister_LargestImmediate, CpuTestFixt
 	emitInstruction16("00111dddiiiiiiii", registers::R7, 255);
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"),
-	reg(registers::R7).equals(0x77777777U - 255U));
+	reg(registers::R7).equals(INITIAL_R7 - 255U));
 }
 
 MICROMACHINE_TEST_F(subImmediate, T2Subtract127FromR0CausesNoCarryToIndicateBorrowAndNegativeResult, CpuTestFixture) {

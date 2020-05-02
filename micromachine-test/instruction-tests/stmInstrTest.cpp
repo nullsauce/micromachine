@@ -31,7 +31,7 @@ MICROMACHINE_TEST_F(stm, JustPushR7WithR0AsAddress, CpuTestFixture) {
 	setReg(registers::R0, TestMachine::INITIAL_PC + 16);
 	memWrite32(TestMachine::INITIAL_PC + 16, 0xFFFFFFFF);
 	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R0).equals(TestMachine::INITIAL_PC + 16 + 1 * 4),
-													memoryAt(TestMachine::INITIAL_PC + 16).equals32(0x77777777));
+													memoryAt(TestMachine::INITIAL_PC + 16).equals32(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(stm, PushAllWithR0AsAddress, CpuTestFixture) {
@@ -42,13 +42,13 @@ MICROMACHINE_TEST_F(stm, PushAllWithR0AsAddress, CpuTestFixture) {
 	StepAndExpectThatInstruction16IsExecutedAndThat(
 		reg(registers::R0).equals(TestMachine::INITIAL_PC + 16 + 8 * 4),
 		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 0).equals32(TestMachine::INITIAL_PC + 16),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 1).equals32(0x11111111U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 2).equals32(0x22222222U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 3).equals32(0x33333333U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 4).equals32(0x44444444U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 5).equals32(0x55555555U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 6).equals32(0x66666666U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 7).equals32(0x77777777U));
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 1).equals32(INITIAL_R1),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 2).equals32(INITIAL_R2),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 3).equals32(INITIAL_R3),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 4).equals32(INITIAL_R4),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 5).equals32(INITIAL_R5),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 6).equals32(INITIAL_R6),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 7).equals32(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(stm, PushAllButR7WithR7AsAddress, CpuTestFixture) {
@@ -56,21 +56,22 @@ MICROMACHINE_TEST_F(stm, PushAllButR7WithR7AsAddress, CpuTestFixture) {
 	emitInstruction16("11000nnnrrrrrrrr", registers::R7, 0x7F);
 	setReg(registers::R7, TestMachine::INITIAL_PC + 16);
 
+	/*
 	for(int i = 0; i < 7; i++) {
 		setReg(i, 0x11111111U * i);
-	}
+	}*/
 
 	for(int i = 0; i < 7; i++) {
 		memWrite32(TestMachine::INITIAL_PC + 16 + 4 * i, 0xFFFFFFFF);
 	}
 	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R7).equals(TestMachine::INITIAL_PC + 16 + 7 * 4),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 0).equals32(0x00000000U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 1).equals32(0x11111111U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 2).equals32(0x22222222U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 3).equals32(0x33333333U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 4).equals32(0x44444444U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 5).equals32(0x55555555U),
-		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 6).equals32(0x66666666U));
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 0).equals32(INITIAL_R0),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 1).equals32(INITIAL_R1),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 2).equals32(INITIAL_R2),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 3).equals32(INITIAL_R3),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 4).equals32(INITIAL_R4),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 5).equals32(INITIAL_R5),
+		memoryAt(TestMachine::INITIAL_PC + 16 + 4 * 6).equals32(INITIAL_R6));
 }
 
 
