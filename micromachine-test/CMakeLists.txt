@@ -141,6 +141,8 @@ declare_test(peripherals/usart-tests.cpp)
 option(BUILD_LEGACY_INSTRUCTION_TESTS "Build the legacy instruction tests" OFF)
 
 if(BUILD_LEGACY_INSTRUCTION_TESTS)
+	message(STATUS "Legacy tests will be built and run")
+
 	declare_test(legacy-instruction-tests/adcRegisterInstrTest.cpp)
 	declare_test(legacy-instruction-tests/addImmediateInstrTest.cpp)
 	declare_test(legacy-instruction-tests/addRegisterInstrTest.cpp)
@@ -209,7 +211,13 @@ if(BUILD_LEGACY_INSTRUCTION_TESTS)
 	declare_test(legacy-instruction-tests/dmbInstrTest.cpp)
 	declare_test(legacy-instruction-tests/dsbInstrTest.cpp)
 	declare_test(legacy-instruction-tests/cpsInstrTest.cpp)
-endif ()
+
+	add_executable(all_legacy_tests ${ALL_TEST_OBJS})
+	target_link_libraries(all_legacy_tests test_common libgtest_main ${CMAKE_THREAD_LIBS_INIT})
+	add_test(all_legacy_tests all_legacy_tests)
+	set_tests_properties(all_legacy_tests PROPERTIES LABELS cpuTests)
+
+endif()
 
 
 # Build a single executable with ALL tests collected in ALL_TEST_OBJS
