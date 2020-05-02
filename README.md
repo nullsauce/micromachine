@@ -1,4 +1,4 @@
-# <img src="docs/images/micromachine-logo.png" width="640" height="320" />
+# <img src="docs/images/micromachine-logo.png" width="400" height="200" />
 
 Micromachine aims to be an cycle-**innacurate** armv6-m emulator that can be used to simulate
 microcontrollers at the application level.
@@ -16,7 +16,7 @@ master |![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20
 `micromachine` contains the emulation code. The most part of it is coded in headers
  in order to minimize the number of compilation unit and allow optimizations to take place.
 
-* :file_folder: [**test**](test/) contains all emulation code tests.
+* :file_folder: [**micromachine-test**](micromachine-test/) contains all emulation code tests.
 
 * :file_folder: [**termdbg**](termdbg/) contains a rudimentary terminal UI application used for
 developing and debugging the emulator.
@@ -90,7 +90,7 @@ See the CI scripts for examples.
 * [ARM Infocenter](http://infocenter.arm.com/help/index.jsp)
 
 
-### We use their code
+### Acknowledgments
 * [cotire](https://github.com/sakra/cotire) by Sascha Kratky
 * [CPPurses](https://github.com/a-n-t-h-o-n-y/CPPurses) by a-n-t-h-o-n-y
 * [ELFIO](https://github.com/serge1/ELFIO) by Serge Lamikhov
