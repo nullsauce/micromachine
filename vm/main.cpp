@@ -107,6 +107,10 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
 	}
 
+	if(!iopump.wait_until_flushed()) {
+		fprintf(stderr, "Warning: Not all the device output could be flushed\n");
+	}
+
 	iopump.shutdown();
 
 	return EXIT_SUCCESS;
