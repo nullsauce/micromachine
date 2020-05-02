@@ -29,7 +29,6 @@ MICROMACHINE_TEST_F(cmpRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) 
 
 MICROMACHINE_TEST_F(cmpRegister, T1RnLargerThanRm, CpuTestFixture) {
 
-	setReg(registers::R2, 0x22222222);
 	emitInstruction16("0100001010mmmnnn", registers::R1, registers::R2);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"));
 }
@@ -50,7 +49,6 @@ MICROMACHINE_TEST_F(cmpRegister, T1ForceNegativeOverflow, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(cmpRegister, T1ForcePositiveOverflow, CpuTestFixture) {
 
-	setReg(registers::R2, 0x22222222);
 	emitInstruction16("0100001010mmmnnn", registers::R1, registers::R2);
 	setReg(registers::R2, 0x7FFFFFFFU);
 	setReg(registers::R1, -1U);

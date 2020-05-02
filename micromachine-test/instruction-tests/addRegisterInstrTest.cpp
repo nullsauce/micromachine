@@ -28,7 +28,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseHigestRegisterForAllArgs, CpuTestFixture) 
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(
 		apsrFlagsEquals("NzcV"),
-		reg(registers::R7).equals(0x77777777U + 0x77777777U));
+		reg(registers::R7).equals(INITIAL_R7 + INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(addRegister, T1UseDifferentRegistersForEachArg, CpuTestFixture) {
@@ -38,7 +38,7 @@ MICROMACHINE_TEST_F(addRegister, T1UseDifferentRegistersForEachArg, CpuTestFixtu
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(
 		apsrFlagsEquals("nzcv"),
-		reg(registers::R3).equals(0x11111111U + 0x22222222U));
+		reg(registers::R3).equals(INITIAL_R1 + INITIAL_R2));
 }
 
 // Force APSR flags to be set which haven't already been covered above.
@@ -69,7 +69,7 @@ MICROMACHINE_TEST_F(addRegister, T1ForceCarryAndOverflow, CpuTestFixture) {
    NOTE: Shouldn't modify any of the APSR flags.*/
 MICROMACHINE_TEST_F(addRegister, T2UseR1ForAllArgs, CpuTestFixture) {
 	emitInstruction16("01000100dmmmmddd", registers::R1, registers::R1);
-	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R1).equals(0x11111111U + 0x11111111U));
+	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R1).equals(INITIAL_R1 + INITIAL_R1));
 }
 
 MICROMACHINE_TEST_F(addRegister, T2UseLowestRegisterForAllArgs, CpuTestFixture) {
@@ -79,12 +79,12 @@ MICROMACHINE_TEST_F(addRegister, T2UseLowestRegisterForAllArgs, CpuTestFixture) 
 
 MICROMACHINE_TEST_F(addRegister, T2UseForR12AllArgs, CpuTestFixture) {
 	emitInstruction16("01000100dmmmmddd", registers::R12, registers::R12);
-	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R12).equals(0xCCCCCCCCU + 0xCCCCCCCCU));
+	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R12).equals(INITIAL_R12 + INITIAL_R12));
 }
 
 MICROMACHINE_TEST_F(addRegister, T2UseDifferentRegistersForEachArg, CpuTestFixture) {
 	emitInstruction16("01000100dmmmmddd", registers::R2, registers::R1);
-	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R2).equals(0x11111111U + 0x22222222U));
+	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R2).equals(INITIAL_R1 + INITIAL_R2));
 }
 
 MICROMACHINE_TEST_F(addRegister, T2WrapAroundTo0, CpuTestFixture) {
@@ -121,7 +121,7 @@ MICROMACHINE_TEST_F(addRegister, T2Add1ToLR, CpuTestFixture) {
 
 	setReg(registers::R1, 1);
 
-	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::LR).equals(CpuTestFixture::INITIAL_LR + 1));
+	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::LR).equals(INITIAL_LR + 1));
 }
 
 MICROMACHINE_TEST_F(addRegister, T2Add1ToPCWhichWillBeOddAndRoundedDown, CpuTestFixture) {

@@ -36,7 +36,7 @@ MICROMACHINE_TEST_F(bicRegister, UseHighestRegisterForBothArgs, CpuTestFixture) 
 MICROMACHINE_TEST_F(bicRegister, UseR3andR7, CpuTestFixture) {
 
 	emitInstruction16("0100001110mmmddd", registers::R3, registers::R7);
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(0x77777777 & ~0x33333333));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(INITIAL_R7 & ~INITIAL_R3));
 }
 
 MICROMACHINE_TEST_F(bicRegister, UseBicToClearLSbit, CpuTestFixture) {

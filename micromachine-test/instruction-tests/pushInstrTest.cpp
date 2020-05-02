@@ -24,7 +24,7 @@ MICROMACHINE_TEST_F(push, JustPushLR, CpuTestFixture) {
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(
 		reg(registers::SP).equals(TestMachine::INITIAL_SP - 4),
-		memoryAt(TestMachine::INITIAL_SP - 4).equals32(CpuTestFixture::INITIAL_LR));
+		memoryAt(TestMachine::INITIAL_SP - 4).equals32(INITIAL_LR));
 }
 
 MICROMACHINE_TEST_F(push, JustPushR0, CpuTestFixture) {
@@ -40,7 +40,7 @@ MICROMACHINE_TEST_F(push, JustPushR7, CpuTestFixture) {
 	emitInstruction16("1011010Mrrrrrrrr", 0, 1 << 7);
 	memWrite32(TestMachine::INITIAL_SP - 4, 0xFFFFFFFF);
 	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::SP).equals(TestMachine::INITIAL_SP - 4),
-													memoryAt(TestMachine::INITIAL_SP - 4).equals32(0x77777777));
+													memoryAt(TestMachine::INITIAL_SP - 4).equals32(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(push, PushAll, CpuTestFixture) {
@@ -49,15 +49,15 @@ MICROMACHINE_TEST_F(push, PushAll, CpuTestFixture) {
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(
 		reg(registers::SP).wasDecrementedBy(4 * 9),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 0)).equals32(0x00000000U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 1)).equals32(0x11111111U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 2)).equals32(0x22222222U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 3)).equals32(0x33333333U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 4)).equals32(0x44444444U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 5)).equals32(0x55555555U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 6)).equals32(0x66666666U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 7)).equals32(0x77777777U),
-		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 8)).equals32(CpuTestFixture::INITIAL_LR)
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 0)).equals32(INITIAL_R0),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 1)).equals32(INITIAL_R1),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 2)).equals32(INITIAL_R2),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 3)).equals32(INITIAL_R3),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 4)).equals32(INITIAL_R4),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 5)).equals32(INITIAL_R5),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 6)).equals32(INITIAL_R6),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 7)).equals32(INITIAL_R7),
+		memoryAt(TestMachine::INITIAL_SP - 4 * (9 - 8)).equals32(INITIAL_LR)
 	);
 }
 

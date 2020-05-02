@@ -29,12 +29,12 @@ MICROMACHINE_TEST_F(movRegister, UseHighRegisterForAllArgs, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(movRegister, MoveHighRegisterToLowRegister, CpuTestFixture) {
 	emitInstruction16("01000110dmmmmddd", registers::R7, registers::R12);
-	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R7).equals(0xCCCCCCCC));
+	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R7).equals(INITIAL_R12));
 }
 
 MICROMACHINE_TEST_F(movRegister, MoveLowRegisterToLHighRegister, CpuTestFixture) {
 	emitInstruction16("01000110dmmmmddd", registers::R12, registers::R7);
-	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R12).equals(0x77777777));
+	StepAndExpectThatInstruction16IsExecutedAndThat(reg(registers::R12).equals(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(movRegister, MoveOddAddressIntoPCAndMakeSureLSbitIsCleared, CpuTestFixture) {

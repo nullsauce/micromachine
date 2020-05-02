@@ -44,8 +44,6 @@ MICROMACHINE_TEST_F(strbImmediate, YetAnotherMixOfRegistersThirdByteInWord, CpuT
 }
 
 MICROMACHINE_TEST_F(strbImmediate, YetAnotherMixOfRegistersFourthByteInWord, CpuTestFixture) {
-
-	setReg(registers::R5, 0x55555555U);
 	emitInstruction16("01110iiiiinnnttt", 3, registers::R1, registers::R5);
 	setReg(registers::R1, TestMachine::INITIAL_PC + 4);
 	memWrite32(TestMachine::INITIAL_PC + 4, 0xBAADFEED);
