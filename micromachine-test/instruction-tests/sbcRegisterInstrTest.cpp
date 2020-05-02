@@ -39,7 +39,7 @@ MICROMACHINE_TEST_F(sbcRegister,
 	emitInstruction16("0100000110mmmddd", registers::R1, registers::R2);
 	setCarryFlag(true);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"),
-	reg(registers::R2).equals(0x22222222U - 0x11111111U));
+	reg(registers::R2).equals(INITIAL_R2 - INITIAL_R1));
 }
 
 MICROMACHINE_TEST_F(sbcRegister, ForceCarryClearToIndicateBorrowAndResultWillBeNegative, CpuTestFixture) {
@@ -77,5 +77,5 @@ MICROMACHINE_TEST_F(sbcRegister, ClearCarryToCauseABorrowToOccur, CpuTestFixture
 	emitInstruction16("0100000110mmmddd", registers::R1, registers::R2);
 	setCarryFlag(false); // Causes borrow.
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"),
-	reg(registers::R2).equals(0x22222222U - 1U - 0x11111111U));
+	reg(registers::R2).equals(INITIAL_R2 - 1U - INITIAL_R1));
 }

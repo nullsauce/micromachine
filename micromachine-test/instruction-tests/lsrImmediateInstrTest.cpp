@@ -23,7 +23,7 @@ using namespace micromachine::testing;
 MICROMACHINE_TEST_F(lsr, ImmediateR2by1toR0, CpuTestFixture) {
 
 	emitInstruction16("00001iiiiimmmddd", IMM_1, registers::R2, registers::R0);
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R0).equals(0x22222222U >> 1));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R0).equals(INITIAL_R2 >> 1));
 }
 
 MICROMACHINE_TEST_F(lsr, ImmediateR7by32toR0_ZeroResult, CpuTestFixture) {
@@ -34,7 +34,7 @@ MICROMACHINE_TEST_F(lsr, ImmediateR7by32toR0_ZeroResult, CpuTestFixture) {
 MICROMACHINE_TEST_F(lsr, ImmediateR1by1toR7_CarryOut, CpuTestFixture) {
 
 	emitInstruction16("00001iiiiimmmddd", IMM_1, registers::R1, registers::R7);
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R7).equals(0x11111111U >> 1));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R7).equals(INITIAL_R1 >> 1));
 }
 
 MICROMACHINE_TEST_F(lsr, ImmediateR0by32_CarryOutAndIsZero, CpuTestFixture) {

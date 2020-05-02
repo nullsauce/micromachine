@@ -29,7 +29,6 @@ MICROMACHINE_TEST_F(cmnRegister, UseHigestRegisterForAllArgs, CpuTestFixture) {
 
 MICROMACHINE_TEST_F(cmnRegister, UseDifferentRegistersForEachArg, CpuTestFixture) {
 
-	setReg(registers::R2, 0x22222222);
 	emitInstruction16("0100001011mmmnnn", registers::R1, registers::R2);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"));
 }

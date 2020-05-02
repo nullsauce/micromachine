@@ -26,7 +26,7 @@ MICROMACHINE_TEST_F(mul, UseHigestRegisterForAllArgs_OnlyGetLower32bitsOfResult,
 
 	emitInstruction16("0100001101nnnddd", registers::R7, registers::R7);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("Nzcv"),
-	reg(registers::R7).equals(0x77777777U * 0x77777777U));
+	reg(registers::R7).equals(INITIAL_R7 * INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(mul, UseDifferentRegistersForEachArg, CpuTestFixture) {

@@ -35,7 +35,7 @@ MICROMACHINE_TEST_F(orrRegister, OrR3andR7, CpuTestFixture) {
 
 	emitInstruction16("0100001100mmmddd", registers::R3, registers::R7);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"),
-	reg(registers::R7).equals(0x33333333 | 0x77777777));
+	reg(registers::R7).equals(INITIAL_R3 | INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(orrRegister, UseOrToTurnOnNegativeSignBit, CpuTestFixture) {

@@ -34,7 +34,7 @@ MICROMACHINE_TEST_F(subRegister, UseDifferentRegistersForEachArg, CpuTestFixture
 
 	emitInstruction16("0001101mmmnnnddd", registers::R1, registers::R2, registers::R0);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"),
-	reg(registers::R0).equals(0x22222222U - 0x11111111U));
+	reg(registers::R0).equals(INITIAL_R2 - INITIAL_R1));
 }
 
 // Force APSR flags to be set which haven't already been covered above.

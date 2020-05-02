@@ -24,13 +24,13 @@ MICROMACHINE_TEST_F(addImmediate, T1UseLowestRegisterOnlyAddLargestImmediate, Cp
 MICROMACHINE_TEST_F(addImmediate, T1UseHigestRegisterOnlyAddSmallestImmediate, CpuTestFixture) {
 	emitInstruction16("0001110iiinnnddd", 0, registers::R7, registers::R7);
 
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(0x77777777U + 0U));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(INITIAL_R7 + 0U));
 }
 
 MICROMACHINE_TEST_F(addImmediate, T1UseDifferentRegistersForEachArg, CpuTestFixture) {
 	emitInstruction16("0001110iiinnnddd", 3, registers::R7, registers::R0);
 
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R0).equals(0x77777777U + 3U));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R0).equals(INITIAL_R7 + 3U));
 }
 
 MICROMACHINE_TEST_F(addImmediate, T1ForceCarryByAdding1ToLargestInteger, CpuTestFixture) {
@@ -60,7 +60,7 @@ MICROMACHINE_TEST_F(addImmediate, T2UseLowestRegisterAndAddLargestImmediate, Cpu
 MICROMACHINE_TEST_F(addImmediate, T2UseHigestRegisterAndAddSmallestImmediate, CpuTestFixture) {
 	emitInstruction16("00110dddiiiiiiii", registers::R7, 0);
 
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(0x77777777U + 0U));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"), reg(registers::R7).equals(INITIAL_R7 + 0U));
 }
 
 MICROMACHINE_TEST_F(addImmediate, T2ForceCarryByAdding1ToLargestInteger, CpuTestFixture) {
