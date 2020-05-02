@@ -1,6 +1,5 @@
 
 include(gtest)
-
 find_package(Threads)
 
 set(ALL_TEST_OBJS "")
@@ -25,8 +24,8 @@ add_library(test_common STATIC
 	framework/PredicateHelpers.hpp
 	framework/PredicateHelpers.cpp
 	framework/TestHelpers.hpp
-
 )
+
 target_include_directories(test_common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/framework")
 target_link_libraries(test_common libgtest micromachine)
 target_compile_definitions(test_common PUBLIC TEST_SRC_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
@@ -135,21 +134,8 @@ declare_test(systick_control_reg.cpp)
 declare_test(nvic.cpp)
 declare_test(reset/reset_tests.cpp)
 declare_test(peripherals/usart-tests.cpp)
-
-
-
-
-# disabled until we dont rely anymore on bkp to stop execution flow.
-#declare_test(instructions/bkptInstrTest.cpp)
-
-# these tests have yet to be integrated
-#declare_test(instructions/sevInstrTest.cpp)
-#declare_test(instructions/wfeInstrTest.cpp)
-#declare_test(instructions/wfiInstrTest.cpp)
-#declare_test(instructions/yieldInstrTest.cpp)
-#declare_test(alu_tests alu_tests.cpp)
-
 #declare_test(disasm/disasm.cpp)
+
 
 option(BUILD_LEGACY_INSTRUCTION_TESTS "Build the legacy instruction tests" OFF)
 
