@@ -116,6 +116,10 @@ public:
 		}
 	}
 
+	size_t bytes_available() const override {
+		return _tx_buffer.size();
+	}
+
 	void shutdown() override {
 		_rx_buffer.abort();
 		_tx_buffer.abort();
