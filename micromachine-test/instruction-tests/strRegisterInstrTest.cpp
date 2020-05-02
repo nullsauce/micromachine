@@ -33,7 +33,7 @@ MICROMACHINE_TEST_F(strRegister, UseAnotherMixOfRegisters, CpuTestFixture) {
 	setReg(registers::R1, 4);
 	memWrite32(TestMachine::INITIAL_PC + 4, 0xBAADFEED);
 
-	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 4).equals32(0x77777777));
+	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 4).equals32(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(strRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
@@ -43,7 +43,7 @@ MICROMACHINE_TEST_F(strRegister, YetAnotherMixOfRegisters, CpuTestFixture) {
 	setReg(registers::R0, 4);
 	memWrite32(TestMachine::INITIAL_PC + 4, 0xBAADFEED);
 
-	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 4).equals32(0x44444444));
+	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 4).equals32(INITIAL_R4));
 }
 
 MICROMACHINE_TEST_F(strRegister, AttemptUnalignedStore, CpuTestFixture) {

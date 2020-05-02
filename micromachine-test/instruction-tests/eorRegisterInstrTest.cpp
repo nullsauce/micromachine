@@ -36,7 +36,7 @@ MICROMACHINE_TEST_F(eorRegister, XorR3andR7, CpuTestFixture) {
 	emitInstruction16("0100000001mmmddd", registers::R3, registers::R7);
 	setCarryFlag(false);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"),
-													reg(registers::R7).equals(0x33333333 ^ 0x77777777));
+													reg(registers::R7).equals(INITIAL_R3 ^ INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(eorRegister, UseXorToJustFlipNegativeSignBitOn, CpuTestFixture) {
@@ -45,5 +45,5 @@ MICROMACHINE_TEST_F(eorRegister, UseXorToJustFlipNegativeSignBitOn, CpuTestFixtu
 	setReg(registers::R6, 0x80000000);
 	setCarryFlag(true);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("NzCv"),
-													reg(registers::R3).equals(0x33333333 ^ 0x80000000));
+													reg(registers::R3).equals(INITIAL_R3 ^ 0x80000000));
 }

@@ -20,7 +20,7 @@ MICROMACHINE_TEST_F(adcRegister, UserR1ForAllArgs, CpuTestFixture) {
 	emitInstruction16("0100000101mmmddd", registers::R1, registers::R1);
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"),
-													reg(registers::R1).equals(0x11111111U + 0x11111111U));
+													reg(registers::R1).equals(INITIAL_R1 + INITIAL_R1));
 }
 
 MICROMACHINE_TEST_F(adcRegister, UseLowestRegisterForAllArgs, CpuTestFixture) {
@@ -33,14 +33,14 @@ MICROMACHINE_TEST_F(adcRegister, UseHigestRegisterForAllArgsPositiveOverflow, Cp
 	emitInstruction16("0100000101mmmddd", registers::R7, registers::R7);
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("NzcV"),
-													reg(registers::R7).equals(0x77777777U + 0x77777777U));
+													reg(registers::R7).equals(INITIAL_R7 + INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(adcRegister, UseDifferentRegistersForEachArg, CpuTestFixture) {
 	emitInstruction16("0100000101mmmddd", registers::R1, registers::R2);
 
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzcv"),
-													reg(registers::R2).equals(0x11111111U + 0x22222222U));
+													reg(registers::R2).equals(INITIAL_R1 + INITIAL_R2));
 }
 
 MICROMACHINE_TEST_F(adcRegister, Add0to0WithCarryInSetToGiveAResultOf1, CpuTestFixture) {

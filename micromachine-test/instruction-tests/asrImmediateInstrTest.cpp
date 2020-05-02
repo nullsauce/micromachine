@@ -51,14 +51,13 @@ MICROMACHINE_TEST_F(asrImmediate, PositiveNumberBy32_Shift0FromHighestBit, CpuTe
 MICROMACHINE_TEST_F(asrImmediate, R1by1ToR7, CpuTestFixture) {
 
 	emitInstruction16("00010iiiiimmmddd", IMM_1, registers::R1, registers::R7);
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R7).equals((int32_t)0x11111111U >> 1));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R7).equals((int32_t)INITIAL_R1 >> 1));
 }
 
 MICROMACHINE_TEST_F(asrImmediate, R7by1ToR2, CpuTestFixture) {
 
-	setReg(registers::R2, 0x22222222);
 	emitInstruction16("00010iiiiimmmddd", IMM_1, registers::R7, registers::R2);
-	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R2).equals((int32_t)0x77777777U >> 1));
+	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("nzCv"), reg(registers::R2).equals((int32_t)INITIAL_R7 >> 1));
 }
 
 MICROMACHINE_TEST_F(asrImmediate, R0by1, CpuTestFixture) {

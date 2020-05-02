@@ -29,7 +29,7 @@ MICROMACHINE_TEST_F(strImmediate, T1UseAnotherMixOfRegistersWithLargestImmediate
 	emitInstruction16("01100iiiiinnnttt", 31, registers::R0, registers::R7);
 	setReg(registers::R0, TestMachine::INITIAL_PC);
 	memWrite32(TestMachine::INITIAL_PC + 31 * 4, 0xBAADFEED);
-	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 31 * 4).equals32(0x77777777));
+	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 31 * 4).equals32(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(strImmediate, T1AttemptUnalignedStore, CpuTestFixture) {
@@ -53,7 +53,7 @@ MICROMACHINE_TEST_F(strImmediate, T2HighestRegisterWithSmallestImmediateOffset, 
 	emitInstruction16("10010tttiiiiiiii", registers::R7, 0);
 	setReg(registers::SP, TestMachine::INITIAL_PC + 1024);
 	memWrite32(TestMachine::INITIAL_PC + 1024, 0xBAADFEED);
-	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 1024).equals32(0x77777777));
+	StepAndExpectThatInstruction16IsExecutedAndThat(memoryAt(TestMachine::INITIAL_PC + 1024).equals32(INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(strImmediate, T2LowestRegisterWithLargestImmediateOffset, CpuTestFixture) {

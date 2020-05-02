@@ -26,14 +26,14 @@ MICROMACHINE_TEST_F(rsbImmediate, UseHigestRegisterOnly, CpuTestFixture) {
 
 	emitInstruction16("0100001001nnnddd", registers::R7, registers::R7);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("Nzcv"),
-	reg(registers::R7).equals(-0x77777777U));
+	reg(registers::R7).equals(-INITIAL_R7));
 }
 
 MICROMACHINE_TEST_F(rsbImmediate, UseDifferentRegistersForEachArg, CpuTestFixture) {
 
 	emitInstruction16("0100001001nnnddd", registers::R2, registers::R0);
 	StepAndExpectThatInstruction16IsExecutedAndThat(apsrFlagsEquals("Nzcv"),
-	reg(registers::R0).equals(-0x22222222));
+	reg(registers::R0).equals(-INITIAL_R2));
 }
 
 MICROMACHINE_TEST_F(rsbImmediate, ForceOverflowByNegatingLargestNegativeValue, CpuTestFixture) {
