@@ -10,6 +10,11 @@
 #include <chrono>
 #include <unistd.h>
 
+static const char* OPT_EXECUTABLE = "executable";
+static const char* OPT_TESTING = "testing";
+static const char* OPT_USART_INPUT_STR = "usart-input-string";
+static const char* OPT_GDB_SERVER = "gdb-server";
+static const char* OPT_GDB_SERVER_PORT = "gdb-server-port";
 
 int main(int argc, char** argv) {
 
@@ -21,16 +26,16 @@ int main(int argc, char** argv) {
 
 	cxxopts::Options options("micromachine", "ARMv6-M emulator");
 	options.add_options()
-		("t,testing", "Enable testing", cxxopts::value<bool>()->default_value("false"))
-		("executable", "Executable path", cxxopts::value<std::string>())
-		("usart-input-string", "usart input data to be passed to the application", cxxopts::value<std::string>())
-		("gdb-server", "Enable gdb server debugging", cxxopts::value<bool>()->default_value("false"))
-		("gdb-server-port", "sets the gdb server port (implies gdb-server)", cxxopts::value<uint16_t>()->default_value("2345"))
+		(OPT_EXECUTABLE, "Executable path", cxxopts::value<std::string>())
+		(OPT_TESTING, "Enable testing", cxxopts::value<bool>()->default_value("false"))
+		(OPT_USART_INPUT_STR, "usart input data to be passed to the application", cxxopts::value<std::string>()->default_value(""))
+		(OPT_GDB_SERVER, "Enable gdb server debugging", cxxopts::value<bool>()->default_value("false"))
+		(OPT_GDB_SERVER_PORT, "sets the gdb server port (implies gdb-server)", cxxopts::value<uint16_t>()->default_value("2345"))
 		("h,help", "Print usage")
 	;
 
 	try {
-		options.parse_positional({"executable"});
+		options.parse_positional({OPT_EXECUTABLE});
 		auto result = options.parse(argc, argv);
 
 		if (result.count("help")) {
@@ -38,7 +43,7 @@ int main(int argc, char** argv) {
 			return EXIT_SUCCESS;
 		}
 
-		if(result.count("executable") != 1) {
+		if(result.count(OPT_EXECUTABLE) != 1) {
 			std::cout << options.help() << std::endl;
 			return EXIT_FAILURE;
 		}
@@ -47,10 +52,11 @@ int main(int argc, char** argv) {
 			usart_input_string = result["usart-input-string"].as<std::string>();
 		}
 
-		testing_enabled = result["testing"].as<bool>();
-		executable_path = result["executable"].as<std::string>();
-		enable_gdb_server = result["gdb-server"].as<bool>();
-		gdb_server_port = result["gdb-server-port"].as<uint16_t>();
+		usart_input_string = result[OPT_USART_INPUT_STR].as<std::string>();
+		testing_enabled = result[OPT_TESTING].as<bool>();
+		executable_path = result[OPT_EXECUTABLE].as<std::string>();
+		enable_gdb_server = result[OPT_GDB_SERVER].as<bool>();
+		gdb_server_port = result[OPT_GDB_SERVER_PORT].as<uint16_t>();
 
 	} catch (const cxxopts::OptionParseException& e) {
 		fprintf(stderr, "%s\n", e.what());
