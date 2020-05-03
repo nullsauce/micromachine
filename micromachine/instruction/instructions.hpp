@@ -405,10 +405,21 @@ struct standard_imm8_cond : public layout_16_08_84 {
 	define_instruction_field(cond, 1);
 };
 
-struct nop {};
-struct wfe {};
-struct yield {};
-struct wfi {};
+struct nop : public generic_instruction<uint16_t> {
+	using generic_instruction<uint16_t>::generic_instruction;
+};
+
+struct wfe : public generic_instruction<uint16_t> {
+	using generic_instruction<uint16_t>::generic_instruction;
+};
+
+struct yield : public generic_instruction<uint16_t> {
+	using generic_instruction<uint16_t>::generic_instruction;
+};
+
+struct wfi : public generic_instruction<uint16_t> {
+	using generic_instruction<uint16_t>::generic_instruction;
+};
 
 struct sev : public generic_instruction<uint16_t> {
 	using generic_instruction<uint16_t>::generic_instruction;
