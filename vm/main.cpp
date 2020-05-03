@@ -13,6 +13,7 @@
 static const char* OPT_EXECUTABLE = "executable";
 static const char* OPT_TESTING = "testing";
 static const char* OPT_USART_INPUT_STR = "usart-input-string";
+static const char* OPT_USART_INPUT_FILE = "usart-input-file";
 static const char* OPT_GDB_SERVER = "gdb-server";
 static const char* OPT_GDB_SERVER_PORT = "gdb-server-port";
 
@@ -21,6 +22,7 @@ int main(int argc, char** argv) {
 	bool testing_enabled = false;
 	std::string executable_path;
 	std::string usart_input_string;
+	std::string usart_input_file_path;
 	bool enable_gdb_server = false;
 	uint16_t gdb_server_port = 2345;
 
@@ -29,6 +31,7 @@ int main(int argc, char** argv) {
 		(OPT_EXECUTABLE, "Executable path", cxxopts::value<std::string>())
 		(OPT_TESTING, "Enable testing", cxxopts::value<bool>()->default_value("false"))
 		(OPT_USART_INPUT_STR, "usart input data to be passed to the application", cxxopts::value<std::string>()->default_value(""))
+		(OPT_USART_INPUT_FILE, "file containing usart input data to be passed to the application", cxxopts::value<std::string>()->default_value(""))
 		(OPT_GDB_SERVER, "Enable gdb server debugging", cxxopts::value<bool>()->default_value("false"))
 		(OPT_GDB_SERVER_PORT, "sets the gdb server port (implies gdb-server)", cxxopts::value<uint16_t>()->default_value("2345"))
 		("h,help", "Print usage")
@@ -48,19 +51,23 @@ int main(int argc, char** argv) {
 			return EXIT_FAILURE;
 		}
 
-		if(result.count("usart-input-string")) {
-			usart_input_string = result["usart-input-string"].as<std::string>();
+		if(result.count(OPT_USART_INPUT_STR) && result.count(OPT_USART_INPUT_FILE)) {
+			throw cxxopts::OptionParseException("Can't specify both " +
+												std::string(OPT_USART_INPUT_STR) +
+												" and " +
+												OPT_USART_INPUT_FILE);
 		}
 
 		usart_input_string = result[OPT_USART_INPUT_STR].as<std::string>();
+		usart_input_file_path = result[OPT_USART_INPUT_FILE].as<std::string>();
+
 		testing_enabled = result[OPT_TESTING].as<bool>();
 		executable_path = result[OPT_EXECUTABLE].as<std::string>();
 		enable_gdb_server = result[OPT_GDB_SERVER].as<bool>();
 		gdb_server_port = result[OPT_GDB_SERVER_PORT].as<uint16_t>();
 
 	} catch (const cxxopts::OptionParseException& e) {
-		fprintf(stderr, "%s\n", e.what());
-		std::cout << options.help() << std::endl;
+		fprintf(stderr, "Error: %s\n", e.what());
 		return EXIT_FAILURE;
 	}
 
@@ -74,6 +81,20 @@ int main(int argc, char** argv) {
 
 	if(usart_input_string.size()) {
 		mcu.get_usart_controller().write_string(usart_input_string);
+	}
+
+	if(usart_input_file_path.size()) {
+
+		std::ifstream usart_input_file(usart_input_file_path, std::ios::binary);
+		if(!usart_input_file) {
+			fprintf(stderr, "Error: Failed to open usart-input-file=%s\n", usart_input_file_path.c_str());
+			return EXIT_FAILURE;
+		}
+
+		char byte;
+		while(usart_input_file.read(&byte, 1)) {
+			mcu.get_usart_controller().send(byte);
+		}
 	}
 
 	iopump iopump(mcu.get_usart_controller(), [](uint8_t byte){
