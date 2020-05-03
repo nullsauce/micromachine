@@ -72,10 +72,9 @@ add_test_command(
 	VM_ARGS --usart-input-string '<vm> Hello app!'
 )
 
-
 add_test_command(
 	NAME usart_interrupt_test
 	EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/usart_test/usart_interrupt_test
 	EXPECTED_OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_interrupt_expected_stdout.txt
-	VM_ARGS --usart-input-string '<vm> Hello app!'
+	VM_ARGS --usart-input-file ${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_interrupt_usart-input.txt
 )
