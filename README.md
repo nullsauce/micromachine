@@ -13,8 +13,8 @@ master |![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20
 
 ### Structure
 
-`micromachine` contains the emulation code. The most part of it is coded in headers
- in order to minimize the number of compilation unit and allow optimizations to take place.
+* :file_folder: [**micromachine**](micromachine/) contains the emulation code. The most part of it is coded in headers
+                                                            in order to minimize the number of compilation unit and allow optimizations to take place.
 
 * :file_folder: [**micromachine-test**](micromachine-test/) contains all emulation code tests.
 
