@@ -46,6 +46,7 @@ set(SRCS
 	registers/system_control/shpr3_reg.hpp
 	registers/system_control/systick_control_reg.hpp
 	registers/system_control/config_and_control_reg.hpp
+	registers/system_control/interrupt_and_reset_control_reg.hpp
 	registers/special_registers/apsr_reg.hpp
 	registers/special_registers/control_reg.hpp
 	registers/core_registers/core_registers.hpp

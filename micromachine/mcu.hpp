@@ -21,6 +21,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
 #include "registers/system_control/config_and_control_reg.hpp"
+#include "registers/system_control/interrupt_and_reset_control_reg.hpp"
 #include "systick.hpp"
 
 namespace micromachine::system {
@@ -48,6 +49,7 @@ private:
 	generic_io_reg _generic_io_reg;
 	cpuid_reg _cpuid_reg;
 	config_and_control_reg _ccr_reg;
+	interrupt_and_reset_control_reg _aircr;
 
 	usart_controller _usart_controller;
 
@@ -59,6 +61,7 @@ private:
 			{shpr2_reg::SHPR2, _shpr2_reg},
 			{shpr3_reg::SHPR3, _shpr3_reg},
 			{config_and_control_reg::CCR, _ccr_reg},
+			{interrupt_and_reset_control_reg::AIRCR, _aircr},
 			{systick_control_reg::SYST_CSR, _systick.control_register()},
 			{systick_control_reg::SYST_RVR, _systick.reload_value_register()},
 			{systick_control_reg::SYST_CVR, _systick.current_value_register()},
