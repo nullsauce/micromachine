@@ -61,6 +61,7 @@ public:
 	void reset() {
 		clear_pending();
 		deactivate();
+		set_enable(false);
 	}
 
 	void copy_state_from(const exception_state& other) {
@@ -449,6 +450,10 @@ public:
 		for(exception_state& e : _indexed) {
 			e.reset();
 		}
+
+		_svc.set_priority(0);
+		_pend_sv.set_priority(0);
+		_sys_tick.set_priority(0);
 	}
 };
 } // namespace micromachine::system
