@@ -12,10 +12,19 @@ and/or distributed without the express permission of Flavio Roth.
 
 namespace micromachine::system {
 
-cpu::step_result mcu::step() {
+mcu::step_result mcu::step() {
 	_systick.step();
 	_usart_controller.step();
-	return _cpu.step();
+	_cpu.step();
+
+	if(_control_signals.halt) {
+		return step_result::HALT;
+	} else if(_control_signals.reset) {
+		reset();
+		return step_result::OK;
+	} else {
+		return step_result::OK;
+	}
 }
 
 }
