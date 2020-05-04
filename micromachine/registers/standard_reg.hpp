@@ -11,11 +11,14 @@ class standard_reg : public iregister {
 public:
 	using iregister::operator=;
 
-	standard_reg()
-		: _word(0) {}
-
 	standard_reg(const standard_reg& existing_state)
 		: _word(existing_state) {}
+
+	standard_reg(uint32_t value)
+		: _word(value) {}
+
+	standard_reg()
+		: standard_reg(0) {}
 
 	void reset() override {
 		set(0);
