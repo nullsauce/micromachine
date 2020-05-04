@@ -34,6 +34,7 @@ set(SRCS
 	instruction/instructions.hpp
 	memory/mapping.hpp
 	memory/memory.hpp
+	memory/register_map.hpp
 	registers/custom
 	registers/custom/generic_io_reg.hpp
 	registers/system_control

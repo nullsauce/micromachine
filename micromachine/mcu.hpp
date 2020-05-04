@@ -40,7 +40,7 @@ private:
 	memory _memory;
 	cpu _cpu;
 
-	memory::system_control_register_map generate_system_control_register_map() {
+	register_map::map generate_system_control_register_map() {
 		return {
 			{cpuid_reg::CPUID, _cpuid_reg},
 			{shpr2_reg::SHPR2, _shpr2_reg},
