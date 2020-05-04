@@ -19,6 +19,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/system_control/cpuid_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
+#include "registers/system_control/config_and_control_reg.hpp"
 #include "systick.hpp"
 
 namespace micromachine::system {
@@ -29,6 +30,7 @@ private:
 	shpr2_reg _shpr2_reg;
 	shpr3_reg _shpr3_reg;
 	cpuid_reg _cpuid_reg;
+	config_and_control_reg _ccr_reg;
 	generic_io_reg::callback_t _io_reg_callback;
 	generic_io_reg _generic_io_reg;
 	systick _systick;
@@ -45,6 +47,7 @@ private:
 			{cpuid_reg::CPUID, _cpuid_reg},
 			{shpr2_reg::SHPR2, _shpr2_reg},
 			{shpr3_reg::SHPR3, _shpr3_reg},
+			{config_and_control_reg::CCR, _ccr_reg},
 			{systick_control_reg::SYST_CSR, _systick.control_register()},
 			{systick_control_reg::SYST_RVR, _systick.reload_value_register()},
 			{systick_control_reg::SYST_CVR, _systick.current_value_register()},
