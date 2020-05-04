@@ -11,25 +11,24 @@
 
 #include "exception/exception_controller.hpp"
 #include "mapping.hpp"
-#include "registers/iregister.hpp"
+
+#include "register_map.hpp"
 
 namespace micromachine::system {
 
 class memory {
 public:
 	using region_vec = std::vector<memory_mapping>;
-	using system_control_register_map =
-		std::unordered_map<uint32_t, std::reference_wrapper<iregister>>;
 
 private:
 	region_vec _regions;
 	exception_controller& _exception_controller;
-	const std::unordered_map<uint32_t, std::reference_wrapper<iregister>> _system_control_registers;
+	const register_map _memory_mapped_registers;
 
 public:
-	memory(exception_controller& exception_controller, system_control_register_map scr_map)
+	memory(exception_controller& exception_controller, register_map::map memory_mapped_registers_map)
 		: _exception_controller(exception_controller)
-		, _system_control_registers(std::move(scr_map)) {}
+		, _memory_mapped_registers(std::move(memory_mapped_registers_map)) {}
 
 	bool write32(uint32_t address, uint32_t val) {
 		return this->write<uint32_t>(address, val);
@@ -124,23 +123,14 @@ private:
 		return access_host<access_t>(region->translate(addr));
 	}
 
-	// TODO Clear up who will map the peripherals memory range.
-	//  (maybe the cpu should do it  automatically ? )
-	//  https://github.com/flavioroth/micromachine/projects/1#card-36578520
-	template <typename access_t>
-	static bool is_memory_mapped_register_address(uint32_t address) {
-		return (std::is_same<uint32_t, access_t>::value) &&
-			   ((address >= 0xE0000000) || ((address >= 0x40000000) && (address <= 0x5FFFFFFF)));
-	}
-
 	template <typename access_t>
 	bool write(uint32_t address, access_t value) {
-		// Only check if this is a system control register
-		// access when access_t is uint32_t
-		if (is_memory_mapped_register_address<access_t>(address)) {
-			auto reg_it = _system_control_registers.find(address);
-			if (_system_control_registers.end() != reg_it) {
-				reg_it->second.get() = value;
+
+		// If the memory access is 32-bit aligned, it might be a memory
+		// mapped register.
+		if(std::is_same<uint32_t, access_t>::value) {
+			if(auto memory_mapped_register = _memory_mapped_registers.get_register_at(address)) {
+				memory_mapped_register->get() = value;
 				return true;
 			}
 		}
@@ -164,13 +154,13 @@ private:
 
 	template <typename access_t>
 	access_t read(uint32_t address, bool& ok) const {
-		// Only check if this is a system control register
-		// on 32-bit memory accesses
-		if (is_memory_mapped_register_address<access_t>(address)) {
-			auto reg_it = _system_control_registers.find(address);
-			if (_system_control_registers.end() != reg_it) {
+
+		// If the memory access is 32-bit aligned, it might be a memory
+		// mapped register.
+		if(std::is_same<uint32_t, access_t>::value) {
+			if(auto memory_mapped_register = _memory_mapped_registers.get_register_at(address)) {
 				ok = true;
-				return reg_it->second.get();
+				return memory_mapped_register->get();
 			}
 		}
 
