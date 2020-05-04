@@ -97,8 +97,8 @@ public:
 
 		for(size_t i = 0; i < cpu_steps; i++) {
 
-			cpu::step_result state = _mcu.step();
-			if(state == cpu::step_result::BREAK || state == cpu::step_result::FAULT) {
+			mcu::step_result state = _mcu.step();
+			if(state == mcu::step_result::HALT) {
 				interrupted = true;
 				break;
 			}

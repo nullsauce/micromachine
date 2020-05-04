@@ -14,6 +14,7 @@
 #include "registers/special_registers/special_registers.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
+#include "utils/signal.hpp"
 
 namespace micromachine::system {
 
@@ -751,8 +752,8 @@ static void exec(const pop instruction,
 		_interworking_brancher.branch_interworking(address);
 	}
 }
-static void exec(const bkpt instruction, bool& break_signal) {
-	break_signal = true;
+static void exec(const bkpt instruction, signal& halt_signal) {
+	halt_signal.set();
 	// fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8().extract());
 }
 static void exec(const rev_word instruction, core_registers& regs) {
@@ -957,7 +958,7 @@ static void exec(const wfi instruction) {
 	 */
 }
 static void
-exec(const wfe instruction, event_register& event_register, bool& enter_low_power_mode_signal) {
+exec(const wfe instruction, event_register& event_register, signal& enter_low_power_mode_signal) {
 	// wait for event in event register
 
 	/**
@@ -981,7 +982,7 @@ exec(const wfe instruction, event_register& event_register, bool& enter_low_powe
 		event_register.clear();
 	} else {
 		// enter low power
-		enter_low_power_mode_signal = true;
+		enter_low_power_mode_signal.set();
 	}
 }
 static void exec(const yield instruction) {}

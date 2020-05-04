@@ -118,9 +118,8 @@ int main(int argc, char** argv) {
 		auto start = std::chrono::steady_clock::now();
 		decltype(start) end;
 		for(;;) {
-			micromachine::system::cpu::step_result state = mcu.step();
-			if(state == micromachine::system::cpu::step_result::BREAK ||
-			   state == micromachine::system::cpu::step_result::FAULT) {
+			micromachine::system::mcu::step_result state = mcu.step();
+			if(state == micromachine::system::mcu::step_result::HALT) {
 				end = std::chrono::steady_clock::now();
 				break;
 			}

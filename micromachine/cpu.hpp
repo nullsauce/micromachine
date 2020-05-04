@@ -15,6 +15,7 @@
 #include "instruction/instruction_pair.hpp"
 #include "instruction/instructions.hpp"
 
+#include "control_signals.hpp"
 #include "exception/exception.hpp"
 #include "exception/exception_vector.hpp"
 #include "execution/interworking_brancher.hpp"
@@ -22,6 +23,7 @@
 #include "registers/core_registers/core_registers.hpp"
 #include "registers/special_registers/special_registers.hpp"
 #include "types/types.hpp"
+#include "utils/signal.hpp"
 
 namespace micromachine::system {
 
@@ -33,28 +35,21 @@ private:
 	special_registers _special_registers;
 	core_registers _core_regs;
 	interworking_brancher _interworking_brancher;
+	control_signals& _control_signals;
 	exec_dispatcher _exec_dispatcher;
 	context_switcher _ctx_switcher;
 	event_register _event_register;
 	execution_mode _exec_mode;
 
-	bool _break_signal;
-	bool _enter_low_power_mode_signal;
-
 	uint64_t _debug_instruction_counter;
 
 public:
-	enum class step_result {
-		OK,
-		FAULT,
-		BREAK,
-	};
-
 	cpu& operator=(const cpu& other) = delete;
 
 	cpu(memory& memory,
 		exception_vector& exception_vector,
-		exception_controller& exception_controller)
+		exception_controller& exception_controller,
+		control_signals& control_signals)
 		: _mem(memory)
 		, _exception_vector(exception_vector)
 		, _exception_controller(exception_controller)
@@ -63,6 +58,7 @@ public:
 								 _special_registers.execution_status_register(),
 								 _ctx_switcher,
 								 _core_regs.pc_register())
+		, _control_signals(control_signals)
 		, _exec_dispatcher(_exception_controller,
 						   _core_regs,
 						   _special_registers,
@@ -70,8 +66,7 @@ public:
 						   _interworking_brancher,
 						   _exec_mode,
 						   _event_register,
-						   _break_signal,
-						   _enter_low_power_mode_signal)
+						   _control_signals)
 		, _ctx_switcher(_core_regs,
 						_special_registers,
 						_exec_mode,
@@ -79,13 +74,12 @@ public:
 						_exception_vector,
 						_interworking_brancher)
 		, _exec_mode(execution_mode::thread)
-		, _break_signal(false)
-		, _enter_low_power_mode_signal(false)
 		, _debug_instruction_counter(0) {}
 
 	cpu(memory& memory,
 		exception_vector& exception_vector,
 		exception_controller& exception_controller,
+		control_signals& control_signals,
 		const cpu& other)
 		: _mem(memory)
 		, _exception_vector(exception_vector)
@@ -99,6 +93,7 @@ public:
 								 _special_registers.execution_status_register(),
 								 _ctx_switcher,
 								 _core_regs.pc_register())
+		, _control_signals(control_signals)
 		, _exec_dispatcher(_exception_controller,
 						   _core_regs,
 						   _special_registers,
@@ -106,8 +101,7 @@ public:
 						   _interworking_brancher,
 						   _exec_mode,
 						   _event_register,
-						   _break_signal,
-						   _enter_low_power_mode_signal)
+						   _control_signals)
 		, _ctx_switcher(_core_regs,
 						_special_registers,
 						_exec_mode,
@@ -115,8 +109,6 @@ public:
 						_exception_vector,
 						_interworking_brancher)
 		, _exec_mode(other._exec_mode)
-		, _break_signal(other._break_signal)
-		, _enter_low_power_mode_signal(other._enter_low_power_mode_signal)
 		, _debug_instruction_counter(other._debug_instruction_counter) {}
 
 	void reset(uint32_t initial_pc) {
@@ -138,16 +130,13 @@ public:
 		_exception_vector.reset();
 		_event_register.clear();
 
-		_break_signal = false;
-		_enter_low_power_mode_signal = false;
+		_control_signals.halt.clear();
+		_control_signals.enter_low_power.clear();
 		_debug_instruction_counter = 0;
 	}
 
-	step_result step() {
+	void step() {
 
-		if(_break_signal) {
-			return cpu::step_result::BREAK;
-		}
 		_debug_instruction_counter++;
 
 		const uint32_t cur_instruction_address = _core_regs.pc();
@@ -173,6 +162,7 @@ public:
 			// have been raised during the execution
 			ex = next_exception_to_take();
 		}
+
 		uint32_t next_instruction_address =
 			get_next_instruction_address(cur_instruction_address, cur_intruction);
 
@@ -191,7 +181,7 @@ public:
 			_core_regs.pc() = next_instruction_address;
 		}
 
-		return cpu::step_result::OK;
+		return;
 	}
 
 	const exception_vector& exceptions() const {

@@ -8,6 +8,8 @@
 #include "memory/memory.hpp"
 #include "registers/core_registers/core_registers.hpp"
 #include "registers/special_registers/special_registers.hpp"
+#include "utils/signal.hpp"
+#include "control_signals.hpp"
 
 namespace micromachine::system {
 
@@ -20,8 +22,7 @@ private:
 	interworking_brancher& _interworking_brancher;
 	execution_mode& _execution_mode;
 	event_register& _event_register;
-	bool& _break_signal;
-	bool& _enter_low_power_mode_signal;
+	control_signals& _control_signals;
 
 public:
 	exec_dispatcher(exception_controller& exception_controller,
@@ -31,8 +32,7 @@ public:
 					interworking_brancher& interworking_brancher,
 					execution_mode& execution_mode,
 					event_register& event_register,
-					bool& break_signal,
-					bool& enter_low_power_mode_signal)
+					control_signals& control_signals)
 		: _exception_controller(exception_controller)
 		, _core_regs(core_regs)
 		, _special_regs(special_regs)
@@ -40,8 +40,7 @@ public:
 		, _interworking_brancher(interworking_brancher)
 		, _execution_mode(execution_mode)
 		, _event_register(event_register)
-		, _break_signal(break_signal)
-		, _enter_low_power_mode_signal(enter_low_power_mode_signal) {}
+		, _control_signals(control_signals) {}
 
 private:
 	void invalid_instruction(const uint16_t instr) override {
@@ -62,7 +61,7 @@ private:
 		exec(instruction);
 	}
 	void dispatch(const wfe instruction) override {
-		exec(instruction, _event_register, _enter_low_power_mode_signal);
+		exec(instruction, _event_register, _control_signals.enter_low_power);
 	}
 	void dispatch(const wfi instruction) override {
 		/* If PRIMASK.PM is set to 1, an asynchronous exception that has a higher group priority
@@ -259,7 +258,7 @@ private:
 		exec(instruction, _core_regs, _mem, _interworking_brancher);
 	}
 	void dispatch(const bkpt instruction) override {
-		exec(instruction, _break_signal);
+		exec(instruction, _control_signals.halt);
 	}
 	void dispatch(const rev_word instruction) override {
 		exec(instruction, _core_regs);
