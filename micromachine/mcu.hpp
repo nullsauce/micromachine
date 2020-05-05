@@ -23,6 +23,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/system_control/config_and_control_reg.hpp"
 #include "registers/system_control/interrupt_and_reset_control_reg.hpp"
 #include "registers/system_control/vtable_offset_reg.hpp"
+#include "registers/system_control/interrupt_control_state_reg.hpp"
 #include "systick.hpp"
 
 namespace micromachine::system {
@@ -52,6 +53,7 @@ private:
 	config_and_control_reg _ccr_reg;
 	interrupt_and_reset_control_reg _aircr;
 	vtable_offset_reg _vtable_offset_reg;
+	interrupt_control_state_reg _icsr_reg;
 
 	usart_controller _usart_controller;
 
@@ -101,6 +103,7 @@ public:
 		, _systick(_exception_controller)
 		, _generic_io_reg(_io_reg_callback)
 		, _aircr(_exception_vector, _control_signals.reset)
+		, _icsr_reg(_exception_vector)
 		, _usart_controller(_exception_controller, exception::EXTI_00)
 		, _previously_used_entrypoint(0) {}
 
@@ -119,6 +122,7 @@ public:
 		, _cpuid_reg(other._cpuid_reg)
 		, _aircr(_exception_vector, _control_signals.reset)
 		, _vtable_offset_reg(other._vtable_offset_reg)
+		, _icsr_reg(_exception_vector)
 		, _usart_controller(_exception_controller, exception::EXTI_00)
 		, _previously_used_entrypoint(other._previously_used_entrypoint) {}
 
