@@ -13,6 +13,7 @@ set(SRCS
 	elfio/elfio_strings.hpp
 	elfio/elfio_symbols.hpp
 	elfio/elfio_utils.hpp
+	utils/interruptible_signal.hpp
 	exception/exception.hpp
 	exception/exception_controller.hpp
 	exception/exception_return_handler.hpp
