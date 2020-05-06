@@ -75,6 +75,10 @@ void MachineTestHarness::raiseHardfault() {
 	_machine.getMCU().get_cpu().interrupt().raise_hardfault();
 }
 
+void MachineTestHarness::raiseException(exception::Type ex) {
+	_machine.getMCU().get_cpu().exceptions().interrupt_state(ex).set_pending(true);
+}
+
 void MachineTestHarness::raiseExternalInterrupt(exception::Type ex) {
 	assert(ex >= exception::Type::EXTI_00 && "Can't raise an interrupt lower than EXTI_00");
 	_machine.getMCU().get_cpu().interrupt().raise_external_interrupt(ex);
