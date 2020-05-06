@@ -19,10 +19,10 @@ private:
 public:
 	static constexpr uint32_t ICSR = 0xE000ED04;
 
+	using nmi_pending_bit = bits<31>;
 	using pensdv_pending_bit = bits<28>;
 	using systick_pending_bit = bits<26>;
 
-	using standard_reg::standard_reg;
 	/*
 	interrupt_control_state_reg(exception_controller& exception_controller)
 		: _exception_controller(exception_vector) {}
@@ -45,6 +45,14 @@ public:
 
 	auto systick_pending() {
 		return systick_pending_bit::of(_word);
+	}
+
+	const auto nmi_pending() const {
+		return nmi_pending_bit::of(_word);
+	}
+
+	auto nmi_pending() {
+		return nmi_pending_bit::of(_word);
 	}
 
 	void reset() override {
