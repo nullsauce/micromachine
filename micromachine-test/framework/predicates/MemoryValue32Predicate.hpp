@@ -30,7 +30,9 @@ public:
 	}
 
 	void check(const mcu& actual) const {
-		uint32_t actualValue = actual.get_memory().read32_unchecked(_address);
+		bool memory_access_ok = false;
+		uint32_t actualValue = actual.get_memory().read32(_address, memory_access_ok);
+		EXPECT_TRUE(memory_access_ok);
 		EXPECT_PRED_FORMAT3(assertMemoryEquality, actualValue, _expectedValue, _address);
 	}
 
