@@ -76,6 +76,7 @@ protected:
 	uint32_t memRead32(uint32_t address);
 	void resetMachine(uint32_t initialPc);
 	void raiseHardfault();
+	void raiseException(exception::Type ex);
 	void raiseExternalInterrupt(exception::Type ex);
 	void enableExternalInterrupt(exception::Type ex);
 	void enabledAndRaiseExternalInterrupt(exception::Type ex);

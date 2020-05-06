@@ -21,7 +21,9 @@ public:
 
 	using nmi_pending_bit = bits<31>;
 	using pensdv_pending_bit = bits<28>;
+	using pensdv_clear_bit = bits<27>;
 	using systick_pending_bit = bits<26>;
+	using systick_clear_bit = bits<25>;
 
 	/*
 	interrupt_control_state_reg(exception_controller& exception_controller)
@@ -30,6 +32,14 @@ public:
 	interrupt_control_state_reg(exception_controller& exception_controller, const interrupt_control_state_reg& other)
 		: standard_reg(other)
 		, _exception_controller(exception_vector) {}*/
+
+	const auto nmi_pending() const {
+		return nmi_pending_bit::of(_word);
+	}
+
+	auto nmi_pending() {
+		return nmi_pending_bit::of(_word);
+	}
 
 	const auto pendsv_pending() const {
 		return pensdv_pending_bit::of(_word);
@@ -47,21 +57,26 @@ public:
 		return systick_pending_bit::of(_word);
 	}
 
-	const auto nmi_pending() const {
-		return nmi_pending_bit::of(_word);
-	}
-
-	auto nmi_pending() {
-		return nmi_pending_bit::of(_word);
-	}
-
 	void reset() override {
 		_word = 0;
 	}
 
 private:
 	void set(uint32_t word) override {
-		_word = word;
+
+		// set pending state can't be disabled by writing a zero to it, so we OR them
+		nmi_pending_bit::of(_word) = nmi_pending_bit::of(_word) | nmi_pending_bit::of(word);
+		pensdv_pending_bit::of(_word) = pensdv_pending_bit::of(_word) | pensdv_pending_bit::of(word);
+		systick_pending_bit::of(_word) = systick_pending_bit::of(_word) | systick_pending_bit::of(word);
+
+		if(pensdv_clear_bit::of(word)) {
+			pendsv_pending() = false;
+		}
+
+		if(systick_clear_bit::of(word)) {
+			systick_pending() = false;
+		}
+
 	}
 
 	uint32_t get() const override {
