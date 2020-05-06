@@ -13,6 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "nvic.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
+#include "registers/system_control/interrupt_control_state_reg.hpp"
 
 #include <algorithm>
 #include <list>
@@ -118,22 +119,22 @@ public:
 
 class shpr2_exception_state : public internal_exception_state {
 protected:
-	shpr2_reg& _reg;
+	shpr2_reg& _priority_reg;
 
 public:
-	shpr2_exception_state(exception::Type number, shpr2_reg& reg)
+	shpr2_exception_state(exception::Type number, shpr2_reg& priority_reg)
 		: internal_exception_state(number)
-		, _reg(reg) {}
+		, _priority_reg(priority_reg) {}
 };
 
-class shpr3_exception_state : public internal_exception_state {
+class shpr3_exception_state : public exception_state {
 protected:
-	shpr3_reg& _reg;
+	shpr3_reg& _priority_reg;
 
 public:
-	shpr3_exception_state(exception::Type number, shpr3_reg& reg)
-		: internal_exception_state(number)
-		, _reg(reg) {}
+	shpr3_exception_state(exception::Type number, shpr3_reg& priority_reg)
+		: exception_state(number)
+		, _priority_reg(priority_reg) {}
 };
 
 class pri11_exception_state : public shpr2_exception_state {
@@ -141,38 +142,74 @@ public:
 	using shpr2_exception_state::shpr2_exception_state;
 
 	exception::priority_t priority() const override {
-		return _reg.pri11();
+		return _priority_reg.pri11();
 	}
 
 	void set_priority(exception::priority_t priority) override {
 		micromachine_check(priority > -1 && priority < 4, "priority not withing range");
-		_reg.pri11() = (uint8_t)priority;
+		_priority_reg.pri11() = (uint8_t)priority;
 	}
 };
 
-class pri14_exception_state : public shpr3_exception_state {
-public:
-	using shpr3_exception_state::shpr3_exception_state;
+class icsr_controllable_exception : public shpr3_exception_state {
+protected:
+	interrupt_control_state_reg& _pending_state_reg;
 
-	exception::priority_t priority() const override {
-		return _reg.pri14();
+public:
+	icsr_controllable_exception(exception::Type exception, shpr3_reg& priority_reg, interrupt_control_state_reg& pending_state_reg)
+		: shpr3_exception_state(exception, priority_reg)
+		, _pending_state_reg(pending_state_reg) {}
+
+	bool is_enabled() const override {
+		// internal exceptions are always enabled
+		return true;
 	}
 
-	void set_priority(exception::priority_t priority) override {
-		_reg.pri14() = (uint8_t)priority;
+	void set_enable(bool enable) override {
+		// Can't disable an internal exception
 	}
 };
 
-class pri15_exception_state : public shpr3_exception_state {
+class pendsv_exception_state : public icsr_controllable_exception {
 public:
-	using shpr3_exception_state::shpr3_exception_state;
+	using icsr_controllable_exception::icsr_controllable_exception;
+
+	bool is_pending() const override {
+		return _pending_state_reg.pendsv_pending();
+	}
+
+	void set_pending(bool pending) override {
+		_pending_state_reg.pendsv_pending() = pending;
+	}
 
 	exception::priority_t priority() const override {
-		return _reg.pri15();
+		return _priority_reg.pri14();
 	}
 
 	void set_priority(exception::priority_t priority) override {
-		_reg.pri15() = (uint8_t)priority;
+		_priority_reg.pri14() = (uint8_t)priority;
+	}
+
+};
+
+class systick_exception_state : public icsr_controllable_exception {
+public:
+	using icsr_controllable_exception::icsr_controllable_exception;
+
+	bool is_pending() const override {
+		return _pending_state_reg.systick_pending();
+	}
+
+	void set_pending(bool pending) override {
+		_pending_state_reg.systick_pending() = pending;
+	}
+
+	exception::priority_t priority() const override {
+		return _priority_reg.pri15();
+	}
+
+	void set_priority(exception::priority_t priority) override {
+		_priority_reg.pri15() = (uint8_t)priority;
 	}
 };
 
@@ -232,8 +269,9 @@ public:
 	exception_vector(nvic& nvic,
 					 shpr2_reg& sph2,
 					 shpr3_reg& sph3,
+					 interrupt_control_state_reg& icsr,
 					 const exception_vector& existing_state)
-		: exception_vector(nvic, sph2, sph3) {
+		: exception_vector(nvic, sph2, sph3, icsr) {
 		// Initializes everything as usual.
 		// Then copy the exception states from the existing state
 		for(exception::Type type : _implemented_exception_types) {
@@ -243,13 +281,13 @@ public:
 		}
 	}
 
-	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3)
+	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, interrupt_control_state_reg& icsr)
 		: _reset(exception::RESET)
 		, _nmi(exception::NMI)
 		, _hard_fault(exception::HARDFAULT)
 		, _svc(exception::SVCALL, sph2)
-		, _pend_sv(exception::PENDSV, sph3)
-		, _sys_tick(exception::SYSTICK, sph3)
+		, _pend_sv(exception::PENDSV, sph3, icsr)
+		, _sys_tick(exception::SYSTICK, sph3, icsr)
 		, _ext_interrupt_0(exception::EXTI_00, nvic)
 		, _ext_interrupt_1(exception::EXTI_01, nvic)
 		, _ext_interrupt_2(exception::EXTI_02, nvic)
@@ -346,8 +384,8 @@ private:
 	pri11_exception_state _svc;
 	non_implemented_exception_state _reserved_7;
 	non_implemented_exception_state _reserved_8;
-	pri14_exception_state _pend_sv;
-	pri15_exception_state _sys_tick;
+	pendsv_exception_state _pend_sv;
+	systick_exception_state _sys_tick;
 
 	// TODO: Map the 16 remaining NVIC interrupts (NVIC 16-31) for a total of 48 exception states
 	nvic_based_exception_state<0> _ext_interrupt_0;

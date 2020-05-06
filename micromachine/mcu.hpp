@@ -64,9 +64,10 @@ private:
 			{cpuid_reg::CPUID, _cpuid_reg},
 			{shpr2_reg::SHPR2, _shpr2_reg},
 			{shpr3_reg::SHPR3, _shpr3_reg},
-			{config_and_control_reg::CCR, _ccr_reg},
-			{interrupt_and_reset_control_reg::AIRCR, _aircr},
+			{interrupt_control_state_reg::ICSR, _icsr_reg},
 			{vtable_offset_reg::VTOR, _aircr},
+			{interrupt_and_reset_control_reg::AIRCR, _aircr},
+			{config_and_control_reg::CCR, _ccr_reg},
 			{systick_control_reg::SYST_CSR, _systick.control_register()},
 			{systick_control_reg::SYST_RVR, _systick.reload_value_register()},
 			{systick_control_reg::SYST_CVR, _systick.current_value_register()},
@@ -96,14 +97,14 @@ public:
 	cpu& operator=(const cpu& other) = delete;
 
 	mcu()
-		: _exception_vector(_nvic, _shpr2_reg, _shpr3_reg)
+		: _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, _icsr_reg)
 		, _exception_controller(_exception_vector)
 		, _memory(_exception_controller, generate_system_control_register_map())
 		, _cpu(_memory, _exception_vector, _exception_controller, _control_signals)
 		, _systick(_exception_controller)
 		, _generic_io_reg(_io_reg_callback)
 		, _aircr(_exception_vector, _control_signals.reset)
-		, _icsr_reg(_exception_vector)
+		, _icsr_reg()
 		, _usart_controller(_exception_controller, exception::EXTI_00)
 		, _previously_used_entrypoint(0) {}
 
@@ -111,7 +112,7 @@ public:
 		: _nvic(other._nvic)
 		, _shpr2_reg(other._shpr2_reg)
 		, _shpr3_reg(other._shpr3_reg)
-		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, other._exception_vector)
+		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, _icsr_reg, other._exception_vector)
 		, _exception_controller(_exception_vector)
 		, _control_signals(other._control_signals)
 		, _memory(_exception_controller, generate_system_control_register_map())
@@ -122,7 +123,7 @@ public:
 		, _cpuid_reg(other._cpuid_reg)
 		, _aircr(_exception_vector, _control_signals.reset)
 		, _vtable_offset_reg(other._vtable_offset_reg)
-		, _icsr_reg(_exception_vector)
+		, _icsr_reg(other._icsr_reg)
 		, _usart_controller(_exception_controller, exception::EXTI_00)
 		, _previously_used_entrypoint(other._previously_used_entrypoint) {}
 
