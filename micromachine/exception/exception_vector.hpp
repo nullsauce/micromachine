@@ -117,6 +117,41 @@ public:
 	}
 };
 
+class nmi_exception_state : public exception_state {
+private:
+	interrupt_control_state_reg& _pending_state_reg;
+
+public:
+	nmi_exception_state(interrupt_control_state_reg& pending_state_reg)
+		: exception_state(exception::NMI)
+		, _pending_state_reg(pending_state_reg) {}
+
+	exception::priority_t priority() const override {
+		return exception::NMI_PRIORITY;
+	}
+
+	void set_priority(exception::priority_t priority) override {
+		// Can't set priority of a fixed priority exception
+	}
+
+	bool is_pending() const override {
+		return _pending_state_reg.nmi_pending();
+	}
+
+	void set_pending(bool pending) override {
+		_pending_state_reg.nmi_pending() = pending;
+	}
+
+	bool is_enabled() const override {
+		// internal exceptions are always enabled
+		return true;
+	}
+
+	void set_enable(bool enable) override {
+		// Can't disable an internal exception
+	}
+};
+
 class shpr2_exception_state : public internal_exception_state {
 protected:
 	shpr2_reg& _priority_reg;
@@ -283,7 +318,7 @@ public:
 
 	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, interrupt_control_state_reg& icsr)
 		: _reset(exception::RESET)
-		, _nmi(exception::NMI)
+		, _nmi(icsr)
 		, _hard_fault(exception::HARDFAULT)
 		, _svc(exception::SVCALL, sph2)
 		, _pend_sv(exception::PENDSV, sph3, icsr)
@@ -372,7 +407,7 @@ public:
 private:
 	non_implemented_exception_state _used_for_sp;
 	fixed_priority_exception_state<exception::RESET_PRIORITY> _reset;
-	fixed_priority_exception_state<exception::NMI_PRIORITY> _nmi;
+	nmi_exception_state _nmi;
 	fixed_priority_exception_state<exception::HARDFAULT_PRIORITY> _hard_fault;
 	non_implemented_exception_state _reserved_0;
 	non_implemented_exception_state _reserved_1;
