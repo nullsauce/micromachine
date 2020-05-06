@@ -47,20 +47,21 @@ public:
 		_active = false;
 	}
 
-	void clear_pending() {
-		set_pending(false);
-	}
-
 	void reset() {
-		clear_pending();
+		set_pending(false);
 		deactivate();
+		set_enable(false);
 	}
 
 	void copy_state_from(const exception_state& other) {
-		_active = other._active;
+		set_active(other.is_active());
 		set_priority(other.priority());
 		set_pending(other.is_pending());
 		set_enable(other.is_enabled());
+	}
+
+	void set_active(bool active) {
+		_active = active;
 	}
 };
 

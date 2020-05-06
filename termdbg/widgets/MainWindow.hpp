@@ -58,7 +58,7 @@ public:
 		, _registers_view(_second_col_layout.make_child<RegistersView>(_mcu.get_cpu()))
 		, _breakpoint_manager_view(_second_col_layout.make_child<BreakPointManagerView>(_breakpoint_manager))
 		, _memory_browser(_third_col_layout.make_child<MemoryBrowser>(_mcu.get_memory()))
-		, _interrupt_view(_third_col_layout.make_child<InterruptView>(_mcu.get_cpu()))
+		, _interrupt_view(_third_col_layout.make_child<InterruptView>(_mcu))
 		, _output_view(_fourth_col_layout.make_child<LogView>())
 	{
 

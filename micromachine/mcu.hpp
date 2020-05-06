@@ -9,21 +9,20 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "cpu.hpp"
-#include "exception/exception_controller.hpp"
-#include "exception/exception_vector.hpp"
-#include "memory/memory.hpp"
 #include "control_signals.hpp"
+#include "cpu.hpp"
+#include "exception/exception_vector_controller.hpp"
+#include "memory/memory.hpp"
 #include "nvic.hpp"
 #include "peripherals/usart/usart_controller.hpp"
 #include "registers/custom/generic_io_reg.hpp"
+#include "registers/system_control/config_and_control_reg.hpp"
 #include "registers/system_control/cpuid_reg.hpp"
+#include "registers/system_control/interrupt_and_reset_control_reg.hpp"
+#include "registers/system_control/interrupt_control_state_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
-#include "registers/system_control/config_and_control_reg.hpp"
-#include "registers/system_control/interrupt_and_reset_control_reg.hpp"
 #include "registers/system_control/vtable_offset_reg.hpp"
-#include "registers/system_control/interrupt_control_state_reg.hpp"
 #include "systick.hpp"
 
 namespace micromachine::system {
@@ -39,8 +38,7 @@ private:
 	nvic _nvic;
 	shpr2_reg _shpr2_reg;
 	shpr3_reg _shpr3_reg;
-	exception_vector _exception_vector;
-	exception_controller _exception_controller;
+	exception_vector_controller _exception_controller;
 
 	control_signals _control_signals;
 	memory _memory;
@@ -97,13 +95,12 @@ public:
 	cpu& operator=(const cpu& other) = delete;
 
 	mcu()
-		: _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, _icsr_reg)
-		, _exception_controller(_exception_vector)
+		: _exception_controller(_nvic, _shpr2_reg, _shpr3_reg, _icsr_reg)
 		, _memory(_exception_controller, generate_system_control_register_map())
-		, _cpu(_memory, _exception_vector, _exception_controller, _control_signals)
+		, _cpu(_memory, _exception_controller, _control_signals)
 		, _systick(_exception_controller)
 		, _generic_io_reg(_io_reg_callback)
-		, _aircr(_exception_vector, _control_signals.reset)
+		, _aircr(_exception_controller, _control_signals.reset)
 		, _icsr_reg()
 		, _usart_controller(_exception_controller, exception::EXTI_00)
 		, _previously_used_entrypoint(0) {}
@@ -112,16 +109,15 @@ public:
 		: _nvic(other._nvic)
 		, _shpr2_reg(other._shpr2_reg)
 		, _shpr3_reg(other._shpr3_reg)
-		, _exception_vector(_nvic, _shpr2_reg, _shpr3_reg, _icsr_reg, other._exception_vector)
-		, _exception_controller(_exception_vector)
+		, _exception_controller(_nvic, _shpr2_reg, _shpr3_reg, _icsr_reg, other._exception_controller)
 		, _control_signals(other._control_signals)
 		, _memory(_exception_controller, generate_system_control_register_map())
-		, _cpu(_memory, _exception_vector, _exception_controller, _control_signals, other._cpu)
+		, _cpu(_memory, _exception_controller, _control_signals, other._cpu)
 		, _systick(_exception_controller, other._systick)
 		, _io_reg_callback(other._io_reg_callback)
 		, _generic_io_reg(_io_reg_callback)
 		, _cpuid_reg(other._cpuid_reg)
-		, _aircr(_exception_vector, _control_signals.reset)
+		, _aircr(_exception_controller, _control_signals.reset)
 		, _vtable_offset_reg(other._vtable_offset_reg)
 		, _icsr_reg(other._icsr_reg)
 		, _usart_controller(_exception_controller, exception::EXTI_00)
@@ -143,12 +139,12 @@ public:
 		return _cpu;
 	}
 
-	const exception_vector& get_exception_vector() const {
-		return _exception_vector;
+	const exception_controller& exceptions() const {
+		return _exception_controller;
 	}
 
-	exception_vector& get_exception_vector() {
-		return _exception_vector;
+	exception_controller& exceptions() {
+		return _exception_controller;
 	}
 
 	usart_controller& get_usart_controller() {
@@ -166,7 +162,7 @@ public:
 		_shpr2_reg.reset();
 		_shpr3_reg.reset();
 		_nvic.reset();
-		_exception_vector.reset();
+		_exception_controller.reset();
 		_cpu.reset(program_entry_point);
 	}
 

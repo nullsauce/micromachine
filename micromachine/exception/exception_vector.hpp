@@ -10,10 +10,11 @@ and/or distributed without the express permission of Flavio Roth.
 #pragma once
 
 #include "exception.hpp"
+#include "exception_state.hpp"
 #include "nvic.hpp"
+#include "registers/system_control/interrupt_control_state_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
-#include "registers/system_control/interrupt_control_state_reg.hpp"
 
 #include <algorithm>
 #include <list>
@@ -21,61 +22,6 @@ and/or distributed without the express permission of Flavio Roth.
 
 namespace micromachine::system {
 
-class exception_state {
-private:
-	bool _active;
-	const exception::Type _number;
-
-public:
-	exception_state(exception::Type number)
-		: _active(false)
-		, _number(number) {}
-
-	virtual exception::priority_t priority() const = 0;
-	virtual void set_priority(exception::priority_t priority) = 0;
-	virtual void set_pending(bool pending) = 0;
-	virtual bool is_pending() const = 0;
-	virtual bool is_enabled() const = 0;
-	virtual void set_enable(bool enable) = 0;
-
-	exception::Type number() const {
-		return _number;
-	}
-
-	bool is_active() const {
-		return _active;
-	}
-
-	void activate() {
-		_active = true;
-		set_pending(false);
-	}
-
-	void deactivate() {
-		_active = false;
-	}
-
-	void clear_pending() {
-		set_pending(false);
-	}
-
-	void reset() {
-		clear_pending();
-		deactivate();
-		set_enable(false);
-	}
-
-	void copy_state_from(const exception_state& other) {
-		set_active(other.is_active());
-		set_priority(other.priority());
-		set_pending(other.is_pending());
-		set_enable(other.is_enabled());
-	}
-
-	void set_active(bool active) {
-		_active = active;
-	}
-};
 
 class internal_exception_state : public exception_state {
 private:
@@ -191,7 +137,8 @@ protected:
 	interrupt_control_state_reg& _pending_state_reg;
 
 public:
-	icsr_controllable_exception(exception::Type exception, shpr3_reg& priority_reg, interrupt_control_state_reg& pending_state_reg)
+	icsr_controllable_exception(exception::Type exception, shpr3_reg& priority_reg,
+								interrupt_control_state_reg& pending_state_reg)
 		: shpr3_exception_state(exception, priority_reg)
 		, _pending_state_reg(pending_state_reg) {}
 
@@ -302,11 +249,11 @@ class exception_vector {
 public:
 	// copy constructor
 	exception_vector(nvic& nvic,
-					 shpr2_reg& sph2,
-					 shpr3_reg& sph3,
+					 shpr2_reg& shpr2,
+					 shpr3_reg& shpr3,
 					 interrupt_control_state_reg& icsr,
 					 const exception_vector& existing_state)
-		: exception_vector(nvic, sph2, sph3, icsr) {
+		: exception_vector(nvic, shpr2, shpr3, icsr) {
 		// Initializes everything as usual.
 		// Then copy the exception states from the existing state
 		for(exception::Type type : _implemented_exception_types) {
@@ -316,13 +263,13 @@ public:
 		}
 	}
 
-	exception_vector(nvic& nvic, shpr2_reg& sph2, shpr3_reg& sph3, interrupt_control_state_reg& icsr)
+	exception_vector(nvic& nvic, shpr2_reg& shpr2, shpr3_reg& shpr3, interrupt_control_state_reg& icsr)
 		: _reset(exception::RESET)
 		, _nmi(icsr)
 		, _hard_fault(exception::HARDFAULT)
-		, _svc(exception::SVCALL, sph2)
-		, _pend_sv(exception::PENDSV, sph3, icsr)
-		, _sys_tick(exception::SYSTICK, sph3, icsr)
+		, _svc(exception::SVCALL, shpr2)
+		, _pend_sv(exception::PENDSV, shpr3, icsr)
+		, _sys_tick(exception::SYSTICK, shpr3, icsr)
 		, _ext_interrupt_0(exception::EXTI_00, nvic)
 		, _ext_interrupt_1(exception::EXTI_01, nvic)
 		, _ext_interrupt_2(exception::EXTI_02, nvic)
@@ -444,34 +391,12 @@ private:
 	std::array<std::reference_wrapper<exception_state>, 32> _indexed;
 
 public:
-	const exception_state& at(size_t index) const {
-		return _indexed.at(index);
-	}
-
-	template <exception::Type Ex>
-	exception_state& interrupt_state() {
-		return _indexed[Ex];
-	}
-
-	template <exception::Type Ex>
-	const exception_state& interrupt_state() const {
-		return _indexed[Ex];
-	}
-
 	exception_state& interrupt_state(exception::Type t) {
 		return _indexed.at(t);
 	}
 
 	const exception_state& interrupt_state(exception::Type t) const {
 		return _indexed.at(t);
-	}
-
-	exception_state& interrupt_state(uint32_t number) {
-		return interrupt_state(static_cast<exception::Type>(number));
-	}
-
-	const exception_state& interrupt_state(uint32_t number) const {
-		return interrupt_state(static_cast<exception::Type>(number));
 	}
 
 	size_t active_count() const {
@@ -492,7 +417,7 @@ public:
 		});
 	}
 
-	exception_state* top_pending() {
+	exception_state* top_pending() const {
 		exception_state* top = nullptr;
 		// Find the pending exception with the lowest priority
 		for(exception_state& e : _indexed) {
@@ -519,6 +444,32 @@ public:
 		return top;
 	}
 
+	exception::priority_t current_execution_priority(bool primask_pm) const {
+		exception::priority_t prio = exception::THREAD_MODE_PRIORITY;
+		exception::priority_t boosted_prio = exception::THREAD_MODE_PRIORITY;
+
+		for(size_t i = 2; i < 32; i++) {
+			const exception_state& e = _indexed.at(i);
+			if(!e.is_active())
+				continue;
+			if(e.priority() < prio) {
+				prio = e.priority();
+			}
+		}
+
+		// if primask is set, ignore all maskable exceptions by
+		// pretending the executing priority is now 0
+		if(primask_pm) {
+			prio = 0;
+		}
+
+		if(boosted_prio < prio) {
+			return boosted_prio;
+		} else {
+			return prio;
+		}
+	}
+
 	void reset() {
 		for(exception_state& e : _indexed) {
 			e.reset();
@@ -527,6 +478,11 @@ public:
 		_svc.set_priority(0);
 		_pend_sv.set_priority(0);
 		_sys_tick.set_priority(0);
+	}
+
+private:
+	const exception_state& at(size_t index) const {
+		return _indexed.at(index);
 	}
 };
 } // namespace micromachine::system

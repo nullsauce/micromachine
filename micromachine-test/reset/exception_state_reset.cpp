@@ -13,7 +13,7 @@ using namespace micromachine::testing;
 
 static mcu mcuWithAllExceptionsEnabledPendingActiveAtMaxPriority() {
 	mcu mcu;
-	exception_vector& exception_vector = mcu.get_exception_vector();
+	exception_controller& exception_controller = mcu.exceptions();
 
 	for(exception::Type exception : {exception::RESET,
 									 exception::NMI,
@@ -21,21 +21,21 @@ static mcu mcuWithAllExceptionsEnabledPendingActiveAtMaxPriority() {
 									 exception::SVCALL,
 									 exception::PENDSV,
 									 exception::SYSTICK}) {
-		exception_vector.interrupt_state(exception).set_enable(true);
-		exception_vector.interrupt_state(exception).set_pending(true);
-		exception_vector.interrupt_state(exception).set_active(true);
+		exception_controller.set_enable(exception, true);
+		exception_controller.set_pending(exception, true);
+		exception_controller.set_active(exception, true);
 	}
 
-	exception_vector.interrupt_state(exception::SVCALL).set_priority(3);
-	exception_vector.interrupt_state(exception::PENDSV).set_priority(3);
-	exception_vector.interrupt_state(exception::SYSTICK).set_priority(3);
+	exception_controller.set_priority(exception::SVCALL, 3);
+	exception_controller.set_priority(exception::PENDSV, 3);
+	exception_controller.set_priority(exception::SYSTICK, 3);
 	return mcu;
 }
 
 TEST(ExceptionStateReset, ResetClearsAllActiveStateForFixedAndConfigurableExceptions) {
 
 	mcu mcu = mcuWithAllExceptionsEnabledPendingActiveAtMaxPriority();
-	exception_vector& exception_vector = mcu.get_exception_vector();
+	exception_controller& exception_controller = mcu.exceptions();
 
 	mcu.reset();
 
@@ -45,12 +45,12 @@ TEST(ExceptionStateReset, ResetClearsAllActiveStateForFixedAndConfigurableExcept
 									 exception::SVCALL,
 									 exception::PENDSV,
 									 exception::SYSTICK}) {
-		EXPECT_TRUE(exception_vector.interrupt_state(exception).is_enabled());
-		EXPECT_FALSE(exception_vector.interrupt_state(exception).is_pending());
-		EXPECT_FALSE(exception_vector.interrupt_state(exception).is_active());
+		EXPECT_TRUE(exception_controller.is_enabled(exception));
+		EXPECT_FALSE(exception_controller.is_pending(exception));
+		EXPECT_FALSE(exception_controller.is_active(exception));
 	}
 
-	EXPECT_EQ(0U, exception_vector.interrupt_state(exception::SVCALL).priority());
-	EXPECT_EQ(0U, exception_vector.interrupt_state(exception::PENDSV).priority());
-	EXPECT_EQ(0U, exception_vector.interrupt_state(exception::SYSTICK).priority());
+	EXPECT_EQ(0U, exception_controller.priority(exception::SVCALL));
+	EXPECT_EQ(0U, exception_controller.priority(exception::PENDSV));
+	EXPECT_EQ(0U, exception_controller.priority(exception::SYSTICK));
 }

@@ -16,14 +16,6 @@ class ExceptionStatePredicate {
 protected:
 	const exception::Type _exceptionType;
 
-	exception_state& stateOf(mcu& target) {
-		return target.get_exception_vector().interrupt_state(_exceptionType);
-	}
-
-	const exception_state& stateOf(const mcu& target) const {
-		return target.get_exception_vector().interrupt_state(_exceptionType);
-	}
-
 public:
 	ExceptionStatePredicate(exception::Type exceptionType)
 		: _exceptionType(exceptionType) {}

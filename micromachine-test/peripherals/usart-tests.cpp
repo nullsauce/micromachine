@@ -174,34 +174,34 @@ MICROMACHINE_TEST_F(USART_Peripheral, StepDoesNotMoveRxBufferIntoRxRegisterWhenD
 MICROMACHINE_TEST_F(USART_Peripheral, ICREnableTxEmptyInterruptTriggersAnInterrupt, USARTControllerTestHarness) {
 	binops::set_bit(usart().control_register(), usart_cr1_reg::tx_empty_interrupt_enable_bit::offset);
 	usart().step();
-	EXPECT_TRUE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	EXPECT_TRUE(_machine.exceptions().is_pending(exception::EXTI_00));
 }
 
 MICROMACHINE_TEST_F(USART_Peripheral, ResetDoeNotTriggersAnInterrupt, USARTControllerTestHarness) {
 	binops::set_bit(usart().control_register(), usart_cr1_reg::tx_empty_interrupt_enable_bit::offset);
 	usart().reset();
-	EXPECT_FALSE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	EXPECT_FALSE(_machine.exceptions().is_pending(exception::EXTI_00));
 }
 
 MICROMACHINE_TEST_F(USART_Peripheral, ICREnableRxNotEmptyInterruptTriggersAnInterrupt, USARTControllerTestHarness) {
 	usart().send(0xdf);
 	usart().step();
-	EXPECT_FALSE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	EXPECT_FALSE(_machine.exceptions().is_pending(exception::EXTI_00));
 	binops::set_bit(usart().control_register(), usart_cr1_reg::rx_not_empty_interrupt_enable_bit::offset);
 	usart().step();
-	EXPECT_TRUE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	EXPECT_TRUE(_machine.exceptions().is_pending(exception::EXTI_00));
 }
 
 MICROMACHINE_TEST_F(USART_Peripheral, ICRDisableRxNotEmptyInterruptDoesNotTriggersAnInterrupt, USARTControllerTestHarness) {
 	usart().send(0xdf);
 	usart().step();
-	EXPECT_FALSE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	EXPECT_FALSE(_machine.exceptions().is_pending(exception::EXTI_00));
 	binops::set_bit(usart().control_register(), usart_cr1_reg::rx_not_empty_interrupt_enable_bit::offset);
 	usart().step();
-	EXPECT_TRUE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
-	_machine.get_exception_vector().interrupt_state(exception::EXTI_00).set_pending(false);
+	EXPECT_TRUE(_machine.exceptions().is_pending(exception::EXTI_00));
+	_machine.exceptions().set_pending(exception::EXTI_00, false);
 	usart().step();
 	binops::clear_bit(usart().control_register(), usart_cr1_reg::rx_not_empty_interrupt_enable_bit::offset);
 	usart().step();
-	EXPECT_FALSE(_machine.get_exception_vector().interrupt_state(exception::EXTI_00).is_pending());
+	EXPECT_FALSE(_machine.exceptions().is_pending(exception::EXTI_00));
 }

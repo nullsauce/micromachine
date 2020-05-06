@@ -3,7 +3,7 @@
 //
 
 #include "exception/exception.hpp"
-#include "exception/exception_controller.hpp"
+#include "exception/exception_vector_controller.hpp"
 #include "exception/exception_vector.hpp"
 #include "nvic.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
@@ -17,29 +17,26 @@ using namespace micromachine::system;
 class SystickTestBench : public ::testing::Test {
 protected:
 	nvic _nvic;
-	micromachine::system::shpr2_reg _sph2;
+	shpr2_reg _sph2;
 	shpr3_reg _sph3;
 	interrupt_control_state_reg _icsr;
-	micromachine::system::exception_vector _evec;
-	micromachine::system::exception_controller _interrupter;
-	micromachine::system::systick syst;
+	exception_vector_controller _exception_controller;
+	systick syst;
 	SystickTestBench()
-		: _evec(_nvic, _sph2, _sph3, _icsr)
-		, _interrupter(_evec)
-		, syst(_interrupter)
+		: _exception_controller(_nvic, _sph2, _sph3, _icsr)
+		, syst(_exception_controller)
 	{}
 
 	void SetUp() override {
 		_nvic.reset();
 		_sph2.reset();
 		_sph3.reset();
-		_evec.reset();
+		_exception_controller.reset();
 	}
 
 	void TearDown() override {
 
 	}
-
 };
 
 TEST_F(SystickTestBench, WhenDisabledTimerDoeNotCountsDown) {
@@ -133,7 +130,7 @@ TEST_F(SystickTestBench, SYSTICKIsPendingAfterCounterReachesZero) {
 	syst.reload_value_register() = 1;
 	syst.current_value_register().set_internal(1);
 	syst.step();
-	EXPECT_TRUE(_evec.interrupt_state<exception::Type::SYSTICK>().is_pending());
+	EXPECT_TRUE(_exception_controller.is_pending(exception::SYSTICK));
 }
 
 TEST_F(SystickTestBench, AwriteToSYST_CVRdoesNotTriggerTheSysTickExceptionLogic) {
@@ -141,5 +138,5 @@ TEST_F(SystickTestBench, AwriteToSYST_CVRdoesNotTriggerTheSysTickExceptionLogic)
 	syst.reload_value_register() = 1;
 	syst.current_value_register() = 100U;
 	syst.step();
-	EXPECT_FALSE(_evec.interrupt_state<exception::Type::SYSTICK>().is_pending());
+	EXPECT_FALSE(_exception_controller.is_pending(exception::SYSTICK));
 }

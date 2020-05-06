@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "exception/exception_controller.hpp"
 #include "registers/memory_mapped_reg.hpp"
 #include "types/types.hpp"
 
@@ -13,7 +14,7 @@ namespace micromachine::system {
 
 class interrupt_and_reset_control_reg : public memory_mapped_reg {
 private:
-	exception_vector& _exception_vector;
+	exception_controller& _exception_controller;
 	signal& _reset_signal;
 
 public:
@@ -24,9 +25,9 @@ public:
 	using reset_request_bit = bits<2>;
 	using endianess_bit = bits<15>;
 
-	interrupt_and_reset_control_reg(exception_vector& exception_vector, signal& reset_signal)
+	interrupt_and_reset_control_reg(exception_controller& exception_controller, signal& reset_signal)
 		: memory_mapped_reg(RESET_VALUE)
-		, _exception_vector(exception_vector)
+		, _exception_controller(exception_controller)
 		, _reset_signal(reset_signal)
 	{}
 
@@ -41,7 +42,7 @@ public:
 private:
 	void set(uint32_t word) override {
 		if(clear_exception_state_bit::of(word)) {
-			_exception_vector.reset();
+			_exception_controller.reset();
 		}
 
 		if(reset_request_bit::of(word)) {
