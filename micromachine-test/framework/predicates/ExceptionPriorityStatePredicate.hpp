@@ -19,15 +19,14 @@ public:
 		, _expectedPriority(expectedPendingState) {}
 
 	ExceptionPriorityStatePredicate(exception::Type exceptionType, const mcu& expected)
-		: ExceptionPriorityStatePredicate(exceptionType,
-										  expected.get_exception_vector().interrupt_state(exceptionType).priority()) {}
+		: ExceptionPriorityStatePredicate(exceptionType, expected.exceptions().priority(exceptionType)) {}
 
 	void apply(mcu& expected) {
-		stateOf(expected).set_priority(_expectedPriority);
+		expected.exceptions().set_priority(_exceptionType, _expectedPriority);
 	}
 
 	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT2(assertEquality, _expectedPriority, stateOf(actual).priority());
+		EXPECT_PRED_FORMAT2(assertEquality, _expectedPriority, actual.exceptions().priority(_exceptionType));
 	}
 
 private:

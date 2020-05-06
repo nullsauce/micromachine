@@ -78,7 +78,6 @@ protected:
 	void raiseHardfault();
 	void raiseException(exception::Type ex);
 	void raiseExternalInterrupt(exception::Type ex);
-	void enableExternalInterrupt(exception::Type ex);
 	void enabledAndRaiseExternalInterrupt(exception::Type ex);
 	void setExceptionPriority(exception::Type ex, exception::priority_t priority);
 	void setXPSR(uint32_t xpsr);
@@ -134,7 +133,7 @@ protected:
 		ExecutionModeStatePredicate(predictedState).check(actualState);
 
 		// exceptions state is equal
-		for(uint32_t i = 1; i < predictedState.get_exception_vector().supported_exception_count(); ++i) {
+		for(uint32_t i = 1; i < predictedState.exceptions().supported_exception_count(); ++i) {
 			ExceptionActiveStatePredicate(exception::from_number(i), predictedState).check(actualState);
 			ExceptionPendingStatePredicate(exception::from_number(i), predictedState).check(actualState);
 			ExceptionPriorityStatePredicate(exception::from_number(i), predictedState).check(actualState);

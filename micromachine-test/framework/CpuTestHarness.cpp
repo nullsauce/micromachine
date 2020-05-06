@@ -260,7 +260,7 @@ void CpuTestHarness::pinkySimStep()
 void CpuTestHarness::validateSignaledException()
 {
 	if (CPU_STEP_HARDFAULT == m_expectedStepReturn) {
-		EXPECT_TRUE(_mcu.get_cpu().exceptions().interrupt_state<exception::Type::HARDFAULT>().is_active());
+		EXPECT_TRUE(_mcu.exceptions().is_active(exception::HARDFAULT));
 	} else {
 		assert("TODO implement");
 	}

@@ -19,16 +19,15 @@ public:
 		, _expectedActiveState(expectedActiveState) {}
 
 	ExceptionActiveStatePredicate(exception::Type exceptionType, const mcu& expected)
-		: ExceptionActiveStatePredicate(exceptionType,
-										expected.get_exception_vector().interrupt_state(exceptionType).is_active())
+		: ExceptionActiveStatePredicate(exceptionType, expected.exceptions().is_active(exceptionType))
 	{}
 
 	void apply(mcu& expected) {
-		stateOf(expected).set_active(_expectedActiveState);
+		expected.exceptions().set_active(_exceptionType, _expectedActiveState);
 	}
 
 	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT2(assertEquality, _expectedActiveState, stateOf(actual).is_active());
+		EXPECT_PRED_FORMAT2(assertEquality, _expectedActiveState, actual.exceptions().is_active(_exceptionType));
 	}
 
 private:

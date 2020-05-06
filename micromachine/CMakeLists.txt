@@ -19,6 +19,7 @@ set(SRCS
 	control_signals.hpp
 	exception/exception.hpp
 	exception/exception_controller.hpp
+	exception/exception_vector_controller.hpp
 	exception/exception_return_handler.hpp
 	exception/exception_state.hpp
 	exception/exception_vector.hpp

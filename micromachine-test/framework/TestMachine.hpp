@@ -34,7 +34,7 @@ private:
 		constexpr uint32_t fake_handler_size = 0x10;
 
 		// note that these stub handlers are not valid code
-		for(uint32_t i = 1; i < _mcu.get_cpu().exceptions().supported_exception_count(); ++i) {
+		for(uint32_t i = 1; i < _mcu.exceptions().supported_exception_count(); ++i) {
 			uint32_t handler_address = handlers_base + (i * fake_handler_size);
 			_mcu.get_memory().write32(i * sizeof(uint32_t), handler_address | 1);
 		}

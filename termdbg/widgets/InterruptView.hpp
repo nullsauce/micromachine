@@ -65,14 +65,14 @@ namespace {
 
 class InterruptView : public cppurses::layout::Vertical {
 private:
-	cpu& _cpu;
+	mcu& _mcu;
 	FoldableWidgetHeader& _header;
 	cppurses::Text_display& _interrupt_list;
 	wchar_t _line_buffer[128] = {};
 
 public:
-	InterruptView(cpu& cpu)
-		: _cpu(cpu)
+	InterruptView(mcu& mcu)
+		: _mcu(mcu)
 		, _header(make_child<FoldableWidgetHeader>("Interrupts"))
 		, _interrupt_list(make_child<cppurses::Text_display>())
 		{}
@@ -87,13 +87,15 @@ public:
 		_interrupt_list.clear();
 
 
+		const exception::Type current_active = _mcu.get_cpu().special_regs().interrupt_status_register().exception_num();
 		for(size_t interrupt_number : interrupts_of_interest) {
-			const exception::Type current_active = _cpu.special_regs().interrupt_status_register().exception_num();
-			const exception_state& state = _cpu.exceptions().at(interrupt_number);
-			uint32_t vector_table_offset = sizeof(uint32_t) * state.number();
-			uint32_t handler_address = _cpu.mem().read32(vector_table_offset) & ~1;
+			const exception::Type exception = exception::from_number(interrupt_number);
+			const bool exception_is_active = _mcu.exceptions().is_active(exception);
+			const bool exception_is_pending = _mcu.exceptions().is_pending(exception);
+			uint32_t vector_table_offset = sizeof(uint32_t) * interrupt_number;
+			uint32_t handler_address = _mcu.get_memory().read32(vector_table_offset) & ~1;
 			const char* name = interrupt_names[interrupt_number];
-			wchar_t symbol = state.is_active() ? L'⎆' : state.is_pending() ? L'⚑' : ' ';
+			wchar_t symbol = exception_is_active ? L'⎆' : exception_is_pending ? L'⚑' : ' ';
 			swprintf(_line_buffer, sizeof(_line_buffer), L"%02i %lc %08x %s\n"
 				, interrupt_number
 				, symbol

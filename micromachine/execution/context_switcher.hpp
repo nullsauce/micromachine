@@ -11,7 +11,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "exception/exception.hpp"
 #include "exception/exception_return_handler.hpp"
-#include "exception/exception_vector.hpp"
+#include "exception/exception_controller.hpp"
 #include "instruction/instruction_pair.hpp"
 #include "interworking_brancher.hpp"
 #include "memory/memory.hpp"
@@ -27,7 +27,7 @@ private:
 	special_registers& _special_regs;
 	execution_mode& _execution_mode;
 	memory& _mem;
-	exception_vector& _exception_state_vector;
+	exception_controller& _exception_controller;
 	interworking_brancher& _interworking_brancher;
 
 public:
@@ -35,13 +35,13 @@ public:
 					 special_registers& special_regs,
 					 execution_mode& execution_mode,
 					 memory& mem,
-					 exception_vector& exception_vector,
+					 exception_controller& exception_controller,
 					 interworking_brancher& interworking_brancher)
 		: _core_regs(core_regs)
 		, _special_regs(special_regs)
 		, _execution_mode(execution_mode)
 		, _mem(mem)
-		, _exception_state_vector(exception_vector)
+		, _exception_controller(exception_controller)
 		, _interworking_brancher(interworking_brancher) {}
 
 	void exception_return(uint32_t ret_address) override {
@@ -58,12 +58,11 @@ public:
 		// The maximum theoretical value of exception_num from IPSR is 63
 		// This implementation might not support that many exceptions.
 		// Check that the exception number is within accepted range.
-		if(exception_returning_from >=
-		   _exception_state_vector.highest_accepted_exception_number()) {
+		if(exception_returning_from >= _exception_controller.highest_accepted_exception_number()) {
 			fprintf(stderr, "unpredictable.\n");
 		}
 
-		if(!_exception_state_vector.interrupt_state(exception_returning_from).is_active()) {
+		if(!_exception_controller.is_active(exception_returning_from)) {
 			// unpredictable
 			fprintf(stderr, "return from an inactive handler\n");
 		}
@@ -72,7 +71,7 @@ public:
 		const uint8_t ret_bits = (uint8_t)bits<0, 4>::of(ret_address).extract();
 		switch(ret_bits) {
 			case 0b0001: /* return to handler EXC_RETURN=0xFFFFFFF1 */ {
-				if(_exception_state_vector.active_count() == 1) {
+				if(_exception_controller.active_count() == 1) {
 					// unpredictable
 					// exception mismatch
 					fprintf(stderr, "exception mismatch\n");
@@ -85,7 +84,7 @@ public:
 				break;
 			}
 			case 0b1001: /* return to thread using main stack EXC_RETURN=0xFFFFFFF9  */ {
-				if(_exception_state_vector.active_count() != 1) {
+				if(_exception_controller.active_count() != 1) {
 					// unpredictable
 					// return to thread exception mismatch
 					fprintf(stderr, "return to thread exception mismatch\n");
@@ -98,7 +97,7 @@ public:
 				break;
 			}
 			case 0b1101: /* return to thread using process stack EXC_RETURN=0xFFFFFFFD*/ {
-				if(_exception_state_vector.active_count() != 1) {
+				if(_exception_controller.active_count() != 1) {
 					// unpredictable
 					// return to thread exception mismatch
 					fprintf(stderr, "return to thread exception mismatch\n");
@@ -118,7 +117,7 @@ public:
 			}
 		}
 
-		_exception_state_vector.interrupt_state(exception_returning_from).deactivate();
+		_exception_controller.set_active(exception_returning_from, false);
 		//_active_exception_count--;
 		pop_stack(frame_ptr, ret_address);
 
@@ -182,8 +181,9 @@ public:
 		// stack is now SP_main
 		_special_regs.control_register().set_sp_sel(0);
 
-		// activate it
-		exception_state.activate();
+		// activate it. Pending flag is cleared automatically
+		exception_state.set_active(true);
+		exception_state.set_pending(false);
 
 		// SCS_UpdateStatusRegs();
 		// SetEventRegister();

@@ -4,7 +4,7 @@
 
 #include "exception/exception_vector.hpp"
 #include "exception/exception.hpp"
-#include "exception/exception_controller.hpp"
+#include "exception/exception_vector_controller.hpp"
 #include "nvic.hpp"
 #include <gtest/gtest.h>
 
@@ -13,21 +13,19 @@ using namespace micromachine::system;
 class ExceptionVectorTestBench : public ::testing::Test {
 protected:
 	nvic _nvic;
-	micromachine::system::shpr2_reg _sph2;
+	shpr2_reg _sph2;
 	shpr3_reg _sph3;
 	interrupt_control_state_reg _icsr;
-	micromachine::system::exception_vector _evec;
-	micromachine::system::exception_controller _interrupter;
+	exception_vector_controller _exception_controller;
 	ExceptionVectorTestBench()
-		: _evec(_nvic, _sph2, _sph3, _icsr)
-		, _interrupter(_evec)
+		: _exception_controller(_nvic, _sph2, _sph3, _icsr)
 	{}
 
 	void SetUp() override {
 		_nvic.reset();
 		_sph2.reset();
 		_sph3.reset();
-		_evec.reset();
+		_exception_controller.reset();
 	}
 
 	void TearDown() override {
@@ -35,147 +33,148 @@ protected:
 	}
 
 	void SimulateExceptionHandling(micromachine::system::exception::Type e) {
-		_evec.interrupt_state(e).activate();
-		_evec.interrupt_state(e).clear_pending();
-		_evec.interrupt_state(e).deactivate();
+		_exception_controller.set_active(e, true);
+		_exception_controller.set_pending(e, false);
+		_exception_controller.set_active(e, false);
 	}
 
 };
 
 TEST_F(ExceptionVectorTestBench, NotPendingWhenEmpty)
 {
-	EXPECT_FALSE(_evec.any_active());
+	EXPECT_FALSE(_exception_controller.any_active());
 }
 
 TEST_F(ExceptionVectorTestBench, ActivatingClearsPendingFlag)
 {
-	_interrupter.raise_hardfault();
-	EXPECT_TRUE(_evec.any_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::HARDFAULT, _evec.top_pending()->number());
-	_evec.interrupt_state<micromachine::system::exception::Type::HARDFAULT>().activate();
-	EXPECT_FALSE(_evec.interrupt_state<micromachine::system::exception::Type::HARDFAULT>().is_pending());
-	EXPECT_FALSE(_evec.any_pending());
+	_exception_controller.raise_hardfault();
+	EXPECT_TRUE(_exception_controller.any_pending());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
+	_exception_controller.set_active(exception::HARDFAULT, true);
+	_exception_controller.set_pending(exception::HARDFAULT, false);
+	EXPECT_FALSE(_exception_controller.is_pending(exception::Type::HARDFAULT));
+	EXPECT_FALSE(_exception_controller.any_pending());
 }
 
 TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBePending)
 {
-	_interrupter.raise_hardfault();
-	EXPECT_TRUE(_evec.any_pending());
+	_exception_controller.raise_hardfault();
+	EXPECT_TRUE(_exception_controller.any_pending());
 }
 
 TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBeTheOneSeenAsTopPending)
 {
-	_interrupter.raise_hardfault();
-	EXPECT_TRUE(_evec.any_pending());
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::HARDFAULT, _evec.top_pending()->number());
+	_exception_controller.raise_hardfault();
+	EXPECT_TRUE(_exception_controller.any_pending());
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
 }
 
 
 TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 {
 	// Raise a HARDFAULT exception
-	_interrupter.raise_hardfault();
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::HARDFAULT, _evec.top_pending()->number());
+	_exception_controller.raise_hardfault();
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
 
 	// Raise a NMI exception
 	// Reset is higher priority and should take precedence as top pending
-	_interrupter.raise_nmi();
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::NMI, _evec.top_pending()->number());
+	_exception_controller.raise_nmi();
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::NMI, _exception_controller.top_pending()->number());
 
 	// Simulate handling of the NMI exception
-	SimulateExceptionHandling(micromachine::system::exception::Type::NMI);
+	SimulateExceptionHandling(exception::NMI);
 
 	// The HARDFAULT exception should still be pending
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::HARDFAULT, _evec.top_pending()->number());
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
 
 	// Simulate the handling of the HARDFAULT exception
-	SimulateExceptionHandling(micromachine::system::exception::Type::HARDFAULT);
+	SimulateExceptionHandling(exception::HARDFAULT);
 
 	// There should be no more pending exceptions
-	EXPECT_EQ(nullptr, _evec.top_pending());
+	EXPECT_EQ(nullptr, _exception_controller.top_pending());
 }
 
 
 TEST_F(ExceptionVectorTestBench, RaiseExternalInterrupt)
 {
-	_interrupter.enable_external_interrupt<exception::EXTI_12>();
-	_interrupter.raise_external_interrupt<exception::EXTI_12>();
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::EXTI_12, _evec.top_pending()->number());
+	_exception_controller.set_enable(exception::EXTI_12, true);
+	_exception_controller.raise_external_interrupt(exception::EXTI_12);
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::EXTI_12, _exception_controller.top_pending()->number());
 }
 
 TEST_F(ExceptionVectorTestBench, RaiseDisabledExternalInterrupt)
 {
-	_interrupter.disable_external_interrupt<exception::EXTI_12>();
-	_interrupter.raise_external_interrupt<exception::EXTI_12>();
-	ASSERT_EQ(nullptr, _evec.top_pending());
+	_exception_controller.set_enable(exception::EXTI_12, false);
+	_exception_controller.raise_external_interrupt(exception::EXTI_12);
+	ASSERT_EQ(nullptr, _exception_controller.top_pending());
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithLowerNumberTakesPrecedenceOnExceptionWithSamePriority)
 {
-	_interrupter.enable_external_interrupt<exception::EXTI_13>();
-	_interrupter.enable_external_interrupt<exception::EXTI_12>();
-	_interrupter.raise_external_interrupt<exception::EXTI_13>();
-	_interrupter.raise_external_interrupt<exception::EXTI_12>();
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::EXTI_12, _evec.top_pending()->number());
+	_exception_controller.set_enable(exception::EXTI_13, true);
+	_exception_controller.set_enable(exception::EXTI_12, true);
+	_exception_controller.raise_external_interrupt(exception::EXTI_13);
+	_exception_controller.raise_external_interrupt(exception::EXTI_12);
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::EXTI_12, _exception_controller.top_pending()->number());
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithHigherNumberTakesPrecedenceOnDisabledException) {
-	_interrupter.enable_external_interrupt<exception::EXTI_13>();
-	_interrupter.disable_external_interrupt<exception::EXTI_12>();
-	_interrupter.raise_external_interrupt<exception::EXTI_13>();
-	_interrupter.raise_external_interrupt<exception::EXTI_12>();
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::EXTI_13, _evec.top_pending()->number());
+	_exception_controller.set_enable(exception::EXTI_13, true);
+	_exception_controller.set_enable(exception::EXTI_12, false);
+	_exception_controller.raise_external_interrupt(exception::EXTI_13);
+	_exception_controller.raise_external_interrupt(exception::EXTI_12);
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::EXTI_13, _exception_controller.top_pending()->number());
 }
 
 TEST_F(ExceptionVectorTestBench, ShprBasedPriorityExceptionPriorityReadWrite)
 {
-	_evec.interrupt_state<micromachine::system::exception::Type::SVCALL>().set_priority(3);
-	_evec.interrupt_state<micromachine::system::exception::Type::PENDSV>().set_priority(2);
-	_evec.interrupt_state<micromachine::system::exception::Type::SYSTICK>().set_priority(1);
+	_exception_controller.set_priority(exception::SVCALL, 3);
+	_exception_controller.set_priority(exception::PENDSV, 2);
+	_exception_controller.set_priority(exception::SYSTICK, 1);
 
-	EXPECT_EQ(3, _evec.interrupt_state<micromachine::system::exception::Type::SVCALL>().priority());
-	EXPECT_EQ(2, _evec.interrupt_state<micromachine::system::exception::Type::PENDSV>().priority());
-	EXPECT_EQ(1, _evec.interrupt_state<micromachine::system::exception::Type::SYSTICK>().priority());
+	EXPECT_EQ(3, _exception_controller.priority(exception::SVCALL));
+	EXPECT_EQ(2, _exception_controller.priority(exception::PENDSV));
+	EXPECT_EQ(1, _exception_controller.priority(exception::SYSTICK));
 }
 
 TEST_F(ExceptionVectorTestBench, NvicBasedPriorityExceptionPriorityReadWrite)
 {
-	for(size_t i = 0; i < 16; i++) {
-		_evec.interrupt_state(micromachine::system::exception::Type::EXTI_00 + i).set_priority(i % 4);
+	for(size_t i = exception::EXTI_00; i <= exception::EXTI_15; i++) {
+		_exception_controller.set_priority(exception::from_number(i), i % 4);
 	}
 
-	for(size_t i = 0; i < 16; i++) {
-		EXPECT_EQ(i % 4, _evec.interrupt_state(micromachine::system::exception::Type::EXTI_00 + i).priority());
+	for(size_t i = exception::EXTI_00; i <= exception::EXTI_15; i++) {
+		EXPECT_EQ(i % 4, _exception_controller.priority(exception::from_number(i)));
 	}
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithLowerPriorityTakesPecedence)
 {
-	_evec.interrupt_state<micromachine::system::exception::Type::SVCALL>().set_priority(3);
-	_evec.interrupt_state<micromachine::system::exception::Type::PENDSV>().set_priority(2);
-	_evec.interrupt_state<micromachine::system::exception::Type::SYSTICK>().set_priority(1);
-	_interrupter.raise_pendsv();
-	_interrupter.raise_svcall();
-	_interrupter.raise_systick();
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::SYSTICK, _evec.top_pending()->number());
-	SimulateExceptionHandling(micromachine::system::exception::Type::SYSTICK);
+	_exception_controller.set_priority(exception::SVCALL, 3);
+	_exception_controller.set_priority(exception::PENDSV, 2);
+	_exception_controller.set_priority(exception::SYSTICK, 1);
+	_exception_controller.raise_pendsv();
+	_exception_controller.raise_svcall();
+	_exception_controller.raise_systick();
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::SYSTICK, _exception_controller.top_pending()->number());
+	SimulateExceptionHandling(exception::SYSTICK);
 
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::PENDSV, _evec.top_pending()->number());
-	SimulateExceptionHandling(micromachine::system::exception::Type::PENDSV);
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::PENDSV, _exception_controller.top_pending()->number());
+	SimulateExceptionHandling(exception::PENDSV);
 
-	ASSERT_NE(nullptr, _evec.top_pending());
-	EXPECT_EQ(micromachine::system::exception::Type::SVCALL, _evec.top_pending()->number());
-	SimulateExceptionHandling(micromachine::system::exception::Type::SVCALL);
+	ASSERT_NE(nullptr, _exception_controller.top_pending());
+	EXPECT_EQ(exception::SVCALL, _exception_controller.top_pending()->number());
+	SimulateExceptionHandling(exception::SVCALL);
 
-	ASSERT_EQ(nullptr, _evec.top_pending());
+	ASSERT_EQ(nullptr, _exception_controller.top_pending());
 }
 

@@ -17,7 +17,7 @@
 
 #include "control_signals.hpp"
 #include "exception/exception.hpp"
-#include "exception/exception_vector.hpp"
+#include "exception/exception_controller.hpp"
 #include "execution/interworking_brancher.hpp"
 #include "memory/memory.hpp"
 #include "registers/core_registers/core_registers.hpp"
@@ -30,7 +30,6 @@ namespace micromachine::system {
 class cpu {
 private:
 	memory& _mem;
-	exception_vector& _exception_vector;
 	exception_controller& _exception_controller;
 	special_registers _special_registers;
 	core_registers _core_regs;
@@ -47,11 +46,9 @@ public:
 	cpu& operator=(const cpu& other) = delete;
 
 	cpu(memory& memory,
-		exception_vector& exception_vector,
 		exception_controller& exception_controller,
 		control_signals& control_signals)
 		: _mem(memory)
-		, _exception_vector(exception_vector)
 		, _exception_controller(exception_controller)
 		, _core_regs(_exec_mode, _special_registers.control_register(), _ctx_switcher)
 		, _interworking_brancher(_exec_mode,
@@ -71,18 +68,16 @@ public:
 						_special_registers,
 						_exec_mode,
 						_mem,
-						_exception_vector,
+						_exception_controller,
 						_interworking_brancher)
 		, _exec_mode(execution_mode::thread)
 		, _debug_instruction_counter(0) {}
 
 	cpu(memory& memory,
-		exception_vector& exception_vector,
 		exception_controller& exception_controller,
 		control_signals& control_signals,
 		const cpu& other)
 		: _mem(memory)
-		, _exception_vector(exception_vector)
 		, _exception_controller(exception_controller)
 		, _special_registers(other._special_registers)
 		, _core_regs(_exec_mode,
@@ -106,7 +101,7 @@ public:
 						_special_registers,
 						_exec_mode,
 						_mem,
-						_exception_vector,
+						_exception_controller,
 						_interworking_brancher)
 		, _exec_mode(other._exec_mode)
 		, _debug_instruction_counter(other._debug_instruction_counter) {}
@@ -127,7 +122,7 @@ public:
 		_special_registers.primask_register().reset();
 		_special_registers.control_register().reset();
 
-		_exception_vector.reset();
+		_exception_controller.reset();
 		_event_register.clear();
 
 		_control_signals.halt.clear();
@@ -184,14 +179,6 @@ public:
 		return;
 	}
 
-	const exception_vector& exceptions() const {
-		return _exception_vector;
-	}
-
-	exception_vector& exceptions() {
-		return _exception_vector;
-	}
-
 	memory& mem() {
 		return _mem;
 	}
@@ -233,34 +220,12 @@ public:
 	}
 
 	exception::priority_t current_execution_priority() const {
-		exception::priority_t prio = exception::THREAD_MODE_PRIORITY;
-		exception::priority_t boosted_prio = exception::THREAD_MODE_PRIORITY;
-
-		for(size_t i = 2; i < 32; i++) {
-			const exception_state& e = _exception_vector.at(i);
-			if(!e.is_active())
-				continue;
-			if(e.priority() < prio) {
-				prio = e.priority();
-			}
-		}
-
-		// if primask is set, ignore all maskable exceptions by
-		// pretending the executing priority is now 0
-		if(_special_registers.primask_register().pm()) {
-			prio = 0;
-		}
-
-		if(boosted_prio < prio) {
-			return boosted_prio;
-		} else {
-			return prio;
-		}
+		return _exception_controller.current_execution_priority(_special_registers.primask_register().pm());
 	}
 
 private:
 	exception_state* next_exception_to_take() {
-		exception_state* pending_exception = _exception_vector.top_pending();
+		exception_state* pending_exception = _exception_controller.top_pending();
 		if(nullptr == pending_exception) {
 			// no exceptions to process
 			return nullptr;

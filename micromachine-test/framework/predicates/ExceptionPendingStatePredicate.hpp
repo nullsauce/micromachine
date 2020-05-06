@@ -19,15 +19,14 @@ public:
 		, _expectedPendingState(expectedPendingState) {}
 
 	ExceptionPendingStatePredicate(exception::Type exceptionType, const mcu& expected)
-		: ExceptionPendingStatePredicate(exceptionType,
-										 expected.get_exception_vector().interrupt_state(exceptionType).is_pending()) {}
+		: ExceptionPendingStatePredicate(exceptionType, expected.exceptions().is_pending(exceptionType)) {}
 
 	void apply(mcu& expected) {
-		stateOf(expected).set_pending(_expectedPendingState);
+		expected.exceptions().set_pending(_exceptionType, _expectedPendingState);
 	}
 
 	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT2(assertEquality, _expectedPendingState, stateOf(actual).is_pending());
+		EXPECT_PRED_FORMAT2(assertEquality, _expectedPendingState, actual.exceptions().is_pending(_exceptionType));
 	}
 
 private:
