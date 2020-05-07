@@ -12,7 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include "exception.hpp"
 #include "exception_state.hpp"
 #include "nvic.hpp"
-#include "registers/system_control/interrupt_control_state_reg.hpp"
+#include "registers/system_control/icsr_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
 

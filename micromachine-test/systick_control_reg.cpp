@@ -19,11 +19,16 @@ protected:
 	nvic _nvic;
 	shpr2_reg _sph2;
 	shpr3_reg _sph3;
-	interrupt_control_state_reg _icsr;
 	exception_vector_controller _exception_controller;
+	uint32_t _xpsr;
+	ipsr_reg _ipsr_reg;
+	interrupt_control_state_reg _icsr;
 	systick syst;
 	SystickTestBench()
 		: _exception_controller(_nvic, _sph2, _sph3, _icsr)
+		, _xpsr(0)
+		, _ipsr_reg(_xpsr)
+		, _icsr(_exception_controller, _ipsr_reg)
 		, syst(_exception_controller)
 	{}
 
