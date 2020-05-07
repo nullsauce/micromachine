@@ -1,9 +1,8 @@
 
-#include <io.h>
+
 #include <stdint.h>
 #include <system.h>
-#include <tinyprintf.h>
-#include <control_registers.h>
+#include <stdio.h>
 
 static uint32_t val = 0xdeadbabe;
 

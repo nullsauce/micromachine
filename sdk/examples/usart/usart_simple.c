@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include <stdint.h>
-
+#include <stdlib.h>
 #include <micromachine_mcu.h>
-#include <tinyprintf.h>
+
 
 struct usart_config {
 	bool enable;

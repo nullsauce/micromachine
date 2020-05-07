@@ -1,6 +1,7 @@
 
-#include <tinyprintf.h>
+
 #include <micromachine_mcu.h>
+#include <stdio.h>
 
 
 void main() {

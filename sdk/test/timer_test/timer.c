@@ -10,11 +10,9 @@ and/or distributed without the express permission of Flavio Roth.
 #include <interrupt_handlers.h>
 #include <instructions.h>
 #include <systick.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <tinyprintf.h>
-#include <entrypoint.h>
-#include <io.h>
+
+#include <system.h>
+#include <stdio.h>
 
 void _isr_systick() {
 	static uint32_t counter = 0;

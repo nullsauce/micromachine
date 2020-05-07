@@ -8,18 +8,12 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 
-#include <interrupt_handlers.h>
-#include <instructions.h>
-#include <systick.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <io.h>
-#include <entrypoint.h>
-#include <random.h>
 #include <system.h>
-#include <startup.h>
+#include <stdio.h>
 
 uint32_t test_variable_1 = 0x99c0feee;
+
+extern void _init();
 
 // should be equivalent as above
 static uint32_t test_variable_2 = 0xbeefc0de;

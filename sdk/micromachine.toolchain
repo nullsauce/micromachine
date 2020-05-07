@@ -16,14 +16,26 @@ set(CMAKE_ASM_COMPILER "${TARGET_PREFIX}as")
 
 UNSET(CMAKE_C_FLAGS CACHE)
 UNSET(CMAKE_CXX_FLAGS CACHE)
-set(COMMON_CFLAGS "-ffreestanding -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -nostdlib -march=armv6s-m -ggdb -g")
+
+
+# Global compiler options notes
+#  * fshort-wchar : Ensures output ABI is compatible with newlib-nano specs
+#  * -ggdb -g : To generate debug information
+#
+set(COMMON_CFLAGS "\
+    -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -march=armv6s-m \
+    -ggdb -g \
+    --specs=nano.specs \
+    -fshort-wchar \
+")
+
 set(CMAKE_C_FLAGS "${COMMON_CFLAGS} -std=c11")
 # note that to avoid undefined reference to `__cxa_guard_acquire' the threadsafe static initialization of c++11 is
 # disabled
 # note that to avoid undefined reference to  `__dso_handle and `__aeabi_atexit the option -fno-use-cxa-atexit is added
 set(CMAKE_CXX_FLAGS "${COMMON_CFLAGS} -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions -march=armv6s-m")
 
-set(CUSTOM_LD_FLAGS "-nostdlib -nodefaultlibs -nostartfiles")
+set(CUSTOM_LD_FLAGS "-nostartfiles")
 
 set(CMAKE_C_LINK_FLAGS "${CUSTOM_LD_FLAGS}")
 set(CMAKE_CXX_LINK_FLAGS "${CUSTOM_LD_FLAGS}")

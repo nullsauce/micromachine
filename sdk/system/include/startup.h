@@ -12,11 +12,6 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <stdint.h>
 
-void _startup();
-
-extern uint32_t _initial_size;
-
 void _init();
-
 
 #endif //MICROMACHINE_STARTUP_H

@@ -1,12 +1,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <io.h>
-#include <control_registers.h>
-#include <system.h>
-#include <micromachine_mcu.h>
-#include <tinyprintf.h>
+#include <stdio.h>
 
+#include <micromachine_mcu.h>
 
 struct usart_device;
 

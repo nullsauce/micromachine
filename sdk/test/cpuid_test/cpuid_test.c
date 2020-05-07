@@ -9,8 +9,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <stdint.h>
 #include <stddef.h>
-#include <tinyprintf.h>
 #include <system.h>
+#include <stdio.h>
 
 #define CPUID 0xE000ED00
 
