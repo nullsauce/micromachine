@@ -16,13 +16,13 @@ and/or distributed without the express permission of Flavio Roth.
 #include "nvic.hpp"
 #include "peripherals/usart/usart_controller.hpp"
 #include "registers/custom/generic_io_reg.hpp"
-#include "registers/system_control/config_and_control_reg.hpp"
+#include "registers/system_control/aircr_reg.hpp"
+#include "registers/system_control/ccr_reg.hpp"
 #include "registers/system_control/cpuid_reg.hpp"
 #include "registers/system_control/icsr_reg.hpp"
-#include "registers/system_control/interrupt_and_reset_control_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
-#include "registers/system_control/vtable_offset_reg.hpp"
+#include "registers/system_control/vtor_reg.hpp"
 #include "systick.hpp"
 
 namespace micromachine::system {

@@ -4,7 +4,7 @@
 
 #include "CpuTestFixture.hpp"
 #include "exception/exception.hpp"
-#include "registers/system_control/config_and_control_reg.hpp"
+#include "registers/system_control/ccr_reg.hpp"
 
 #include "CpuTestFixture.hpp"
 #include <gtest/gtest.h>
