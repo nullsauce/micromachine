@@ -9,6 +9,7 @@
 #include "exception/exception_controller.hpp"
 #include "registers/memory_mapped_reg.hpp"
 #include "types/types.hpp"
+#include "utils/signal.hpp"
 
 namespace micromachine::system {
 

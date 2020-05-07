@@ -3,8 +3,7 @@
 //
 
 
-#include "registers/system_control/vtable_offset_reg.hpp"
-
+#include "registers/system_control/vtor_reg.hpp"
 
 #include <gtest/gtest.h>
 
