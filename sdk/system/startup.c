@@ -9,13 +9,11 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "include/startup.h"
 #include "include/system.h"
-#include "include/io.h"
-#include "include/entrypoint.h"
 #include "include/instructions.h"
 
 #include <stdint.h>
 
-uint32_t _initial_size;
+extern void main(void);
 
 static
 void _init_memory() {
@@ -37,16 +35,12 @@ void _init_memory() {
 
 void _init() {
 	_init_memory();
-	_init_io();
 }
-
 
 void _startup() {
 
-
 	// init memory and io subsystems
 	_init();
-
 
 	// call main
 	main();

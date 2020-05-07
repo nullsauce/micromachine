@@ -16,11 +16,8 @@ function(add_micromachine_executable)
 	set_target_properties(${ARGV0} PROPERTIES LINK_FLAGS "-T ${LINKER_SCRIPT}")
 	set_target_properties(${ARGV0} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 
-	# appends the boot object sources to the target
-	target_sources(${ARGV0} PRIVATE $<TARGET_OBJECTS:boot>)
-
-	# appends the system library to the target
-	target_link_libraries(${ARGV0} PRIVATE system)
+	# appends the boot and system objects to the target
+	target_sources(${ARGV0} PRIVATE $<TARGET_OBJECTS:boot> $<TARGET_OBJECTS:system>)
 
 endfunction()
 

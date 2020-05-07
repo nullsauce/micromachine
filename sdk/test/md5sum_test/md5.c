@@ -37,9 +37,10 @@
 
 #ifndef HAVE_OPENSSL
 
-#include <mem.h>
 
 #include "md5.h"
+#include <stdlib.h>
+#include <string.h>
 
 /*
  * The basic MD5 functions.

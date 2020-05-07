@@ -7,18 +7,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 */
 
-
-#include <interrupt_handlers.h>
-#include <instructions.h>
-#include <systick.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <tinyprintf.h>
-#include <entrypoint.h>
-#include <random.h>
 #include <system.h>
-#include <io.h>
-#include <startup.h>
+#include <stdio.h>
 
 uint32_t test_variable_1;
 

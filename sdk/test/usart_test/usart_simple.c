@@ -2,7 +2,7 @@
 #include <stdbool.h>
 
 #include <micromachine_mcu.h>
-#include <tinyprintf.h>
+#include <stdio.h>
 
 
 struct usart_config {
