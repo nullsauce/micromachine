@@ -132,6 +132,7 @@ namespace micromachine::testing {
 
 		return PredicateAggregate(reg(registers::PC).equals(handlerAddress),
 								  exceptionStateOf(ex).isActive(),
+								  exceptionStateOf(ex).isNotPending(),
 								  executionModeIsHandler(),
 								  RegistersPushedStatePredicate(contextValues),
 								  reg(registers::LR).equals(0xFFFFFFF9),
