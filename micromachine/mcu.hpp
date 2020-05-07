@@ -18,8 +18,8 @@ and/or distributed without the express permission of Flavio Roth.
 #include "registers/custom/generic_io_reg.hpp"
 #include "registers/system_control/config_and_control_reg.hpp"
 #include "registers/system_control/cpuid_reg.hpp"
+#include "registers/system_control/icsr_reg.hpp"
 #include "registers/system_control/interrupt_and_reset_control_reg.hpp"
-#include "registers/system_control/interrupt_control_state_reg.hpp"
 #include "registers/system_control/shpr2_reg.hpp"
 #include "registers/system_control/shpr3_reg.hpp"
 #include "registers/system_control/vtable_offset_reg.hpp"
@@ -101,7 +101,7 @@ public:
 		, _systick(_exception_controller)
 		, _generic_io_reg(_io_reg_callback)
 		, _aircr(_exception_controller, _control_signals.reset)
-		, _icsr_reg()
+		, _icsr_reg(_exception_controller, _cpu.special_regs().interrupt_status_register())
 		, _usart_controller(_exception_controller, exception::EXTI_00)
 		, _previously_used_entrypoint(0) {}
 
@@ -119,7 +119,7 @@ public:
 		, _cpuid_reg(other._cpuid_reg)
 		, _aircr(_exception_controller, _control_signals.reset)
 		, _vtable_offset_reg(other._vtable_offset_reg)
-		, _icsr_reg(other._icsr_reg)
+		, _icsr_reg(_exception_controller, _cpu.special_regs().interrupt_status_register(), other._icsr_reg)
 		, _usart_controller(_exception_controller, exception::EXTI_00)
 		, _previously_used_entrypoint(other._previously_used_entrypoint) {}
 
