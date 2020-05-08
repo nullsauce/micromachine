@@ -12,7 +12,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include "alib.h"
 
-void main() {
+int main() {
 	volatile uint32_t* bad = (uint32_t*)a_lib_value;
 	while(1) *bad++;
 }

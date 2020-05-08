@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 
-void main() {
+int main() {
 	printf("Hello cmsis world!\n");
 
 	// External peripherals

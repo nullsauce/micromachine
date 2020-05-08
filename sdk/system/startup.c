@@ -13,7 +13,7 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <stdint.h>
 
-extern void main(void);
+extern int main(void);
 
 static
 void _init_memory() {
