@@ -8,6 +8,7 @@ and/or distributed without the express permission of Flavio Roth.
 */
 
 #include "include/control_registers.h"
+#include "include/instructions.h"
 #include "include/system.h"
 
 #include <stdint.h>
@@ -68,3 +69,6 @@ int _isatty(int file) {
 	return 1;
 }
 
+int _exit() {
+	breakpoint(1);
+}
