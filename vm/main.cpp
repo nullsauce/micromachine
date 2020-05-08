@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 		}
 	});
 
-	mcu.set_io_callback([](uint8_t op, uint8_t data) {
+	mcu.set_io_callback([](uint8_t data) {
 		if(0 == write(STDOUT_FILENO, &data, 1)) {
 			fprintf(stderr, "failed to write to stdout\n");
 		}

@@ -121,7 +121,7 @@ public:
 		_output_view.border.segments.disable_all();
 		_output_view.border.segments.north.enable();
 
-		_mcu.set_io_callback([this](uint8_t op, uint8_t data){
+		_mcu.set_io_callback([this](uint8_t data){
 			_output_view.append_char((char)data);
 		});
 

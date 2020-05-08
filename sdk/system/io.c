@@ -14,15 +14,10 @@ and/or distributed without the express permission of Flavio Roth.
 #include <stddef.h>
 #include <sys/stat.h>
 
-static
-void io_call(uint8_t op, uint8_t d0, uint8_t d1, uint8_t d2) {
-	IO_REG = ((op << 24) | (d2 << 16) | (d2 << 8) | (d0 << 0));
-}
-
 int _write(int fd, char* buf, int count) {
 	int written = 0;
 	for(; count != 0; --count) {
-		io_call(0, *buf++, 0, 0);
+		IO_REG = (uint32_t)(*buf++);
 		++written;
 	}
 	return written;
