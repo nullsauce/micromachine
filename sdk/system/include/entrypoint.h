@@ -1,7 +1,0 @@
-
-#ifndef MICROMACHINE_EMU_ENTRYPOINT_H
-#define MICROMACHINE_EMU_ENTRYPOINT_H
-
-extern void main(void);
-
-#endif //MICROMACHINE_EMU_ENTRYPOINT_H

@@ -4,7 +4,6 @@ set(SRCS
 	startup.c
 	interrupt_handlers.c
 	io.c
-	$<TARGET_OBJECTS:libaeabi>
 )
 
 set(CMSIS_HEADERS
