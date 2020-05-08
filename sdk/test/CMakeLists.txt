@@ -4,6 +4,7 @@ add_subdirectory(arithmetic_test)
 add_subdirectory(static_initialization)
 add_subdirectory(cpuid_test)
 add_subdirectory(usart_test)
+add_subdirectory(malloc_test)
 
 # pass the --testing flag to the vm to enable various testing behaviors
 # such as filling uninitialized memory with non-zero values
@@ -77,4 +78,10 @@ add_test_command(
 	EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/usart_test/usart_interrupt_test
 	EXPECTED_OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_interrupt_expected_stdout.txt
 	VM_ARGS --usart-input-file ${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_interrupt_usart-input.txt
+)
+
+add_test_command(
+		NAME malloc_test
+		EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/malloc_test/malloc_test
+		EXPECTED_OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/malloc_test/expected_stdout.txt
 )
