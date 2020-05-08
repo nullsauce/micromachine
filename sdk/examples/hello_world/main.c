@@ -6,7 +6,7 @@
 
 static uint32_t val = 0xdeadbabe;
 
-void main() {
+int main() {
 	val++;
 	printf("Hello World!\n");
 	printf("System memory layout:\n");

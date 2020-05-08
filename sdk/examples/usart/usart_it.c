@@ -150,7 +150,7 @@ static void rx_example() {
 	printf("'\n");
 }
 
-void main() {
+int main() {
 	usart_init(&dev);
 
 	/*

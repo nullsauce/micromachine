@@ -38,7 +38,7 @@ static void usart_transmit(struct usart_device* dev, uint8_t* data, size_t len) 
 	}
 }
 
-void main() {
+int main() {
 
 	static struct usart_device dev = {
 		.port = USART0,
