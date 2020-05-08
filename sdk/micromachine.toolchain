@@ -33,7 +33,7 @@ set(CMAKE_C_FLAGS "${COMMON_CFLAGS} -std=c11")
 # note that to avoid undefined reference to `__cxa_guard_acquire' the threadsafe static initialization of c++11 is
 # disabled
 # note that to avoid undefined reference to  `__dso_handle and `__aeabi_atexit the option -fno-use-cxa-atexit is added
-set(CMAKE_CXX_FLAGS "${COMMON_CFLAGS} -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions -march=armv6s-m")
+set(CMAKE_CXX_FLAGS "${COMMON_CFLAGS}  -std=c++11 -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions -march=armv6s-m")
 
 set(CUSTOM_LD_FLAGS "-nostartfiles")
 
