@@ -42,7 +42,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_subdirectory(boot)
-add_subdirectory(runtime-abi)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/system/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/system/include/CMSIS/Core/Include)
 add_subdirectory(system)
