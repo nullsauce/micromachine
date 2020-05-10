@@ -1,6 +1,6 @@
 
 
-#include <micromachine_mcu.h>
+#include <micromachine.h>
 #include <stdio.h>
 
 
@@ -14,7 +14,7 @@ int main() {
 
 	// internal register
 	//  TODO SCB has to be mapped in the vm
-//	SCB_Type* system_control_block = SCB;
+	//	SCB_Type* system_control_block = SCB;
 //	uint32_t aircr = system_control_block->AIRCR;
 
 	// internal peripheral

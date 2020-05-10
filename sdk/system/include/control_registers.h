@@ -4,10 +4,6 @@
 
 #define REG32(address) (*((volatile unsigned long*)address))
 
-#define NVIC_ST_CTRL_R          REG32(0xE000E010)
-#define NVIC_ST_RELOAD_R        REG32(0xE000E014)
-#define NVIC_ST_CURRENT_R       REG32(0xE000E018)
-
 #define IO_REG          		REG32(0xE000EF90)
 
 #endif //MICROMACHINE_EMU_CONTROL_REGISTERS_H

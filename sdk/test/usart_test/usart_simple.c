@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <micromachine_mcu.h>
+#include <micromachine.h>
 #include <stdio.h>
 
 

@@ -9,7 +9,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <interrupt_handlers.h>
 #include <instructions.h>
-#include <systick.h>
+
+#include <micromachine.h>
 
 #include <system.h>
 #include <stdio.h>
@@ -23,11 +24,15 @@ void _isr_systick() {
 };
 
 void main() {
-	NVIC_ST_CTRL_R = 0;			// disable SysTick during setup
-	NVIC_ST_RELOAD_R = 100000;	// reload value
-	NVIC_ST_CURRENT_R = 0;		// any write to current clears it
-	// enable SysTick with core clock
-	NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE + NVIC_ST_CTRL_CLK_SRC;
+
+	NVIC_DisableIRQ(SysTick_IRQn); // disable SysTick during setup
+
+	if(SysTick_Config(1000)) {
+		printf("systick configuration failed\n");
+	}
+
+	NVIC_EnableIRQ(SysTick_IRQn);
+
 	while(1) {}
 }
 

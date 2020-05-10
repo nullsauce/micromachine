@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <micromachine_mcu.h>
+#include <micromachine.h>
 
 
 struct usart_config {

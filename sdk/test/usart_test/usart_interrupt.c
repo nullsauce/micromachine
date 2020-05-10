@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <micromachine_mcu.h>
+#include <micromachine.h>
 
 struct usart_device;
 
