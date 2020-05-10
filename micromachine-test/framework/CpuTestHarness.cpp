@@ -300,7 +300,7 @@ void CpuTestHarness::validateRegisters()
 	for (int i = 0; i < 13; i++)
 		EXPECT_EQ(m_expectedRegisterValues[i], _mcu.get_cpu().regs().get(i));
 	EXPECT_EQ(m_expectedSPmain,
-			  _mcu.get_cpu().regs().sp_register().get_specific_banked_sp(sp_reg::StackType::Main));
+			  _mcu.get_cpu().regs().sp_register().get_specific_banked_sp(sp_reg::stack_type::main));
 	EXPECT_EQ(m_expectedLR, _mcu.get_cpu().regs().lr());
 	EXPECT_EQ(m_expectedPC, _mcu.get_cpu().regs().pc());
 }

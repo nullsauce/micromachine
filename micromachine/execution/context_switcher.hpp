@@ -76,7 +76,7 @@ public:
 					fprintf(stderr, "exception mismatch\n");
 				} else {
 					frame_ptr =
-						_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
+						_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::main);
 					_execution_mode.enter_handler_mode();
 					_special_regs.control_register().set_sp_sel(0);
 				}
@@ -89,7 +89,7 @@ public:
 					fprintf(stderr, "return to thread exception mismatch\n");
 				} else {
 					frame_ptr =
-						_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
+						_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::main);
 					_execution_mode.enter_thread_mode();
 					_special_regs.control_register().set_sp_sel(0);
 				}
@@ -102,7 +102,7 @@ public:
 					fprintf(stderr, "return to thread exception mismatch\n");
 				} else {
 					frame_ptr =
-						_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
+						_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::process);
 					_execution_mode.enter_thread_mode();
 					_special_regs.control_register().set_sp_sel(1);
 					// Assigning CurrentMode to Mode_Thread causes a drop in privilege
@@ -208,17 +208,17 @@ public:
 			case 0b0001: /* return to handler */
 			case 0b1001: /* return to thread using main stack */ {
 				uint32_t sp_main =
-					_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Main);
+					_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::main);
 				uint32_t new_sp_main = (sp_main + 0x20) | stack_align;
-				_core_regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Main,
+				_core_regs.sp_register().set_specific_banked_sp(sp_reg::stack_type::main,
 																new_sp_main);
 				break;
 			}
 			case 0b1101: /* return to thread using process stack */ {
 				uint32_t sp_process =
-					_core_regs.sp_register().get_specific_banked_sp(sp_reg::StackType::Process);
+					_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::process);
 				uint32_t new_sp_process = (sp_process + 0x20) | stack_align;
-				_core_regs.sp_register().set_specific_banked_sp(sp_reg::StackType::Process,
+				_core_regs.sp_register().set_specific_banked_sp(sp_reg::stack_type::process,
 																new_sp_process);
 				break;
 			}

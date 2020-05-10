@@ -27,8 +27,8 @@ public:
 			 {}
 
 	void apply(mcu& expected) {
-		expected.get_cpu().regs().sp().set_specific_banked_sp(sp_reg::StackType::Main, _expectedMainSP);
-		expected.get_cpu().regs().sp().set_specific_banked_sp(sp_reg::StackType::Process, _expectedProcessSP);
+		expected.get_cpu().regs().sp().set_specific_banked_sp(sp_reg::stack_type::main, _expectedMainSP);
+		expected.get_cpu().regs().sp().set_specific_banked_sp(sp_reg::stack_type::process, _expectedProcessSP);
 	}
 
 	void check(const mcu& actual) const {
@@ -38,16 +38,16 @@ public:
 
 private:
 
-	uint32_t getSPFrom(const mcu& mcu, sp_reg::StackType stackType) const {
+	uint32_t getSPFrom(const mcu& mcu, sp_reg::stack_type stackType) const {
 		return mcu.get_cpu().regs().sp().get_specific_banked_sp(stackType);
 	}
 
 	uint32_t getMainSPFrom(const mcu& mcu) const {
-		return getSPFrom(mcu, sp_reg::StackType::Main);
+		return getSPFrom(mcu, sp_reg::stack_type::main);
 	}
 
 	uint32_t getProcessSPFrom(const mcu& mcu) const {
-		return getSPFrom(mcu, sp_reg::StackType::Process);
+		return getSPFrom(mcu, sp_reg::stack_type::process);
 	}
 
 	::testing::AssertionResult assertEquality(const char*,
