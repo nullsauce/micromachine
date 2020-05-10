@@ -1,15 +1,21 @@
-# <img src="docs/images/micromachine-logo.png" width="400" height="200" />
 
-Micromachine aims to be an cycle-**innacurate** armv6-m emulator that can be used to simulate
-microcontrollers at the application level.
+<p align="center">
+  <img width="50%" src="docs/images/micromachine-logo.png" />
+</p>
 
+<p align="center">
+    <img src="https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=master" />
+</p>
 
-### Build status
+<br/>
 
-branch | status
--------|--------
-master |![](https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=master)
+<p align="center">
+Micromachine aims to be a correct, clean and performant (in that order) cycle-<b>innacurate</b> armv6-m emulator capable of simulating
+micro-controllers at the application level.
+</p>
 
+</br>
+</br>
 
 ### Structure
 
