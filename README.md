@@ -14,8 +14,8 @@ Micromachine aims to be a correct, clean and performant (in that order) cycle-<b
 micro-controllers at the application level.
 </p>
 
-</br>
-</br>
+<br/>
+<br/>
 
 ### Structure
 
