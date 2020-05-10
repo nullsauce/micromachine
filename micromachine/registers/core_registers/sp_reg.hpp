@@ -33,13 +33,13 @@ public:
 
 	using iregister::operator=;
 
-	enum class StackType : size_t { Main = 0, Process = 1 };
+	enum class stack_type : size_t { main = 0, process = 1 };
 
-	void set_specific_banked_sp(StackType type, uint32_t word) {
+	void set_specific_banked_sp(stack_type type, uint32_t word) {
 		_banked_stack_pointers[(size_t)type] = word;
 	}
 
-	uint32_t get_specific_banked_sp(StackType type) const {
+	uint32_t get_specific_banked_sp(stack_type type) const {
 		return _banked_stack_pointers[(size_t)type];
 	}
 
