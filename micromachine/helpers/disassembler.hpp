@@ -144,29 +144,29 @@ private:
 		return cond_names + (condition * 2U);
 	}
 
-	static std::string special_register(special_reg_instr::SpecialRegister sr) {
+	static std::string special_register(special_reg_instr::special_register sr) {
 		switch(sr) {
-			case msr::SpecialRegister::APSR:
+			case msr::special_register::apsr:
 				return "apsr";
-			case msr::SpecialRegister::IAPSR:
+			case msr::special_register::iapsr:
 				return "iapsr";
-			case msr::SpecialRegister::EAPSR:
+			case msr::special_register::eapsr:
 				return "eapsr";
-			case msr::SpecialRegister::XPSR:
+			case msr::special_register::xpsr:
 				return "xpsr";
-			case msr::SpecialRegister::IPSR:
+			case msr::special_register::ipsr:
 				return "ipsr";
-			case msr::SpecialRegister::EPSR:
+			case msr::special_register::epsr:
 				return "epsr";
-			case msr::SpecialRegister::IEPSR:
+			case msr::special_register::iepsr:
 				return "iepsr";
-			case msr::SpecialRegister::MSP:
+			case msr::special_register::msp:
 				return "msp";
-			case msr::SpecialRegister::PSP:
+			case msr::special_register::psp:
 				return "psp";
-			case msr::SpecialRegister::PRIMASK:
+			case msr::special_register::primask:
 				return "primask";
-			case msr::SpecialRegister::CONTROL:
+			case msr::special_register::control:
 				return "control";
 			default:
 				return "?";
@@ -174,7 +174,7 @@ private:
 	}
 
 	static std::string special_register(uint8_t val) {
-		return special_register((special_reg_instr::SpecialRegister)val);
+		return special_register((special_reg_instr::special_register)val);
 	}
 
 	void invalid_instruction(const uint16_t instr) override {
