@@ -28,8 +28,8 @@ private:
 	bool _pending;
 
 public:
-	internal_exception_state(exception::Type number)
-		: exception_state(number)
+	internal_exception_state(exception kind)
+		: exception_state(kind)
 		, _pending(false) {}
 
 	bool is_pending() const override {
@@ -103,8 +103,8 @@ protected:
 	shpr2_reg& _priority_reg;
 
 public:
-	shpr2_exception_state(exception::Type number, shpr2_reg& priority_reg)
-		: internal_exception_state(number)
+	shpr2_exception_state(exception kind, shpr2_reg& priority_reg)
+		: internal_exception_state(kind)
 		, _priority_reg(priority_reg) {}
 };
 
@@ -113,8 +113,8 @@ protected:
 	shpr3_reg& _priority_reg;
 
 public:
-	shpr3_exception_state(exception::Type number, shpr3_reg& priority_reg)
-		: exception_state(number)
+	shpr3_exception_state(exception kind, shpr3_reg& priority_reg)
+		: exception_state(kind)
 		, _priority_reg(priority_reg) {}
 };
 
@@ -137,7 +137,7 @@ protected:
 	interrupt_control_state_reg& _pending_state_reg;
 
 public:
-	icsr_controllable_exception(exception::Type exception, shpr3_reg& priority_reg,
+	icsr_controllable_exception(exception exception, shpr3_reg& priority_reg,
 								interrupt_control_state_reg& pending_state_reg)
 		: shpr3_exception_state(exception, priority_reg)
 		, _pending_state_reg(pending_state_reg) {}
@@ -201,8 +201,8 @@ private:
 	nvic& _nvic;
 
 public:
-	nvic_based_exception_state(exception::Type number, nvic& nvic)
-		: exception_state(number)
+	nvic_based_exception_state(exception kind, nvic& nvic)
+		: exception_state(kind)
 		, _nvic(nvic) {}
 
 	exception::priority_t priority() const override {
@@ -256,7 +256,7 @@ public:
 		: exception_vector(nvic, shpr2, shpr3, icsr) {
 		// Initializes everything as usual.
 		// Then copy the exception states from the existing state
-		for(exception::Type type : _implemented_exception_types) {
+		for(exception type : _implemented_exception_types) {
 			auto& current = _indexed[type].get();
 			auto& existing = existing_state._indexed[type].get();
 			current.copy_state_from(existing);
@@ -387,15 +387,15 @@ private:
 	nvic_based_exception_state<14> _ext_interrupt_14;
 	nvic_based_exception_state<15> _ext_interrupt_15;
 
-	const std::array<exception::Type, 22> _implemented_exception_types;
+	const std::array<exception, 22> _implemented_exception_types;
 	std::array<std::reference_wrapper<exception_state>, 32> _indexed;
 
 public:
-	exception_state& interrupt_state(exception::Type t) {
+	exception_state& interrupt_state(exception t) {
 		return _indexed.at(t);
 	}
 
-	const exception_state& interrupt_state(exception::Type t) const {
+	const exception_state& interrupt_state(exception t) const {
 		return _indexed.at(t);
 	}
 
@@ -436,7 +436,7 @@ public:
 				// When two pending exceptions have the same group priority, the lower pending
 				// exception number has priority over the higher pending number as part of the
 				// priority precedence rule
-				if(e.number() < top->number()) {
+				if(e.kind() < top->kind()) {
 					top = &e;
 				}
 			}

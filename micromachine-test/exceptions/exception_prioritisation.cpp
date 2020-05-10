@@ -12,7 +12,7 @@ class ExceptionTestHarness : public CpuTestHarness {
 		: _assembler(_code_gen)
 		{}
 
-		void install_handler(micromachine::system::exception::Type ex, uint32_t address) {
+		void install_handler(micromachine::system::exception ex, uint32_t address) {
 			_mcu.get_cpu().mem().write32(ex * sizeof(uint32_t), address);
 		}
 };
@@ -47,7 +47,7 @@ TEST_F(ExceptionTestHarness, ExceptionPreAndPostState)
 	const uint32_t exception_handler_stub = 0x2000;
 
 	// hardfault handler points to this address now
-	install_handler(micromachine::system::exception::Type::HARDFAULT, exception_handler_stub | 1);
+	install_handler(micromachine::system::exception::HARDFAULT, exception_handler_stub | 1);
 
 	// write a simple empty function in the hardfault handler.
 	// the function simply returns using BX LR

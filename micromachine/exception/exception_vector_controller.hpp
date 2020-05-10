@@ -18,7 +18,7 @@ class exception_vector_controller : public exception_controller {
 private:
 	exception_vector _exception_vector;
 
-	void raise(exception::Type ex) {
+	void raise(exception ex) {
 		set_pending(ex, true);
 	}
 
@@ -33,35 +33,35 @@ public:
 						 const exception_vector_controller& other)
 		: _exception_vector(nvic, shpr2, shpr3, icsr, other._exception_vector) {}
 
-	bool is_pending(exception::Type ex) const override {
+	bool is_pending(exception ex) const override {
 		return _exception_vector.interrupt_state(ex).is_pending();
 	}
 
-	bool is_enabled(exception::Type ex) const override {
+	bool is_enabled(exception ex) const override {
 		return _exception_vector.interrupt_state(ex).is_enabled();
 	}
 
-	bool is_active(exception::Type ex) const override {
+	bool is_active(exception ex) const override {
 		return _exception_vector.interrupt_state(ex).is_active();
 	}
 
-	exception::priority_t priority(exception::Type ex) const override {
+	exception::priority_t priority(exception ex) const override {
 		return _exception_vector.interrupt_state(ex).priority();
 	}
 
-	void set_pending(exception::Type ex, bool pending) override {
+	void set_pending(exception ex, bool pending) override {
 		return _exception_vector.interrupt_state(ex).set_pending(pending);
 	}
 
-	void set_enable(exception::Type ex, bool active) override {
+	void set_enable(exception ex, bool active) override {
 		return _exception_vector.interrupt_state(ex).set_enable(active);
 	}
 
-	void set_active(exception::Type ex, bool active) override {
+	void set_active(exception ex, bool active) override {
 		return _exception_vector.interrupt_state(ex).set_active(active);
 	}
 
-	void set_priority(exception::Type ex, exception::priority_t priority) override {
+	void set_priority(exception ex, exception::priority_t priority) override {
 		_exception_vector.interrupt_state(ex).set_priority(priority);
 	}
 
@@ -125,8 +125,8 @@ public:
 		raise(exception::SYSTICK);
 	}
 
-	void raise_external_interrupt(exception::Type ex) override {
-		assert(ex >= exception::Type::EXTI_00 && "Can't raise an interrupt lower than EXTI_00");
+	void raise_external_interrupt(exception ex) override {
+		assert(ex >= exception::EXTI_00 && "Can't raise an interrupt lower than EXTI_00");
 		_exception_vector.interrupt_state(ex).set_pending(true);
 	}
 

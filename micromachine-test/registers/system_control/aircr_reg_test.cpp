@@ -15,7 +15,7 @@ static mcu mcuWithAllExceptionsEnabledPendingActiveAtMaxPriority() {
 	mcu mcu;
 	exception_controller& exception_controller = mcu.exceptions();
 
-	for(exception::Type exception : {exception::RESET,
+	for(exception exception : {exception::RESET,
 									 exception::NMI,
 									 exception::HARDFAULT,
 									 exception::SVCALL,
@@ -46,7 +46,7 @@ TEST(AIRCRReg, ClearAllActiveStateForFixedAndConfigurableExceptions) {
 	EXPECT_TRUE(exception_controller.is_active(exception::HARDFAULT));
 
 	// but the other exceptions should be reset
-	for(exception::Type exception : {exception::RESET,
+	for(exception exception : {exception::RESET,
 									 exception::NMI,
 									 exception::SVCALL,
 									 exception::PENDSV,

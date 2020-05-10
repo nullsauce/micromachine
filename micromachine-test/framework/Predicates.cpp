@@ -20,7 +20,7 @@ namespace micromachine::testing {
 		return {registers::SP, amount};
 	}
 
-	ExceptionStatePredicateBuilder exceptionStateOf(exception::Type exception) {
+	ExceptionStatePredicateBuilder exceptionStateOf(exception exception) {
 		return {exception};
 	}
 
@@ -64,7 +64,7 @@ namespace micromachine::testing {
 							   bool zeroFlag,
 							   bool carryFlag,
 							   bool overflowFlag,
-							   exception::Type ex,
+							   exception ex,
 							   bool thumbFlag) {
 		uint32_t xpsrValue = 0;
 
@@ -83,7 +83,7 @@ namespace micromachine::testing {
 		return xpsrValue;
 	}
 
-	uint32_t makeXPSRFlagsFrom(const char* apsrFlagStr, exception::Type ex, bool thumbFlag) {
+	uint32_t makeXPSRFlagsFrom(const char* apsrFlagStr, exception ex, bool thumbFlag) {
 		const APSRFlags apsrFlags(apsrFlagStr);
 		return makeXPSRFlagsFrom(apsrFlags.negativeFlag,
 								 apsrFlags.zeroFlag,
@@ -101,7 +101,7 @@ namespace micromachine::testing {
 								 apsrReg.zero_flag(),
 								 apsrReg.carry_flag(),
 								 apsrReg.overflow_flag(),
-								 ipsrReg.exception_num(),
+								 ipsrReg.exception(),
 								 epsrReg.thumb_flag());
 	}
 

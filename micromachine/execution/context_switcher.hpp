@@ -52,8 +52,7 @@ public:
 			fprintf(stderr, "unpredictable.\n");
 		}
 
-		exception::Type exception_returning_from =
-			_special_regs.interrupt_status_register().exception_num();
+		exception exception_returning_from = _special_regs.interrupt_status_register().exception();
 
 		// The maximum theoretical value of exception_num from IPSR is 63
 		// This implementation might not support that many exceptions.
@@ -122,16 +121,16 @@ public:
 		pop_stack(frame_ptr, ret_address);
 
 		if(_execution_mode.is_in_handler_mode()) {
-			if(0U == _special_regs.interrupt_status_register().exception_num()) {
+			if(0U == _special_regs.interrupt_status_register().exception()) {
 				// unpredictable
 				fprintf(stderr,
 						"unpredictable. (is_handler_mode but exception_returning_from is zero)\n");
 			}
-		} else if(0U != _special_regs.interrupt_status_register().exception_num()) {
+		} else if(0U != _special_regs.interrupt_status_register().exception()) {
 			// unpredictable
 			fprintf(stderr,
 					"unpredictable. (not in handler mode, but exception_returning_from is %d)\n",
-					(uint8_t)_special_regs.interrupt_status_register().exception_num());
+					(uint8_t)_special_regs.interrupt_status_register().exception());
 		}
 
 		// TODO: SetEventRegister()
@@ -152,7 +151,7 @@ public:
 		uint32_t return_address;
 
 		// 1. Compute the return address
-		switch(exception_state.number()) {
+		switch(exception_state.kind()) {
 			// address of the instruction causing fault
 			case exception::HARDFAULT:
 				return_address = instruction_address;
@@ -176,7 +175,7 @@ public:
 		_execution_mode.enter_handler_mode();
 
 		// set ipsr with exception number
-		_special_regs.interrupt_status_register().set_exception_number(exception_state.number());
+		_special_regs.interrupt_status_register().set_exception_number(exception_state.kind());
 
 		// stack is now SP_main
 		_special_regs.control_register().set_sp_sel(0);
@@ -188,7 +187,7 @@ public:
 		// SCS_UpdateStatusRegs();
 		// SetEventRegister();
 		// InstructionSynchronizationBarrier();
-		uint32_t vector_table_offset = sizeof(uint32_t) * exception_state.number();
+		uint32_t vector_table_offset = sizeof(uint32_t) * exception_state.kind();
 		uint32_t handler_address = _mem.read32(vector_table_offset);
 		_interworking_brancher.branch_link_interworking(handler_address);
 	}

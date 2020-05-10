@@ -14,19 +14,19 @@ private:
 	const bool _expectedPendingState;
 
 public:
-	ExceptionPendingStatePredicate(exception::Type exceptionType, bool expectedPendingState)
+	ExceptionPendingStatePredicate(exception exceptionType, bool expectedPendingState)
 		: ExceptionStatePredicate(exceptionType)
 		, _expectedPendingState(expectedPendingState) {}
 
-	ExceptionPendingStatePredicate(exception::Type exceptionType, const mcu& expected)
+	ExceptionPendingStatePredicate(exception exceptionType, const mcu& expected)
 		: ExceptionPendingStatePredicate(exceptionType, expected.exceptions().is_pending(exceptionType)) {}
 
 	void apply(mcu& expected) {
-		expected.exceptions().set_pending(_exceptionType, _expectedPendingState);
+		expected.exceptions().set_pending(_exception, _expectedPendingState);
 	}
 
 	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT2(assertEquality, _expectedPendingState, actual.exceptions().is_pending(_exceptionType));
+		EXPECT_PRED_FORMAT2(assertEquality, _expectedPendingState, actual.exceptions().is_pending(_exception));
 	}
 
 private:
@@ -38,15 +38,11 @@ private:
 		}
 
 		return ::testing::AssertionFailure()
-			   << "Equality check fail for pending status of Exception " << exceptionName(_exceptionType) << std::endl
-			   << " * Expected: " << exception::name_of(_exceptionType) << " is "
+			   << "Equality check fail for pending status of Exception " << exceptionDetailedName(_exception) << std::endl
+			   << " * Expected: " << _exception.name() << " is "
 			   << (expectedPendingState ? "pending" : "NOT pending") << std::endl
-			   << " * Actual  : " << exception::name_of(_exceptionType) << " is "
+			   << " * Actual  : " << _exception.name() << " is "
 			   << (actualPendingState ? "pending" : "NOT pending") << std::endl;
-	}
-
-	static std::string exceptionName(exception::Type e) {
-		return exception::name_of(e) + " (number=" + std::to_string(e) + ")";
 	}
 };
 

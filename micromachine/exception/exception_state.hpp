@@ -16,12 +16,12 @@ namespace micromachine::system {
 class exception_state {
 private:
 	bool _active;
-	const exception::Type _number;
+	const exception _kind;
 
 public:
-	exception_state(exception::Type number)
+	exception_state(exception kind)
 		: _active(false)
-		, _number(number) {}
+		, _kind(kind) {}
 
 	virtual exception::priority_t priority() const = 0;
 	virtual void set_priority(exception::priority_t priority) = 0;
@@ -30,8 +30,8 @@ public:
 	virtual bool is_enabled() const = 0;
 	virtual void set_enable(bool enable) = 0;
 
-	exception::Type number() const {
-		return _number;
+	exception kind() const {
+		return _kind;
 	}
 
 	bool is_active() const {

@@ -88,8 +88,8 @@ private:
 	uint32_t get() const override {
 		uint32_t value = _word;
 		const auto* top_pending = _exception_controller.top_pending();
-		pending_excetion_bits::of(value) = top_pending ? top_pending->number() : exception::INVALID;
-		active_excetion_bits::of(value) = _ipsr_reg.exception_num();
+		pending_excetion_bits::of(value) = top_pending ? top_pending->kind() : exception::INVALID;
+		active_excetion_bits::of(value) = _ipsr_reg.exception();
 		return value;
 	}
 };

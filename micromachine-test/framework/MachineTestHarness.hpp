@@ -76,10 +76,10 @@ protected:
 	uint32_t memRead32(uint32_t address);
 	void resetMachine(uint32_t initialPc);
 	void raiseHardfault();
-	void raiseException(exception::Type ex);
-	void raiseExternalInterrupt(exception::Type ex);
-	void enabledAndRaiseExternalInterrupt(exception::Type ex);
-	void setExceptionPriority(exception::Type ex, exception::priority_t priority);
+	void raiseException(exception ex);
+	void raiseExternalInterrupt(exception ex);
+	void enabledAndRaiseExternalInterrupt(exception ex);
+	void setExceptionPriority(exception ex, exception::priority_t priority);
 	void setXPSR(uint32_t xpsr);
 	void enterHandlerMode();
 	void enterThreadMode();
@@ -147,12 +147,12 @@ protected:
 		return captureContext(_machine.getCpu());
 	}
 
-	auto exceptionHandlerReachedWithContext(exception::Type ex,
+	auto exceptionHandlerReachedWithContext(exception ex,
 											RegistersPushedStatePredicate::StackedValues contextValues) const {
 		return exceptionHandlerReachedAtAddressWithContext(ex, _machine.exceptionHandlerAddress(ex), contextValues);
 	}
 
-	auto exceptionHandlerReached(exception::Type ex) {
+	auto exceptionHandlerReached(exception ex) {
 		return exceptionHandlerReachedWithContext(ex, captureCurrentContext());
 	}
 

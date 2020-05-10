@@ -12,10 +12,10 @@ namespace micromachine::testing {
 
 class IPSRStatePredicate {
 protected:
-	const exception::Type _expectedException;
+	const exception _expectedException;
 
 public:
-	IPSRStatePredicate(exception::Type expectedException)
+	IPSRStatePredicate(exception expectedException)
 		: _expectedException(expectedException) {}
 
 	IPSRStatePredicate(const mcu& expected)
@@ -30,12 +30,12 @@ public:
 	}
 
 private:
-	static exception::Type getValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().interrupt_status_register().exception_num();
+	static exception getValueFrom(const mcu& target) {
+		return target.get_cpu().special_regs().interrupt_status_register().exception();
 	}
 
 	::testing::AssertionResult
-	assertEquality(const char*, const char*, exception::Type expectedException, exception::Type actualException) const {
+	assertEquality(const char*, const char*, exception expectedException, exception actualException) const {
 
 		if(expectedException == actualException) {
 			return ::testing::AssertionSuccess();
@@ -47,8 +47,8 @@ private:
 			   << " * Actual  : IPSR exception number is " << exceptionName(actualException);
 	}
 
-	static std::string exceptionName(exception::Type e) {
-		return exception::name_of(e) + " (number=" + std::to_string(e) + ")";
+	static std::string exceptionName(exception e) {
+		return e.name() + " (number=" + std::to_string(e) + ")";
 	}
 };
 

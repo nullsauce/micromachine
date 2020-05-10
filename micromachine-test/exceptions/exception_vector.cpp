@@ -37,7 +37,7 @@ protected:
 
 	}
 
-	void SimulateExceptionHandling(micromachine::system::exception::Type e) {
+	void SimulateExceptionHandling(micromachine::system::exception e) {
 		_exception_controller.set_active(e, true);
 		_exception_controller.set_pending(e, false);
 		_exception_controller.set_active(e, false);
@@ -54,10 +54,10 @@ TEST_F(ExceptionVectorTestBench, ActivatingClearsPendingFlag)
 {
 	_exception_controller.raise_hardfault();
 	EXPECT_TRUE(_exception_controller.any_pending());
-	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->kind());
 	_exception_controller.set_active(exception::HARDFAULT, true);
 	_exception_controller.set_pending(exception::HARDFAULT, false);
-	EXPECT_FALSE(_exception_controller.is_pending(exception::Type::HARDFAULT));
+	EXPECT_FALSE(_exception_controller.is_pending(exception::HARDFAULT));
 	EXPECT_FALSE(_exception_controller.any_pending());
 }
 
@@ -72,7 +72,7 @@ TEST_F(ExceptionVectorTestBench, RasingOnePendingShouldBeTheOneSeenAsTopPending)
 	_exception_controller.raise_hardfault();
 	EXPECT_TRUE(_exception_controller.any_pending());
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->kind());
 }
 
 
@@ -81,20 +81,20 @@ TEST_F(ExceptionVectorTestBench, TopPendingShouldBeHighestPriority)
 	// Raise a HARDFAULT exception
 	_exception_controller.raise_hardfault();
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->kind());
 
 	// Raise a NMI exception
 	// Reset is higher priority and should take precedence as top pending
 	_exception_controller.raise_nmi();
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::NMI, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::NMI, _exception_controller.top_pending()->kind());
 
 	// Simulate handling of the NMI exception
 	SimulateExceptionHandling(exception::NMI);
 
 	// The HARDFAULT exception should still be pending
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::HARDFAULT, _exception_controller.top_pending()->kind());
 
 	// Simulate the handling of the HARDFAULT exception
 	SimulateExceptionHandling(exception::HARDFAULT);
@@ -109,7 +109,7 @@ TEST_F(ExceptionVectorTestBench, RaiseExternalInterrupt)
 	_exception_controller.set_enable(exception::EXTI_12, true);
 	_exception_controller.raise_external_interrupt(exception::EXTI_12);
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::EXTI_12, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::EXTI_12, _exception_controller.top_pending()->kind());
 }
 
 TEST_F(ExceptionVectorTestBench, RaiseDisabledExternalInterrupt)
@@ -126,7 +126,7 @@ TEST_F(ExceptionVectorTestBench, ExceptionWithLowerNumberTakesPrecedenceOnExcept
 	_exception_controller.raise_external_interrupt(exception::EXTI_13);
 	_exception_controller.raise_external_interrupt(exception::EXTI_12);
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::EXTI_12, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::EXTI_12, _exception_controller.top_pending()->kind());
 }
 
 TEST_F(ExceptionVectorTestBench, ExceptionWithHigherNumberTakesPrecedenceOnDisabledException) {
@@ -135,7 +135,7 @@ TEST_F(ExceptionVectorTestBench, ExceptionWithHigherNumberTakesPrecedenceOnDisab
 	_exception_controller.raise_external_interrupt(exception::EXTI_13);
 	_exception_controller.raise_external_interrupt(exception::EXTI_12);
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::EXTI_13, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::EXTI_13, _exception_controller.top_pending()->kind());
 }
 
 TEST_F(ExceptionVectorTestBench, ShprBasedPriorityExceptionPriorityReadWrite)
@@ -169,15 +169,15 @@ TEST_F(ExceptionVectorTestBench, ExceptionWithLowerPriorityTakesPecedence)
 	_exception_controller.raise_svcall();
 	_exception_controller.raise_systick();
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::SYSTICK, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::SYSTICK, _exception_controller.top_pending()->kind());
 	SimulateExceptionHandling(exception::SYSTICK);
 
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::PENDSV, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::PENDSV, _exception_controller.top_pending()->kind());
 	SimulateExceptionHandling(exception::PENDSV);
 
 	ASSERT_NE(nullptr, _exception_controller.top_pending());
-	EXPECT_EQ(exception::SVCALL, _exception_controller.top_pending()->number());
+	EXPECT_EQ(exception::SVCALL, _exception_controller.top_pending()->kind());
 	SimulateExceptionHandling(exception::SVCALL);
 
 	ASSERT_EQ(nullptr, _exception_controller.top_pending());

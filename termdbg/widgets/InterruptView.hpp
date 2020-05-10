@@ -52,13 +52,12 @@ namespace {
 
 	};
 
-	const std::array<size_t, 22> interrupts_of_interest = {{
-		1,2,3,11,
-		14,15,16,17,
-		18,19,20,21,
-		22,23,24,25,
-		26,27,28,29,
-		30,31
+	const std::array<exception, 22> exceptions_of_interest = {{
+		exception::RESET,   exception::NMI,     exception::HARDFAULT, exception::SVCALL,  exception::PENDSV,
+		exception::SYSTICK, exception::EXTI_00, exception::EXTI_01,   exception::EXTI_02, exception::EXTI_03,
+		exception::EXTI_04, exception::EXTI_05, exception::EXTI_06,   exception::EXTI_07, exception::EXTI_08,
+		exception::EXTI_09, exception::EXTI_10, exception::EXTI_11,   exception::EXTI_12, exception::EXTI_13,
+		exception::EXTI_14, exception::EXTI_15,
 	}};
 
 }
@@ -86,23 +85,21 @@ public:
 	void render() {
 		_interrupt_list.clear();
 
-
-		const exception::Type current_active = _mcu.get_cpu().special_regs().interrupt_status_register().exception_num();
-		for(size_t interrupt_number : interrupts_of_interest) {
-			const exception::Type exception = exception::from_number(interrupt_number);
+		const exception current_active = _mcu.get_cpu().special_regs().interrupt_status_register().exception();
+		for(exception exception : exceptions_of_interest) {
 			const bool exception_is_active = _mcu.exceptions().is_active(exception);
 			const bool exception_is_pending = _mcu.exceptions().is_pending(exception);
-			uint32_t vector_table_offset = sizeof(uint32_t) * interrupt_number;
+			uint32_t vector_table_offset = sizeof(uint32_t) * exception;
 			uint32_t handler_address = _mcu.get_memory().read32(vector_table_offset) & ~1;
-			const char* name = interrupt_names[interrupt_number];
+			const char* name = interrupt_names[exception];
 			wchar_t symbol = exception_is_active ? L'⎆' : exception_is_pending ? L'⚑' : ' ';
 			swprintf(_line_buffer, sizeof(_line_buffer), L"%02i %lc %08x %s\n"
-				, interrupt_number
+				, exception
 				, symbol
 				, handler_address
 				, name
 			);
-			if(interrupt_number == current_active) {
+			if(exception == current_active) {
 				_interrupt_list.insert_brush.add_attributes(cppurses::Attribute::Standout);
 			}
 			_interrupt_list.append(_line_buffer);

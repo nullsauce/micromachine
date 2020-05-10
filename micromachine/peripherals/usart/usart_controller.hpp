@@ -30,7 +30,7 @@ private:
 	usart_tx_reg _tx_register;
 	data_channel _rx_buffer;
 	data_channel _tx_buffer;
-	const exception::Type _external_interrupt;
+	const exception _external_interrupt;
 
 public:
 	static constexpr uint32_t USART_BASE = 0x40000000;
@@ -40,7 +40,7 @@ public:
 	static constexpr uint32_t USART_RX = USART_BASE + 0x0c;
 	static constexpr uint32_t USART_TX = USART_BASE + 0x10;
 
-	usart_controller(exception_controller& exception_controller, exception::Type external_interrupt)
+	usart_controller(exception_controller& exception_controller, exception external_interrupt)
 		: _interrupt_event(false)
 		, _exception_controller(exception_controller)
 		, _interrupt_status_register(_interrupt_event)

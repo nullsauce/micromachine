@@ -16,14 +16,14 @@ namespace micromachine::system {
 
 class exception_controller {
 public:
-	virtual bool is_pending(exception::Type ex) const = 0;
-	virtual bool is_enabled(exception::Type ex) const = 0;
-	virtual bool is_active(exception::Type ex) const = 0;
-	virtual exception::priority_t priority(exception::Type ex) const = 0;
-	virtual void set_pending(exception::Type ex, bool pending) = 0;
-	virtual void set_enable(exception::Type ex, bool active) = 0;
-	virtual void set_active(exception::Type ex, bool active) = 0;
-	virtual void set_priority(exception::Type ex, exception::priority_t priority) = 0;
+	virtual bool is_pending(exception ex) const = 0;
+	virtual bool is_enabled(exception ex) const = 0;
+	virtual bool is_active(exception ex) const = 0;
+	virtual exception::priority_t priority(exception ex) const = 0;
+	virtual void set_pending(exception ex, bool pending) = 0;
+	virtual void set_enable(exception ex, bool active) = 0;
+	virtual void set_active(exception ex, bool active) = 0;
+	virtual void set_priority(exception ex, exception::priority_t priority) = 0;
 	virtual size_t active_count() const = 0;
 	virtual bool any_active() const = 0;
 	virtual bool any_pending() const = 0;
@@ -39,6 +39,6 @@ public:
 	virtual void raise_svcall() = 0;
 	virtual void raise_pendsv() = 0;
 	virtual void raise_systick() = 0;
-	virtual void raise_external_interrupt(exception::Type ex) = 0;
+	virtual void raise_external_interrupt(exception ex) = 0;
 };
 } // namespace micromachine::system
