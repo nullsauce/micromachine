@@ -5,10 +5,12 @@ add_executable(usart_simple_test
 	usart_simple.c
 )
 add_micromachine_executable(usart_simple_test)
+target_link_libraries(usart_simple_test cmsis)
 generate_dissasembly(usart_simple_test)
 
 add_executable(usart_interrupt_test
 	usart_interrupt.c
 )
 add_micromachine_executable(usart_interrupt_test)
+target_link_libraries(usart_interrupt_test cmsis)
 generate_dissasembly(usart_interrupt_test)

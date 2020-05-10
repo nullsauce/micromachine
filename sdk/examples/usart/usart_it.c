@@ -5,7 +5,7 @@
 #include <system.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <micromachine_mcu.h>
+#include <micromachine.h>
 
 // Fwd declaration
 struct usart_device;

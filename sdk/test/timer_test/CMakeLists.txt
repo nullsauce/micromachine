@@ -5,4 +5,5 @@ add_executable(timer_test
 	timer.c
 )
 add_micromachine_executable(timer_test)
+target_link_libraries(timer_test cmsis)
 generate_dissasembly(timer_test)
