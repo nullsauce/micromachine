@@ -893,10 +893,10 @@ static void exec(const msr instruction,
 				 special_registers& special_regs,
 				 execution_mode& execution_mode) {
 	switch(instruction.sysn) {
-		case msr::SpecialRegister::APSR:
-		case msr::SpecialRegister::IAPSR:
-		case msr::SpecialRegister::EAPSR:
-		case msr::SpecialRegister::XPSR: {
+		case msr::special_register::apsr:
+		case msr::special_register::iapsr:
+		case msr::special_register::eapsr:
+		case msr::special_register::xpsr: {
 			// Note that the documentation says that the bits 27 to 31 should be copied.
 			// However, the bit 27 is part of the reserved area of the APSR (and XPSR by
 			// extension).
@@ -905,14 +905,14 @@ static void exec(const msr instruction,
 			special_regs.app_status_register().flags() =
 				apsr_reg::flags_bits::of(regs.get(instruction.rn));
 		} break;
-		case msr::SpecialRegister::MSP: {
+		case msr::special_register::msp: {
 			// TODO: Should fail if not in privileged mode
 
 			// align to word address (multiple of 4)
 			uint32_t sp = binops::aligned<4>(regs.get(instruction.rn));
 			regs.sp_register().set_specific_banked_sp(sp_reg::stack_type::main, sp);
 		} break;
-		case msr::SpecialRegister::PSP: {
+		case msr::special_register::psp: {
 			// TODO: Should fail if not in privileged mode
 
 			// align to word address (multiple of 4)
@@ -920,11 +920,11 @@ static void exec(const msr instruction,
 
 			regs.sp_register().set_specific_banked_sp(sp_reg::stack_type::process, sp);
 		} break;
-		case msr::SpecialRegister::PRIMASK: {
+		case msr::special_register::primask: {
 			// TODO: MSR SpecialRegister::PRIMASK
 			special_regs.primask_register().set_pm(bits<0>::of(regs.get(instruction.rn)));
 		} break;
-		case msr::SpecialRegister::CONTROL: {
+		case msr::special_register::control: {
 			if(execution_mode.is_in_thread_mode()) {
 				uint32_t val = regs.get(instruction.rn);
 				special_regs.control_register().set_n_priv(bits<0>::of(val));

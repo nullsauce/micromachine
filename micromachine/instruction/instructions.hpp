@@ -814,27 +814,27 @@ struct svc : public standard_imm8 {
 };
 
 struct special_reg_instr {
-	enum class SpecialRegister : imm8_t {
-		APSR = 0b00000000,
-		IAPSR = 0b00000001,
-		EAPSR = 0b00000010,
-		XPSR = 0b00000011,
-		IPSR = 0b00000101,
-		EPSR = 0b00000110,
-		IEPSR = 0b00000111,
-		MSP = 0b00001000,
-		PSP = 0b00001001,
-		PRIMASK = 0b00010000,
-		CONTROL = 0b00010100,
+	enum class special_register : imm8_t {
+		apsr = 0b00000000,
+		iapsr = 0b00000001,
+		eapsr = 0b00000010,
+		xpsr = 0b00000011,
+		ipsr = 0b00000101,
+		epsr = 0b00000110,
+		iepsr = 0b00000111,
+		msp = 0b00001000,
+		psp = 0b00001001,
+		primask = 0b00010000,
+		control = 0b00010100,
 	};
 };
 
 struct msr : special_reg_instr {
 	msr(const instruction_pair& instr)
 		: rn(bits<0, 4>::of(instr.first()))
-		, sysn((SpecialRegister)(uint8_t)bits<0, 8>::of(instr.second())) {}
+		, sysn((special_register)(uint8_t)bits<0, 8>::of(instr.second())) {}
 	const reg_idx rn;
-	const SpecialRegister sysn;
+	const special_register sysn;
 };
 
 struct mrs : special_reg_instr {
