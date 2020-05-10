@@ -13,12 +13,12 @@ struct ipsr_reg : public xpsr_reg {
 
 	using ipsr_bits = bits<0, 6>;
 
-	void set_exception_number(exception::Type number) {
-		ipsr_bits::of(_xpsr) = ipsr_bits::of(number);
+	void set_exception_number(exception exception) {
+		ipsr_bits::of(_xpsr) = ipsr_bits::of((uint32_t)exception);
 	}
 
-	exception::Type exception_num() const {
-		return static_cast<exception::Type>(ipsr_bits::of(_xpsr).extract());
+	micromachine::system::exception exception() const {
+		return exception::from_number(ipsr_bits::of(_xpsr));
 	}
 
 	void reset() {

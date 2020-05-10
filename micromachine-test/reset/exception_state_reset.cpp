@@ -15,7 +15,7 @@ static mcu mcuWithAllExceptionsEnabledPendingActiveAtMaxPriority() {
 	mcu mcu;
 	exception_controller& exception_controller = mcu.exceptions();
 
-	for(exception::Type exception : {exception::RESET,
+	for(exception exception : {exception::RESET,
 									 exception::NMI,
 									 exception::HARDFAULT,
 									 exception::SVCALL,
@@ -39,7 +39,7 @@ TEST(ExceptionStateReset, ResetClearsAllActiveStateForFixedAndConfigurableExcept
 
 	mcu.reset();
 
-	for(exception::Type exception : {exception::RESET,
+	for(exception exception : {exception::RESET,
 									 exception::NMI,
 									 exception::HARDFAULT,
 									 exception::SVCALL,

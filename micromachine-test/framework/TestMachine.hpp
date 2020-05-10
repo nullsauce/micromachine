@@ -82,7 +82,7 @@ public:
 		return _mcu.get_cpu();
 	}
 
-	uint32_t exceptionHandlerAddress(exception::Type exception) const {
+	uint32_t exceptionHandlerAddress(exception exception) const {
 		uint32_t address = _mcu.get_memory().read32_unchecked(exception * sizeof(uint32_t));
 		return address & ~1;
 	}

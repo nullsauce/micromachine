@@ -22,7 +22,7 @@ namespace micromachine::testing {
 	APSRFlagsStatePredicate apsrFlagsEquals(const char apsrFlagStr[4]);
 	RegisterEqualityPredicate registerValueEquals(reg_idx regIdx, uint32_t value);
 	RegisterUnsignedDecrementPredicate StackGrowthOf(uint32_t amount);
-	ExceptionStatePredicateBuilder exceptionStateOf(exception::Type exception);
+	ExceptionStatePredicateBuilder exceptionStateOf(exception exception);
 	RegisterStatePredicateBuilder reg(reg_idx regIdx);
 	MemoryValuePredicateBuilder memoryAt(uint32_t address);
 	EPSRFlagsStatePredicate thumbFlagIsNotSet();
@@ -37,9 +37,9 @@ namespace micromachine::testing {
 							   bool zeroFlag,
 							   bool carryFlag,
 							   bool overflowFlag,
-							   exception::Type ex,
+							   exception ex,
 							   bool thumbFlag);
-	uint32_t makeXPSRFlagsFrom(const char* apsrFlagStr, exception::Type ex, bool thumbFlag);
+	uint32_t makeXPSRFlagsFrom(const char* apsrFlagStr, exception ex, bool thumbFlag);
 	uint32_t makeXPSRFlagsFromCPUState(const cpu& cpu);
 	RegistersPushedStatePredicate::StackedValues captureContext(const cpu& cpu);
 
@@ -126,7 +126,7 @@ namespace micromachine::testing {
 	}
 
 	static auto
-	exceptionHandlerReachedAtAddressWithContext(exception::Type ex,
+	exceptionHandlerReachedAtAddressWithContext(exception ex,
 												uint32_t handlerAddress,
 												RegistersPushedStatePredicate::StackedValues contextValues) {
 

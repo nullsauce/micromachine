@@ -75,21 +75,21 @@ void MachineTestHarness::raiseHardfault() {
 	_machine.getMCU().exceptions().raise_hardfault();
 }
 
-void MachineTestHarness::raiseException(exception::Type ex) {
+void MachineTestHarness::raiseException(exception ex) {
 	_machine.getMCU().exceptions().set_pending(ex, true);
 }
 
-void MachineTestHarness::raiseExternalInterrupt(exception::Type ex) {
-	assert(ex >= exception::Type::EXTI_00 && "Can't raise an interrupt lower than EXTI_00");
+void MachineTestHarness::raiseExternalInterrupt(exception ex) {
+	assert(ex >= exception::EXTI_00 && "Can't raise an interrupt lower than EXTI_00");
 	_machine.getMCU().get_cpu().interrupt().raise_external_interrupt(ex);
 }
 
-void MachineTestHarness::enabledAndRaiseExternalInterrupt(exception::Type ex) {
+void MachineTestHarness::enabledAndRaiseExternalInterrupt(exception ex) {
 	_machine.getMCU().exceptions().set_enable(ex, true);
 	raiseException(ex);
 }
 
-void MachineTestHarness::setExceptionPriority(exception::Type ex, exception::priority_t priority) {
+void MachineTestHarness::setExceptionPriority(exception ex, exception::priority_t priority) {
 	_machine.getMCU().exceptions().set_priority(ex, priority);
 }
 

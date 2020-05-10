@@ -14,11 +14,15 @@ namespace micromachine::testing {
 
 class ExceptionStatePredicate {
 protected:
-	const exception::Type _exceptionType;
+	const exception _exception;
+
+	static std::string exceptionDetailedName(exception e) {
+		return e.name() + " (number=" + std::to_string(e) + ")";
+	}
 
 public:
-	ExceptionStatePredicate(exception::Type exceptionType)
-		: _exceptionType(exceptionType) {}
+	ExceptionStatePredicate(exception exception)
+		: _exception(exception) {}
 };
 
 }

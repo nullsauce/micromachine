@@ -14,20 +14,20 @@ private:
 	const bool _expectedActiveState;
 
 public:
-	ExceptionActiveStatePredicate(exception::Type exceptionType, bool expectedActiveState)
+	ExceptionActiveStatePredicate(exception exceptionType, bool expectedActiveState)
 		: ExceptionStatePredicate(exceptionType)
 		, _expectedActiveState(expectedActiveState) {}
 
-	ExceptionActiveStatePredicate(exception::Type exceptionType, const mcu& expected)
+	ExceptionActiveStatePredicate(exception exceptionType, const mcu& expected)
 		: ExceptionActiveStatePredicate(exceptionType, expected.exceptions().is_active(exceptionType))
 	{}
 
 	void apply(mcu& expected) {
-		expected.exceptions().set_active(_exceptionType, _expectedActiveState);
+		expected.exceptions().set_active(_exception, _expectedActiveState);
 	}
 
 	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT2(assertEquality, _expectedActiveState, actual.exceptions().is_active(_exceptionType));
+		EXPECT_PRED_FORMAT2(assertEquality, _expectedActiveState, actual.exceptions().is_active(_exception));
 	}
 
 private:
@@ -39,15 +39,11 @@ private:
 		}
 
 		return ::testing::AssertionFailure()
-			   << "Equality check fail for active status of Exception " << exceptionName(_exceptionType) << std::endl
-			   << " * Expected: " << exception::name_of(_exceptionType) << " is "
+			   << "Equality check fail for active status of Exception " << exceptionDetailedName(_exception) << std::endl
+			   << " * Expected: " << _exception.name() << " is "
 			   << (expectedActiveState ? "active" : "NOT active") << std::endl
-			   << " * Actual  : " << exception::name_of(_exceptionType) << " is "
+			   << " * Actual  : " << _exception.name() << " is "
 			   << (actualActiveState ? "active" : "NOT active") << std::endl;
-	}
-
-	static std::string exceptionName(exception::Type e) {
-		return exception::name_of(e) + " (number=" + std::to_string(e) + ")";
 	}
 };
 

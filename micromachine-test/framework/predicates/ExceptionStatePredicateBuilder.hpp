@@ -18,15 +18,15 @@ public:
 	using ExceptionStatePredicate::ExceptionStatePredicate;
 
 	ExceptionActiveStatePredicate hasActiveStatusOf(bool state) {
-		return {_exceptionType, state};
+		return {_exception, state};
 	}
 
 	ExceptionPendingStatePredicate hasPendingStatusOf(bool state) {
-		return {_exceptionType, state};
+		return {_exception, state};
 	}
 
 	ExceptionPriorityStatePredicate hasPriorityOf(exception::priority_t priority) {
-		return {_exceptionType, priority};
+		return {_exception, priority};
 	}
 
 	ExceptionActiveStatePredicate isActive() {

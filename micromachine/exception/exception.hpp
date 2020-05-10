@@ -22,7 +22,7 @@ public:
 	static constexpr priority_t NMI_PRIORITY = -2;
 	static constexpr priority_t HARDFAULT_PRIORITY = -1;
 	static constexpr priority_t THREAD_MODE_PRIORITY = 4; // this is the default priority
-	enum Type : uint32_t {
+	enum type : uint32_t {
 		INVALID = 0,
 		RESET = 1,
 		NMI = 2,
@@ -57,23 +57,55 @@ public:
 		EXTI_15 = 31,
 	};
 
-	static Type from_number(uint8_t number) {
-		return static_cast<Type>(number);
+	exception(type type) : _type(type) {}
+
+private:
+	const type _type;
+
+public:
+	operator unsigned () {
+		return number();
 	}
 
-	static std::string name_of(exception::Type e) {
+	size_t number() const {
+		return static_cast<size_t>(_type);
+	}
+
+	bool operator==(exception rhs) const {
+		return _type == rhs._type;
+	}
+
+	bool operator!=(exception rhs) const {
+		return !(*this == rhs);
+	}
+
+	bool operator==(type type) const {
+		return _type== type;
+	}
+
+	bool operator!=(type type) const {
+		return !(*this == type);
+	}
+
+	static type from_number(uint8_t number) {
+		return static_cast<type>(number);
+	}
+
+	std::string name() const {
 		static const char* names[] = {
-			"INVALID",      "RESET",       "NMI",          "HARDFAULT",    "_RESERVED_0",
-			"_RESERVED_1",  "_RESERVED_2", "_RESERVED_3",  "_RESERVED_4",  "_RESERVED_5",
-			"_RESERVED_6", "SVCALL",     "_RESERVED_7", "_RESERVED_8", "PENDSV",
-			"SYSTICK",     "EXTI_00",    "EXTI_01",     "EXTI_02",     "EXTI_03",
-			"EXTI_04",     "EXTI_05",    "EXTI_06",     "EXTI_07",     "EXTI_08",
-			"EXTI_09",     "EXTI_10",    "EXTI_11",     "EXTI_12",     "EXTI_13",
-			"EXTI_14",     "EXTI_15",
+			"INVALID",     "RESET",       "NMI",         "HARDFAULT",   "_RESERVED_0", "_RESERVED_1", "_RESERVED_2",
+			"_RESERVED_3", "_RESERVED_4", "_RESERVED_5", "_RESERVED_6", "SVCALL",      "_RESERVED_7", "_RESERVED_8",
+			"PENDSV",      "SYSTICK",     "EXTI_00",     "EXTI_01",     "EXTI_02",     "EXTI_03",     "EXTI_04",
+			"EXTI_05",     "EXTI_06",     "EXTI_07",     "EXTI_08",     "EXTI_09",     "EXTI_10",     "EXTI_11",
+			"EXTI_12",     "EXTI_13",     "EXTI_14",     "EXTI_15",
 		};
-		return names[e];
+		return names[number()];
 	}
-
 };
+
+// Allow comparison of exception::Type == exception
+static bool operator==(const exception::type& lhs, const exception& rhs) {
+	return rhs == lhs;
+}
 
 } // namespace micromachine::system

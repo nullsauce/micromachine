@@ -838,7 +838,7 @@ exec(const mrs instruction, core_registers& core_regs, special_registers& specia
 		case 0b00000: {                         // xPSR composites
 			if(bits<0>::of(instruction.sysn)) { // add IPSR bits
 				bits<0, 8>::of(val) = bits<0, 8>::of(
-					(uint32_t)special_regs.interrupt_status_register().exception_num());
+					(uint32_t)special_regs.interrupt_status_register().exception());
 			}
 			if(bits<1>::of(instruction.sysn)) { // add EPSR bits
 				// T-bit reads as zero
