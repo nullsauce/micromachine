@@ -54,7 +54,7 @@ public:
 		, _interworking_brancher(_exec_mode,
 								 _special_registers.execution_status_register(),
 								 _ctx_switcher,
-								 _core_regs.pc_register())
+								 _core_regs.pc())
 		, _control_signals(control_signals)
 		, _exec_dispatcher(_exception_controller,
 						   _core_regs,
@@ -87,7 +87,7 @@ public:
 		, _interworking_brancher(_exec_mode,
 								 _special_registers.execution_status_register(),
 								 _ctx_switcher,
-								 _core_regs.pc_register())
+								 _core_regs.pc())
 		, _control_signals(control_signals)
 		, _exec_dispatcher(_exception_controller,
 						   _core_regs,
