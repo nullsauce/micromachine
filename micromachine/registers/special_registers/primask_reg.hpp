@@ -18,14 +18,14 @@ class primask_reg : public standard_reg {
 public:
 	using standard_reg::operator=;
 
-	using pm_bit = bits<0>;
+	using primask_bit = bits<0>;
 
-	bool pm() const {
-		return pm_bit::of(_word);
+	auto pm() const {
+		return bits_ref<primask_bit>();
 	}
 
-	void set_pm(bool pm) {
-		pm_bit::of(_word) = pm;
+	auto pm() {
+		return bits_ref<primask_bit>();
 	}
 };
 
