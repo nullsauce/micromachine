@@ -106,7 +106,7 @@ void MachineTestHarness::enterThreadMode() {
 }
 
 void MachineTestHarness::setPrimaskFlag(bool flag) {
-	_machine.getCpu().special_regs().primask_register().set_pm(flag);
+	_machine.getCpu().special_regs().primask_register().pm() = flag;
 }
 
 void MachineTestHarness::setControl(bool nPriv, bool spSel) {

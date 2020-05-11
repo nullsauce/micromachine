@@ -23,7 +23,7 @@ public:
 	{}
 
 	void apply(mcu& expected) {
-		expected.get_cpu().special_regs().primask_register().set_pm(_expectedPrimaskFlag);
+		expected.get_cpu().special_regs().primask_register().pm() = _expectedPrimaskFlag;
 	}
 
 	void check(const mcu& actual) const {

@@ -705,7 +705,7 @@ static void exec(const push instruction, core_registers& regs, memory& mem) {
 	regs.sp() = start_address;
 }
 static void exec(const cps instruction, special_registers& special_regs) {
-	special_regs.primask_register().set_pm(instruction.im);
+	special_regs.primask_register().pm() = instruction.im;
 }
 static void exec(const pop instruction,
 				 core_registers& regs,
@@ -921,8 +921,7 @@ static void exec(const msr instruction,
 			regs.sp_register().set_specific_banked_sp(sp_reg::stack_type::process, sp);
 		} break;
 		case msr::special_register::primask: {
-			// TODO: MSR SpecialRegister::PRIMASK
-			special_regs.primask_register().set_pm(bits<0>::of(regs.get(instruction.rn)));
+			special_regs.primask_register().pm() =  primask_reg::primask_bit::of(regs.get(instruction.rn));
 		} break;
 		case msr::special_register::control: {
 			if(execution_mode.is_in_thread_mode()) {
