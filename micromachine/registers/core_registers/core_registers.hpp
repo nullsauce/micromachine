@@ -113,14 +113,6 @@ public:
 		return _pc.dirty_status();
 	}
 
-	// to be used only for system instructions such as MSR
-	sp_reg& sp_register() {
-		return _sp;
-	}
-
-	pc_reg& pc_register() {
-		return _pc;
-	}
 };
 
 } // namespace micromachine::system

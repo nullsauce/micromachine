@@ -854,11 +854,11 @@ exec(const mrs instruction, core_registers& core_regs, special_registers& specia
 		case 0b00001: { // SP (exclusive)
 			switch((uint8_t)bits<0, 3>::of(instruction.sysn)) {
 				case 0b000: { // add MSP bits
-					val = core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::main);
+					val = core_regs.sp().get_specific_banked_sp(sp_reg::stack_type::main);
 				} break;
 				case 0b001: { // add PSP bits
 					val =
-						core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::process);
+						core_regs.sp().get_specific_banked_sp(sp_reg::stack_type::process);
 					fprintf(stderr, "%08x\n", val);
 				} break;
 				default: {
@@ -910,7 +910,7 @@ static void exec(const msr instruction,
 
 			// align to word address (multiple of 4)
 			uint32_t sp = binops::aligned<4>(regs.get(instruction.rn));
-			regs.sp_register().set_specific_banked_sp(sp_reg::stack_type::main, sp);
+			regs.sp().set_specific_banked_sp(sp_reg::stack_type::main, sp);
 		} break;
 		case msr::special_register::psp: {
 			// TODO: Should fail if not in privileged mode
@@ -918,7 +918,7 @@ static void exec(const msr instruction,
 			// align to word address (multiple of 4)
 			uint32_t sp = binops::aligned<4>(regs.get(instruction.rn));
 
-			regs.sp_register().set_specific_banked_sp(sp_reg::stack_type::process, sp);
+			regs.sp().set_specific_banked_sp(sp_reg::stack_type::process, sp);
 		} break;
 		case msr::special_register::primask: {
 			special_regs.primask_register().pm() =  primask_reg::primask_bit::of(regs.get(instruction.rn));
