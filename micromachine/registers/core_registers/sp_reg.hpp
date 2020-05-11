@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../execution/execution_mode.hpp"
-#include "../../helpers/binops.hpp"
-#include "../../types/bits.hpp"
-#include "../iregister.hpp"
-#include "../standard_reg.hpp"
+#include "execution/execution_mode.hpp"
+#include "helpers/binops.hpp"
+#include "types/bits.hpp"
+#include "registers/iregister.hpp"
+#include "registers/standard_reg.hpp"
 #include "registers/special_registers/control_reg.hpp"
 
 namespace micromachine::system {

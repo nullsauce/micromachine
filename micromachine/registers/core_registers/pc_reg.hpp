@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../exception/exception_return_handler.hpp"
-#include "../../execution/execution_mode.hpp"
-#include "../../helpers/binops.hpp"
-#include "../standard_reg.hpp"
+#include "exception/exception_return_handler.hpp"
+#include "execution/execution_mode.hpp"
+#include "helpers/binops.hpp"
+#include "registers/standard_reg.hpp"
 #include "registers/special_registers/epsr_reg.hpp"
 
 namespace micromachine::system {

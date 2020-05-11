@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "../../exception/exception_return_handler.hpp"
-#include "../registers.hpp"
-#include "../standard_reg.hpp"
+#include "exception/exception_return_handler.hpp"
+#include "registers/registers.hpp"
+#include "registers/standard_reg.hpp"
 #include "pc_reg.hpp"
 #include "registers/special_registers/control_reg.hpp"
 #include "sp_reg.hpp"

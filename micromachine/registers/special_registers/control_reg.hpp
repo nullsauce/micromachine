@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../types/bits.hpp"
-#include "../standard_reg.hpp"
+#include "types/bits.hpp"
+#include "registers/standard_reg.hpp"
 
 namespace micromachine::system {
 
