@@ -1,13 +1,13 @@
 #pragma once
 
 #include "registers/iregister.hpp"
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
 
 namespace micromachine::system {
 
-class shpr3_reg : public memory_mapped_reg {
+class shpr3_reg : public standard_reg {
 public:
 	static constexpr uint32_t SHPR3 = 0xE000ED20;
 

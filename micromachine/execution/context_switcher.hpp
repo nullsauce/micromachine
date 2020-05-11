@@ -78,7 +78,7 @@ public:
 					frame_ptr =
 						_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::main);
 					_execution_mode.enter_handler_mode();
-					_special_regs.control_register().set_sp_sel(0);
+					_special_regs.control_register().sp_sel() = false;
 				}
 				break;
 			}
@@ -91,7 +91,7 @@ public:
 					frame_ptr =
 						_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::main);
 					_execution_mode.enter_thread_mode();
-					_special_regs.control_register().set_sp_sel(0);
+					_special_regs.control_register().sp_sel() = false;
 				}
 				break;
 			}
@@ -104,7 +104,7 @@ public:
 					frame_ptr =
 						_core_regs.sp_register().get_specific_banked_sp(sp_reg::stack_type::process);
 					_execution_mode.enter_thread_mode();
-					_special_regs.control_register().set_sp_sel(1);
+					_special_regs.control_register().sp_sel() = true;
 					// Assigning CurrentMode to Mode_Thread causes a drop in privilege
 					// if CONTROL.nPRIV is set to 1
 				}
@@ -229,10 +229,10 @@ public:
 		// XPSR register but with the reserved bits ignored.
 		// (ESPR stack alignment is also considered reserved and is therefore ignored too)
 		// And secondly, optionally zeroing the IPSR exception number.
-		const uint32_t reserved_bits_mask = apsr_reg::flags_bits::as_mask<uint32_t>() |
+		const uint32_t reserved_bits_mask = apsr_reg::all_flags_bits::as_mask<uint32_t>() |
 											ipsr_reg::ipsr_bits::as_mask<uint32_t>() |
 											epsr_reg::epsr_bits::as_mask<uint32_t>() |
-											epsr_reg::stack_align_bit::as_mask<uint32_t>();
+											epsr_reg::stack_align_flag_bit::as_mask<uint32_t>();
 		// Zero out reserved bits for good measure.
 		// Note that the stack alignment value is ignored.
 		_special_regs.xpsr_register() = xpsr_status & reserved_bits_mask;

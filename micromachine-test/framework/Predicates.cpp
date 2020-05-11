@@ -75,7 +75,7 @@ namespace micromachine::testing {
 		apsrReg.overflow_flag() = overflowFlag;
 
 		epsr_reg epsrReg(xpsrValue);
-		epsrReg.set_thumb_bit(thumbFlag);
+		epsrReg.thumb_flag() = thumbFlag;
 
 		ipsr_reg ipsrReg(xpsrValue);
 		ipsrReg.set_exception_number(ex);

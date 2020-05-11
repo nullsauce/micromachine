@@ -1,63 +1,59 @@
 #pragma once
 
 #include "helpers/binops.hpp"
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
 
 namespace micromachine::system {
 
-class systick_control_reg : public memory_mapped_reg {
+class systick_control_reg : public standard_reg {
 public:
 	static constexpr uint32_t SYST_CSR = 0xE000E010;
 	static constexpr uint32_t SYST_RVR = 0xE000E014;
 	static constexpr uint32_t SYST_CVR = 0xE000E018;
 	static constexpr uint32_t SYST_CALIB = 0xE000E01C;
 
-	using memory_mapped_reg::operator=;
-	static constexpr size_t COUNTFLAG_BIT = 16;
-	static constexpr size_t CLKSOURCE_BIT = 2;
-	static constexpr size_t TICKINT_BIT = 1;
-	static constexpr size_t ENABLE_BIT = 0;
+	using standard_reg::operator=;
 
-	using countflag_bit = bits<COUNTFLAG_BIT>;
-	using clocksource_bit = bits<CLKSOURCE_BIT>;
-	using tickint_bit = bits<TICKINT_BIT>;
-	using enable_bit = bits<ENABLE_BIT>;
+	using countflag_bit = bits<16>;
+	using clocksource_bit = bits<2>;
+	using tickint_bit = bits<1>;
+	using enable_bit = bits<0>;
 
 	bool count_flag() {
-		// Reading the COUNTFLAG_BIT clears it to 0
-		bool flag = bits<16, 1>::of(_word);
+		// Reading the COUNTFLAG_BIT clears it
+		bool flag = countflag_bit::of(_word);
 		set_count_flag(0);
 		return flag;
 	}
 
 	void set_count_flag(bool flag) {
-		self<countflag_bit>() = flag;
+		bits_ref<countflag_bit>() = flag;
 	}
 
-	bool clock_source() const {
-		return self<clocksource_bit>();
+	auto clock_source() const {
+		return bits_ref<clocksource_bit>();
 	}
 
-	void set_clock_source(bool flag) {
-		self<clocksource_bit>() = flag;
+	auto clock_source() {
+		return bits_ref<clocksource_bit>();
 	}
 
-	bool tick_int() const {
-		return self<tickint_bit>();
+	auto tick_int() const {
+		return bits_ref<tickint_bit>();
 	}
 
-	void set_tick_int(bool flag) {
-		self<tickint_bit>() = flag;
+	auto tick_int() {
+		return bits_ref<tickint_bit>();
 	}
 
-	bool enabled() const {
-		return self<enable_bit>();
+	auto enabled() const {
+		return bits_ref<enable_bit>();
 	}
 
-	void set_enabled(bool flag) {
-		self<enable_bit>() = flag;
+	auto enabled() {
+		return bits_ref<enable_bit>();
 	}
 
 private:
@@ -71,28 +67,32 @@ private:
 		return _word & _mask;
 	}
 };
-class systick_reload_value_reg : public memory_mapped_reg {
+
+class systick_reload_value_reg : public standard_reg {
 public:
-	using memory_mapped_reg::operator=;
+	using standard_reg::operator=;
+	using reload_value_bits = bits<0, 24>;
 
 private:
 	void set(uint32_t word) override {
-		bits<0, 24>::of(_word) = word;
+		bits_ref<reload_value_bits>() = word;
 	}
 
 	uint32_t get() const override {
-		return bits<0, 24>::of(_word);
+		return bits_ref<reload_value_bits>();
 	}
 };
-class systick_current_value_reg : public memory_mapped_reg {
+
+class systick_current_value_reg : public standard_reg {
 public:
-	using memory_mapped_reg::operator=;
+	using standard_reg::operator=;
+	using value_bits = bits<0, 24>;
+
 	systick_current_value_reg(systick_control_reg& control_reg)
-		: memory_mapped_reg()
-		, _control_reg(control_reg) {}
+		: _control_reg(control_reg) {}
 	// this setter does NOT clear the register
 	void set_internal(uint32_t word) {
-		bits<0, 24>::of(_word) = word;
+		bits_ref<value_bits>() = word;
 	}
 
 	void decrement() {
@@ -102,20 +102,21 @@ public:
 private:
 	void set(uint32_t) override {
 		// Writing to SYST_CVR clears both the register and the COUNTFLAG status bit to zero
-		bits<0, 24>::of(_word).clear();
+		bits_ref<value_bits>().clear();
 		_control_reg.set_count_flag(false);
 	}
 
 	uint32_t get() const override {
-		return bits<0, 24>::of(_word);
+		return bits_ref<value_bits>();
 	}
 
 protected:
 	systick_control_reg& _control_reg;
 };
-class systick_calib_value_reg : public memory_mapped_reg {
+
+class systick_calib_value_reg : public standard_reg {
 public:
-	using memory_mapped_reg::operator=;
+	using standard_reg::operator=;
 	static constexpr size_t SKEW_BIT = 30;
 	static constexpr size_t NOREF_BIT = 31;
 
@@ -124,27 +125,27 @@ public:
 	using noref_bit = bits<NOREF_BIT>;
 
 	uint32_t tenms() const {
-		return self<tenms_bits>();
+		return bits_ref<tenms_bits>();
 	}
 
 	void set_tenms(uint32_t tenms) {
-		self<tenms_bits>() = tenms_bits::of(tenms);
+		bits_ref<tenms_bits>() = tenms_bits::of(tenms);
 	}
 
 	bool skew() const {
-		return self<skew_bit>();
+		return bits_ref<skew_bit>();
 	}
 
 	void set_skew(bool flag) {
-		self<skew_bit>() = flag;
+		bits_ref<skew_bit>() = flag;
 	}
 
 	bool noref() const {
-		return self<noref_bit>();
+		return bits_ref<noref_bit>();
 	}
 
 	void set_noref(bool flag) {
-		self<noref_bit>() = flag;
+		bits_ref<noref_bit>() = flag;
 	}
 
 private:

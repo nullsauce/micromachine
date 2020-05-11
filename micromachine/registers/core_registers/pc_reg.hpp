@@ -13,7 +13,6 @@ private:
 	bool _dirty_status;
 
 public:
-	using standard_reg::standard_reg;
 	using standard_reg::operator=;
 
 	pc_reg()

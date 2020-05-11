@@ -16,8 +16,8 @@ namespace micromachine::system {
 
 class primask_reg : public standard_reg {
 public:
-	using standard_reg::standard_reg;
 	using standard_reg::operator=;
+
 	using pm_bit = bits<0>;
 
 	bool pm() const {

@@ -110,8 +110,8 @@ void MachineTestHarness::setPrimaskFlag(bool flag) {
 }
 
 void MachineTestHarness::setControl(bool nPriv, bool spSel) {
-	_machine.getCpu().special_regs().control_register().set_n_priv(nPriv);
-	_machine.getCpu().special_regs().control_register().set_sp_sel(spSel);
+	_machine.getCpu().special_regs().control_register().n_priv() = nPriv;
+	_machine.getCpu().special_regs().control_register().sp_sel() = spSel;
 }
 
 }

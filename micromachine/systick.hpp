@@ -48,7 +48,7 @@ public:
 		if(0U == _current_value) {
 			_current_value.set_internal(_reload_value);
 			if(0U == _reload_value) {
-				_control.set_enabled(false);
+				_control.enabled() = false;
 				return;
 			}
 		} else {

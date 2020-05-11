@@ -7,13 +7,13 @@
 #pragma once
 
 #include "exception/exception_controller.hpp"
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/types.hpp"
 #include "utils/signal.hpp"
 
 namespace micromachine::system {
 
-class interrupt_and_reset_control_reg : public memory_mapped_reg {
+class interrupt_and_reset_control_reg : public standard_reg {
 private:
 	exception_controller& _exception_controller;
 	signal& _reset_signal;
@@ -27,7 +27,7 @@ public:
 	using endianess_bit = bits<15>;
 
 	interrupt_and_reset_control_reg(exception_controller& exception_controller, signal& reset_signal)
-		: memory_mapped_reg(RESET_VALUE)
+		: standard_reg(RESET_VALUE)
 		, _exception_controller(exception_controller)
 		, _reset_signal(reset_signal)
 	{}
@@ -36,8 +36,8 @@ public:
 		_word = RESET_VALUE;
 	}
 
-	bool is_big_endian() const {
-		return self<endianess_bit>();
+	auto is_big_endian() const {
+		return bits_ref<endianess_bit>();
 	}
 
 private:

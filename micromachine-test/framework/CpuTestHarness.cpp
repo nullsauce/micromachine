@@ -163,42 +163,42 @@ void CpuTestHarness::setExpectedXPSRflags(const char *pExpectedFlags)
 		switch (*pExpectedFlags) {
 			case 'n':
 				m_expectedXPSRflags &= ~APSR_N;
-				_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().negative_flag() = true;
 				//apsr |= APSR_N;
 				break;
 			case 'N':
 				m_expectedXPSRflags |= APSR_N;
-				_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().negative_flag() = false;
 				//apsr &= ~APSR_N;
 				break;
 			case 'z':
 				m_expectedXPSRflags &= ~APSR_Z;
-				_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().zero_flag() = true;
 				//apsr |= APSR_Z;
 				break;
 			case 'Z':
 				m_expectedXPSRflags |= APSR_Z;
-				_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().zero_flag() = false;
 				//apsr &= ~APSR_Z;
 				break;
 			case 'c':
 				m_expectedXPSRflags &= ~APSR_C;
-				_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().carry_flag() = true;
 				//apsr |= APSR_C;
 				break;
 			case 'C':
 				m_expectedXPSRflags |= APSR_C;
-				_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().carry_flag() = false;
 				//apsr &= ~APSR_C;
 				break;
 			case 'v':
 				m_expectedXPSRflags &= ~APSR_V;
-				_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
+				_mcu.get_cpu().special_regs().app_status_register().overflow_flag() = true;
 				//apsr |= APSR_V;
 				break;
 			case 'V':
 				m_expectedXPSRflags |= APSR_V;
-				_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
+				_mcu.get_cpu().special_regs().app_status_register().overflow_flag() = false;
 				//apsr &= ~APSR_V;
 				break;
 			case 't':
@@ -307,42 +307,42 @@ void CpuTestHarness::validateRegisters()
 
 void CpuTestHarness::setCarry()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().carry_flag() = true;
 }
 
 void CpuTestHarness::clearCarry()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_carry_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().carry_flag() = false;
 }
 
 void CpuTestHarness::setZero()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().zero_flag() = true;
 }
 
 void CpuTestHarness::clearZero()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_zero_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().zero_flag() = false;
 }
 
 void CpuTestHarness::setNegative()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().negative_flag() = true;
 }
 
 void CpuTestHarness::clearNegative()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_neg_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().negative_flag() = false;
 }
 
 void CpuTestHarness::setOverflow()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(true);
+	_mcu.get_cpu().special_regs().app_status_register().overflow_flag() = true;
 }
 
 void CpuTestHarness::clearOverflow()
 {
-	_mcu.get_cpu().special_regs().app_status_register().write_overflow_flag(false);
+	_mcu.get_cpu().special_regs().app_status_register().overflow_flag() = false;
 }
 
 void CpuTestHarness::setIPSR(uint32_t ipsr)
