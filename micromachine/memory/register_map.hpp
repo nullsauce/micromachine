@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <optional>
 
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/iregister.hpp"
 
 namespace micromachine::system {
 

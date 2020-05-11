@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/types.hpp"
 
 namespace micromachine::system {
 
-class config_and_control_reg : public memory_mapped_reg {
+class config_and_control_reg : public standard_reg {
 public:
 	static constexpr uint32_t CCR = 0xE000ED14;
 	static constexpr uint32_t RESET_VALUE = 0b1000001000;
@@ -20,15 +20,15 @@ public:
 	using unalign_trap_bit = bits<3>;
 
 	config_and_control_reg()
-		: memory_mapped_reg(RESET_VALUE)
+		: standard_reg(RESET_VALUE)
 	{}
 
-	bool stack_align() const {
-		return self<stack_align_bit>();
+	auto stack_align() const {
+		return bits_ref<stack_align_bit>();
 	}
 
-	bool unaligned_trap() const {
-		return self<unalign_trap_bit>();
+	auto unaligned_trap() const {
+		return bits_ref<unalign_trap_bit>();
 	}
 
 	void reset() override {

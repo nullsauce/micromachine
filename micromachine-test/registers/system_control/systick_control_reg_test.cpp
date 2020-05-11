@@ -45,7 +45,7 @@ protected:
 };
 
 TEST_F(SystickTestBench, WhenDisabledTimerDoeNotCountsDown) {
-	syst.control_register().set_enabled(false);
+	syst.control_register().enabled() = false;
 	syst.reload_value_register() = 1000;
 	syst.current_value_register().set_internal(10);
 	syst.step();
@@ -53,7 +53,7 @@ TEST_F(SystickTestBench, WhenDisabledTimerDoeNotCountsDown) {
 }
 
 TEST_F(SystickTestBench, WhenEnabledTimerCountsDownFromValueInSYST_CVR) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1000;
 	syst.current_value_register().set_internal(10);
 	syst.step();
@@ -62,7 +62,7 @@ TEST_F(SystickTestBench, WhenEnabledTimerCountsDownFromValueInSYST_CVR) {
 
 TEST_F(SystickTestBench,
 	 WhenTheCounterReachesZeroItReloadsTheValueInSYST_RVRonTheNextClockAndDecrementsAfter) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1000U;
 	syst.current_value_register().set_internal(1);
 	syst.step();
@@ -77,7 +77,7 @@ TEST_F(SystickTestBench,
 }
 
 TEST_F(SystickTestBench, WhenTheCounterTransitionsToZeroItSetsTheCOUNTFLAGstatusBitToOne) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1000;
 	syst.current_value_register().set_internal(1);
 	EXPECT_FALSE(syst.control_register().count_flag());
@@ -86,7 +86,7 @@ TEST_F(SystickTestBench, WhenTheCounterTransitionsToZeroItSetsTheCOUNTFLAGstatus
 }
 
 TEST_F(SystickTestBench, ReadingTheCOUNTFLAGstatusBitClearsItToZero) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1000;
 	syst.current_value_register().set_internal(1);
 	syst.step();
@@ -95,7 +95,7 @@ TEST_F(SystickTestBench, ReadingTheCOUNTFLAGstatusBitClearsItToZero) {
 }
 
 TEST_F(SystickTestBench, WritingToSYST_CVRclearsBothTheRegisterAndTheCOUNTFLAGstatusBit) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1000;
 	syst.current_value_register().set_internal(1);
 	EXPECT_EQ(1, syst.current_value_register());
@@ -107,7 +107,7 @@ TEST_F(SystickTestBench, WritingToSYST_CVRclearsBothTheRegisterAndTheCOUNTFLAGst
 }
 
 TEST_F(SystickTestBench, WritingToSYST_CVRcausesAReloadOfSYST_CVRfromSYST_RVRonNextTick) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1000;
 	syst.current_value_register().set_internal(1);
 	EXPECT_EQ(1, syst.current_value_register());
@@ -121,7 +121,7 @@ TEST_F(SystickTestBench, WritingToSYST_CVRcausesAReloadOfSYST_CVRfromSYST_RVRonN
 }
 
 TEST_F(SystickTestBench, WritingAvalueOfZeroToSYST_RVRdisablesTheCounterOnTheNextWrap) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 0;
 	syst.current_value_register().set_internal(1);
 	syst.step();
@@ -131,7 +131,7 @@ TEST_F(SystickTestBench, WritingAvalueOfZeroToSYST_RVRdisablesTheCounterOnTheNex
 }
 
 TEST_F(SystickTestBench, SYSTICKIsPendingAfterCounterReachesZero) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1;
 	syst.current_value_register().set_internal(1);
 	syst.step();
@@ -139,7 +139,7 @@ TEST_F(SystickTestBench, SYSTICKIsPendingAfterCounterReachesZero) {
 }
 
 TEST_F(SystickTestBench, AwriteToSYST_CVRdoesNotTriggerTheSysTickExceptionLogic) {
-	syst.control_register().set_enabled(true);
+	syst.control_register().enabled() = true;
 	syst.reload_value_register() = 1;
 	syst.current_value_register() = 100U;
 	syst.step();

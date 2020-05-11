@@ -1,14 +1,14 @@
 #pragma once
 
 #include "registers/iregister.hpp"
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
 #include <array>
 
 namespace micromachine::system { // Interrupt Priority Registers
 
-class nvic_ipr_reg : public memory_mapped_reg {
+class nvic_ipr_reg : public standard_reg {
 public:
 	using iregister::operator=;
 

@@ -6,7 +6,7 @@
 #define MICROMACHINE_USART_REG_HPP
 
 #include <memory>
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 
 namespace micromachine::system {
 
@@ -16,14 +16,11 @@ namespace micromachine::system {
  * The USART interrupt events are connected to the same interrupt vector. This
  * register indicate which interrupt are to be serviced by the software.
  */
-class usart_is_reg : public memory_mapped_reg {
+class usart_is_reg : public standard_reg {
 private:
 	bool& _interrupt_event;
 
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
-
 	usart_is_reg(bool& interrupt_event)
 		: _interrupt_event(interrupt_event)
 	{}
@@ -76,11 +73,11 @@ public:
 	using tx_empty_bit = bits<3>;
 
 	bool tx_empty() {
-		return self<tx_empty_bit>();
+		return bits_ref<tx_empty_bit>();
 	}
 
 	void set_tx_empty(bool flag) {
-		self<tx_empty_bit>() = flag;
+		bits_ref<tx_empty_bit>() = flag;
 
 		// signaling tx as empty generates an interrupt event
 		if(flag) {
@@ -89,11 +86,11 @@ public:
 	}
 
 	bool rx_not_empty() {
-		return self<rx_not_empty_bit>();
+		return bits_ref<rx_not_empty_bit>();
 	}
 
 	void set_rx_not_empty(bool flag) {
-		self<rx_not_empty_bit>() = flag;
+		bits_ref<rx_not_empty_bit>() = flag;
 
 		// signaling rs as not empty generates an interrupt event
 		if(flag) {
@@ -117,10 +114,10 @@ private:
  * Control register 1.
  * This register allows user to configure the usart peripheral and register for interrupts.
  */
-class usart_cr1_reg : public memory_mapped_reg {
+class usart_cr1_reg : public standard_reg {
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using standard_reg::operator=;
+	using standard_reg::operator uint32_t;
 	using reset_requested = std::function<void()>;
 
 private:
@@ -171,16 +168,16 @@ public:
 	 */
 	using tx_empty_interrupt_enable_bit = bits<3>;
 
-	bool tx_empty_interrupt_enabled() const {
-		return self<tx_empty_interrupt_enable_bit>();
+	auto tx_empty_interrupt_enabled() const {
+		return bits_ref<tx_empty_interrupt_enable_bit>();
 	}
 
-	bool rx_not_empty_interrupt_enabled() const {
-		return self<rx_not_empty_interrupt_enable_bit>();
+	auto rx_not_empty_interrupt_enabled() const {
+		return bits_ref<rx_not_empty_interrupt_enable_bit>();
 	}
 
-	bool enabled() const {
-		return self<enable_bit>();
+	auto enabled() const {
+		return bits_ref<enable_bit>();
 	}
 
 	void reset() override {
@@ -213,10 +210,10 @@ private:
 /**
  * USART interrupt clear register
  */
-class usart_ic_reg : public memory_mapped_reg {
+class usart_ic_reg : public standard_reg {
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using standard_reg::operator=;
+	using standard_reg::operator uint32_t;
 
 	usart_ic_reg(usart_is_reg& isr)
 		: _usart_is_reg(isr) {}
@@ -259,13 +256,13 @@ private:
 /**
  * USART tx register
  */
-class usart_tx_reg : public memory_mapped_reg {
+class usart_tx_reg : public standard_reg {
 private:
 	usart_is_reg& _usart_isr_reg;
 
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using standard_reg::operator=;
+	using standard_reg::operator uint32_t;
 	using data_bits = bits<0, 8>;
 
 	usart_tx_reg(usart_is_reg& usart_is_reg)
@@ -277,7 +274,7 @@ public:
 	 * @details This function is to be used by the virtual machine.
 	 */
 	uint8_t read() {
-		uint8_t byte = self<data_bits>();
+		uint8_t byte = bits_ref<data_bits>();
 
 		// Signals tx as empty which triggers an interrupt event
 		// and maybe an interrupt request.
@@ -296,7 +293,7 @@ private:
 	}
 
 	void set(uint32_t word) override {
-		self<data_bits>() = word;
+		bits_ref<data_bits>() = word;
 		_usart_isr_reg.set_tx_empty(false);
 	}
 };
@@ -304,13 +301,13 @@ private:
 /**
  * USART rx register
  */
-class usart_rx_reg : public memory_mapped_reg {
+class usart_rx_reg : public standard_reg {
 private:
 	usart_is_reg& _usart_isr_reg;
 
 public:
-	using memory_mapped_reg::operator=;
-	using memory_mapped_reg::operator uint32_t;
+	using standard_reg::operator=;
+	using standard_reg::operator uint32_t;
 	using data_bits = bits<0, 8>;
 
 	usart_rx_reg(usart_is_reg& usart_is_reg)
@@ -322,7 +319,7 @@ public:
 	 * @details This function is to be used by the virtual machine.
 	 */
 	void write(uint8_t byte) {
-		self<data_bits>() = byte;
+		bits_ref<data_bits>() = byte;
 
 		// Signals rx as not empty which triggers an interrupt event
 		// and maybe an interrupt request.
@@ -338,7 +335,7 @@ private:
 		}
 
 		// otherwise just return whatever data is in there and mark the register as empty
-		uint32_t word = self<data_bits>();
+		uint32_t word = bits_ref<data_bits>();
 		_usart_isr_reg.set_rx_not_empty(false);
 
 		return word;

@@ -26,8 +26,8 @@ public:
 	{}
 
 	void apply(mcu& expected) {
-		expected.get_cpu().special_regs().control_register().set_n_priv(_expectednPrivFlag);
-		expected.get_cpu().special_regs().control_register().set_sp_sel(_expectedSpSelectionFlag);
+		expected.get_cpu().special_regs().control_register().n_priv() = _expectednPrivFlag;
+		expected.get_cpu().special_regs().control_register().sp_sel() = _expectedSpSelectionFlag;
 	}
 
 	void check(const mcu& actual) const {

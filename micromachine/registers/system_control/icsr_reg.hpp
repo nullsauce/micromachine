@@ -7,7 +7,7 @@
 #pragma once
 
 #include "exception/exception_controller.hpp"
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "registers/special_registers/ipsr_reg.hpp"
 #include "types/types.hpp"
 

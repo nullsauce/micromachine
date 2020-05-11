@@ -1,5 +1,6 @@
 
 #include "CodeGenerator.hpp"
+#include "helpers/check.hpp"
 #include <cstring>
 
 namespace micromachine::testing {
@@ -65,7 +66,7 @@ uint16_t CodeGenerator::assemble_instruction(const char* encoding, va_list valis
 		char c;
 	} fields[6];
 
-	assert(16 == strlen(encoding));
+	micromachine_check(16 == strlen(encoding), "instruction template length must be 16");
 	memset(fields, 0, sizeof(fields));
 
 	// Go through encoding from left to right and find all fields to be inserted.
@@ -83,7 +84,7 @@ uint16_t CodeGenerator::assemble_instruction(const char* encoding, va_list valis
 
 			// If this is the first time we have seen the field, then save its value in fields array.
 			if(!found) {
-				assert(i < sizeof(fields) / sizeof(fields[0]));
+				micromachine_check(i < sizeof(fields) / sizeof(fields[0]));
 
 				fields[i].value = va_arg(valist, uint32_t);
 				fields[i].c = c;
@@ -110,7 +111,7 @@ uint16_t CodeGenerator::assemble_instruction(const char* encoding, va_list valis
 				if(fields[j].c == c)
 					break;
 			}
-			assert(j != i);
+			micromachine_check(j != i);
 
 			instr |= (fields[j].value & 1) << 15;
 			fields[j].value >>= 1;

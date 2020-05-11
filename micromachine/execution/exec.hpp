@@ -842,7 +842,7 @@ exec(const mrs instruction, core_registers& core_regs, special_registers& specia
 			}
 			if(bits<1>::of(instruction.sysn)) { // add EPSR bits
 				// T-bit reads as zero
-				bits<epsr_reg::FLAG_THUMB>::of(val) = false;
+				epsr_reg::thumb_flag_bit::of(val) = false;
 			}
 			if(!bits<2>::of(instruction.sysn)) { // add APSR bits
 				// T-bit reads as zero
@@ -903,7 +903,7 @@ static void exec(const msr instruction,
 			// I suppose this is a documentation mistake and copy only the 4
 			// APSR bits 28 to 31.
 			special_regs.app_status_register().flags() =
-				apsr_reg::flags_bits::of(regs.get(instruction.rn));
+				apsr_reg::all_flags_bits::of(regs.get(instruction.rn));
 		} break;
 		case msr::special_register::msp: {
 			// TODO: Should fail if not in privileged mode
@@ -927,8 +927,8 @@ static void exec(const msr instruction,
 		case msr::special_register::control: {
 			if(execution_mode.is_in_thread_mode()) {
 				uint32_t val = regs.get(instruction.rn);
-				special_regs.control_register().set_n_priv(bits<0>::of(val));
-				special_regs.control_register().set_sp_sel(bits<1>::of(val));
+				special_regs.control_register().n_priv() = bits<0>::of(val);
+				special_regs.control_register().sp_sel() = bits<1>::of(val);
 			}
 		} break;
 		default: {

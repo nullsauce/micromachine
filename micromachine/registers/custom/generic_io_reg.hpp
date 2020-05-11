@@ -1,12 +1,12 @@
 #pragma once
 
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/bits.hpp"
 #include "types/types.hpp"
 
 namespace micromachine::system {
 
-class generic_io_reg : public memory_mapped_reg {
+class generic_io_reg : public standard_reg {
 public:
 	using callback_t = std::function<void(uint8_t data)>;
 	static constexpr uint32_t GIO_IO = 0xE000EF90;

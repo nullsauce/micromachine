@@ -38,7 +38,7 @@ private:
 	}
 
 	static bool getStackAlignFlagValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().execution_status_register().stack_alignment();
+		return target.get_cpu().special_regs().execution_status_register().stack_align_flag();
 	}
 
 	::testing::AssertionResult

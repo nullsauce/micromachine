@@ -7,21 +7,25 @@ namespace micromachine::system {
 
 class control_reg : public standard_reg {
 public:
-	using standard_reg::standard_reg;
 	using standard_reg::operator=;
+
 	using n_priv_bit = bits<0>;
 	using sp_selection_bit = bits<1>;
 
-	bool n_priv() const {
-		return n_priv_bit::of(_word);
+	auto n_priv() const {
+		return bits_ref<n_priv_bit>();
 	}
 
-	void set_n_priv(bool priv) {
-		n_priv_bit::of(_word) = priv;
+	auto n_priv() {
+		return bits_ref<n_priv_bit>();
 	}
 
-	bool sp_sel() const {
-		return sp_selection_bit::of(_word);
+	auto sp_sel() const {
+		return bits_ref<sp_selection_bit>();
+	}
+
+	auto sp_sel() {
+		return bits_ref<sp_selection_bit>();
 	}
 
 	void set_sp_sel(bool sel) {

@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "registers/memory_mapped_reg.hpp"
+#include "registers/standard_reg.hpp"
 #include "types/types.hpp"
 
 namespace micromachine::system {
 
-class vtable_offset_reg : public memory_mapped_reg {
+class vtable_offset_reg : public standard_reg {
 public:
 	static constexpr uint32_t VTOR = 0xE000ED08;
 

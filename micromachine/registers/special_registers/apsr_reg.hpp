@@ -4,66 +4,63 @@
 
 #pragma once
 
-#include "../../types/bits.hpp"
+#include "types/bits.hpp"
 #include "xpsr_reg.hpp"
 
 namespace micromachine::system {
 
 struct apsr_reg : public xpsr_reg {
 
-	using xpsr_reg::flag_bit_ref;
-	using xpsr_reg::flag_bit_const_ref;
-
-	static constexpr size_t FLAG_NEGATIVE = 31;
-	static constexpr size_t FLAG_ZERO = 30;
-	static constexpr size_t FLAG_CARRY = 29;
-	static constexpr size_t FLAG_OVERFLOW = 28;
+	using negative_flag_bit = bits<31>;
+	using zero_flag_bit = bits<30>;
+	using carry_flag_bit = bits<29>;
+	using overflow_flag_bit = bits<28>;
+	using all_flags_bits = bits<28, 4>;
 
 	using xpsr_reg::xpsr_reg;
-	using flags_bits = bits<28, 4>;
 
-	flag_bit_ref<FLAG_NEGATIVE> negative_flag() {
-		return flag_bit_ref<FLAG_NEGATIVE>(_xpsr);
+	auto negative_flag() {
+		return negative_flag_bit::of(_xpsr);
 	}
 
-	flag_bit_const_ref<FLAG_NEGATIVE> negative_flag() const {
-		return flag_bit_const_ref<FLAG_NEGATIVE>(_xpsr);
+	auto negative_flag() const {
+		return negative_flag_bit::of(_xpsr);
 	}
 
-	flag_bit_ref<FLAG_ZERO> zero_flag() {
-		return flag_bit_ref<FLAG_ZERO>(_xpsr);
+	auto zero_flag() {
+		return zero_flag_bit::of(_xpsr);
 	}
 
-	flag_bit_const_ref<FLAG_ZERO> zero_flag() const {
-		return flag_bit_const_ref<FLAG_ZERO>(_xpsr);
+	auto zero_flag() const {
+		return zero_flag_bit::of(_xpsr);
 	}
 
-	flag_bit_ref<FLAG_CARRY> carry_flag() {
-		return flag_bit_ref<FLAG_CARRY>(_xpsr);
+	auto carry_flag() {
+		return carry_flag_bit::of(_xpsr);
 	}
 
-	flag_bit_const_ref<FLAG_CARRY> carry_flag() const {
-		return flag_bit_const_ref<FLAG_CARRY>(_xpsr);
+	auto carry_flag() const {
+		return carry_flag_bit::of(_xpsr);
 	}
 
-	flag_bit_ref<FLAG_OVERFLOW> overflow_flag() {
-		return flag_bit_ref<FLAG_OVERFLOW>(_xpsr);
+	auto overflow_flag() {
+		return overflow_flag_bit::of(_xpsr);
 	}
 
-	flag_bit_const_ref<FLAG_OVERFLOW> overflow_flag() const {
-		return flag_bit_const_ref<FLAG_OVERFLOW>(_xpsr);
+	auto overflow_flag() const {
+		return overflow_flag_bit::of(_xpsr);
 	}
 
-	flags_bits::const_integer_slice<uint32_t> flags() const {
-		return flags_bits::const_integer_slice<uint32_t>(_xpsr);
+	auto flags() {
+		return all_flags_bits::integer_slice<uint32_t>(_xpsr);
 	}
 
-	flags_bits::integer_slice<uint32_t> flags() {
-		return flags_bits::integer_slice<uint32_t>(_xpsr);
+	auto flags() const {
+		return all_flags_bits::const_integer_slice<uint32_t>(_xpsr);
 	}
 
 	void reset() {
-		flags_bits::of(_xpsr).clear();
+		all_flags_bits::of(_xpsr).clear();
 	}
 
 	void apply_zero(const uint32_t& val) {
@@ -72,22 +69,6 @@ struct apsr_reg : public xpsr_reg {
 
 	void apply_neg(const uint32_t& val) {
 		negative_flag() = bits<31>::of(val);
-	}
-
-	void write_neg_flag(bool status) {
-		write_bit(FLAG_NEGATIVE, status);
-	}
-
-	void write_zero_flag(bool status) {
-		write_bit(FLAG_ZERO, status);
-	}
-
-	void write_carry_flag(bool status) {
-		write_bit(FLAG_CARRY, status);
-	}
-
-	void write_overflow_flag(bool status) {
-		write_bit(FLAG_OVERFLOW, status);
 	}
 
 	bool is_eq() const {
