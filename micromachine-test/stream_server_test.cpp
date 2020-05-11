@@ -283,14 +283,13 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 		}
 	};
 
-	size_t count = 0;
+	std::atomic<size_t> count = 0;
 	for(auto& th : clients_thr) {
 		auto* param = new parameters;
 		th = std::thread([&server, &new_data_callback, param, &payload, &count]() {
 			stream_connection connection(server.pathname(), nullptr, new_data_callback, param);
 			EXPECT_TRUE(connection.is_connected());
 			count++;
-			fprintf(stderr, "count %d\n", (int)count);
 			EXPECT_FALSE(param->all_data_has_been_received.wait());
 			EXPECT_EQ(param->received_data, payload);
 			connection.close();
@@ -299,8 +298,8 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 	}
 
 	// make sure everyone is listening.
-	while(count != clients_thr.size());
-	std::this_thread::sleep_for(std::chrono::milliseconds(20));
+	while(count != n_clients);
+//	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	parameters param;
 	stream_connection sender(server.pathname(), nullptr, new_data_callback, &param);
@@ -308,7 +307,7 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 	sender.send(payload.data(), payload.size());
 
 	// make sure the message is broadcasted by the server
-	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	sender.close();
 
 	for(auto& th : clients_thr) {
@@ -320,5 +319,5 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 	server.stop();
 }
 
-INSTANTIATE_TEST_CASE_P(Repeat50time, RepeaterFixture, ::testing::Range(1, 50));
+INSTANTIATE_TEST_CASE_P(Repeat50time, RepeaterFixture, ::testing::Range(1, 25));
 
