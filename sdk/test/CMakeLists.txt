@@ -24,6 +24,18 @@ function(add_test_command)
 	set_tests_properties(${test_name} PROPERTIES LABELS sdkTests)
 endfunction()
 
+function(add_custom_test_command)
+	set(oneValueArgs NAME TEST_CALLER EXECUTABLE EXPECTED_OUTPUT_FILE)
+	set(multiValueArgs VM_ARGS)
+	cmake_parse_arguments(this_test "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	add_test(NAME ${this_test_NAME}
+			COMMAND ${this_test_TEST_CALLER} ${this_test_EXPECTED_OUTPUT_FILE} ${MICROMACHINE_VM}
+			${MICROMACHINE_VM_OPTS} ${this_test_VM_ARGS} ${this_test_EXECUTABLE}
+			)
+	set_tests_properties(${test_name} PROPERTIES LABELS sdkTests)
+endfunction()
+
 add_test_command(
 	NAME md5_test
 	EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/md5sum_test/md5sum
@@ -84,4 +96,11 @@ add_test_command(
 		NAME malloc_test
 		EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/malloc_test/malloc_test
 		EXPECTED_OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/malloc_test/expected_stdout.txt
+)
+
+add_custom_test_command(
+	NAME usart_echoer_test
+	TEST_CALLER ${CMAKE_SOURCE_DIR}/test/usart_test/test_echoer.sh
+	EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/usart_test/usart_echoer_test
+	EXPECTED_OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_echoer_expected_stdout.txt
 )

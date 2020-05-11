@@ -14,3 +14,11 @@ add_executable(usart_interrupt_test
 add_micromachine_executable(usart_interrupt_test)
 target_link_libraries(usart_interrupt_test cmsis)
 generate_dissasembly(usart_interrupt_test)
+
+
+add_executable(usart_echoer_test
+		usart_echoer.c
+		)
+add_micromachine_executable(usart_echoer_test)
+target_link_libraries(usart_echoer_test cmsis)
+generate_dissasembly(usart_echoer_test)
