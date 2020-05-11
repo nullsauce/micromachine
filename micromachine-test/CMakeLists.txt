@@ -141,6 +141,7 @@ declare_test(nvic.cpp)
 declare_test(reset/reset_tests.cpp)
 declare_test(reset/exception_state_reset.cpp)
 declare_test(peripherals/usart-tests.cpp)
+declare_test(stream_server_test.cpp)
 #declare_test(disasm/disasm.cpp)
 
 
