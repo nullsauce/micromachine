@@ -1,11 +1,11 @@
 
 #include <cxxopts.hpp>
 
-#include "cpu.hpp"
 #include "mcu.hpp"
 #include "peripherals/iodev.hpp"
 #include "programmer.hpp"
 #include "gdb-server.hpp"
+#include "stream_server.hpp"
 
 #include <chrono>
 #include <unistd.h>
@@ -97,11 +97,11 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	iopump iopump(mcu.get_usart_controller(), [](uint8_t byte){
-		if(0 == write(STDOUT_FILENO, &byte, 1)) {
-			fprintf(stderr, "failed to write to stdout\n");
-		}
-	});
+//	iopump iopump(mcu.get_usart_controller(), [](uint8_t byte){
+//		if(0 == write(STDOUT_FILENO, &byte, 1)) {
+//			fprintf(stderr, "failed to write to stdout\n");
+//		}
+//	});
 
 	mcu.set_io_callback([](uint8_t data) {
 		if(0 == write(STDOUT_FILENO, &data, 1)) {
@@ -133,11 +133,11 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
 	}
 
-	if(!iopump.wait_until_flushed()) {
-		fprintf(stderr, "Warning: Not all the device output could be flushed\n");
-	}
-
-	iopump.shutdown();
+//	if(!iopump.wait_until_flushed()) {
+//		fprintf(stderr, "Warning: Not all the device output could be flushed\n");
+//	}
+//
+//	iopump.shutdown();
 
 	return EXIT_SUCCESS;
 }
