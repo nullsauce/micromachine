@@ -765,13 +765,15 @@ static void exec(const cps instruction, special_registers& special_regs) {
 	special_regs.primask_register().pm() = instruction.im;
 }
 
-static void
-exec(const pop instruction, core_registers& regs, memory& mem, interworking_brancher& _interworking_brancher) {
+static void exec(const pop instruction, core_registers& regs, memory& mem, interworking_brancher& _interworking_brancher) {
+
 	micromachine_check(instruction.pop_count() > 0, "must push at least one register");
-	const uint32_t frame_start = regs.sp(); // sp
-	uint32_t sp_base = frame_start;
+
+	const uint32_t frame_start = regs.sp();
+
 	const uint32_t stored_size = 4 * instruction.pop_count();
-	// fprintf(stderr, "pop stack %08X - %08X\n", frame_start, frame_start + stored_size);
+
+	uint32_t sp_base = frame_start;
 	for(reg_idx rid = 0; rid < 8; rid++) {
 		if(instruction.is_set(rid)) {
 			regs.set(rid, mem.read32(sp_base));
@@ -811,7 +813,6 @@ exec(const pop instruction, core_registers& regs, memory& mem, interworking_bran
 
 static void exec(const bkpt instruction, signal& halt_signal) {
 	halt_signal.set();
-	// fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8().extract());
 }
 
 static void exec(const rev_word instruction, core_registers& regs) {
@@ -819,11 +820,12 @@ static void exec(const rev_word instruction, core_registers& regs) {
 }
 
 static void exec(const rev16 instruction, core_registers& regs) {
-
 	const uint32_t rm = regs.get(instruction.rm());
 
-	uint32_t res = bits<16, 8>::of((rm)) << 24U | bits<24, 8>::of((rm)) << 16U | bits<0, 8>::of((rm)) << 8U |
-				   bits<8, 8>::of((rm)) << 0U;
+	uint32_t res = bits<16, 8>::of(rm) << 24U |
+				   bits<24, 8>::of(rm) << 16U |
+				   bits<0, 8>::of(rm) << 8U |
+				   bits<8, 8>::of(rm) << 0U;
 
 	regs.set(instruction.rd(), res);
 }
@@ -831,9 +833,11 @@ static void exec(const rev16 instruction, core_registers& regs) {
 static void exec(const revsh instruction, core_registers& regs) {
 
 	const uint32_t rm = regs.get(instruction.rm());
+	using low_byte = bits<0, 8>;
+	using high_byte = bits<8, 8>;
 
-	uint32_t swapped_low16 = (bits<0, 8>::of(rm) << 8U) | bits<8, 8>::of(rm);
-	uint32_t res = binops::sign(swapped_low16, 16);
+	uint32_t swapped_low16 = (low_byte::of(rm) << 8U) | high_byte::of(rm);
+	uint32_t res = binops::sign(swapped_low16, 16U);
 
 	regs.set(instruction.rd(), res);
 }
@@ -868,7 +872,6 @@ static void exec(const stm instruction, core_registers& regs, memory& mem) {
 		}
 	}
 
-	// write back
 	regs.set(instruction.rn(), address);
 }
 
