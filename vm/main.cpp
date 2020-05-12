@@ -97,7 +97,10 @@ int main(int argc, char** argv) {
 		}
 	}
 
-//	iopump iopump(mcu.get_usart_controller(), [](uint8_t byte){
+	std::unique_ptr<stream_server> usart_streamer =
+		create_stream_server(mcu.get_usart_controller(), "usart0", "/tmp/micromachine");
+
+	//	iopump iopump(mcu.get_usart_controller(), [](uint8_t byte){
 //		if(0 == write(STDOUT_FILENO, &byte, 1)) {
 //			fprintf(stderr, "failed to write to stdout\n");
 //		}
@@ -139,5 +142,8 @@ int main(int argc, char** argv) {
 //
 //	iopump.shutdown();
 
+	if (usart_streamer) {
+		usart_streamer->stop();
+	}
 	return EXIT_SUCCESS;
 }

@@ -8,7 +8,6 @@
 #include "exception/exception_controller.hpp"
 #include "peripherals/iodev.hpp"
 #include "peripherals/usart/usart_reg.hpp"
-#include "stream_server.hpp"
 #include "utils/blocking_queue.hpp"
 
 #include <deque>
@@ -32,7 +31,6 @@ private:
 	data_channel _tx_buffer;
 	const exception _external_interrupt;
 
-	std::unique_ptr<stream_server> _server;
 
 public:
 	static constexpr uint32_t USART_BASE = 0x40000000;
@@ -51,13 +49,7 @@ public:
 		, _rx_register(_interrupt_status_register)
 		, _tx_register(_interrupt_status_register)
 		, _external_interrupt(external_interrupt)
-		, _server(create_stream_server(*this, "usart0"))
-	{
-	}
-
-	~usart_controller() {
-		_server->stop();
-	}
+	{}
 
 	void reset() {
 		clear_interrupt_event();
