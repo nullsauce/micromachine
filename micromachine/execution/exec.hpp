@@ -830,62 +830,59 @@ static void exec(const ldm instruction, core_registers& regs, memory& mem) {
 	}
 }
 static void
-exec(const mrs instruction, core_registers& core_regs, special_registers& special_regs) {
+exec(const mrs instruction, core_registers& core_regs, const special_registers& special_regs) {
+
+	enum special_register_group : uint8_t {
+		FROM_PSR = 0b00000000,
+		FROM_MAIN_STACK = 0b00001000,
+		FROM_PROCESS_STACK = 0b00001001,
+		FROM_PRIMASK = 0b00010000,
+		FROM_CONTROL = 0b00010100
+	};
+
 	// do not keep the value initially present in the register
 	uint32_t val = 0;
-	uint8_t sysn_bits = bits<3, 5>::of(instruction.sysn);
-	switch(sysn_bits) {
-		case 0b00000: {                         // xPSR composites
-			if(bits<0>::of(instruction.sysn)) { // add IPSR bits
-				bits<0, 8>::of(val) = bits<0, 8>::of(
-					(uint32_t)special_regs.interrupt_status_register().exception());
-			}
-			if(bits<1>::of(instruction.sysn)) { // add EPSR bits
-				// T-bit reads as zero
-				epsr_reg::thumb_flag_bit::of(val) = false;
-			}
-			if(!bits<2>::of(instruction.sysn)) { // add APSR bits
-				// T-bit reads as zero
-				// copy 5 bits from APS
-				// TODO: Why 5 and not 4 ???
-				bits<27, 5>::of(val) = bits<27, 5>::of(special_regs.xpsr_register());
-			}
-		} break;
-		case 0b00001: { // SP (exclusive)
-			switch((uint8_t)bits<0, 3>::of(instruction.sysn)) {
-				case 0b000: { // add MSP bits
-					val = core_regs.sp().get_specific_banked_sp(sp_reg::stack_type::main);
-				} break;
-				case 0b001: { // add PSP bits
-					val =
-						core_regs.sp().get_specific_banked_sp(sp_reg::stack_type::process);
-					fprintf(stderr, "%08x\n", val);
-				} break;
-				default: {
-					// unpredictable
-					break;
-				}
-			}
-		} break;
-		case 0b00010: { // PRIMASK & CONTROL (exclusive)
-			switch((uint8_t)bits<0, 3>::of(instruction.sysn)) {
-				case 0b000: {
-					val = special_regs.primask_register().pm();
-				} break;
-				case 0b100: {
-					bits<0, 2>::of(val) = bits<0, 2>::of((uint32_t)special_regs.control_register());
-				} break;
-				default: {
-					// unpredictable
-					break;
-				}
-			}
-		} break;
-		default: {
-			// unpredictable
-			break;
+	using special_register_group_bits = bits<3, 5>;
+
+	const uint8_t target_group = special_register_group_bits::of(instruction.sysn);
+
+	if(target_group == FROM_PSR) {
+
+		using ipsr_bit = bits<0>;
+		using epsr_bit = bits<1>;
+		using apsr_bit = bits<2>;
+
+		if(ipsr_bit::of(instruction.sysn)) {
+			bits<0, 8>::of(val) = special_regs.interrupt_status_register().exception();
 		}
+
+		if(epsr_bit::of(instruction.sysn)) {
+			// T-bit always reads as zero
+			epsr_reg::thumb_flag_bit::of(val) = false;
+		}
+
+		if(!apsr_bit::of(instruction.sysn)) {
+			// copy 5 bits from APS
+			// Note that the M0+ APSR register only holds 4 flags in the highest bits (not 5)
+			// The spec wants us to copy 5 bits. In Cortex M3 and above, the 28th bit
+			// stores the 'Sticky saturation' flag.
+
+			// Copy 5 bits, as asked by the spec.
+			bits<27, 5>::of(val) = bits<27, 5>::of(special_regs.xpsr_register());
+		}
+
+	} else if(instruction.sysn == FROM_MAIN_STACK) {
+		val = core_regs.sp().get_specific_banked_sp(sp_reg::stack_type::main);
+	} else if(instruction.sysn == FROM_PROCESS_STACK) {
+		val = core_regs.sp().get_specific_banked_sp(sp_reg::stack_type::process);
+	} else if(instruction.sysn == FROM_PRIMASK) {
+		val = special_regs.primask_register().pm();
+	} else if(instruction.sysn == FROM_CONTROL) {
+		control_reg::all_flags_bits::of(val) = control_reg::all_flags_bits::of(special_regs.control_register());
+	} else {
+		unpredictable();
 	}
+
 	core_regs.set(instruction.rd, val);
 }
 static void exec(const msr instruction,
@@ -926,8 +923,8 @@ static void exec(const msr instruction,
 		case msr::special_register::control: {
 			if(execution_mode.is_in_thread_mode()) {
 				uint32_t val = regs.get(instruction.rn);
-				special_regs.control_register().n_priv() = bits<0>::of(val);
-				special_regs.control_register().sp_sel() = bits<1>::of(val);
+				special_regs.control_register().n_priv() = control_reg::n_priv_bit::of(val);
+				special_regs.control_register().sp_sel() = control_reg::sp_selection_bit::of(val);
 			}
 		} break;
 		default: {
