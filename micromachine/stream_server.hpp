@@ -25,13 +25,16 @@
 
 namespace micromachine::system {
 
+namespace {
+
+
 /**
  * Wait on signal
  * @param sync_point
  * @param timeout_ms
  * @return true if timeout, false if the signal is catched
  */
-static bool wait_signal(std::promise<void>& sync_point, unsigned int timeout_ms) {
+bool wait_signal(std::promise<void>& sync_point, unsigned int timeout_ms) {
 	using namespace std::chrono_literals;
 
 	auto f = sync_point.get_future();
@@ -47,6 +50,18 @@ static bool wait_signal(std::promise<void>& sync_point, unsigned int timeout_ms)
 	} while(status != std::future_status::ready);
 
 	return false;
+}
+
+void wait_signal_or_throw(std::promise<void>& sync_point, std::atomic<bool>& cond, std::thread& th) {
+	bool timeout = wait_signal(sync_point, 500);
+	if(timeout) {
+		cond = false;
+		if(th.joinable()) {
+			th.join();
+		}
+		throw std::runtime_error("signal cannot be catch on time");
+	}
+}
 }
 
 class stream_connection {
@@ -89,23 +104,7 @@ private:
 	std::thread _listener_thread;
 
 public:
-	explicit stream_connection(const std::string& unix_domain_socket,
-							   client_disconnect_callback_t disconnection_callback = nullptr,
-							   new_data_callback_t new_data_callback = nullptr,
-							   void* user_param = nullptr)
-		: _unix_domain_socket(unix_domain_socket)
-		, _socket(create_and_connect_socket(_unix_domain_socket))
-		, _disconnection_callback(std::move(disconnection_callback))
-		, _new_data_callback(std::move(new_data_callback))
-		, _user_param(user_param)
-		, _listener_is_running(true)
-		, _listener_thread(std::thread(&stream_connection::listener, this)) {
 
-		// since create_and_connect_socket hasn't throw, assume it's connected
-		_is_connected = true;
-
-		wait_signal_or_throw(_listener_has_stared, _listener_thread);
-	}
 
 	// create stream_connection from a connected socket
 	stream_connection(const int socket,
@@ -122,8 +121,19 @@ public:
 		, _listener_is_running(true)
 		, _listener_thread(std::thread(&stream_connection::listener, this)) {
 
-		wait_signal_or_throw(_listener_has_stared, _listener_thread);
+		wait_signal_or_throw(_listener_has_stared, _listener_is_running, _listener_thread);
 	}
+
+	explicit stream_connection(const std::string& unix_domain_socket,
+							   client_disconnect_callback_t disconnection_callback = nullptr,
+							   new_data_callback_t new_data_callback = nullptr,
+							   void* user_param = nullptr)
+		: stream_connection(create_and_connect_socket(unix_domain_socket),
+						  unix_domain_socket,
+						  std::move(disconnection_callback),
+						  std::move(new_data_callback),
+						  user_param)
+	{}
 
 	~stream_connection() {
 		close();
@@ -174,15 +184,6 @@ public:
 	}
 
 private:
-	static void wait_signal_or_throw(std::promise<void>& sync_point, std::thread& th) {
-		bool timeout = wait_signal(sync_point, 500);
-		if(timeout) {
-			if(th.joinable()) {
-				th.join();
-			}
-			throw std::runtime_error("signal cannot be stopped on time");
-		}
-	}
 
 	static int create_and_connect_socket(const std::string& unix_domain_socket) {
 
@@ -350,14 +351,7 @@ public:
 		, _acceptor_is_running(true)
 		, _acceptor_thread(std::thread(&stream_server::acceptor, this)) {
 
-		bool timeout = wait_signal(_acceptor_is_started, 500);
-		if(timeout) {
-			_acceptor_is_running = false;
-			if(_acceptor_thread.joinable()) {
-				_acceptor_thread.join();
-			}
-			throw std::runtime_error("acceptor cannot be started on time");
-		}
+		wait_signal_or_throw(_acceptor_is_started, _acceptor_is_running, _acceptor_thread);
 	}
 
 	virtual ~stream_server() {
@@ -501,13 +495,12 @@ private:
 
 			int client_socket = ::accept(_socket, nullptr, nullptr);
 			if(client_socket <= 0) {
-				std::perror("accept failed");
-				fprintf(stderr, "socket: %d\n", _socket);
 				continue;
 			}
 
-			if(!_acceptor_is_running)
+			if(!_acceptor_is_running) {
 				break;
+			}
 
 			add_new_connection(client_socket);
 		}
