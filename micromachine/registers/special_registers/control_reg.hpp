@@ -11,6 +11,7 @@ public:
 
 	using n_priv_bit = bits<0>;
 	using sp_selection_bit = bits<1>;
+	using all_flags_bits = bits<0, 2>;
 
 	auto n_priv() const {
 		return bits_ref<n_priv_bit>();
