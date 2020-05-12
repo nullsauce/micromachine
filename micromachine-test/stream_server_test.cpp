@@ -115,20 +115,6 @@ TEST(streamServer, InstanciateServerWithInvalidUnixDomainSocketMustThrow_length_
 	EXPECT_THROW(stream_server(dev, "dev0", a_very_long_path), std::length_error);
 }
 
-TEST(streamServer, InstanciateServerWithExistingFileMustThrow_runtime_error) {
-	using namespace micromachine::system;
-	empty_iodevice dev;
-
-	static const std::string location = "/tmp/micromachine/" + std::to_string(getpid());
-	static const std::string device_name = "dev0";
-	static const std::string file_path = location + '/' + device_name;
-	EXPECT_TRUE(std::filesystem::create_directories(location));
-	std::cerr << file_path << std::endl;
-	std::ofstream file(file_path);
-	EXPECT_THROW(stream_server(dev, device_name, "/tmp/micromachine/"), std::runtime_error);
-	EXPECT_TRUE(std::filesystem::remove_all(location));
-}
-
 TEST(streamServer, ClientSizeMustBeZeroAfterServerInstanciation) {
 	using namespace micromachine::system;
 	empty_iodevice dev;

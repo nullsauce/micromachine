@@ -344,7 +344,7 @@ public:
 	stream_server(iodev& dev, const std::string& device_name, const std::string_view& directory = DEFAULT_DIRECTORY)
 		: _device_name(device_name)
 		, _directory(directory)
-		, _socket(socket_establishment(_device_name, _directory, _pathname, _location))
+		, _socket(create_and_bind_socket(_device_name, _directory, _pathname, _location))
 		, _iodev(dev)
 		, _iopump(_iodev, std::bind(&client_manager::broadcast, &_clients, std::placeholders::_1))
 		, _acceptor_is_running(true)
@@ -426,7 +426,7 @@ private:
 	 * @param[out] location AF_UNIX location directory (/tmp/micromachine/<pid>/)
 	 * @return the listened socket
 	 */
-	static int socket_establishment(const std::string& device_name,
+	static int create_and_bind_socket(const std::string& device_name,
 									const std::string& directory,
 									std::string& pathname,
 									std::string& location) {
@@ -441,6 +441,10 @@ private:
 		server.sun_family = AF_UNIX;
 		location = directory + "/" + std::to_string(getpid());
 		pathname = location + "/" + device_name;
+
+		if (std::filesystem::exists(pathname)) {
+			std::filesystem::remove(pathname);
+		}
 
 		if(pathname.size() > sizeof(server.sun_path)) {
 			std::string message = "unix_socket_domain_path is to big! maximum allowed size is: " +
