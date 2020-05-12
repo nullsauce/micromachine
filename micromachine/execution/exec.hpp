@@ -30,6 +30,7 @@ static void exec(const lsl_imm instruction, core_registers& regs, apsr_reg& stat
 	status_reg.carry_flag() = carry;
 	regs.set(instruction.rd(), rm);
 }
+
 static void exec(const lsr_imm instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rm = regs.get(instruction.rm());
 	uint32_t applied_offset = instruction.shift_offset();
@@ -42,6 +43,7 @@ static void exec(const lsr_imm instruction, core_registers& regs, apsr_reg& stat
 	status_reg.carry_flag() = carry;
 	regs.set(instruction.rd(), rm);
 }
+
 static void exec(const asr_imm instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rm = regs.get(instruction.rm());
 	uint32_t applied_offset = instruction.shift_offset();
@@ -54,6 +56,7 @@ static void exec(const asr_imm instruction, core_registers& regs, apsr_reg& stat
 	status_reg.carry_flag() = carry;
 	regs.set(instruction.rd(), rm);
 }
+
 static void exec(const add_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rm = regs.get(instruction.rm());
 	uint32_t rn = regs.get(instruction.rn());
@@ -70,6 +73,7 @@ static void exec(const add_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const subs_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rm = regs.get(instruction.rm());
 	uint32_t rn = regs.get(instruction.rn());
@@ -86,6 +90,7 @@ static void exec(const subs_reg instruction, core_registers& regs, apsr_reg& sta
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const add_imm instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rn = regs.get(instruction.rn());
@@ -102,6 +107,7 @@ static void exec(const add_imm instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const subs_imm instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rn = regs.get(instruction.rn());
 	uint32_t imm32 = instruction.imm3();
@@ -117,18 +123,21 @@ static void exec(const subs_imm instruction, core_registers& regs, apsr_reg& sta
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const mov_imm instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t imm32 = instruction.imm8();
 	regs.set(instruction.rd(), instruction.imm8());
 	status_reg.apply_zero(imm32);
 	status_reg.apply_neg(imm32);
 }
+
 static void exec(const movs instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t val = regs.get(instruction.rm());
 	regs.set(instruction.rd(), val);
 	status_reg.apply_zero(val);
 	status_reg.apply_neg(val);
 }
+
 static void exec(const cmp_imm instruction, const core_registers& regs, apsr_reg& status_reg) {
 	// like subtraction, but discard the result
 	uint32_t imm32 = instruction.imm8();
@@ -143,6 +152,7 @@ static void exec(const cmp_imm instruction, const core_registers& regs, apsr_reg
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const add_imm_t2 instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rn = regs.get(instruction.rdn());
@@ -159,6 +169,7 @@ static void exec(const add_imm_t2 instruction, core_registers& regs, apsr_reg& s
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const subs_imm8 instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rn = regs.get(instruction.rdn());
@@ -175,6 +186,7 @@ static void exec(const subs_imm8 instruction, core_registers& regs, apsr_reg& st
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const and_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rd = regs.get(instruction.rdn());
@@ -188,6 +200,7 @@ static void exec(const and_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const eor_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rd = regs.get(instruction.rdn());
@@ -201,6 +214,7 @@ static void exec(const eor_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const lsl_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t value = regs.get(instruction.rdn());
 	uint32_t shift_offset = bits<0, 8>::of(regs.get(instruction.rm()));
@@ -213,6 +227,7 @@ static void exec(const lsl_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
+
 static void exec(const lsr_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t value = regs.get(instruction.rdn());
 	uint32_t shift_offset = bits<0, 8>::of(regs.get(instruction.rm()));
@@ -225,6 +240,7 @@ static void exec(const lsr_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
+
 static void exec(const asr_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t value = regs.get(instruction.rdn());
 	uint32_t shift_offset = bits<0, 8>::of(regs.get(instruction.rm())); // max 255
@@ -237,6 +253,7 @@ static void exec(const asr_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
+
 static void exec(const adc instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rn = regs.get(instruction.rdn());
 	uint32_t rm = regs.get(instruction.rm());
@@ -253,6 +270,7 @@ static void exec(const adc instruction, core_registers& regs, apsr_reg& status_r
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
+
 static void exec(const sbc instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rn = regs.get(instruction.rdn());
 	uint32_t rm = regs.get(instruction.rm());
@@ -269,6 +287,7 @@ static void exec(const sbc instruction, core_registers& regs, apsr_reg& status_r
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
+
 static void exec(const ror_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t value = regs.get(instruction.rdn());
 	uint32_t shift_offset = bits<0, 8>::of(regs.get(instruction.rm()));
@@ -281,6 +300,7 @@ static void exec(const ror_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_neg(value);
 	status_reg.apply_zero(value);
 }
+
 static void exec(const tst_reg instruction, const core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rn = regs.get(instruction.rn());
 	uint32_t rm = regs.get(instruction.rm());
@@ -291,6 +311,7 @@ static void exec(const tst_reg instruction, const core_registers& regs, apsr_reg
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const rsb_imm instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rn = regs.get(instruction.rn());
 	uint32_t imm32 = 0; // ARMv6-M only supports a value of 0.
@@ -306,6 +327,7 @@ static void exec(const rsb_imm instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
+
 static void exec(const cmp_reg instruction, const core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rn = regs.get(instruction.rn());
 	uint32_t rm = regs.get(instruction.rm());
@@ -320,6 +342,7 @@ static void exec(const cmp_reg instruction, const core_registers& regs, apsr_reg
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
+
 static void exec(const cmn_reg instruction, const core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rn = regs.get(instruction.rn());
 	uint32_t rm = regs.get(instruction.rm());
@@ -334,6 +357,7 @@ static void exec(const cmn_reg instruction, const core_registers& regs, apsr_reg
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
+
 static void exec(const orr_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 	uint32_t rd = regs.get(instruction.rdn());
 	uint32_t rm = regs.get(instruction.rm());
@@ -346,6 +370,7 @@ static void exec(const orr_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const mul_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rm = regs.get(instruction.rdm());
@@ -359,6 +384,7 @@ static void exec(const mul_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const bic_reg instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rn = regs.get(instruction.rdn());
@@ -372,6 +398,7 @@ static void exec(const bic_reg instruction, core_registers& regs, apsr_reg& stat
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const mvn instruction, core_registers& regs, apsr_reg& status_reg) {
 
 	uint32_t rm = regs.get(instruction.rm());
@@ -384,6 +411,7 @@ static void exec(const mvn instruction, core_registers& regs, apsr_reg& status_r
 	status_reg.apply_zero(result);
 	status_reg.apply_neg(result);
 }
+
 static void exec(const add_highreg instruction, core_registers& regs) {
 
 	// TODO:
@@ -408,6 +436,7 @@ static void exec(const add_highreg instruction, core_registers& regs) {
 
 	// Do not update flags
 }
+
 static void exec(const cmp_highreg instruction, const core_registers& regs, apsr_reg& status_reg) {
 
 	if((instruction.high_rn() < 8) && (instruction.high_rm() < 8)) {
@@ -431,6 +460,7 @@ static void exec(const cmp_highreg instruction, const core_registers& regs, apsr
 	status_reg.apply_neg(result);
 	status_reg.apply_zero(result);
 }
+
 static void exec(const mov_highreg instruction, core_registers& regs) {
 	/*
 	 * Note that if both register ids are smaller than 8, this instruction must be encoded as
@@ -451,15 +481,15 @@ static void exec(const mov_highreg instruction, core_registers& regs) {
 		// dont update flags
 	}
 }
-static void
-exec(const bx instruction, core_registers& regs, interworking_brancher& interworking_brancher) {
+
+static void exec(const bx instruction, core_registers& regs, interworking_brancher& interworking_brancher) {
 	if(registers::PC == (reg_idx)instruction.rm()) {
 		unpredictable();
 	}
 	interworking_brancher.branch_interworking(regs.get(instruction.rm()));
 }
-static void
-exec(const blx instruction, core_registers& regs, interworking_brancher& interworking_brancher) {
+
+static void exec(const blx instruction, core_registers& regs, interworking_brancher& interworking_brancher) {
 	if(registers::PC == (reg_idx)instruction.rm()) {
 		unpredictable();
 	}
@@ -479,6 +509,7 @@ exec(const blx instruction, core_registers& regs, interworking_brancher& interwo
 	// jump
 	interworking_brancher.branch_link_interworking(jump_addr);
 }
+
 static void exec(const ldr_literal instruction, core_registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm32();
 	uint32_t base = binops::aligned<4, uint32_t>(regs.pc());
@@ -486,6 +517,7 @@ static void exec(const ldr_literal instruction, core_registers& regs, const memo
 	uint32_t value = mem.read32(address);
 	regs.set(instruction.rt(), value);
 }
+
 static void exec(const str_reg instruction, const core_registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
@@ -495,6 +527,7 @@ static void exec(const str_reg instruction, const core_registers& regs, memory& 
 	uint32_t value = regs.get(instruction.rt());
 	mem.write32(address, value);
 }
+
 static void exec(const strh_reg instruction, const core_registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
@@ -504,6 +537,7 @@ static void exec(const strh_reg instruction, const core_registers& regs, memory&
 	uint32_t value = regs.get(instruction.rt());
 	mem.write16(address, bits<0, 16>::of((uint16_t)value));
 }
+
 static void exec(const strb_reg instruction, const core_registers& regs, memory& mem) {
 
 	// left shift of zero is omitted here
@@ -513,6 +547,7 @@ static void exec(const strb_reg instruction, const core_registers& regs, memory&
 	uint32_t value = regs.get(instruction.rt());
 	mem.write8(address, bits<0, 8>::of((uint8_t)value));
 }
+
 static void exec(const ldrsb_reg instruction, core_registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
 	uint32_t offset = regs.get(instruction.rm());
@@ -524,6 +559,7 @@ static void exec(const ldrsb_reg instruction, core_registers& regs, const memory
 		regs.set(instruction.rt(), value);
 	}
 }
+
 static void exec(const ldr_reg instruction, core_registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
 	uint32_t offset = regs.get(instruction.rm());
@@ -535,6 +571,7 @@ static void exec(const ldr_reg instruction, core_registers& regs, const memory& 
 		regs.set(instruction.rt(), value);
 	}
 }
+
 static void exec(const ldrh_reg instruction, core_registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
 	uint32_t offset = regs.get(instruction.rm());
@@ -546,6 +583,7 @@ static void exec(const ldrh_reg instruction, core_registers& regs, const memory&
 		regs.set(instruction.rt(), (uint32_t)value);
 	}
 }
+
 static void exec(const ldrb_reg instruction, core_registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
 	uint32_t offset = regs.get(instruction.rm());
@@ -557,6 +595,7 @@ static void exec(const ldrb_reg instruction, core_registers& regs, const memory&
 		regs.set(instruction.rt(), (uint32_t)value);
 	}
 }
+
 static void exec(const ldrsh_reg instruction, core_registers& regs, const memory& mem) {
 	// left shift of zero is omitted here
 	uint32_t offset = regs.get(instruction.rm());
@@ -568,6 +607,7 @@ static void exec(const ldrsh_reg instruction, core_registers& regs, const memory
 		regs.set(instruction.rt(), value);
 	}
 }
+
 static void exec(const str_imm instruction, const core_registers& regs, memory& mem) {
 	uint32_t offset = instruction.imm5() << 2U;
 	uint32_t base = regs.get(instruction.rn());
@@ -575,6 +615,7 @@ static void exec(const str_imm instruction, const core_registers& regs, memory& 
 	uint32_t value = regs.get(instruction.rt());
 	mem.write32(address, value);
 }
+
 static void exec(const ldr_imm instruction, core_registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm32();
 	uint32_t base = regs.get(instruction.rn());
@@ -586,6 +627,7 @@ static void exec(const ldr_imm instruction, core_registers& regs, const memory& 
 		regs.set(instruction.rt(), value);
 	}
 }
+
 static void exec(const strb_imm instruction, const core_registers& regs, memory& mem) {
 	uint32_t offset = instruction.imm5();
 	uint32_t base = regs.get(instruction.rn());
@@ -593,6 +635,7 @@ static void exec(const strb_imm instruction, const core_registers& regs, memory&
 	uint32_t value = regs.get(instruction.rt());
 	mem.write8(address, bits<0, 8>::of((uint8_t)value));
 }
+
 static void exec(const ldrb_imm instruction, core_registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm5();
 	uint32_t base = regs.get(instruction.rn());
@@ -604,6 +647,7 @@ static void exec(const ldrb_imm instruction, core_registers& regs, const memory&
 		regs.set(instruction.rt(), value);
 	}
 }
+
 static void exec(const strh_imm instruction, const core_registers& regs, memory& mem) {
 	uint32_t offset = instruction.imm5() << 1U;
 	uint32_t base = regs.get(instruction.rn());
@@ -611,6 +655,7 @@ static void exec(const strh_imm instruction, const core_registers& regs, memory&
 	uint32_t value = regs.get(instruction.rt());
 	mem.write16(address, bits<0, 16>::of((uint16_t)value));
 }
+
 static void exec(const ldrh_imm instruction, core_registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm5() << 1U;
 	uint32_t base = regs.get(instruction.rn());
@@ -622,6 +667,7 @@ static void exec(const ldrh_imm instruction, core_registers& regs, const memory&
 		regs.set(instruction.rt(), value);
 	}
 }
+
 static void exec(const str_sp_imm instruction, const core_registers& regs, memory& mem) {
 	uint32_t offset = instruction.imm32();
 	uint32_t base = regs.sp(); // SP
@@ -629,6 +675,7 @@ static void exec(const str_sp_imm instruction, const core_registers& regs, memor
 	uint32_t value = regs.get(instruction.rt());
 	mem.write32(address, value);
 }
+
 static void exec(const ldr_sp_imm instruction, core_registers& regs, const memory& mem) {
 	uint32_t offset = instruction.imm8() << 2U;
 	uint32_t base = regs.sp(); // SP
@@ -636,12 +683,14 @@ static void exec(const ldr_sp_imm instruction, core_registers& regs, const memor
 	uint32_t value = mem.read32(address);
 	regs.set(instruction.rt(), value);
 }
+
 static void exec(const adr instruction, core_registers& regs) {
 	uint32_t offset = instruction.imm32();
 	uint32_t base = binops::aligned<4, uint32_t>(regs.pc()); // PC
 	uint32_t address = base + offset;
 	regs.set(instruction.rd(), address);
 }
+
 static void exec(const add_sp_imm instruction, core_registers& regs) {
 	// TODO check if other instructions should go here
 	uint32_t imm32 = instruction.imm32();
@@ -649,6 +698,7 @@ static void exec(const add_sp_imm instruction, core_registers& regs) {
 	uint32_t result = alu::add_with_carry(sp, imm32, false);
 	regs.set(instruction.rd(), result);
 }
+
 static void exec(const add_sp_imm_t2 instruction, core_registers& regs) {
 	// TODO check if other instructions should go here
 	uint32_t imm32 = instruction.imm32();
@@ -656,6 +706,7 @@ static void exec(const add_sp_imm_t2 instruction, core_registers& regs) {
 	uint32_t result = alu::add_with_carry(sp, imm32, false);
 	regs.sp() = result;
 }
+
 static void exec(const sub_sp_imm instruction, core_registers& regs) {
 	// TODO check if other instructions should go here
 	uint32_t imm32 = instruction.imm32();
@@ -663,30 +714,35 @@ static void exec(const sub_sp_imm instruction, core_registers& regs) {
 	uint32_t result = alu::add_with_carry(sp, ~imm32, true);
 	regs.sp() = result;
 }
+
 static void exec(const sxth instruction, core_registers& regs) {
 	// Note: ROR(0) is omitted here
 	uint32_t rm = regs.get(instruction.rm());
 	uint32_t extended = binops::sign(rm, 16); // sign-extend 16 bit to 32
 	regs.set(instruction.rd(), extended);
 }
+
 static void exec(const sxtb instruction, core_registers& regs) {
 	// Note: ROR(0) is omitted here
 	uint32_t rm = regs.get(instruction.rm());
 	uint32_t extended = binops::sign(rm, 8); // sign-extend 8 bit to 32
 	regs.set(instruction.rd(), extended);
 }
+
 static void exec(const uxth instruction, core_registers& regs) {
 	// Note: ROR(0) is omitted here
 	uint16_t rm = bits<0, 16>::of(regs.get(instruction.rm()));
 	uint32_t extended(rm); // zero-extend 16 bit to 32
 	regs.set(instruction.rd(), extended);
 }
+
 static void exec(const uxtb instruction, core_registers& regs) {
 	// Note: ROR(0) is omitted here
 	uint8_t rm = bits<0, 8>::of(regs.get(instruction.rm()));
 	uint32_t extended(rm); // zero-extend 8 bit to 32
 	regs.set(instruction.rd(), extended);
 }
+
 static void exec(const push instruction, core_registers& regs, memory& mem) {
 	micromachine_check(instruction.pushed_registers_count() > 0, "must push at least one register");
 	const size_t stored_size = 4 * instruction.pushed_registers_count();
@@ -704,13 +760,13 @@ static void exec(const push instruction, core_registers& regs, memory& mem) {
 	}
 	regs.sp() = start_address;
 }
+
 static void exec(const cps instruction, special_registers& special_regs) {
 	special_regs.primask_register().pm() = instruction.im;
 }
-static void exec(const pop instruction,
-				 core_registers& regs,
-				 memory& mem,
-				 interworking_brancher& _interworking_brancher) {
+
+static void
+exec(const pop instruction, core_registers& regs, memory& mem, interworking_brancher& _interworking_brancher) {
 	micromachine_check(instruction.pop_count() > 0, "must push at least one register");
 	const uint32_t frame_start = regs.sp(); // sp
 	uint32_t sp_base = frame_start;
@@ -752,22 +808,26 @@ static void exec(const pop instruction,
 		_interworking_brancher.branch_interworking(address);
 	}
 }
+
 static void exec(const bkpt instruction, signal& halt_signal) {
 	halt_signal.set();
 	// fprintf(stderr, "BREAKPOINT %d\n", instruction.imm8().extract());
 }
+
 static void exec(const rev_word instruction, core_registers& regs) {
 	regs.set(instruction.rd(), binops::swap(regs.get(instruction.rm())));
 }
+
 static void exec(const rev16 instruction, core_registers& regs) {
 
 	const uint32_t rm = regs.get(instruction.rm());
 
-	uint32_t res = bits<16, 8>::of((rm)) << 24U | bits<24, 8>::of((rm)) << 16U |
-				   bits<0, 8>::of((rm)) << 8U | bits<8, 8>::of((rm)) << 0U;
+	uint32_t res = bits<16, 8>::of((rm)) << 24U | bits<24, 8>::of((rm)) << 16U | bits<0, 8>::of((rm)) << 8U |
+				   bits<8, 8>::of((rm)) << 0U;
 
 	regs.set(instruction.rd(), res);
 }
+
 static void exec(const revsh instruction, core_registers& regs) {
 
 	const uint32_t rm = regs.get(instruction.rm());
@@ -777,6 +837,7 @@ static void exec(const revsh instruction, core_registers& regs) {
 
 	regs.set(instruction.rd(), res);
 }
+
 static void exec(const branch instruction, core_registers& regs, apsr_reg& flags) {
 
 	if(!flags.condition_passed(instruction.cond())) {
@@ -793,6 +854,7 @@ static void exec(const unconditional_branch instruction, core_registers& regs) {
 	uint32_t pc = regs.pc();
 	regs.pc() = pc + delta;
 }
+
 static void exec(const stm instruction, core_registers& regs, memory& mem) {
 	uint32_t address = regs.get(instruction.rn());
 
@@ -809,6 +871,7 @@ static void exec(const stm instruction, core_registers& regs, memory& mem) {
 	// write back
 	regs.set(instruction.rn(), address);
 }
+
 static void exec(const ldm instruction, core_registers& regs, memory& mem) {
 	uint32_t address = regs.get(instruction.rn());
 
@@ -829,8 +892,8 @@ static void exec(const ldm instruction, core_registers& regs, memory& mem) {
 		regs.set(instruction.rn(), address);
 	}
 }
-static void
-exec(const mrs instruction, core_registers& core_regs, const special_registers& special_regs) {
+
+static void exec(const mrs instruction, core_registers& core_regs, const special_registers& special_regs) {
 
 	enum special_register_group : uint8_t {
 		FROM_PSR = 0b00000000,
@@ -885,10 +948,9 @@ exec(const mrs instruction, core_registers& core_regs, const special_registers& 
 
 	core_regs.set(instruction.rd, val);
 }
-static void exec(const msr instruction,
-				 core_registers& regs,
-				 special_registers& special_regs,
-				 execution_mode& execution_mode) {
+
+static void
+exec(const msr instruction, core_registers& regs, special_registers& special_regs, execution_mode& execution_mode) {
 	switch(instruction.sysn) {
 		case msr::special_register::apsr:
 		case msr::special_register::iapsr:
@@ -899,8 +961,7 @@ static void exec(const msr instruction,
 			// extension).
 			// I suppose this is a documentation mistake and copy only the 4
 			// APSR bits 28 to 31.
-			special_regs.app_status_register().flags() =
-				apsr_reg::all_flags_bits::of(regs.get(instruction.rn));
+			special_regs.app_status_register().flags() = apsr_reg::all_flags_bits::of(regs.get(instruction.rn));
 		} break;
 		case msr::special_register::msp: {
 			// TODO: Should fail if not in privileged mode
@@ -918,7 +979,7 @@ static void exec(const msr instruction,
 			regs.sp().set_specific_banked_sp(sp_reg::stack_type::process, sp);
 		} break;
 		case msr::special_register::primask: {
-			special_regs.primask_register().pm() =  primask_reg::primask_bit::of(regs.get(instruction.rn));
+			special_regs.primask_register().pm() = primask_reg::primask_bit::of(regs.get(instruction.rn));
 		} break;
 		case msr::special_register::control: {
 			if(execution_mode.is_in_thread_mode()) {
@@ -933,6 +994,7 @@ static void exec(const msr instruction,
 		}
 	}
 }
+
 static void exec(const bl_imm instruction, core_registers& regs) {
 	// pc is 4 bytes ahead, so already poiting to the next instruction
 	uint32_t next_instr_addr = regs.pc();
@@ -942,10 +1004,15 @@ static void exec(const bl_imm instruction, core_registers& regs) {
 	int32_t new_pc = regs.pc() + offset;
 	regs.pc() = new_pc;
 }
+
 static void exec(const dsb instruction) {}
+
 static void exec(const dmb instruction) {}
+
 static void exec(const isb instruction) {}
+
 static void exec(const sev instruction) {}
+
 static void exec(const wfi instruction) {
 	/*
 	 * If PRIMASK.PM is set to 1, an asynchronous exception that has a higher group priority than
@@ -953,8 +1020,8 @@ static void exec(const wfi instruction) {
 	 *exception is less than or equal to the execution group priority, the exception is ignored.
 	 */
 }
-static void
-exec(const wfe instruction, event_register& event_register, signal& enter_low_power_mode_signal) {
+
+static void exec(const wfe instruction, event_register& event_register, signal& enter_low_power_mode_signal) {
 	// wait for event in event register
 
 	/**
@@ -981,5 +1048,6 @@ exec(const wfe instruction, event_register& event_register, signal& enter_low_po
 		enter_low_power_mode_signal.set();
 	}
 }
+
 static void exec(const yield instruction) {}
 } // namespace micromachine::system
