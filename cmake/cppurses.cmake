@@ -4,7 +4,7 @@ include(FetchContent)
 # this requires a recent cmake
 FetchContent_Declare(
 	cppurses
-	GIT_REPOSITORY https://github.com/flavioroth/CPPurses
+	GIT_REPOSITORY https://github.com/a-n-t-h-o-n-y/CPPurses
 	GIT_TAG "master"
 )
 
