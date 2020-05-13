@@ -97,17 +97,11 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	std::unique_ptr<stream_server> usart_streamer =
-		create_stream_server(mcu.get_usart_controller(), "usart0", "/tmp/micromachine");
-
-	if(usart_streamer == nullptr) {
-		fprintf(stderr, "Error: usart streamer cannot be started\n");
-		return EXIT_FAILURE;
-	}
+	stream_server usart_streamer(mcu.get_usart_controller(), "usart0", "/tmp/micromachine");
 
 	// This client print (stdout) everything is written in USART0->TX register.
-	std::unique_ptr<stream_connection> usart_printer = create_stream_connection(
-		usart_streamer->pathname(),
+	stream_connection usart_printer(
+		usart_streamer.pathname(),
 		nullptr,
 		[](const uint8_t* buffer, size_t size, void*) -> void {
 			size_t index = 0;
@@ -119,11 +113,6 @@ int main(int argc, char** argv) {
 			}
 		},
 		nullptr);
-
-	if(usart_printer == nullptr) {
-		fprintf(stderr, "Error: usart printer connection failed ('%s')\n", usart_streamer->pathname().c_str());
-		return EXIT_FAILURE;
-	}
 
 	mcu.set_io_callback([](uint8_t data) {
 		if(0 == write(STDOUT_FILENO, &data, 1)) {
@@ -155,13 +144,8 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
 	}
 
-	if (usart_streamer) {
-		usart_streamer->stop();
-	}
-
-	if (usart_printer) {
-		usart_printer->close();
-	}
+	usart_streamer.stop();
+	usart_printer.close();
 
 	return EXIT_SUCCESS;
 }
