@@ -18,6 +18,7 @@ add_library(test_common STATIC
 	framework/CodeGenerator.cpp
 	framework/TestMachine.hpp
 	framework/CpuTestFixture.hpp
+	framework/IodeviceHelpers.hpp
 	framework/MachineTestHarness.hpp
 	framework/MachineTestHarness.cpp
 	framework/Predicates.hpp

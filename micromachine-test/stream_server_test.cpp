@@ -2,10 +2,10 @@
 // Created by joel on 01/05/2020.
 //
 
+#include "framework/IodeviceHelpers.hpp"
 #include "peripherals/iodev.hpp"
 #include "stream_server.hpp"
 #include "utils/blocking_queue.hpp"
-
 #include <chrono>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -54,18 +54,6 @@ public:
 
 class RepeaterFixture : public ::testing::TestWithParam<int> {};
 
-class empty_iodevice : public iodev {
-public:
-	void send(uint8_t byte) override {}
-	bool receive(uint8_t& byte) override {
-		return false;
-	}
-	void shutdown() override {}
-
-	size_t bytes_available() const override {
-		return 0;
-	}
-};
 TEST_P(RepeaterFixture, createOne_stream_server) {
 	using namespace micromachine::system;
 	empty_iodevice dev;
