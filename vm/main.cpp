@@ -100,11 +100,30 @@ int main(int argc, char** argv) {
 	std::unique_ptr<stream_server> usart_streamer =
 		create_stream_server(mcu.get_usart_controller(), "usart0", "/tmp/micromachine");
 
-	//	iopump iopump(mcu.get_usart_controller(), [](uint8_t byte){
-//		if(0 == write(STDOUT_FILENO, &byte, 1)) {
-//			fprintf(stderr, "failed to write to stdout\n");
-//		}
-//	});
+	if(usart_streamer == nullptr) {
+		fprintf(stderr, "Error: usart streamer cannot be started\n");
+		return EXIT_FAILURE;
+	}
+
+	// This client print (stdout) everything is written in USART0->TX register.
+	std::unique_ptr<stream_connection> usart_printer = create_stream_connection(
+		usart_streamer->pathname(),
+		nullptr,
+		[](const uint8_t* buffer, size_t size, void*) -> void {
+			size_t index = 0;
+			while(index < size) {
+				if(0 == write(STDOUT_FILENO, &buffer[index], 1)) {
+					fprintf(stderr, "failed to write to stdout\n");
+				}
+				index++;
+			}
+		},
+		nullptr);
+
+	if(usart_printer == nullptr) {
+		fprintf(stderr, "Error: usart printer connection failed ('%s')\n", usart_streamer->pathname().c_str());
+		return EXIT_FAILURE;
+	}
 
 	mcu.set_io_callback([](uint8_t data) {
 		if(0 == write(STDOUT_FILENO, &data, 1)) {
@@ -136,11 +155,9 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
 	}
 
-//	if(!iopump.wait_until_flushed()) {
-//		fprintf(stderr, "Warning: Not all the device output could be flushed\n");
-//	}
-//
-//	iopump.shutdown();
+	if (usart_printer) {
+		usart_printer->close();
+	}
 
 	if (usart_streamer) {
 		usart_streamer->stop();

@@ -536,6 +536,23 @@ create_stream_server(iodev& dev,
 	}
 	return nullptr;
 }
+
+std::unique_ptr<stream_connection>
+create_stream_connection(const std::string& unix_socket_domain,
+						 const stream_connection::client_disconnect_callback_t& disconnected_callback,
+						 const stream_connection::new_data_callback_t& new_data_callback,
+						 void* user_pramm) {
+	try {
+		return std::make_unique<stream_connection>(unix_socket_domain,
+												   disconnected_callback,
+												   new_data_callback,
+												   user_pramm);
+	} catch(std::runtime_error& e) {
+		fprintf(stderr, "Error: connection failed: %s\n", e.what());
+	}
+	return nullptr;
+}
+
 } // namespace
 
 } // namespace micromachine::system
