@@ -107,9 +107,23 @@ public:
 		, _new_data_callback(std::move(new_data_callback))
 		, _user_param(user_param)
 		, _is_connected(true)
-		, _listener_is_running(true)
-		, _listener_thread(std::thread(&stream_connection::listener, this)) {
+		, _listener_is_running(false)
+	{}
 
+	explicit stream_connection(const std::string& unix_domain_socket,
+							   client_disconnect_callback_t disconnection_callback = nullptr,
+							   new_data_callback_t new_data_callback = nullptr,
+							   void* user_param = nullptr)
+
+	: _unix_domain_socket(unix_domain_socket)
+	, _socket(create_and_connect_socket(_unix_domain_socket))
+	, _disconnection_callback(std::move(disconnection_callback))
+	, _new_data_callback(std::move(new_data_callback))
+	, _user_param(user_param)
+	, _is_connected(true)
+	, _listener_is_running(true)
+	, _listener_thread(std::thread(&stream_connection::listener, this))
+	{
 		bool timeout = wait_signal(_listener_has_stared, 500);
 		if(timeout) {
 			_listener_is_running = false;
@@ -120,19 +134,20 @@ public:
 		}
 	}
 
-	explicit stream_connection(const std::string& unix_domain_socket,
-							   client_disconnect_callback_t disconnection_callback = nullptr,
-							   new_data_callback_t new_data_callback = nullptr,
-							   void* user_param = nullptr)
-		: stream_connection(create_and_connect_socket(unix_domain_socket),
-						  unix_domain_socket,
-						  std::move(disconnection_callback),
-						  std::move(new_data_callback),
-						  user_param)
-	{}
-
 	~stream_connection() {
 		close();
+	}
+
+	void start() {
+		_listener_thread = std::thread(&stream_connection::listener, this);
+		bool timeout = wait_signal(_listener_has_stared, 500);
+		if(timeout) {
+			_listener_is_running = false;
+			if(_listener_thread.joinable()) {
+				_listener_thread.join();
+			}
+			throw std::runtime_error("signal cannot be catch on time");
+		}
 	}
 
 	bool is_connected() const {
@@ -211,6 +226,7 @@ private:
 		char buffer[len] = {};
 
 		// ctor synchronization
+		_listener_is_running = true;
 		_listener_has_stared.set_value();
 
 		while(_listener_is_running) {
@@ -283,6 +299,15 @@ public:
 		if(found != _clients.end()) {
 			_clients_to_delete.push_back(std::move((*found).second));
 			_clients.erase(found);
+		}
+	}
+
+	void start(int socket) {
+		std::lock_guard<std::mutex> lock(_clients_mutex);
+
+		auto found = _clients.find(socket);
+		if(found != _clients.end()) {
+			found->second->start();
 		}
 	}
 
@@ -386,6 +411,10 @@ public:
 	}
 
 	int close() {
+
+		_iopump.wait_until_flushed();
+		_iopump.shutdown();
+
 		{
 			std::lock_guard<std::mutex> lock(_on_client_disconnect_mutex);
 			_acceptor_is_running = false;
@@ -396,9 +425,6 @@ public:
 		if(_acceptor_thread.joinable()) {
 			_acceptor_thread.join();
 		}
-
-		_iopump.wait_until_flushed();
-		_iopump.shutdown();
 
 		_clients.clear();
 
@@ -482,6 +508,7 @@ private:
 
 		_clients.add_new_client(std::make_pair(client_socket, std::move(connection)));
 		_clients.flush_delete_list();
+		_clients.start(client_socket);
 	}
 
 	/**

@@ -58,7 +58,6 @@ TEST_P(RepeaterFixture, createOne_stream_server) {
 	using namespace micromachine::system;
 	empty_iodevice dev;
 	stream_server server(dev, "dev0", "/tmp/micromachine");
-	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }
 
 TEST(streamServer, UnixSocketDomainCreationAndSuppression) {
@@ -233,7 +232,6 @@ TEST(iodeviceServer, EchoWithOneClient) {
 	stream_connection client(server.pathname(), nullptr, new_data_callback, &data_received);
 
 	ASSERT_TRUE(client.is_connected());
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	ssize_t transmitted = client.send(payload.data(), payload.size());
 	ASSERT_GT(transmitted, 0);
@@ -286,7 +284,6 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 
 	// make sure everyone is listening.
 	while(count != n_clients);
-//	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	parameters param;
 	stream_connection sender(server.pathname(), nullptr, new_data_callback, &param);
