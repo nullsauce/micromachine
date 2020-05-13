@@ -552,38 +552,5 @@ private:
 	}
 };
 
-namespace {
-std::unique_ptr<stream_server>
-create_stream_server(iodev& dev,
-					 const std::string& device_name,
-					 const std::string_view& directory = stream_server::default_directory()) {
-	try {
-		return std::make_unique<stream_server>(dev, device_name, directory);
-	} catch(std::runtime_error& e) {
-		fprintf(stderr, "Error: stream server cannot be started: %s\n", e.what());
-	} catch(std::length_error& e) {
-		fprintf(stderr, "Error: stream server cannot be started, unix domain socket path is too long\n");
-	}
-	return nullptr;
-}
-
-std::unique_ptr<stream_connection>
-create_stream_connection(const std::string& unix_socket_domain,
-						 const stream_connection::client_disconnect_callback_t& disconnected_callback,
-						 const stream_connection::new_data_callback_t& new_data_callback,
-						 void* user_pramm) {
-	try {
-		return std::make_unique<stream_connection>(unix_socket_domain,
-												   disconnected_callback,
-												   new_data_callback,
-												   user_pramm);
-	} catch(std::runtime_error& e) {
-		fprintf(stderr, "Error: connection failed: %s\n", e.what());
-	}
-	return nullptr;
-}
-
-} // namespace
-
 } // namespace micromachine::system
 #endif // MICROMACHINE_STREAM_SERVER_HPP
