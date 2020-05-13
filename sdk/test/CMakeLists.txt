@@ -13,24 +13,19 @@ set(MICROMACHINE_VM_OPTS "--testing")
 enable_testing()
 
 function(add_test_command)
-	set(oneValueArgs NAME EXECUTABLE EXPECTED_OUTPUT_FILE)
+	set(oneValueArgs NAME CUSTOM_TEST_CALLER EXECUTABLE EXPECTED_OUTPUT_FILE)
 	set(multiValueArgs VM_ARGS)
 	cmake_parse_arguments(this_test "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	add_test(NAME ${this_test_NAME}
-		COMMAND ${CMAKE_SOURCE_DIR}/test/test_caller.sh ${this_test_EXPECTED_OUTPUT_FILE} ${MICROMACHINE_VM}
-		${MICROMACHINE_VM_OPTS} ${this_test_VM_ARGS} ${this_test_EXECUTABLE}
-	)
-	set_tests_properties(${test_name} PROPERTIES LABELS sdkTests)
-endfunction()
-
-function(add_custom_test_command)
-	set(oneValueArgs NAME TEST_CALLER EXECUTABLE EXPECTED_OUTPUT_FILE)
-	set(multiValueArgs VM_ARGS)
-	cmake_parse_arguments(this_test "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	set(DEFAULT_TEST_CALLER ${CMAKE_SOURCE_DIR}/test/test_caller.sh)
+	if (DEFINED this_test_CUSTOM_TEST_CALLER)
+		set(TEST_CALLER ${this_test_CUSTOM_TEST_CALLER})
+	else ()
+		set(TEST_CALLER ${DEFAULT_TEST_CALLER})
+	endif ()
 
 	add_test(NAME ${this_test_NAME}
-			COMMAND ${this_test_TEST_CALLER} ${this_test_EXPECTED_OUTPUT_FILE} ${MICROMACHINE_VM}
+			COMMAND ${TEST_CALLER} ${this_test_EXPECTED_OUTPUT_FILE} ${MICROMACHINE_VM}
 			${MICROMACHINE_VM_OPTS} ${this_test_VM_ARGS} ${this_test_EXECUTABLE}
 			)
 	set_tests_properties(${test_name} PROPERTIES LABELS sdkTests)
@@ -98,9 +93,9 @@ add_test_command(
 		EXPECTED_OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/malloc_test/expected_stdout.txt
 )
 
-add_custom_test_command(
+add_test_command(
 	NAME usart_echoer_test
-	TEST_CALLER ${CMAKE_SOURCE_DIR}/test/usart_test/test_echoer.sh
+	CUSTOM_TEST_CALLER ${CMAKE_SOURCE_DIR}/test/usart_test/test_echoer.sh
 	EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/usart_test/usart_echoer_test
 	EXPECTED_OUTPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/usart_test/usart_echoer_expected_stdout.txt
 )
