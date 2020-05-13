@@ -155,12 +155,13 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
 	}
 
+	if (usart_streamer) {
+		usart_streamer->stop();
+	}
+
 	if (usart_printer) {
 		usart_printer->close();
 	}
 
-	if (usart_streamer) {
-		usart_streamer->stop();
-	}
 	return EXIT_SUCCESS;
 }
