@@ -16,12 +16,10 @@ echo "running test: $command_to_run"
 ${command_to_run} &
 vm_pid=$!
 
+# The application will termiate when sizeof("Welcome micromachinist!") is received
 sleep 0.1
 echo -e "Welcome micromachinist!" | nc -U "/tmp/micromachine/${vm_pid}/usart0" > ${actual_stdout_file} &
 sleep 0.1
-
-echo "kill ${vm_pid}"
-kill ${vm_pid}
 
 
 if cmp --silent ${expected_stdout_file} ${actual_stdout_file}; then

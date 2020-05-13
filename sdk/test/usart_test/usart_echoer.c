@@ -41,15 +41,12 @@ void wait_for_tx_empty(struct usart_device* dev) {
 }
 
 static void echo(struct usart_device* dev) {
-	unsigned int len = 4096;
-//	printf("[+] Data received : '");
+	unsigned int len = sizeof("Welcome micromachinist!");
 	while(len--) {
 		uint8_t rx_data = usart_read(dev);
-//		printf("%c", rx_data);
 		wait_for_tx_empty(dev);
 		dev->port->TX = rx_data;
 	}
-//	printf("'\n");
 }
 
 void main() {
