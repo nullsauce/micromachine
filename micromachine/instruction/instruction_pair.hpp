@@ -4,12 +4,17 @@
 #include "types/types.hpp"
 
 namespace micromachine::system {
+
 static bool is_wide_thumb_encoding(const uint16_t& instruction) {
 	return 0b111 == bits<13, 3>::of(instruction) && 0b00 != bits<11, 2>::of(instruction) &&
 		   0b1 != bits<11, 1>::of(instruction);
 }
-struct instruction_pair {
 
+class instruction_pair {
+private:
+	uint32_t _word;
+
+public:
 	using first_intruction_bits = bits<0, 16>;
 	using second_intruction_bits = bits<16, 16>;
 
@@ -41,18 +46,12 @@ struct instruction_pair {
 	}
 
 	bool is_wide() const {
-		return is_wide_intruction(first());
-	}
-
-	static bool is_wide_intruction(uint16_t first) {
-		return is_wide_thumb_encoding(first);
+		return is_wide_thumb_encoding(first());
 	}
 
 	const uint32_t size() const {
 		return sizeof(uint16_t) + (is_wide() * sizeof(uint16_t));
 	}
 
-private:
-	uint32_t _word;
 };
 } // namespace micromachine::system
