@@ -51,17 +51,6 @@ bool wait_signal(std::promise<void>& sync_point, unsigned int timeout_ms) {
 
 	return false;
 }
-
-void wait_signal_or_throw(std::promise<void>& sync_point, std::atomic<bool>& cond, std::thread& th) {
-	bool timeout = wait_signal(sync_point, 500);
-	if(timeout) {
-		cond = false;
-		if(th.joinable()) {
-			th.join();
-		}
-		throw std::runtime_error("signal cannot be catch on time");
-	}
-}
 }
 
 class stream_connection {
@@ -121,7 +110,14 @@ public:
 		, _listener_is_running(true)
 		, _listener_thread(std::thread(&stream_connection::listener, this)) {
 
-		wait_signal_or_throw(_listener_has_stared, _listener_is_running, _listener_thread);
+		bool timeout = wait_signal(_listener_has_stared, 500);
+		if(timeout) {
+			_listener_is_running = false;
+			if(_listener_thread.joinable()) {
+				_listener_thread.join();
+			}
+			throw std::runtime_error("signal cannot be catch on time");
+		}
 	}
 
 	explicit stream_connection(const std::string& unix_domain_socket,
@@ -351,7 +347,14 @@ public:
 		, _acceptor_is_running(true)
 		, _acceptor_thread(std::thread(&stream_server::acceptor, this)) {
 
-		wait_signal_or_throw(_acceptor_is_started, _acceptor_is_running, _acceptor_thread);
+		bool timeout = wait_signal(_acceptor_is_started, 500);
+		if(timeout) {
+			_acceptor_is_running = false;
+			if(_acceptor_thread.joinable()) {
+				_acceptor_thread.join();
+			}
+			throw std::runtime_error("signal cannot be catch on time");
+		}
 	}
 
 	virtual ~stream_server() {
