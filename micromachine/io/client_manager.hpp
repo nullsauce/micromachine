@@ -38,6 +38,10 @@ private:
 
 public:
 
+	~client_manager() {
+		clear();
+	}
+
 	void lock() {
 		_clients_mutex.lock();
 	}
@@ -54,21 +58,17 @@ public:
 		return _clients.end();
 	}
 
-	~client_manager() {
-		clear();
-	}
-
 	size_t size() {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		return _clients.size();
 	}
 
-	void add_new_client(std::unique_ptr<stream_connection>& client) {
+	void add_client(std::unique_ptr<stream_connection>& client) {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		_clients.emplace(client.get(), std::move(client));
 	}
 
-	void flush_delete_list() {
+	void delete_removed_clients() {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		_clients_to_delete.clear();
 	}
