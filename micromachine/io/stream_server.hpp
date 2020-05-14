@@ -23,8 +23,8 @@
 #include "helpers/check.hpp"
 #include "io/helpers.hpp"
 #include "peripherals/iodev.hpp"
-#include "client_manager.hpp"
-#include "stream_connection.hpp"
+#include "io/client_manager.hpp"
+#include "io/stream_connection.hpp"
 
 namespace micromachine::system {
 
