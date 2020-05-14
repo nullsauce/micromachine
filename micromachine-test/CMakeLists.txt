@@ -12,19 +12,59 @@ set(ALL_TEST_OBJS "")
 # all test targets link to this library and automatically
 # inherit the proper includes and libraries
 add_library(test_common STATIC
+	framework/predicates/APSRFlagsStatePredicate.hpp
+	framework/predicates/APSRFlagsStatePredicate.cpp
+	framework/predicates/BankedStackPointerStatePredicate.hpp
+	framework/predicates/BankedStackPointerStatePredicate.cpp
+	framework/predicates/ControlRegStatePredicate.hpp
+	framework/predicates/ControlRegStatePredicate.cpp
+	framework/predicates/EPSRFlagsStatePredicate.hpp
+	framework/predicates/EPSRFlagsStatePredicate.cpp
+	framework/predicates/ExceptionActiveStatePredicate.hpp
+	framework/predicates/ExceptionActiveStatePredicate.cpp
+	framework/predicates/ExceptionPendingStatePredicate.hpp
+	framework/predicates/ExceptionPendingStatePredicate.cpp
+	framework/predicates/ExceptionPriorityStatePredicate.hpp
+	framework/predicates/ExceptionPriorityStatePredicate.cpp
+	framework/predicates/ExceptionStatePredicate.hpp
+	framework/predicates/ExceptionStatePredicate.cpp
+	framework/predicates/ExceptionStatePredicateBuilder.hpp
+	framework/predicates/ExecutionModeStatePredicate.hpp
+	framework/predicates/ExecutionModeStatePredicate.cpp
+	framework/predicates/IPSRStatePredicate.hpp
+	framework/predicates/IPSRStatePredicate.cpp
+	framework/predicates/MemoryStateEqualityChecker.hpp
+	framework/predicates/MemoryStateEqualityChecker.cpp
+	framework/predicates/MemoryValue32Predicate.hpp
+	framework/predicates/MemoryValue32Predicate.cpp
+	framework/predicates/MemoryValuePredicate.hpp
+	framework/predicates/MemoryValuePredicateBuilder.hpp
+	framework/predicates/PredicateAggregate.hpp
+	framework/predicates/PrimaskStatePredicate.hpp
+	framework/predicates/PrimaskStatePredicate.cpp
+	framework/predicates/RegisterEqualityPredicate.hpp
+	framework/predicates/RegisterEqualityPredicate.cpp
+	framework/predicates/RegistersPushedStatePredicate.hpp
+	framework/predicates/RegistersPushedStatePredicate.cpp
+	framework/predicates/RegisterStatePredicateBuilder.hpp
+	framework/predicates/RegisterUnsignedDecrementPredicate.hpp
+	framework/predicates/RegisterUnsignedDecrementPredicate.cpp
+	framework/predicates/RegisterUnsignedIncrementPredicate.hpp
+	framework/predicates/RegisterUnsignedIncrementPredicate.cpp
+	framework/predicates/ValueFormaters.hpp
+	framework/predicates/ValueFormaters.cpp
 	framework/CpuTestHarness.hpp
 	framework/CpuTestHarness.cpp
 	framework/CodeGenerator.hpp
 	framework/CodeGenerator.cpp
 	framework/TestMachine.hpp
+	framework/TestMachine.cpp
 	framework/CpuTestFixture.hpp
 	framework/IodeviceHelpers.hpp
 	framework/MachineTestHarness.hpp
 	framework/MachineTestHarness.cpp
 	framework/Predicates.hpp
 	framework/Predicates.cpp
-	framework/PredicateHelpers.hpp
-	framework/PredicateHelpers.cpp
 	framework/TestHelpers.hpp
 )
 

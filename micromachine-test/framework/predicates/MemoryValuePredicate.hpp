@@ -4,12 +4,6 @@
 
 #pragma once
 
-#include "mcu.hpp"
-
-#include <gtest/gtest.h>
-#include <string>
-#include <types/types.hpp>
-
 namespace micromachine::testing {
 
 class MemoryValuePredicate {

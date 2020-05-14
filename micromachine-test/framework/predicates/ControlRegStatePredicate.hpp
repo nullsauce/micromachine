@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "mcu.hpp"
+#include "mcu_foward_decl.hpp"
 
 #include <gtest/gtest.h>
 
@@ -16,56 +16,20 @@ protected:
 	const bool _expectedSpSelectionFlag;
 
 public:
-	ControlRegStatePredicate(bool nPrivFlag, bool spSelectionFlag)
-		: _expectednPrivFlag(nPrivFlag)
-		, _expectedSpSelectionFlag(spSelectionFlag) {}
-
-	ControlRegStatePredicate(const mcu& expected)
-		: _expectednPrivFlag(getnPrivFlagFrom(expected))
-		, _expectedSpSelectionFlag(getSpSelectionFlagFrom(expected))
-	{}
-
-	void apply(mcu& expected) {
-		expected.get_cpu().special_regs().control_register().n_priv() = _expectednPrivFlag;
-		expected.get_cpu().special_regs().control_register().sp_sel() = _expectedSpSelectionFlag;
-	}
-
-	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT3(assertEquality,
-							_expectednPrivFlag, getnPrivFlagFrom(actual),
-							"nPRIV");
-
-		EXPECT_PRED_FORMAT3(assertEquality,
-							_expectednPrivFlag, getSpSelectionFlagFrom(actual),
-							"SPSEL");
-	}
+	ControlRegStatePredicate(bool nPrivFlag, bool spSelectionFlag);
+	ControlRegStatePredicate(const micromachine::system::mcu& expected);
+	void apply(micromachine::system::mcu& expected);
+	void check(const micromachine::system::mcu& actual) const;
 
 private:
-	static bool getnPrivFlagFrom(const mcu& target) {
-		return target.get_cpu().special_regs().control_register().n_priv();
-	}
-
-	static bool getSpSelectionFlagFrom(const mcu& target) {
-		return target.get_cpu().special_regs().control_register().sp_sel();
-	}
-
+	static bool getnPrivFlagFrom(const micromachine::system::mcu& target);
+	static bool getSpSelectionFlagFrom(const micromachine::system::mcu& target);
 	::testing::AssertionResult assertEquality(const char*,
 											  const char*,
 											  const char*,
 											  bool expectedFlagStatus,
 											  bool actualFlagStatus,
-											  const char* flagName) const {
-
-		if(expectedFlagStatus == actualFlagStatus) {
-			return ::testing::AssertionSuccess();
-		}
-
-		return ::testing::AssertionFailure()
-			   << "Equality check fail for CONTROL." << flagName << " flag" << std::endl
-			   << " * Expected: CONTROL." << flagName << " flag is " << (expectedFlagStatus ? "set" : "clear")
-			   << std::endl
-			   << " * Actual  : CONTROL." << flagName << " flag is " << (actualFlagStatus ? "set" : "clear");
-	}
+											  const char* flagName) const;
 };
 
 }

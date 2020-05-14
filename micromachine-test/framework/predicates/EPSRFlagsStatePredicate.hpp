@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "mcu.hpp"
+#include "mcu_foward_decl.hpp"
 
 #include <gtest/gtest.h>
 
@@ -17,44 +17,21 @@ protected:
 	const bool _expectedThumbFlag;
 
 public:
-	EPSRFlagsStatePredicate(bool expectedThumbFlag)
-		: _expectedThumbFlag(expectedThumbFlag) {}
-
-	EPSRFlagsStatePredicate(const mcu& expected)
-		: EPSRFlagsStatePredicate(getThumbFlagValueFrom(expected)) {}
-
-	void apply(mcu& expected) {
-		expected.get_cpu().special_regs().execution_status_register().thumb_flag() = _expectedThumbFlag;
-	}
-
-	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT3(assertEquality, _expectedThumbFlag, getThumbFlagValueFrom(actual), "T");
-		EXPECT_PRED_FORMAT3(assertEquality, false, getStackAlignFlagValueFrom(actual), "a");
-	}
+	EPSRFlagsStatePredicate(bool expectedThumbFlag);
+	EPSRFlagsStatePredicate(const micromachine::system::mcu& expected);
+	void apply(micromachine::system::mcu& expected);
+	void check(const micromachine::system::mcu& actual) const;
 
 private:
-	static bool getThumbFlagValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().execution_status_register().thumb_flag();
-	}
+	static bool getThumbFlagValueFrom(const micromachine::system::mcu& target);
+	static bool getStackAlignFlagValueFrom(const micromachine::system::mcu& target);
 
-	static bool getStackAlignFlagValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().execution_status_register().stack_align_flag();
-	}
-
-	::testing::AssertionResult
-	assertEquality(const char*, const char*,
-					const char*, bool expectedFlagValue, bool actualFlagValue , const char* flagName) const {
-
-		if(expectedFlagValue == actualFlagValue) {
-			return ::testing::AssertionSuccess();
-		}
-
-		return ::testing::AssertionFailure()
-			   << "Equality check fail for EPSR." << flagName << std::endl
-			   << " * Expected: EPSR." << flagName << " is " << (expectedFlagValue ? "set" : "clear") << std::endl
-			   << " * Actual  : EPSR." << flagName << " is " << (actualFlagValue ? "set" : "clear");
-	}
-
+	::testing::AssertionResult assertEquality(const char*,
+											  const char*,
+											  const char*,
+											  bool expectedFlagValue,
+											  bool actualFlagValue,
+											  const char* flagName) const;
 };
 
-}
+} // namespace micromachine::testing
