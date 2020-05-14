@@ -32,10 +32,9 @@ namespace micromachine::system {
  */
 class client_manager {
 private:
-	using af_unix_connection_type = std::unique_ptr<stream_connection>;
 	std::mutex _clients_mutex;
-	std::__cxx11::list<af_unix_connection_type> _clients_to_delete;
 	std::unordered_map<stream_connection*, std::unique_ptr<stream_connection>> _clients;
+	std::unordered_set<std::unique_ptr<stream_connection>> _clients_to_delete;
 
 public:
 	~client_manager() {
