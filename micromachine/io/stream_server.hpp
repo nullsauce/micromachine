@@ -205,9 +205,12 @@ private:
 			std::bind(&stream_server::data_receive_from_client_evt, this, _1, _2, _3),
 			nullptr);
 
+		// grab a weak reference on the connection
+		// so that we can call start after moving the unique ptr
+		stream_connection* client = connection.get();
 		_clients.add_new_client(std::make_pair(client_socket, std::move(connection)));
+		client->start();
 		_clients.flush_delete_list();
-		_clients.start(client_socket);
 	}
 
 	/**
