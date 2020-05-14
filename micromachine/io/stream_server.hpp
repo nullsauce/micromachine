@@ -66,7 +66,7 @@ public:
 		, _directory(directory)
 		, _socket(create_and_bind_socket(_device_name, _directory, _pathname, _location))
 		, _iodev(dev)
-		, _iopump(_iodev, std::bind(&client_manager::broadcast, &_clients, std::placeholders::_1))
+		, _iopump(_iodev, std::bind(&stream_server::broadcast, this, std::placeholders::_1))
 		, _acceptor_is_running(true)
 		, _acceptor_thread(std::thread(&stream_server::acceptor, this)) {
 
@@ -106,6 +106,13 @@ public:
 
 	size_t client_size() {
 		return _clients.size();
+	}
+
+	void broadcast(uint8_t byte) {
+		std::lock_guard<client_manager> lock(_clients);
+		for(auto& [_, client] : _clients) {
+			client->send(byte);
+		}
 	}
 
 	int close() {
