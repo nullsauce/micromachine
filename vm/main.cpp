@@ -1,11 +1,12 @@
 
 #include <cxxopts.hpp>
 
+#include "gdb-server.hpp"
+#include "io/stream_server.hpp"
 #include "mcu.hpp"
 #include "peripherals/iodev.hpp"
 #include "programmer.hpp"
-#include "gdb-server.hpp"
-#include "stream_server.hpp"
+#include "stream_connection.hpp"
 
 #include <chrono>
 #include <unistd.h>

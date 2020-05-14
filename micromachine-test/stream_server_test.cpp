@@ -3,8 +3,9 @@
 //
 
 #include "framework/IodeviceHelpers.hpp"
+#include "io/stream_server.hpp"
+#include "io/stream_connection.hpp"
 #include "peripherals/iodev.hpp"
-#include "stream_server.hpp"
 #include "utils/blocking_queue.hpp"
 #include <chrono>
 #include <fstream>
