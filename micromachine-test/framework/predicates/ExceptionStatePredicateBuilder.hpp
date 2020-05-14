@@ -25,7 +25,7 @@ public:
 		return {_exception, state};
 	}
 
-	ExceptionPriorityStatePredicate hasPriorityOf(exception::priority_t priority) {
+	ExceptionPriorityStatePredicate hasPriorityOf(micromachine::system::exception::priority_t priority) {
 		return {_exception, priority};
 	}
 

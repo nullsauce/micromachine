@@ -6,23 +6,16 @@
 #pragma once
 
 #include "exception/exception.hpp"
-#include "mcu.hpp"
-
-#include <gtest/gtest.h>
 
 namespace micromachine::testing {
 
 class ExceptionStatePredicate {
 protected:
-	const exception _exception;
-
-	static std::string exceptionDetailedName(exception e) {
-		return e.name() + " (number=" + std::to_string(e) + ")";
-	}
+	const micromachine::system::exception _exception;
+	static std::string exceptionDetailedName(micromachine::system::exception e);
 
 public:
-	ExceptionStatePredicate(exception exception)
-		: _exception(exception) {}
+	ExceptionStatePredicate(micromachine::system::exception exception);
 };
 
-}
+} // namespace micromachine::testing

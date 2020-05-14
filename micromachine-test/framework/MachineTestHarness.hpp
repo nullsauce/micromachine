@@ -54,6 +54,12 @@ struct over_all<T> {
 
 }
 
+namespace micromachine::system {
+	class mcu;
+	class cpu;
+}
+
+
 namespace micromachine::testing {
 
 class MachineTestHarness : public ::testing::Test {
@@ -113,9 +119,8 @@ protected:
 		// step the reference state
 		actualState.step();
 
-		// check that the predicted state is globally equal to the actual state
-		// this will detect any difference not explicitly covered by the predicates
-		// apply the transforms to the predicted state
+		// check that the predicted state is globally equal to the reference state
+		// this will detect any difference not explicitly covered by the predicates.
 		over_all<Args...>::for_each([&](const auto&& predicate) { predicate.check(actualState); },
 									std::forward<Args>(predicates)...);
 

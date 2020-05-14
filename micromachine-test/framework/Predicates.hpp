@@ -7,16 +7,16 @@
 #pragma once
 
 #include "predicates/APSRFlagsStatePredicate.hpp"
+#include "predicates/BankedStackPointerStatePredicate.hpp"
+#include "predicates/ControlRegStatePredicate.hpp"
 #include "predicates/EPSRFlagsStatePredicate.hpp"
 #include "predicates/ExceptionStatePredicateBuilder.hpp"
 #include "predicates/ExecutionModeStatePredicate.hpp"
-#include "predicates/MemoryValuePredicateBuilder.hpp"
-#include "predicates/MemoryStateEqualityChecker.hpp"
-#include "predicates/PrimaskStateRepdicate.hpp"
-#include "predicates/RegisterStatePredicateBuilder.hpp"
 #include "predicates/IPSRStatePredicate.hpp"
-#include "predicates/ControlRegStatePredicate.hpp"
-#include "predicates/BankedStackPointerStatePredicate.hpp"
+#include "predicates/MemoryStateEqualityChecker.hpp"
+#include "predicates/MemoryValuePredicateBuilder.hpp"
+#include "predicates/PrimaskStatePredicate.hpp"
+#include "predicates/RegisterStatePredicateBuilder.hpp"
 
 namespace micromachine::testing {
 	APSRFlagsStatePredicate apsrFlagsEquals(const char apsrFlagStr[4]);

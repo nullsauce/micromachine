@@ -9,14 +9,13 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-
-#include "mcu.hpp"
-
 #include <algorithm>
 #include <cstddef>
 #include <gtest/gtest.h>
 #include <utility>
 #include <string>
+
+#include "mcu_foward_decl.hpp"
 
 namespace micromachine::testing {
 
@@ -99,67 +98,22 @@ protected:
 	APSRFlags _expected;
 
 public:
-	APSRFlagsStatePredicate(std::string flagStr)
-		: _expected(flagStr) {
-	}
-
-	APSRFlagsStatePredicate(const mcu& expected)
-		: _expected(
-			getNegativeFlagValueFrom(expected),
-			getZeroFlagValueFrom(expected),
-			getCarryFlagValueFrom(expected),
-			getOverflowFlagValueFrom(expected)
-		) {}
-
-	void apply(mcu& expected) {
-		expected.get_cpu().special_regs().app_status_register().negative_flag() = _expected.negativeFlag;
-		expected.get_cpu().special_regs().app_status_register().zero_flag() = _expected.zeroFlag;
-		expected.get_cpu().special_regs().app_status_register().carry_flag() = _expected.carryFlag;
-		expected.get_cpu().special_regs().app_status_register().overflow_flag() = _expected.overflowFlag;
-	}
-
-	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT3(assertEquality, _expected.negativeFlag, getNegativeFlagValueFrom(actual), "negative");
-		EXPECT_PRED_FORMAT3(assertEquality, _expected.zeroFlag, getZeroFlagValueFrom(actual), "zero");
-		EXPECT_PRED_FORMAT3(assertEquality, _expected.carryFlag, getCarryFlagValueFrom(actual), "carry");
-		EXPECT_PRED_FORMAT3(assertEquality, _expected.overflowFlag, getOverflowFlagValueFrom(actual), "overflow");
-	}
+	APSRFlagsStatePredicate(std::string flagStr);
+	APSRFlagsStatePredicate(const micromachine::system::mcu& expected);
+	void apply(micromachine::system::mcu& expected);
+	void check(const micromachine::system::mcu& actual) const;
 
 private:
-	static bool getNegativeFlagValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().app_status_register().negative_flag();
-	}
-
-	static bool getZeroFlagValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().app_status_register().zero_flag();
-	}
-
-	static bool getCarryFlagValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().app_status_register().carry_flag();
-	}
-
-	static bool getOverflowFlagValueFrom(const mcu& target) {
-		return target.get_cpu().special_regs().app_status_register().overflow_flag();
-	}
-
-
-
+	static bool getNegativeFlagValueFrom(const micromachine::system::mcu& target);
+	static bool getZeroFlagValueFrom(const micromachine::system::mcu& target);
+	static bool getCarryFlagValueFrom(const micromachine::system::mcu& target);
+	static bool getOverflowFlagValueFrom(const micromachine::system::mcu& target);
 	::testing::AssertionResult assertEquality(const char*,
 											  const char*,
 											  const char*,
 											  bool expectedFlagStatus,
 											  bool actualFlagStatus,
-											  const char* flagName) const {
-
-		if(expectedFlagStatus == actualFlagStatus) {
-			return ::testing::AssertionSuccess();
-		}
-
-		return ::testing::AssertionFailure()
-			   << "Equality check fail for APSR " << flagName << " flag" << std::endl
-			   << " * Expected: " << flagName << " flag is " << (expectedFlagStatus ? "set" : "clear") << std::endl
-			   << " * Actual  : " << flagName << " flag is " << (actualFlagStatus ? "set" : "clear");
-	}
+											  const char* flagName) const;
 };
 
 }

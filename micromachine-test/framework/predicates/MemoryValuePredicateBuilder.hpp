@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "mcu.hpp"
-
 #include "MemoryValue32Predicate.hpp"
 
 namespace micromachine::testing {

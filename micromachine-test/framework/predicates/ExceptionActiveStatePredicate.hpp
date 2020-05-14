@@ -7,6 +7,9 @@
 
 #include "ExceptionStatePredicate.hpp"
 
+#include "mcu_foward_decl.hpp"
+#include <gtest/gtest.h>
+
 namespace micromachine::testing {
 
 class ExceptionActiveStatePredicate : public ExceptionStatePredicate {
@@ -14,37 +17,14 @@ private:
 	const bool _expectedActiveState;
 
 public:
-	ExceptionActiveStatePredicate(exception exceptionType, bool expectedActiveState)
-		: ExceptionStatePredicate(exceptionType)
-		, _expectedActiveState(expectedActiveState) {}
-
-	ExceptionActiveStatePredicate(exception exceptionType, const mcu& expected)
-		: ExceptionActiveStatePredicate(exceptionType, expected.exceptions().is_active(exceptionType))
-	{}
-
-	void apply(mcu& expected) {
-		expected.exceptions().set_active(_exception, _expectedActiveState);
-	}
-
-	void check(const mcu& actual) const {
-		EXPECT_PRED_FORMAT2(assertEquality, _expectedActiveState, actual.exceptions().is_active(_exception));
-	}
+	ExceptionActiveStatePredicate(micromachine::system::exception exceptionType, bool expectedActiveState);
+	ExceptionActiveStatePredicate(micromachine::system::exception exceptionType, const micromachine::system::mcu& expected);
+	void apply(micromachine::system::mcu& expected);
+	void check(const micromachine::system::mcu& actual) const;
 
 private:
 	::testing::AssertionResult
-	assertEquality(const char*, const char*, bool expectedActiveState, bool actualActiveState) const {
-
-		if(expectedActiveState == actualActiveState) {
-			return ::testing::AssertionSuccess();
-		}
-
-		return ::testing::AssertionFailure()
-			   << "Equality check fail for active status of Exception " << exceptionDetailedName(_exception) << std::endl
-			   << " * Expected: " << _exception.name() << " is "
-			   << (expectedActiveState ? "active" : "NOT active") << std::endl
-			   << " * Actual  : " << _exception.name() << " is "
-			   << (actualActiveState ? "active" : "NOT active") << std::endl;
-	}
+	assertEquality(const char*, const char*, bool expectedActiveState, bool actualActiveState) const;
 };
 
-}
+} // namespace micromachine::testing
