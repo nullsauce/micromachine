@@ -73,7 +73,9 @@ set(SRCS
 	nvic.hpp
 	programmer.hpp
 	systick.hpp
-	stream_server.hpp
+	io/stream_server.hpp
+	io/stream_connection.hpp
+	io/client_manager.hpp
 )
 
 add_library(micromachine STATIC ${SRCS})
