@@ -18,6 +18,7 @@
 #include <future>
 #include <list>
 #include <map>
+#include <unordered_set>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <thread>
@@ -32,10 +33,9 @@ namespace micromachine::system {
 class client_manager {
 private:
 	using af_unix_connection_type = std::unique_ptr<stream_connection>;
-	using connection_pair = std::pair<int, af_unix_connection_type>;
 	std::mutex _clients_mutex;
-	std::map<int, af_unix_connection_type> _clients;
 	std::__cxx11::list<af_unix_connection_type> _clients_to_delete;
+	std::unordered_map<stream_connection*, std::unique_ptr<stream_connection>> _clients;
 
 public:
 	~client_manager() {
@@ -47,9 +47,9 @@ public:
 		return _clients.size();
 	}
 
-	void add_new_client(connection_pair connection) {
+	void add_new_client(std::unique_ptr<stream_connection>& client) {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
-		_clients.emplace(std::move(connection));
+		_clients.emplace(client.get(), std::move(client));
 	}
 
 	void flush_delete_list() {
@@ -59,10 +59,9 @@ public:
 
 	void remove_client(stream_connection& connection) {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
-
-		auto found = _clients.find(connection.socket());
+		auto found = _clients.find(&connection);
 		if(found != _clients.end()) {
-			_clients_to_delete.push_back(std::move((*found).second));
+			_clients_to_delete.emplace(std::move(found->second));
 			_clients.erase(found);
 		}
 	}
@@ -80,7 +79,7 @@ public:
 		// send data to connected tcp clients
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 
-		for(auto& [socket, client] : _clients) {
+		for(auto& [_, client] : _clients) {
 			client->send(byte);
 		}
 	}
