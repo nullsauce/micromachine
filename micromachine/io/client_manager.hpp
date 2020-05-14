@@ -67,15 +67,6 @@ public:
 		}
 	}
 
-	void start(int socket) {
-		std::lock_guard<std::mutex> lock(_clients_mutex);
-
-		auto found = _clients.find(socket);
-		if(found != _clients.end()) {
-			found->second->start();
-		}
-	}
-
 	void clear() {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		for(auto& [_, client] : _clients) {
