@@ -37,6 +37,23 @@ private:
 	std::unordered_set<std::unique_ptr<stream_connection>> _clients_to_delete;
 
 public:
+
+	void lock() {
+		_clients_mutex.lock();
+	}
+
+	void unlock() {
+		_clients_mutex.unlock();
+	}
+
+	auto begin() const {
+		return _clients.begin();
+	}
+
+	auto end() const {
+		return _clients.end();
+	}
+
 	~client_manager() {
 		clear();
 	}
@@ -72,15 +89,6 @@ public:
 		}
 		_clients.clear();
 		_clients_to_delete.clear();
-	}
-
-	void broadcast(uint8_t byte) {
-		// send data to connected tcp clients
-		std::lock_guard<std::mutex> lock(_clients_mutex);
-
-		for(auto& [_, client] : _clients) {
-			client->send(byte);
-		}
 	}
 };
 
