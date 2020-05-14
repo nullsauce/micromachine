@@ -63,7 +63,7 @@ public:
 		return _clients.size();
 	}
 
-	void add_client(std::unique_ptr<stream_connection>& client) {
+	void add_client(std::unique_ptr<stream_connection> client) {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		_clients.emplace(client.get(), std::move(client));
 	}

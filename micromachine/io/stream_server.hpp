@@ -215,7 +215,7 @@ private:
 		// grab a weak reference on the connection
 		// so that we can call start after moving the unique ptr
 		stream_connection* client = connection.get();
-		_clients.add_client(connection);
+		_clients.add_client(std::move(connection));
 		client->start();
 		_clients.delete_removed_clients();
 	}
