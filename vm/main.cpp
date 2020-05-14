@@ -6,7 +6,6 @@
 #include "mcu.hpp"
 #include "peripherals/iodev.hpp"
 #include "programmer.hpp"
-#include "stream_connection.hpp"
 
 #include <chrono>
 #include <unistd.h>
