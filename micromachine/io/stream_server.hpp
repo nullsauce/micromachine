@@ -53,7 +53,7 @@ private:
 	/**
 	 * Waitable signal for starting _acceptor_thread
 	 */
-	interruptible_signal _acceptor_thread_ready;
+	waitable_condition _acceptor_thread_ready;
 	std::thread _acceptor_thread;
 
 	static constexpr int LISTEN_BACKLOG_SIZE = 5;
@@ -70,7 +70,7 @@ public:
 		, _accept_connections(true)
 		, _acceptor_thread(std::thread(&stream_server::accept_loop, this)) {
 
-		if(interruptible_signal::ok != _acceptor_thread_ready.wait(500ms)) {
+		if(waitable_flag::ok != _acceptor_thread_ready.wait(500ms)) {
 			close();
 			throw std::runtime_error("thread didn't start in time");
 		}

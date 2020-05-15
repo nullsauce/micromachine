@@ -9,6 +9,7 @@
 #include "helpers/check.hpp"
 #include "io/helpers.hpp"
 #include "peripherals/iodev.hpp"
+#include "utils/waitable_condition.hpp"
 
 #include <atomic>
 #include <cerrno>
@@ -26,7 +27,6 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <utils/interruptible_signal.hpp>
 
 namespace micromachine::system {
 
@@ -65,14 +65,14 @@ private:
 	 * Waitable signal set by the client thread that indicates the thread has successfully started.
 	 * This signal is used to ensure the client constructor returns only after its thread has started.
 	 */
-	interruptible_signal _listener_thread_ready;
+	waitable_condition _listener_thread_ready;
 
 	/**
 	 * Waitable signal set by the main thread that indicates to the client that it can start
 	 * reading the socket. The client thread will wait indefinitely for this signal after
 	 * initialization.
 	 */
-	interruptible_signal _start_reading;
+	waitable_condition _start_reading;
 
 	/**
 	 * The client thread. Always started by the constructor.
@@ -91,7 +91,7 @@ public:
 		, _user_param(user_param)
 		, _shutdown_requested(false)
 		, _listener_thread(std::thread(&stream_connection::listener, this)) {
-			if(interruptible_signal::ok != _listener_thread_ready.wait(500ms)) {
+			if(waitable_flag::ok != _listener_thread_ready.wait(500ms)) {
 				close();
 				throw std::runtime_error("thread didn't start in time");
 			}
