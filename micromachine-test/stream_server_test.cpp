@@ -140,7 +140,6 @@ TEST(streamConnection, ClientConnectionDataCoherance) {
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 
 	stream_connection client(server.pathname());
-	EXPECT_TRUE(client.is_connected());
 	EXPECT_GT(client.socket(), 0);
 	client.close();
 	server.stop();
@@ -157,7 +156,6 @@ TEST(streamConnection, ConnectMustSucceed) {
 
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 	stream_connection connection(server.pathname());
-	EXPECT_TRUE(connection.is_connected());
 }
 
 TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
@@ -175,7 +173,6 @@ TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
 	for(unsigned int i = 0; i < n_clients; i++) {
 		clients.emplace_back(server.pathname());
 		stream_connection& t_client = clients.back();
-		EXPECT_TRUE(t_client.is_connected());
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -232,7 +229,6 @@ TEST(iodeviceServer, EchoWithOneClient) {
 	int data_received = false;
 	stream_connection client(server.pathname(), nullptr, new_data_callback, &data_received);
 
-	ASSERT_TRUE(client.is_connected());
 
 	ssize_t transmitted = client.send(payload.data(), payload.size());
 	ASSERT_GT(transmitted, 0);
@@ -274,7 +270,6 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 		auto* param = new parameters;
 		th = std::thread([&server, &new_data_callback, param, &payload, &count]() {
 			stream_connection connection(server.pathname(), nullptr, new_data_callback, param);
-			EXPECT_TRUE(connection.is_connected());
 			count++;
 			EXPECT_FALSE(param->all_data_has_been_received.wait());
 			EXPECT_EQ(param->received_data, payload);
@@ -288,7 +283,6 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 
 	parameters param;
 	stream_connection sender(server.pathname(), nullptr, new_data_callback, &param);
-	EXPECT_TRUE(sender.is_connected());
 	sender.send(payload.data(), payload.size());
 
 	// make sure the message is broadcasted by the server
