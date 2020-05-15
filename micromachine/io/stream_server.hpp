@@ -111,7 +111,7 @@ public:
 		}
 	}
 
-	int close() {
+	void close() {
 
 		_iopump.wait_until_flushed();
 		_iopump.shutdown();
@@ -122,7 +122,7 @@ public:
 		}
 
 		::shutdown(socket(), SHUT_RDWR);
-		int r = ::close(socket());
+		::close(socket());
 
 		if(_acceptor_thread.joinable()) {
 			_acceptor_thread.join();
@@ -136,8 +136,6 @@ public:
 		if(std::filesystem::is_empty(_location, error)) {
 			std::filesystem::remove_all(_location);
 		}
-
-		return r;
 	}
 
 private:

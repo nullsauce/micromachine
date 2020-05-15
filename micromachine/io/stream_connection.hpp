@@ -124,11 +124,10 @@ public:
 		return _socket;
 	}
 
-	int close() {
-
+	void close() {
 
 		shutdown(_socket, SHUT_RDWR);
-		int r = ::close(_socket);
+		::close(_socket);
 
 		_shutdown_requested = true;
 
@@ -139,7 +138,6 @@ public:
 			_listener_thread.join();
 		}
 
-		return r;
 	}
 	void send(uint8_t byte) const {
 
