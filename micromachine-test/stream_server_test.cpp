@@ -174,8 +174,9 @@ TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
 		clients.emplace_back(server.pathname());
 	}
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	EXPECT_EQ(n_clients, server.client_size());
+	while(n_clients != server.client_count()) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
 
 	for(auto& client : clients) {
 		client.close();
