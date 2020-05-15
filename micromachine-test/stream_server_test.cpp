@@ -240,40 +240,42 @@ TEST(iodeviceServer, EchoWithOneClient) {
 	server.close();
 }
 
-TEST_P(RepeaterFixture, EchoWithSeveralClients) {
+TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClients) {
 	using namespace micromachine::system;
 
 	echoer_iodevice<uint8_t, 1024> dev;
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 	std::string str = "A funny payload for multiple clients";
-	std::vector<uint8_t> payload(str.begin(), str.end());
+	const std::vector<uint8_t> expected_payload(str.begin(), str.end());
 
 	size_t n_clients = 20;
 	std::list<std::thread> clients_thr(n_clients);
 
 	struct parameters {
+		const size_t _expected_payload_size;
 		std::vector<uint8_t> received_data;
-		waitable_signal all_data_has_been_received;
-	};
-	auto new_data_callback = [&payload](const uint8_t* buffer, size_t size, void* user_param) {
-		parameters* params = static_cast<parameters*>(user_param);
-		params->received_data.insert(params->received_data.end(), buffer, buffer + size);
+		waitable_condition all_data_has_been_received;
 
-		if(params->received_data == payload) {
-			params->all_data_has_been_received.notify();
+		parameters(size_t expected_payload_size)
+		 : _expected_payload_size(expected_payload_size) {}
+
+		void append_data(const uint8_t* buffer, size_t size) {
+			received_data.insert(received_data.end(), buffer, buffer + size);
+			if(received_data.size() == _expected_payload_size) {
+				all_data_has_been_received.set();
+			}
 		}
 	};
 
-	std::atomic<size_t> count = 0;
+	std::atomic<size_t> connected_client_count = 0;
 	for(auto& th : clients_thr) {
-		auto* param = new parameters;
-		th = std::thread([&server, &new_data_callback, param, &payload, &count]() {
-			stream_connection connection(server.pathname(), nullptr, new_data_callback, param);
-			count++;
-			EXPECT_FALSE(param->all_data_has_been_received.wait());
-			EXPECT_EQ(param->received_data, payload);
+		th = std::thread([&server, &expected_payload, &connected_client_count]() {
+			parameters params(expected_payload.size());
+			stream_connection connection(server.pathname(), nullptr, std::bind(&parameters::append_data, &params, std::placeholders::_1, std::placeholders::_2));
+			connected_client_count++;
+			EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(1000ms));
+			EXPECT_EQ(params.received_data, expected_payload);
 			connection.close();
-			delete param;
 		});
 	}
 
@@ -282,13 +284,19 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
+	parameters params(expected_payload.size());
+	stream_connection sender(server.pathname(), nullptr,
+							 std::bind(&parameters::append_data, &params, std::placeholders::_1, std::placeholders::_2));
+	sender.send(expected_payload.data(), expected_payload.size());
 
-	parameters param;
-	stream_connection sender(server.pathname(), nullptr, new_data_callback, &param);
-	sender.send(payload.data(), payload.size());
+	EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(1000ms));
+	EXPECT_EQ(params.received_data, expected_payload);
 
-	// make sure the message is broadcasted by the server
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	// give time to the server to broadcast the message to all clients
+	std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
+	// Note that it is theorically possible that the broadcast data hasn't reached all clients
+	// at this point which will cause the test to fail.
 	sender.close();
 
 	for(auto& th : clients_thr) {
