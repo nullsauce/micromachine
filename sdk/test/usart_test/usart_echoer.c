@@ -41,11 +41,11 @@ void wait_for_tx_empty(struct usart_device* dev) {
 }
 
 static void echo(struct usart_device* dev) {
-	unsigned int len = sizeof("Welcome micromachinist!");
+	unsigned int len = sizeof("Welcome micromachinist!\n") - 1;
 	while(len--) {
 		uint8_t rx_data = usart_read(dev);
-		wait_for_tx_empty(dev);
 		dev->port->TX = rx_data;
+		wait_for_tx_empty(dev);
 	}
 }
 
