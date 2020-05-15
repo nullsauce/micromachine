@@ -48,12 +48,12 @@ private:
 	client_manager _clients;
 
 	std::mutex _on_client_disconnect_mutex;
-	std::atomic<bool> _acceptor_is_running;
+	std::atomic<bool> _accept_connections;
 
 	/**
 	 * Waitable signal for starting _acceptor_thread
 	 */
-	std::promise<void> _acceptor_is_started;
+	interruptible_signal _acceptor_thread_ready;
 	std::thread _acceptor_thread;
 
 	static constexpr int LISTEN_BACKLOG_SIZE = 5;
@@ -67,16 +67,12 @@ public:
 		, _socket(create_and_bind_socket(_device_name, _directory, _pathname, _location))
 		, _iodev(dev)
 		, _iopump(_iodev, std::bind(&stream_server::broadcast, this, std::placeholders::_1))
-		, _acceptor_is_running(true)
-		, _acceptor_thread(std::thread(&stream_server::acceptor, this)) {
+		, _accept_connections(true)
+		, _acceptor_thread(std::thread(&stream_server::accept_loop, this)) {
 
-		bool timeout = wait_signal(_acceptor_is_started, 500);
-		if(timeout) {
-			_acceptor_is_running = false;
-			if(_acceptor_thread.joinable()) {
-				_acceptor_thread.join();
-			}
-			throw std::runtime_error("signal cannot be catch on time");
+		if(interruptible_signal::ok != _acceptor_thread_ready.wait(500ms)) {
+			close();
+			throw std::runtime_error("thread didn't start in time");
 		}
 	}
 
@@ -118,7 +114,7 @@ public:
 
 		{
 			std::lock_guard<std::mutex> lock(_on_client_disconnect_mutex);
-			_acceptor_is_running = false;
+			_accept_connections = false;
 		}
 
 		::shutdown(socket(), SHUT_RDWR);
@@ -222,21 +218,22 @@ private:
 	void acceptor() {
 
 		// ctor synchronization
-		_acceptor_is_started.set_value();
-		while(_acceptor_is_running) {
+		_acceptor_thread_ready.set();
+
+		while(_accept_connections) {
 
 			int client_socket = ::accept(_socket, nullptr, nullptr);
 			if(client_socket <= 0) {
 				continue;
 			}
 
-			if(!_acceptor_is_running) {
+			if(!_accept_connections) {
 				break;
 			}
 
 			add_new_connection(client_socket);
 		}
-		_acceptor_is_running = false;
+		_accept_connections = false;
 	}
 
 	void client_disconnect_evt(stream_connection& client) {
