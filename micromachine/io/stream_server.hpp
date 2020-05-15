@@ -88,7 +88,6 @@ public:
 		return DEFAULT_DIRECTORY;
 	}
 
-
 	const int& socket() {
 		return _socket;
 	}
@@ -204,7 +203,6 @@ private:
 		using namespace std::placeholders;
 		auto connection = std::make_unique<stream_connection>(
 			client_socket,
-			pathname(),
 			std::bind(&stream_server::client_disconnect_evt, this, _1),
 			std::bind(&stream_server::data_receive_from_client_evt, this, _1, _2, _3),
 			nullptr);
