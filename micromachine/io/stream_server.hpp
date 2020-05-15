@@ -96,7 +96,7 @@ public:
 		return _location;
 	}
 
-	size_t client_size() {
+	size_t client_count() {
 		return _clients.size();
 	}
 

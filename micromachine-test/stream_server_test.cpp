@@ -121,7 +121,7 @@ TEST(streamServer, ClientSizeMustBeZeroAfterServerInstanciation) {
 	empty_iodevice dev;
 
 	stream_server server(dev, "dev0", "/tmp/micromachine");
-	EXPECT_EQ(0, server.client_size());
+	EXPECT_EQ(0, server.client_count());
 	server.close();
 }
 
@@ -167,7 +167,7 @@ TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
 
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 
-	EXPECT_EQ(0, server.client_size());
+	EXPECT_EQ(0, server.client_count());
 
 	std::list<stream_connection> clients;
 	for(unsigned int i = 0; i < n_clients; i++) {
@@ -182,7 +182,7 @@ TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(20));
-	EXPECT_EQ(0, server.client_size());
+	EXPECT_EQ(0, server.client_count());
 	server.close();
 }
 
