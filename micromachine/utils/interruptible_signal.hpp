@@ -19,6 +19,13 @@ private:
 	std::mutex _mutex;
 
 public:
+
+	enum result {
+		ok,
+		interrupted,
+		timeout
+	};
+
 	interruptible_signal(bool flag)
 		: _flag(flag)
 		, _interrupted(false) {}
@@ -36,23 +43,28 @@ public:
 		set();
 	}
 
-	bool wait(uint64_t timeout_micros = 0) {
+	result wait() {
+		return wait(std::chrono::duration_values<std::chrono::milliseconds>::zero());
+	}
+
+	template <typename _Rep, typename _Period>
+	result wait(const std::chrono::duration<_Rep, _Period>& timeout_duration) {
 
 		if(!_flag) {
 			std::unique_lock<std::mutex> lock(_mutex);
 
 			if(_interrupted) {
-				return false;
+				return result::interrupted;
 			}
 
-			if(timeout_micros) {
+			if(timeout_duration > std::chrono::duration<_Rep, _Period>::zero()) {
 
-				bool timed_out = _signal.wait_for(lock, std::chrono::microseconds(timeout_micros), [this]() {
+				bool not_timed_out = _signal.wait_for(lock, timeout_duration, [this]() {
 					return (_interrupted || _flag);
 				});
 
-				if(!timed_out) {
-					return false;
+				if(!not_timed_out) {
+					return result::timeout;
 				}
 
 			} else {
@@ -62,7 +74,7 @@ public:
 
 		_flag = false;
 
-		return !_interrupted;
+		return _interrupted ? result::interrupted : result::ok;
 	}
 };
 

@@ -10,7 +10,6 @@
 #include "io/helpers.hpp"
 #include "peripherals/iodev.hpp"
 
-#include <arpa/inet.h>
 #include <atomic>
 #include <cerrno>
 #include <cstring>
@@ -19,13 +18,19 @@
 #include <future>
 #include <list>
 #include <map>
+#include <thread>
+#include <utility>
+#include <chrono>
+
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <thread>
 #include <unistd.h>
-#include <utility>
+#include <utils/interruptible_signal.hpp>
 
 namespace micromachine::system {
+
+using namespace std::chrono_literals;
 
 class stream_connection {
 public:
@@ -33,8 +38,7 @@ public:
 	using new_data_callback_t = std::function<void(const uint8_t* buffer, size_t size, void* user_param)>;
 
 private:
-	const std::string& _unix_domain_socket;
-	int _socket;
+	const int _socket;
 
 	/**
 	 * Called whenever a connection has been disconnected.
@@ -51,71 +55,69 @@ private:
 	 */
 	void* _user_param;
 
-
-	std::atomic<bool> _listener_is_running;
+	/**
+	 * Flag set by the main thread that indicates to the client thread that it should stop
+	 * read operations and exit.
+	 */
+	std::atomic<bool> _shutdown_requested;
 
 	/**
-	 * Waitable signal for starting _listener_thread
+	 * Waitable signal set by the client thread that indicates the thread has successfully started.
+	 * This signal is used to ensure the client constructor returns only after its thread has started.
 	 */
-	std::promise<void> _listener_has_stared;
+	interruptible_signal _listener_thread_ready;
 
 	/**
-	 * Waitable signal for stopping _listener_thread
+	 * Waitable signal set by the main thread that indicates to the client that it can start
+	 * reading the socket. The client thread will wait indefinitely for this signal after
+	 * initialization.
 	 */
-	std::promise<void> _listener_has_stopped;
+	interruptible_signal _start_reading;
+
+	/**
+	 * The client thread. Always started by the constructor.
+	 */
 	std::thread _listener_thread;
 
 public:
 	// create stream_connection from a connected socket
 	stream_connection(const int socket,
-					  const std::string& unix_domain_socket,
 					  client_disconnect_callback_t disconnection_callback = nullptr,
 					  new_data_callback_t new_data_callback = nullptr,
 					  void* user_param = nullptr)
-		: _unix_domain_socket(unix_domain_socket)
-		, _socket(socket)
+		: _socket(socket)
 		, _disconnection_callback(std::move(disconnection_callback))
 		, _new_data_callback(std::move(new_data_callback))
 		, _user_param(user_param)
-		, _listener_is_running(false) {}
-
-	explicit stream_connection(const std::string& unix_domain_socket,
-							   client_disconnect_callback_t disconnection_callback = nullptr,
-							   new_data_callback_t new_data_callback = nullptr,
-							   void* user_param = nullptr)
-
-		: _unix_domain_socket(unix_domain_socket)
-		, _socket(create_and_connect_socket(_unix_domain_socket))
-		, _disconnection_callback(std::move(disconnection_callback))
-		, _new_data_callback(std::move(new_data_callback))
-		, _user_param(user_param)
-		, _listener_is_running(true)
+		, _shutdown_requested(false)
 		, _listener_thread(std::thread(&stream_connection::listener, this)) {
-		bool timeout = wait_signal(_listener_has_stared, 500);
-		if(timeout) {
-			_listener_is_running = false;
-			if(_listener_thread.joinable()) {
-				_listener_thread.join();
+			if(interruptible_signal::ok != _listener_thread_ready.wait(500ms)) {
+				close();
+				throw std::runtime_error("thread didn't start in time");
 			}
-			throw std::runtime_error("signal cannot be catch on time");
 		}
+
+	stream_connection(const std::string& unix_domain_socket,
+					  client_disconnect_callback_t disconnection_callback = nullptr,
+					  new_data_callback_t new_data_callback = nullptr,
+					  void* user_param = nullptr)
+		: stream_connection(
+			create_and_connect_socket(unix_domain_socket),
+			disconnection_callback,
+			new_data_callback,
+			user_param) {
+		start();
 	}
+
+	// a client should not be copied.
+	stream_connection(const stream_connection&) = delete;
 
 	~stream_connection() {
 		close();
 	}
 
 	void start() {
-		_listener_thread = std::thread(&stream_connection::listener, this);
-		bool timeout = wait_signal(_listener_has_stared, 500);
-		if(timeout) {
-			_listener_is_running = false;
-			if(_listener_thread.joinable()) {
-				_listener_thread.join();
-			}
-			throw std::runtime_error("signal cannot be catch on time");
-		}
-	}
+		_start_reading.set();
 	}
 
 	const int& socket() const {
@@ -128,7 +130,10 @@ public:
 		shutdown(_socket, SHUT_RDWR);
 		int r = ::close(_socket);
 
-		_listener_is_running = false;
+		_shutdown_requested = true;
+
+		// interrupt the thread if it is waiting to be started
+		_start_reading.interrupt();
 
 		if(_listener_thread.joinable()) {
 			_listener_thread.join();
@@ -183,14 +188,17 @@ private:
 		static constexpr size_t len = 256;
 		char buffer[len] = {};
 
-		// ctor synchronization
-		_listener_is_running = true;
-		_listener_has_stared.set_value();
+		// Let the main thread know that this thread has started.
+		_listener_thread_ready.set();
 
-		while(_listener_is_running) {
+		// Wait for the main thread to trigger the start of read operations
+		_start_reading.wait();
+
+		while(!_shutdown_requested) {
 
 			memset(buffer, 0, len);
 			ssize_t received = recv(_socket, buffer, len, 0);
+
 			if(received == -1) {
 				break;
 			} else if(received == 0) {
@@ -208,10 +216,6 @@ private:
 				}
 			}
 		}
-
-		// dtor synchronization
-		_listener_has_stopped.set_value();
-		_listener_is_running = false;
 	}
 };
 
