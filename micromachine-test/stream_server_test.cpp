@@ -172,7 +172,6 @@ TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
 	std::list<stream_connection> clients;
 	for(unsigned int i = 0; i < n_clients; i++) {
 		clients.emplace_back(server.pathname());
-		stream_connection& t_client = clients.back();
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -245,7 +244,7 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 
 	echoer_iodevice<uint8_t, 1024> dev;
 	stream_server server(dev, "dev0", "/tmp/micromachine");
-	std::string str = "A fummy payload for multiple clients";
+	std::string str = "A funny payload for multiple clients";
 	std::vector<uint8_t> payload(str.begin(), str.end());
 
 	size_t n_clients = 20;
@@ -297,5 +296,5 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 	server.close();
 }
 
-INSTANTIATE_TEST_CASE_P(Repeat50time, RepeaterFixture, ::testing::Range(1, 25));
+INSTANTIATE_TEST_CASE_P(RepeatMultipleTimes, RepeaterFixture, ::testing::Range(1, 25));
 
