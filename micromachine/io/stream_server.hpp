@@ -215,7 +215,7 @@ private:
 	 *   - Create a new stream_connection and push it to the client list
 	 *   - flush the disconnected clients list
 	 */
-	void acceptor() {
+	void accept_loop() {
 
 		// ctor synchronization
 		_acceptor_thread_ready.set();
