@@ -215,7 +215,7 @@ private:
 
 	/**
 	 * Acceptor thread.
-	 *   - Accept incomming connection
+	 *   - Accept incoming connection
 	 *   - Create a new stream_connection and push it to the client list
 	 *   - flush the disconnected clients list
 	 */
