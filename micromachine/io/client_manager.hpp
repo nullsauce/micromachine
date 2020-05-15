@@ -84,9 +84,6 @@ public:
 
 	void clear() {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
-		for(auto& [_, client] : _clients) {
-			client->close();
-		}
 		_clients.clear();
 		_clients_to_delete.clear();
 	}
