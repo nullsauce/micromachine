@@ -67,7 +67,7 @@ TEST(streamServer, UnixSocketDomainCreationAndSuppression) {
 
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 	EXPECT_TRUE(std::filesystem::exists(server.pathname()));
-	server.stop();
+	server.close();
 	EXPECT_FALSE(std::filesystem::exists(server.pathname()));
 }
 
@@ -80,7 +80,7 @@ TEST(streamServer, UnixSocketDomainCreationAndSuppressionWithDefaultDirectory) {
 	EXPECT_TRUE(std::filesystem::exists(server.pathname()));
 	EXPECT_EQ(std::string(stream_server::default_directory()) + "/" + std::to_string(getpid()) + "/dev0",
 			  server.pathname());
-	server.stop();
+	server.close();
 	EXPECT_FALSE(std::filesystem::exists(server.pathname()));
 }
 
@@ -122,7 +122,7 @@ TEST(streamServer, ClientSizeMustBeZeroAfterServerInstanciation) {
 
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 	EXPECT_EQ(0, server.client_size());
-	server.stop();
+	server.close();
 }
 
 TEST_P(RepeaterFixture, createOne_stream_connection) {
@@ -142,7 +142,7 @@ TEST(streamConnection, ClientConnectionDataCoherance) {
 	stream_connection client(server.pathname());
 	EXPECT_GT(client.socket(), 0);
 	client.close();
-	server.stop();
+	server.close();
 }
 
 TEST(streamConnection, ConnectMustFail) {
@@ -184,7 +184,7 @@ TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	EXPECT_EQ(0, server.client_size());
-	server.stop();
+	server.close();
 }
 
 TEST(iodeviceServer, createOne) {
@@ -199,7 +199,7 @@ TEST(iodeviceServer, createAndStop) {
 
 	empty_iodevice dev;
 	stream_server server(dev, "dev0", "/tmp/micromachine");
-	server.stop();
+	server.close();
 }
 
 TEST(iodeviceServer, EchoWithOneClient) {
@@ -229,7 +229,6 @@ TEST(iodeviceServer, EchoWithOneClient) {
 	int data_received = false;
 	stream_connection client(server.pathname(), nullptr, new_data_callback, &data_received);
 
-
 	ssize_t transmitted = client.send(payload.data(), payload.size());
 	ASSERT_GT(transmitted, 0);
 
@@ -238,7 +237,7 @@ TEST(iodeviceServer, EchoWithOneClient) {
 	EXPECT_EQ(payload, received_data);
 
 	client.close();
-	server.stop();
+	server.close();
 }
 
 TEST_P(RepeaterFixture, EchoWithSeveralClients) {
@@ -295,7 +294,7 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 		}
 	}
 
-	server.stop();
+	server.close();
 }
 
 INSTANTIATE_TEST_CASE_P(Repeat50time, RepeaterFixture, ::testing::Range(1, 25));
