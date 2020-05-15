@@ -103,6 +103,7 @@ public:
 	void broadcast(uint8_t byte) {
 		std::lock_guard<client_manager> lock(_clients);
 		for(auto& [_, client] : _clients) {
+			fprintf(stderr, "send to client\n");
 			client->send(byte);
 		}
 	}
@@ -112,10 +113,7 @@ public:
 		_iopump.wait_until_flushed();
 		_iopump.shutdown();
 
-		{
-			std::lock_guard<std::mutex> lock(_on_client_disconnect_mutex);
-			_accept_connections = false;
-		}
+		_accept_connections = false;
 
 		::shutdown(socket(), SHUT_RDWR);
 		::close(socket());
