@@ -44,7 +44,7 @@ jobs:
           ctest --no-tests=error -V
       - name: Install SDK dependencies
         run: |
-          sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi
+          sudo apt-get install -y binutils-arm-none-eabi gcc-arm-none-eabi socat
       - name: Build micromachine SDK
         working-directory: build
         run: |
