@@ -139,17 +139,10 @@ public:
 		}
 
 	}
-	void send(uint8_t byte) const {
 
+	bool send(uint8_t byte) const {
 		ssize_t size = ::send(_socket, &byte, 1, 0);
-		if(size == 0) {
-			fprintf(stderr, "[%s] send size is 0!\n", __PRETTY_FUNCTION__);
-			return;
-		} else if(size == -1) {
-			fprintf(stderr, "[%s] send size is -1!\n", __PRETTY_FUNCTION__);
-			perror("send failed!");
-			return;
-		}
+		return size == 1;
 	}
 
 	ssize_t send(const uint8_t* buffer, size_t size) const {
