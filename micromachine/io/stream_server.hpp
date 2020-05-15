@@ -103,7 +103,6 @@ public:
 	void broadcast(uint8_t byte) {
 		std::lock_guard<client_manager> lock(_clients);
 		for(auto& [_, client] : _clients) {
-			fprintf(stderr, "send to client\n");
 			client->send(byte);
 		}
 	}

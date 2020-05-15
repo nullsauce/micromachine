@@ -243,13 +243,14 @@ TEST(iodeviceServer, EchoWithOneClient) {
 TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClients) {
 	using namespace micromachine::system;
 
-	echoer_iodevice<uint8_t, 1024> dev;
-	stream_server server(dev, "dev0", "/tmp/micromachine");
-	std::string str = "A funny payload for multiple clients";
+	const std::string str = "A funny payload for multiple clients";
 	const std::vector<uint8_t> expected_payload(str.begin(), str.end());
+	const size_t number_of_clients = 20;
 
-	size_t n_clients = 20;
-	std::list<std::thread> clients_thr(n_clients);
+	echoer_iodevice<uint8_t, 1024> echo_device;
+	stream_server server(echo_device, "dev0", "/tmp/micromachine");
+
+	std::list<std::thread> clients_threads(number_of_clients);
 
 	struct parameters {
 		const size_t _expected_payload_size;
@@ -268,7 +269,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClients) {
 	};
 
 	std::atomic<size_t> connected_client_count = 0;
-	for(auto& th : clients_thr) {
+	for(auto& th : clients_threads) {
 		th = std::thread([&server, &expected_payload, &connected_client_count]() {
 			parameters params(expected_payload.size());
 			stream_connection connection(server.pathname(), nullptr, std::bind(&parameters::append_data, &params, std::placeholders::_1, std::placeholders::_2));
@@ -280,7 +281,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClients) {
 	}
 
 	// make sure everyone is connected before sending data.
-	while(server.client_count() != n_clients) {
+	while(server.client_count() != number_of_clients) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
@@ -299,7 +300,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClients) {
 	// at this point which will cause the test to fail.
 	sender.close();
 
-	for(auto& th : clients_thr) {
+	for(auto& th : clients_threads) {
 		if(th.joinable()) {
 			th.join();
 		}
