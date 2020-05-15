@@ -276,8 +276,11 @@ TEST_P(RepeaterFixture, EchoWithSeveralClients) {
 		});
 	}
 
-	// make sure everyone is listening.
-	while(count != n_clients);
+	// make sure everyone is connected before sending data.
+	while(server.client_count() != n_clients) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
 
 	parameters param;
 	stream_connection sender(server.pathname(), nullptr, new_data_callback, &param);
