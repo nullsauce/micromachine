@@ -8,6 +8,7 @@
 
 #include "peripherals/iodev.hpp"
 #include "stream_connection.hpp"
+#include "utils/waitable_condition.hpp"
 
 #include <arpa/inet.h>
 #include <atomic>
@@ -18,11 +19,11 @@
 #include <future>
 #include <list>
 #include <map>
-#include <unordered_set>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <thread>
 #include <unistd.h>
+#include <unordered_set>
 #include <utility>
 
 namespace micromachine::system {
@@ -35,11 +36,15 @@ private:
 	std::mutex _clients_mutex;
 	std::unordered_map<stream_connection*, std::unique_ptr<stream_connection>> _clients;
 	std::unordered_set<std::unique_ptr<stream_connection>> _clients_to_delete;
+	waitable_condition _no_clients;
 
 public:
+	client_manager()
+		: _no_clients(true)
+	{}
 
 	~client_manager() {
-		clear();
+		delete_removed_clients();
 	}
 
 	void lock() {
@@ -73,19 +78,20 @@ public:
 		_clients_to_delete.clear();
 	}
 
+	void wait_no_more_clients() {
+		_no_clients.wait();
+	}
+
 	void remove_client(stream_connection& connection) {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		auto found = _clients.find(&connection);
 		if(found != _clients.end()) {
 			_clients_to_delete.emplace(std::move(found->second));
 			_clients.erase(found);
+			if(_clients.empty()) {
+				_no_clients.set();
+			}
 		}
-	}
-
-	void clear() {
-		std::lock_guard<std::mutex> lock(_clients_mutex);
-		_clients.clear();
-		_clients_to_delete.clear();
 	}
 };
 

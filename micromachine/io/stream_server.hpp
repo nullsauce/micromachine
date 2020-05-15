@@ -124,7 +124,7 @@ public:
 			_acceptor_thread.join();
 		}
 
-		_clients.clear();
+		_clients.wait_no_more_clients();
 
 		std::filesystem::remove_all(_pathname);
 
