@@ -236,18 +236,12 @@ private:
 		_accept_connections = false;
 	}
 
+	/**
+	 * Called by the client's thread
+	 * @param client
+	 */
 	void client_disconnect_evt(stream_connection& client) {
-
-		/*
-		 * since this event and close() member function could be called at the same time by two different thread,
-		 * _acceptor_is_running should be protected.
-		 */
-		std::lock_guard<std::mutex> lock(_on_client_disconnect_mutex);
-
-		// If acceptor thread is not running all client will be removed in the close() member function
-		if(_acceptor_is_running) {
-			_clients.remove_client(client);
-		}
+		_clients.remove_client(client);
 	}
 };
 
