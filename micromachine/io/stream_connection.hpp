@@ -51,7 +51,6 @@ private:
 	 */
 	void* _user_param;
 
-	bool _is_connected;
 
 	std::atomic<bool> _listener_is_running;
 
@@ -78,7 +77,6 @@ public:
 		, _disconnection_callback(std::move(disconnection_callback))
 		, _new_data_callback(std::move(new_data_callback))
 		, _user_param(user_param)
-		, _is_connected(true)
 		, _listener_is_running(false) {}
 
 	explicit stream_connection(const std::string& unix_domain_socket,
@@ -91,7 +89,6 @@ public:
 		, _disconnection_callback(std::move(disconnection_callback))
 		, _new_data_callback(std::move(new_data_callback))
 		, _user_param(user_param)
-		, _is_connected(true)
 		, _listener_is_running(true)
 		, _listener_thread(std::thread(&stream_connection::listener, this)) {
 		bool timeout = wait_signal(_listener_has_stared, 500);
@@ -119,9 +116,6 @@ public:
 			throw std::runtime_error("signal cannot be catch on time");
 		}
 	}
-
-	bool is_connected() const {
-		return _is_connected;
 	}
 
 	const int& socket() const {
@@ -130,11 +124,6 @@ public:
 
 	int close() {
 
-		if(!_is_connected) {
-			return 0;
-		}
-
-		_is_connected = false;
 
 		shutdown(_socket, SHUT_RDWR);
 		int r = ::close(_socket);
@@ -199,10 +188,6 @@ private:
 		_listener_has_stared.set_value();
 
 		while(_listener_is_running) {
-			if(!is_connected()) {
-				std::this_thread::sleep_for(std::chrono::microseconds(10));
-				continue;
-			}
 
 			memset(buffer, 0, len);
 			ssize_t received = recv(_socket, buffer, len, 0);
