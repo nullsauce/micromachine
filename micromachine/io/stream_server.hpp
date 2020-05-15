@@ -80,17 +80,14 @@ public:
 		}
 	}
 
-	virtual ~stream_server() {
-		stop();
+	~stream_server() {
+		close();
 	}
 
 	static constexpr std::string_view default_directory() {
 		return DEFAULT_DIRECTORY;
 	}
 
-	void stop() {
-		close();
-	}
 
 	const int& socket() {
 		return _socket;
