@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
 	}
 
-	usart_streamer.stop();
+	usart_streamer.close();
 	usart_printer.close();
 
 	return EXIT_SUCCESS;
