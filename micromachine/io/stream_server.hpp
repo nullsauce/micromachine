@@ -35,19 +35,40 @@ namespace micromachine::system {
  * /tmp/micromachine/<pid>/usart0
  */
 class stream_server {
+public:
+	static constexpr std::string_view DEFAULT_DIRECTORY = "/tmp/micromachine";
+
 private:
-	std::string _device_name;
-	std::string _directory;
-	std::string _pathname;
-	std::string _location;
-	int _socket;
+
+	class socket_file {
+	private:
+		const std::string _path;
+
+	public:
+		socket_file(const std::string& path)
+			: _path(path) {
+				std::filesystem::create_directories(std::filesystem::path(_path).remove_filename());
+				remove();
+			}
+
+		void remove() {
+			std::error_code error;
+			std::filesystem::remove(_path, error);
+		}
+
+		const std::string& pathname() const {
+			return _path;
+		}
+	};
+
+	socket_file _socket_file;
+	const int _socket;
 
 	iodev& _iodev;
 	iopump _iopump;
 
 	client_manager _clients;
 
-	std::mutex _on_client_disconnect_mutex;
 	std::atomic<bool> _accept_connections;
 
 	/**
@@ -58,14 +79,11 @@ private:
 
 	static constexpr int LISTEN_BACKLOG_SIZE = 5;
 
-	static constexpr std::string_view DEFAULT_DIRECTORY = "/tmp/micromachine";
-
 public:
-	stream_server(iodev& dev, const std::string& device_name, const std::string_view& directory = DEFAULT_DIRECTORY)
-		: _device_name(device_name)
-		, _directory(directory)
-		, _socket(create_and_bind_socket(_device_name, _directory, _pathname, _location))
-		, _iodev(dev)
+	stream_server(iodev& device, const std::string& device_name, const std::string& directory)
+		: _socket_file(make_socket_path(directory, device_name))
+		, _socket(create_and_bind_socket(_socket_file.pathname()))
+		, _iodev(device)
 		, _iopump(_iodev, std::bind(&stream_server::broadcast, this, std::placeholders::_1))
 		, _accept_connections(true)
 		, _acceptor_thread(std::thread(&stream_server::accept_loop, this)) {
@@ -76,24 +94,15 @@ public:
 		}
 	}
 
+	stream_server(iodev& device, const std::string& device_name)
+		: stream_server(device, device_name, std::string(DEFAULT_DIRECTORY)) {}
+
 	~stream_server() {
 		close();
 	}
 
-	static constexpr std::string_view default_directory() {
-		return DEFAULT_DIRECTORY;
-	}
-
-	const int& socket() {
-		return _socket;
-	}
-
 	const std::string& pathname() const {
-		return _pathname;
-	}
-
-	const std::string& location() const {
-		return _location;
+		return _socket_file.pathname();
 	}
 
 	size_t client_count() {
@@ -114,8 +123,8 @@ public:
 
 		_accept_connections = false;
 
-		::shutdown(socket(), SHUT_RDWR);
-		::close(socket());
+		::shutdown(_socket, SHUT_RDWR);
+		::close(_socket);
 
 		if(_acceptor_thread.joinable()) {
 			_acceptor_thread.join();
@@ -123,15 +132,16 @@ public:
 
 		_clients.wait_no_more_clients();
 
-		std::filesystem::remove_all(_pathname);
-
-		std::error_code error;
-		if(std::filesystem::is_empty(_location, error)) {
-			std::filesystem::remove_all(_location);
-		}
+		_socket_file.remove();
 	}
 
 private:
+
+	static std::filesystem::path make_socket_path(const std::string& directory, const std::string& device_name) {
+		std::filesystem::path base = directory;
+		return base / std::to_string(getpid()) / device_name;
+	}
+
 	/**
 	 * Helper to create bind and listen to a AF_UNIX socket located in the provided directory.
 	 *
@@ -142,10 +152,7 @@ private:
 	 * @param[out] location AF_UNIX location directory (/tmp/micromachine/<pid>/)
 	 * @return the listened socket
 	 */
-	static int create_and_bind_socket(const std::string& device_name,
-									const std::string& directory,
-									std::string& pathname,
-									std::string& location) {
+	static int create_and_bind_socket(const std::string& path) {
 
 		int socket = ::socket(AF_UNIX, SOCK_STREAM, 0);
 		if(socket == -1) {
@@ -155,22 +162,14 @@ private:
 		struct sockaddr_un server;
 
 		server.sun_family = AF_UNIX;
-		location = directory + "/" + std::to_string(getpid());
-		pathname = location + "/" + device_name;
 
-		if (std::filesystem::exists(pathname)) {
-			std::filesystem::remove(pathname);
-		}
-
-		if(pathname.size() > sizeof(server.sun_path)) {
+		if(path.size() > sizeof(server.sun_path)) {
 			std::string message = "unix_socket_domain_path is to big! maximum allowed size is: " +
 								  std::to_string(sizeof(server.sun_path));
 			throw std::length_error(message);
 		}
+		strcpy(server.sun_path, path.c_str());
 
-		std::filesystem::create_directories(location);
-
-		strcpy(server.sun_path, pathname.c_str());
 		int r = bind(socket, reinterpret_cast<struct sockaddr*>(&server), sizeof(server));
 		if(r) {
 			throw std::runtime_error("bind failed. " + std::string(std::strerror(errno)));

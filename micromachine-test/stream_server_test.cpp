@@ -78,7 +78,7 @@ TEST(streamServer, UnixSocketDomainCreationAndSuppressionWithDefaultDirectory) {
 	stream_server server(dev, "dev0");
 
 	EXPECT_TRUE(std::filesystem::exists(server.pathname()));
-	EXPECT_EQ(std::string(stream_server::default_directory()) + "/" + std::to_string(getpid()) + "/dev0",
+	EXPECT_EQ(std::string(stream_server::DEFAULT_DIRECTORY) + "/" + std::to_string(getpid()) + "/dev0",
 			  server.pathname());
 	server.close();
 	EXPECT_FALSE(std::filesystem::exists(server.pathname()));
@@ -88,9 +88,9 @@ TEST(streamServer, InstanciateServerWithValidUnixDomainSocket) {
 	using namespace micromachine::system;
 	empty_iodevice dev;
 
-	std::string unix_domain_socket = "/tmp/micromachine";
-	stream_server server(dev, "dev0", unix_domain_socket);
-	EXPECT_EQ((unix_domain_socket + "/" + std::to_string(getpid())), server.location());
+	std::filesystem::path directory = "/tmp/micromachine";
+	stream_server server(dev, "dev0", directory);
+	EXPECT_EQ((directory / std::to_string(getpid()) / "dev0").string(), server.pathname());
 }
 
 TEST(streamServer, InstanciateServerWithInvalidUnixDomainSocketMustThrow_length_error) {
@@ -110,7 +110,7 @@ TEST(streamServer, InstanciateServerWithExistingFileMustPass) {
 	static const std::string location = "/tmp/micromachine/" + std::to_string(getpid());
 	static const std::string device_name = "dev0";
 	static const std::string file_path = location + '/' + device_name;
-	EXPECT_TRUE(std::filesystem::create_directories(location));
+	std::filesystem::create_directories(location);
 	std::cerr << file_path << std::endl;
 	std::ofstream file(file_path);
 	EXPECT_NO_THROW(stream_server(dev, device_name, "/tmp/micromachine"));
