@@ -145,6 +145,12 @@ public:
 		}
 
 		_clients.wait_no_more_clients();
+		_clients.wait_no_more_clients_to_delete();
+
+		_cleanup_connections = false;
+		if(_cleanup_thread.joinable()) {
+			_cleanup_thread.join();
+		}
 
 		_socket_file.remove();
 	}
@@ -216,7 +222,6 @@ private:
 		stream_connection* client = connection.get();
 		_clients.add_client(std::move(connection));
 		client->start();
-		_clients.delete_removed_clients();
 	}
 
 	/**
