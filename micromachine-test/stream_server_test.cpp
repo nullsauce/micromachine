@@ -250,7 +250,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 
 	const std::string str = "A funny payload for multiple clients";
 	const std::vector<uint8_t> expected_payload(str.begin(), str.end());
-	const size_t number_of_clients = 10;
+	const size_t number_of_clients = 20;
 
 	echoer_iodevice<uint8_t, 1024> echo_device;
 	stream_server server(echo_device, "dev0", "/tmp/micromachine");
@@ -273,12 +273,13 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 		}
 	};
 
-	std::atomic<size_t> connected_client_count = 0;
+	waitable_condition start_waiting_for_data;
+
 	for(auto& th : clients_threads) {
-		th = std::thread([&server, &expected_payload, &connected_client_count]() {
+		th = std::thread([&server, &expected_payload, &start_waiting_for_data]() {
 			parameters params(expected_payload.size());
 			stream_connection connection(server.pathname(), nullptr, std::bind(&parameters::append_data, &params, std::placeholders::_1, std::placeholders::_2));
-			connected_client_count++;
+			start_waiting_for_data.wait();
 			EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(1000ms));
 			EXPECT_EQ(params.received_data, expected_payload);
 			connection.close();
@@ -293,6 +294,8 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 	parameters params(expected_payload.size());
 	stream_connection sender(server.pathname(), nullptr,
 							 std::bind(&parameters::append_data, &params, std::placeholders::_1, std::placeholders::_2));
+
+	start_waiting_for_data.set();
 	sender.send(expected_payload.data(), expected_payload.size());
 
 	EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(1000ms));
