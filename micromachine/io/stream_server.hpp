@@ -128,6 +128,13 @@ public:
 		}
 	}
 
+	void close_all_clients() {
+		std::lock_guard<client_manager> lock(_clients);
+		for(auto& [_, client] : _clients) {
+			client->close();
+		}
+	}
+
 	void close() {
 
 		std::lock_guard<std::mutex> lock_guard(_close_mutex);
@@ -144,6 +151,7 @@ public:
 			_acceptor_thread.join();
 		}
 
+		close_all_clients();
 		_clients.wait_no_more_clients();
 		_clients.wait_no_more_clients_to_delete();
 
