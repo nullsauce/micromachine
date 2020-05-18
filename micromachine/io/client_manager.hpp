@@ -35,6 +35,7 @@ class client_manager {
 private:
 	std::mutex _clients_mutex;
 	waitable_condition _no_clients;
+	waitable_condition _no_clients_to_delete;
 	std::unordered_set<std::unique_ptr<stream_connection>> _clients_to_delete;
 	std::unordered_map<stream_connection*, std::unique_ptr<stream_connection>> _clients;
 
@@ -72,15 +73,22 @@ public:
 	void add_client(std::unique_ptr<stream_connection> client) {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		_clients.emplace(client.get(), std::move(client));
+		_no_clients.reset();
 	}
 
 	void delete_removed_clients() {
 		std::lock_guard<std::mutex> lock(_clients_mutex);
 		_clients_to_delete.clear();
+		_no_clients_to_delete.set();
+
 	}
 
 	void wait_no_more_clients() {
-		_no_clients.wait();
+		_no_clients.preemptible_wait(1ms);
+	}
+
+	void wait_no_more_clients_to_delete() {
+		_no_clients_to_delete.preemptible_wait(1ms);
 	}
 
 	void remove_client(stream_connection& connection) {
@@ -88,10 +96,11 @@ public:
 		auto found = _clients.find(&connection);
 		if(found != _clients.end()) {
 			_clients_to_delete.emplace(std::move(found->second));
+			_no_clients_to_delete.reset();
 			_clients.erase(found);
-			if(_clients.empty()) {
-				_no_clients.set();
-			}
+		}
+		if(_clients.empty()) {
+			_no_clients.set();
 		}
 	}
 };
