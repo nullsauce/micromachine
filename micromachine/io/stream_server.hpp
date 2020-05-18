@@ -61,6 +61,8 @@ private:
 		}
 	};
 
+	std::mutex _close_mutex;
+
 	socket_file _socket_file;
 	const int _socket;
 
@@ -127,6 +129,8 @@ public:
 	}
 
 	void close() {
+
+		std::lock_guard<std::mutex> lock_guard(_close_mutex);
 
 		_iopump.wait_until_flushed();
 		_iopump.shutdown();
