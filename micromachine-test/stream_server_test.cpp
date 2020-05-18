@@ -140,7 +140,7 @@ TEST(streamConnection, ClientConnectionDataCoherance) {
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 
 	stream_connection client(server.pathname());
-	EXPECT_GT(client.socket(), 0);
+
 	client.close();
 	server.close();
 }
