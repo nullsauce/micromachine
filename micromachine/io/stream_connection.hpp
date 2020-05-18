@@ -190,12 +190,7 @@ private:
 			memset(buffer, 0, len);
 			ssize_t received = recv(_socket, buffer, len, 0);
 
-			if(received == -1) {
-				break;
-			} else if(received == 0) {
-				if(_disconnection_callback) {
-					_disconnection_callback(*this);
-				}
+			if(received <= 0) {
 				break;
 			}
 
@@ -206,6 +201,10 @@ private:
 					_new_data_callback((const uint8_t*)buffer, received, _user_param);
 				}
 			}
+		}
+
+		if(_disconnection_callback) {
+			_disconnection_callback(*this);
 		}
 	}
 };
