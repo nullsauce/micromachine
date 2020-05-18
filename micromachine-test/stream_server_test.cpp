@@ -202,7 +202,7 @@ TEST(iodeviceServer, createAndStop) {
 	server.close();
 }
 
-TEST(iodeviceServer, EchoWithOneClient) {
+TEST(iodeviceServer, ASignleClientReceivesTheDataItSends) {
 	using namespace micromachine::system;
 	using namespace std::chrono_literals;
 
@@ -229,6 +229,11 @@ TEST(iodeviceServer, EchoWithOneClient) {
 	int data_received = false;
 	stream_connection client(server.pathname(), nullptr, new_data_callback, &data_received);
 
+	// make sure the client is connected before sending data.
+	while(server.client_count() != 1) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
 	ssize_t transmitted = client.send(payload.data(), payload.size());
 	ASSERT_GT(transmitted, 0);
 
@@ -240,7 +245,7 @@ TEST(iodeviceServer, EchoWithOneClient) {
 	server.close();
 }
 
-TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClients) {
+TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItself) {
 	using namespace micromachine::system;
 
 	const std::string str = "A funny payload for multiple clients";
@@ -294,10 +299,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClients) {
 	EXPECT_EQ(params.received_data, expected_payload);
 
 	// give time to the server to broadcast the message to all clients
-	std::this_thread::sleep_for(std::chrono::milliseconds(250));
-
-	// Note that it is theorically possible that the broadcast data hasn't reached all clients
-	// at this point which will cause the test to fail.
+	std::this_thread::sleep_for(100ms);
 	sender.close();
 
 	for(auto& th : clients_threads) {
