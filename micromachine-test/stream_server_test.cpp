@@ -314,5 +314,15 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 	server.close();
 }
 
+TEST(iodeviceServer, ClosingServerDisconnectAllClientsBeforeReturning) {
+	using namespace micromachine::system;
+	empty_iodevice dev;
+	stream_server server(dev, "dev0", "/tmp/micromachine");
+	stream_connection connection(server.pathname());
+	server.close();
+	EXPECT_EQ(0, server.client_count());
+	EXPECT_EQ(waitable_flag::ok, connection.disconnected().wait(100ms));
+}
+
 INSTANTIATE_TEST_CASE_P(RepeatMultipleTimes, RepeaterFixture, ::testing::Range(1, 25));
 
