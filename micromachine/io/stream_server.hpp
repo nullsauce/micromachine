@@ -69,12 +69,15 @@ private:
 
 	client_manager _clients;
 
+	std::atomic<bool> _cleanup_connections;
 	std::atomic<bool> _accept_connections;
 
 	/**
 	 * Waitable signal for starting _acceptor_thread
 	 */
 	waitable_condition _acceptor_thread_ready;
+	waitable_condition _cleanup_thread_ready;
+	std::thread _cleanup_thread;
 	std::thread _acceptor_thread;
 
 	static constexpr int LISTEN_BACKLOG_SIZE = 5;
@@ -85,12 +88,19 @@ public:
 		, _socket(create_and_bind_socket(_socket_file.pathname()))
 		, _iodev(device)
 		, _iopump(_iodev, std::bind(&stream_server::broadcast, this, std::placeholders::_1))
+		, _cleanup_connections(true)
 		, _accept_connections(true)
+		, _cleanup_thread(std::thread(&stream_server::cleanup_loop, this))
 		, _acceptor_thread(std::thread(&stream_server::accept_loop, this)) {
 
-		if(waitable_flag::ok != _acceptor_thread_ready.wait(500ms)) {
+		if(waitable_flag::ok != _acceptor_thread_ready.wait(100ms)) {
 			close();
-			throw std::runtime_error("thread didn't start in time");
+			throw std::runtime_error("acceptor thread didn't start in time");
+		}
+
+		if(waitable_flag::ok != _cleanup_thread_ready.wait(100ms)) {
+			close();
+			throw std::runtime_error("cleanup thread didn't start in time");
 		}
 	}
 
@@ -228,6 +238,16 @@ private:
 			}
 
 			add_new_connection(client_socket);
+		}
+	}
+
+	void cleanup_loop() {
+
+		_cleanup_thread_ready.set();
+
+		while(_cleanup_connections) {
+			_clients.delete_removed_clients();
+			std::this_thread::sleep_for(1ms);
 		}
 		_accept_connections = false;
 	}
