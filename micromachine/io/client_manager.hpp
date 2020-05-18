@@ -34,9 +34,9 @@ namespace micromachine::system {
 class client_manager {
 private:
 	std::mutex _clients_mutex;
+	waitable_condition _no_clients;
 	std::unordered_map<stream_connection*, std::unique_ptr<stream_connection>> _clients;
 	std::unordered_set<std::unique_ptr<stream_connection>> _clients_to_delete;
-	waitable_condition _no_clients;
 
 public:
 	client_manager()
