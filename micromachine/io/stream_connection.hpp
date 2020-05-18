@@ -61,6 +61,12 @@ private:
 	 */
 	std::atomic<bool> _shutdown_requested;
 
+
+	/**
+	 * Flag set when the client receive loop ended.
+	 */
+	waitable_condition _disconnected;
+
 	/**
 	 * Waitable signal set by the client thread that indicates the thread has successfully started.
 	 * This signal is used to ensure the client constructor returns only after its thread has started.
@@ -90,6 +96,7 @@ public:
 		, _new_data_callback(std::move(new_data_callback))
 		, _user_param(user_param)
 		, _shutdown_requested(false)
+		, _disconnected(false)
 		, _listener_thread(std::thread(&stream_connection::listener, this)) {
 			if(waitable_flag::ok != _listener_thread_ready.wait(500ms)) {
 				close();
@@ -118,6 +125,10 @@ public:
 		if(_listener_thread.joinable()) {
 			_listener_thread.join();
 		}
+	}
+
+	waitable_condition& disconnected() {
+		return _disconnected;
 	}
 
 	void start() {
@@ -201,6 +212,8 @@ private:
 		if(_disconnection_callback) {
 			_disconnection_callback(*this);
 		}
+
+		_disconnected.set();
 	}
 };
 
