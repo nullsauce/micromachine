@@ -41,6 +41,11 @@ public:
 	waitable_flag::result wait(const std::chrono::duration<_Rep, _Period>& timeout_duration) {
 		return _waitable_flag.wait(true, timeout_duration);
 	}
+
+	template <typename _Rep, typename _Period>
+	waitable_flag::result preemptible_wait(const std::chrono::duration<_Rep, _Period>& interval) {
+		return _waitable_flag.preemptible_wait(true, interval);
+	}
 };
 
 }
