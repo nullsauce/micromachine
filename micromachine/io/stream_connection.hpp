@@ -114,6 +114,10 @@ public:
 
 	~stream_connection() {
 		close();
+
+		if(_listener_thread.joinable()) {
+			_listener_thread.join();
+		}
 	}
 
 	void start() {
@@ -133,11 +137,6 @@ public:
 
 		// interrupt the thread if it is waiting to be started
 		_start_reading.interrupt();
-
-		if(_listener_thread.joinable()) {
-			_listener_thread.join();
-		}
-
 	}
 
 	bool send(uint8_t byte) const {
