@@ -250,7 +250,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 
 	const std::string str = "A funny payload for multiple clients";
 	const std::vector<uint8_t> expected_payload(str.begin(), str.end());
-	const size_t number_of_clients = 20;
+	const size_t number_of_clients = 10;
 
 	echoer_iodevice<uint8_t, 1024> echo_device;
 	stream_server server(echo_device, "dev0", "/tmp/micromachine");
