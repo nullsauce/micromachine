@@ -202,7 +202,7 @@ TEST(iodeviceServer, createAndStop) {
 	server.close();
 }
 
-TEST(iodeviceServer, ASignleClientReceivesTheDataItSends) {
+TEST(iodeviceServer, ASingleClientReceivesTheDataItSends) {
 	using namespace micromachine::system;
 	using namespace std::chrono_literals;
 
