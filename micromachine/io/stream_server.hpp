@@ -249,7 +249,6 @@ private:
 			_clients.delete_removed_clients();
 			std::this_thread::sleep_for(1ms);
 		}
-		_accept_connections = false;
 	}
 
 	/**
