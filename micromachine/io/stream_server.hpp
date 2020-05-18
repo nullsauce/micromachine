@@ -242,10 +242,6 @@ private:
 				continue;
 			}
 
-			if(!_accept_connections) {
-				break;
-			}
-
 			add_new_connection(client_socket);
 		}
 	}
