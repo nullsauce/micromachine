@@ -85,7 +85,7 @@ public:
 				}
 
 			} else {
-				_signal.wait(lock, [this]() { return (_interrupted || _flag); });
+				_signal.wait(lock, [this, value]() { return (_interrupted || (_flag == value)); });
 			}
 		}
 
