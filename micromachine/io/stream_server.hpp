@@ -11,7 +11,6 @@
 #include <cstring>
 #include <filesystem>
 #include <functional>
-#include <future>
 #include <list>
 #include <map>
 #include <sys/socket.h>
@@ -21,7 +20,7 @@
 #include <utility>
 
 #include "helpers/check.hpp"
-#include "io/helpers.hpp"
+
 #include "peripherals/iodev.hpp"
 #include "io/client_manager.hpp"
 #include "io/stream_connection.hpp"

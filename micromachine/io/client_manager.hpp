@@ -16,7 +16,6 @@
 #include <cstring>
 #include <filesystem>
 #include <functional>
-#include <future>
 #include <list>
 #include <map>
 #include <sys/socket.h>
