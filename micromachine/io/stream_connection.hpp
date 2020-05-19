@@ -108,8 +108,8 @@ public:
 					  void* user_param = nullptr)
 		: stream_connection(
 			create_and_connect_socket(unix_domain_socket),
-			disconnection_callback,
-			new_data_callback,
+			std::move(disconnection_callback),
+			std::move(new_data_callback),
 			user_param) {
 		start();
 	}
@@ -125,7 +125,7 @@ public:
 		}
 	}
 
-	waitable_condition& disconnected() {
+	waitable_condition& disconnected_signal() {
 		return _disconnected;
 	}
 

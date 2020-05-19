@@ -279,7 +279,7 @@ TEST(iodeviceServer, ClosingServerDisconnectAllClientsBeforeReturning) {
 	stream_connection connection(server.pathname());
 	server.close();
 	EXPECT_EQ(0, server.client_count());
-	EXPECT_EQ(waitable_flag::ok, connection.disconnected().wait(100ms));
+	EXPECT_EQ(waitable_flag::ok, connection.disconnected_signal().wait(100ms));
 }
 
 INSTANTIATE_TEST_CASE_P(RepeatMultipleTimes, RepeaterFixture, ::testing::Range(1, 25));
