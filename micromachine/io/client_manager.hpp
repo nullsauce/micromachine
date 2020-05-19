@@ -84,11 +84,11 @@ public:
 	}
 
 	void wait_no_more_clients() {
-		_no_clients.preemptible_wait(1ms);
+		_no_clients.polling_wait(1ms);
 	}
 
 	void wait_no_more_clients_to_delete() {
-		_no_clients_to_delete.preemptible_wait(1ms);
+		_no_clients_to_delete.polling_wait(1ms);
 	}
 
 	void remove_client(stream_connection& connection) {

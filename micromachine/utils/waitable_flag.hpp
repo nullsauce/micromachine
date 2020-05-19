@@ -43,19 +43,22 @@ public:
 		_signal.notify_all();
 	}
 
+	/**
+	 * Waits indefinitely for the internal flag value to become /p value.
+	 */
 	result wait(bool value) {
 		return wait(value, std::chrono::duration_values<std::chrono::milliseconds>::zero());
 	}
 
 	/**
-	 * Waits for flag value in a preemptible fashion so that the value is guaranteed to be re-evaluated
+	 * Waits for flag value in a polling fashion so that the value is guaranteed to be re-evaluated
 	 * every interval even if it has not been notified.
 	 * @param value
 	 * @param interval
 	 * @return
 	 */
 	template <typename _Rep, typename _Period>
-	result preemptible_wait(bool value, const std::chrono::duration<_Rep, _Period>& interval) {
+	result polling_wait(bool value, const std::chrono::duration<_Rep, _Period>& interval) {
 		while(true) {
 			auto res = wait(value, interval);
 			if(res != result::timeout) {
@@ -64,6 +67,13 @@ public:
 		}
 	}
 
+	/**
+	 * Waits for the internal flag value to become /p value within the given timeout duration.
+	 * @param value The value to wait for
+	 * @param timeout_duration The timeout duration
+	 * @return result::interrupted if the operation has been interrupted by another thread, result::ok if the
+	 * flag has been set to value in time, result::timeout otherwise.
+	 */
 	template <typename _Rep, typename _Period>
 	result wait(bool value, const std::chrono::duration<_Rep, _Period>& timeout_duration) {
 

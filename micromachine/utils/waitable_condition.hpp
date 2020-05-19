@@ -43,8 +43,8 @@ public:
 	}
 
 	template <typename _Rep, typename _Period>
-	waitable_flag::result preemptible_wait(const std::chrono::duration<_Rep, _Period>& interval) {
-		return _waitable_flag.preemptible_wait(true, interval);
+	waitable_flag::result polling_wait(const std::chrono::duration<_Rep, _Period>& interval) {
+		return _waitable_flag.polling_wait(true, interval);
 	}
 };
 
