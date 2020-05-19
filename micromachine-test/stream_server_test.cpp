@@ -11,48 +11,6 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-class waitable_signal {
-private:
-	std::promise<void> sync_point;
-
-public:
-	/**
-	 *
-	 * @param timeout_ms
-	 * @return true if timeout, false is the signal has been notified before timeout_ms
-	 */
-	bool wait(unsigned int timeout_ms = 0) {
-
-		auto f = sync_point.get_future();
-
-		try {
-			if(timeout_ms) {
-
-				std::future_status status;
-				do {
-					status = f.wait_for(std::chrono::milliseconds(timeout_ms));
-					if(status == std::future_status::deferred) {
-						continue;
-					} else if(status == std::future_status::timeout) {
-						return true;
-					}
-				} while(status != std::future_status::ready);
-			} else {
-				f.wait();
-			}
-		} catch(std::future_error& e) {
-			if(e.code() == std::future_errc::no_state) {
-				return false;
-			}
-		}
-		return false;
-	}
-
-	void notify() {
-		sync_point.set_value();
-	}
-};
-
 class RepeaterFixture : public ::testing::TestWithParam<int> {};
 
 TEST_P(RepeaterFixture, createOne_stream_server) {
@@ -206,7 +164,7 @@ TEST(iodeviceServer, ASingleClientReceivesTheDataItSends) {
 	using namespace micromachine::system;
 	using namespace std::chrono_literals;
 
-	waitable_signal signal;
+	waitable_condition data_recevied_signal;
 
 	echoer_iodevice<uint8_t, 1024> dev;
 	stream_server server(dev, "dev0", "/tmp/micromachine");
@@ -215,14 +173,14 @@ TEST(iodeviceServer, ASingleClientReceivesTheDataItSends) {
 	std::vector<uint8_t> payload(str.begin(), str.end());
 
 	std::vector<uint8_t> received_data;
-	auto new_data_callback = [&received_data, &payload, &signal](const uint8_t* buffer, size_t size, void* user_data) {
+	auto new_data_callback = [&received_data, &payload, &data_recevied_signal](const uint8_t* buffer, size_t size, void* user_data) {
 		received_data.insert(received_data.end(), buffer, buffer + size);
 
 		if(received_data.size() == payload.size()) {
 
 			int* data_received = (int*)user_data;
 			*data_received = true;
-			signal.notify();
+			data_recevied_signal.set();
 		}
 	};
 
@@ -237,7 +195,7 @@ TEST(iodeviceServer, ASingleClientReceivesTheDataItSends) {
 	ssize_t transmitted = client.send(payload.data(), payload.size());
 	ASSERT_GT(transmitted, 0);
 
-	EXPECT_FALSE(signal.wait(1000));
+	EXPECT_FALSE(data_recevied_signal.wait(1000ms));
 	EXPECT_TRUE(data_received);
 	EXPECT_EQ(payload, received_data);
 
