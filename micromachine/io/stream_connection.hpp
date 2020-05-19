@@ -157,7 +157,7 @@ private:
 	static int create_and_connect_socket(const std::string& unix_domain_socket) {
 
 		int socket = ::socket(AF_UNIX, SOCK_STREAM, 0);
-		if(socket <= 0) {
+		if(socket < 0) {
 			throw std::runtime_error("failed to create client socket: " + std::string(strerror(errno)));
 		}
 
