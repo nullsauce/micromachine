@@ -77,6 +77,7 @@ set(SRCS
 	io/client_manager.hpp
 	utils/waitable_value.hpp
 	utils/waitable_condition.hpp
+	utils/waitable_counter.hpp
 	utils/waitable_flag.hpp
 	utils/signal.hpp
 	utils/blocking_queue.hpp
