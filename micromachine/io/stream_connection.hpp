@@ -51,7 +51,7 @@ private:
 	/**
 	 * Generic user param associated with _new_data_callback
 	 */
-	void* _user_param;
+	void* const _user_param;
 
 	/**
 	 * Flag set by the main thread that indicates to the client thread that it should stop
@@ -199,11 +199,7 @@ private:
 			}
 
 			if(_new_data_callback) {
-				if(_user_param == nullptr) {
-					_new_data_callback((const uint8_t*)buffer, received, this);
-				} else {
-					_new_data_callback((const uint8_t*)buffer, received, _user_param);
-				}
+				_new_data_callback((const uint8_t*)buffer, received, _user_param);
 			}
 		}
 
