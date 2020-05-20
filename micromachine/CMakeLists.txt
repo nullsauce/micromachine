@@ -75,6 +75,11 @@ set(SRCS
 	io/stream_server.hpp
 	io/stream_connection.hpp
 	io/client_manager.hpp
+	utils/waitable_value.hpp
+	utils/waitable_condition.hpp
+	utils/waitable_flag.hpp
+	utils/signal.hpp
+	utils/blocking_queue.hpp
 )
 
 add_library(micromachine STATIC ${SRCS})

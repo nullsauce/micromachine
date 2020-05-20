@@ -10,41 +10,42 @@
 
 namespace micromachine::system {
 
-class waitable_condition {
-private:
-	waitable_flag _waitable_flag;
-
+/**
+ * A waitable condition is a waitable flag that resolves when set to true and
+ * can be reset to false. Initial value can be either true or false.
+ */
+class waitable_condition : protected waitable_flag {
 public:
 	waitable_condition()
-		: _waitable_flag(false) {}
+		: waitable_flag(false) {}
 
 	waitable_condition(bool initial_value)
-		: _waitable_flag(initial_value) {}
+		: waitable_flag(initial_value) {}
 
 	void set() {
-		_waitable_flag.set(true);
+		waitable_flag::set(true);
 	}
 
 	void reset() {
-		_waitable_flag.set(false);
-	}
-
-	void interrupt() {
-		_waitable_flag.interrupt();
+		waitable_flag::set(false);
 	}
 
 	waitable_flag::result wait() {
-		return _waitable_flag.wait(true);
+		return waitable_flag::wait(true);
+	}
+
+	void interrupt() {
+		return waitable_flag::interrupt();
 	}
 
 	template <typename _Rep, typename _Period>
 	waitable_flag::result wait(const std::chrono::duration<_Rep, _Period>& timeout_duration) {
-		return _waitable_flag.wait(true, timeout_duration);
+		return waitable_flag::wait(true, timeout_duration);
 	}
 
 	template <typename _Rep, typename _Period>
 	waitable_flag::result polling_wait(const std::chrono::duration<_Rep, _Period>& interval) {
-		return _waitable_flag.polling_wait(true, interval);
+		return waitable_flag::polling_wait(true, interval);
 	}
 };
 
