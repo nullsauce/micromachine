@@ -12,6 +12,20 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
+namespace {
+	template <typename T, typename F, typename _Rep, typename _Period>
+	bool value_changed_to(T expected_value, F func, const std::chrono::duration<_Rep, _Period>& timeout) {
+		auto end = std::chrono::steady_clock::now() + timeout;
+		while(std::chrono::steady_clock::now() < end) {
+			if(func() == expected_value) {
+				return true;
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+		return false;
+	}
+}
+
 class RepeaterFixture : public ::testing::TestWithParam<int> {};
 
 TEST_P(RepeaterFixture, createOne_stream_server) {
@@ -122,26 +136,25 @@ TEST_P(RepeaterFixture, ConnectDisconnectSeveralClientAndCheckServerCoherance) {
 	empty_iodevice dev;
 
 	// will create n threads
-	static constexpr unsigned int n_clients = 30;
+	static constexpr size_t n_clients = 30;
 
 	stream_server server(dev, "dev0", "/tmp/micromachine");
 
 	EXPECT_EQ(0, server.client_count());
 
 	std::list<stream_connection> clients;
-	for(unsigned int i = 0; i < n_clients; i++) {
+	for(size_t i = 0; i < n_clients; i++) {
 		clients.emplace_back(server.pathname());
 	}
 
-	while(n_clients != server.client_count()) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	}
+	EXPECT_TRUE(value_changed_to(n_clients, [&]() { return server.client_count(); }, 500ms));
 
 	for(auto& client : clients) {
 		client.close();
 	}
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(20));
+	EXPECT_TRUE(value_changed_to(0U, [&]() { return server.client_count(); }, 500ms));
+
 	EXPECT_EQ(0, server.client_count());
 	server.close();
 }
@@ -189,14 +202,12 @@ TEST(iodeviceServer, ASingleClientReceivesTheDataItSends) {
 	stream_connection client(server.pathname(), nullptr, new_data_callback, &data_received);
 
 	// make sure the client is connected before sending data.
-	while(server.client_count() != 1) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
+	EXPECT_TRUE(value_changed_to(1U, [&]() { return server.client_count(); }, 500ms));
 
 	ssize_t transmitted = client.send(payload.data(), payload.size());
 	ASSERT_GT(transmitted, 0);
 
-	EXPECT_FALSE(data_recevied_signal.wait(1000ms));
+	EXPECT_FALSE(data_recevied_signal.wait(2000ms));
 	EXPECT_TRUE(data_received);
 	EXPECT_EQ(payload, received_data);
 
@@ -248,7 +259,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 
 			num_clients_ready.increment();
 			start_waiting_for_data.wait();
-			EXPECT_EQ(waitable_flag::ok,  params.all_data_has_been_received.wait(1000ms));
+			EXPECT_EQ(waitable_flag::ok,  params.all_data_has_been_received.wait(2000ms));
 			EXPECT_EQ(params.received_data, expected_payload);
 			connection.close();
 		});
@@ -260,9 +271,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 							std::bind(&parameters::append_data, &params, &sender, std::placeholders::_1, std::placeholders::_2));
 
 	// make sure everyone is connected before sending data.
-	while(server.client_count() != number_of_clients + 1) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
+ 	EXPECT_TRUE(value_changed_to(1 + number_of_clients, [&]() { return server.client_count(); }, 500ms));
 
 	// make sure all clients are ready to receive data
 	num_clients_ready.wait(number_of_clients);
@@ -270,7 +279,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 	sender.send(expected_payload.data(), expected_payload.size());
 	start_waiting_for_data.set();
 
-	EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(1000ms));
+	EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(2000ms));
 	EXPECT_EQ(params.received_data, expected_payload);
 
 	// give time to the server to broadcast the message to all clients
@@ -293,7 +302,7 @@ TEST(iodeviceServer, ClosingServerDisconnectAllClientsBeforeReturning) {
 	stream_connection connection(server.pathname());
 	server.close();
 	EXPECT_EQ(0, server.client_count());
-	EXPECT_EQ(waitable_flag::ok, connection.disconnected_signal().wait(100ms));
+	EXPECT_EQ(waitable_flag::ok, connection.disconnected_signal().wait(500ms));
 }
 
 INSTANTIATE_TEST_CASE_P(RepeatMultipleTimes, RepeaterFixture, ::testing::Range(1, 25));
