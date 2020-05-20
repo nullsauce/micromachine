@@ -7,6 +7,7 @@
 #include "io/stream_connection.hpp"
 #include "peripherals/iodev.hpp"
 #include "utils/blocking_queue.hpp"
+#include "utils/waitable_counter.hpp"
 #include <chrono>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -213,7 +214,7 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 	echoer_iodevice<uint8_t, 1024> echo_device;
 	stream_server server(echo_device, "dev0", "/tmp/micromachine");
 
-	std::list<std::thread> clients_threads(number_of_clients);
+	std::vector<std::thread> clients_threads;
 
 	struct parameters {
 		const size_t _expected_payload_size;
@@ -221,9 +222,9 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 		waitable_condition all_data_has_been_received;
 
 		parameters(size_t expected_payload_size)
-		 : _expected_payload_size(expected_payload_size) {}
+			: _expected_payload_size(expected_payload_size) {}
 
-		void append_data(const uint8_t* buffer, size_t size) {
+		void append_data(stream_connection* client, const uint8_t* buffer, size_t size) {
 			received_data.insert(received_data.end(), buffer, buffer + size);
 			if(received_data.size() == _expected_payload_size) {
 				all_data_has_been_received.set();
@@ -232,35 +233,48 @@ TEST_P(RepeaterFixture, DataSentByOneClientIsBroadcastToAllClientsIncludingItsel
 	};
 
 	waitable_condition start_waiting_for_data;
+	waitable_counter num_clients_ready(0);
 
-	for(auto& th : clients_threads) {
-		th = std::thread([&server, &expected_payload, &start_waiting_for_data]() {
+	for(size_t i = 0; i < number_of_clients; ++i) {
+		clients_threads.emplace_back([&expected_payload, &server, &num_clients_ready, &start_waiting_for_data]() {
 			parameters params(expected_payload.size());
-			stream_connection connection(server.pathname(), nullptr, std::bind(&parameters::append_data, &params, std::placeholders::_1, std::placeholders::_2));
+			stream_connection connection(server.pathname(),
+										 nullptr,
+										 std::bind(&parameters::append_data,
+												   &params,
+												   &connection,
+												   std::placeholders::_1,
+												   std::placeholders::_2));
+
+			num_clients_ready.increment();
 			start_waiting_for_data.wait();
-			EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(1000ms));
+			EXPECT_EQ(waitable_flag::ok,  params.all_data_has_been_received.wait(1000ms));
 			EXPECT_EQ(params.received_data, expected_payload);
 			connection.close();
 		});
 	}
 
+	parameters params(expected_payload.size());
+	stream_connection sender(server.pathname(),
+							nullptr,
+							std::bind(&parameters::append_data, &params, &sender, std::placeholders::_1, std::placeholders::_2));
+
 	// make sure everyone is connected before sending data.
-	while(server.client_count() != number_of_clients) {
+	while(server.client_count() != number_of_clients + 1) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
-	parameters params(expected_payload.size());
-	stream_connection sender(server.pathname(), nullptr,
-							 std::bind(&parameters::append_data, &params, std::placeholders::_1, std::placeholders::_2));
+	// make sure all clients are ready to receive data
+	num_clients_ready.wait(number_of_clients);
 
-	start_waiting_for_data.set();
 	sender.send(expected_payload.data(), expected_payload.size());
+	start_waiting_for_data.set();
 
 	EXPECT_EQ(waitable_flag::ok, params.all_data_has_been_received.wait(1000ms));
 	EXPECT_EQ(params.received_data, expected_payload);
 
 	// give time to the server to broadcast the message to all clients
-	std::this_thread::sleep_for(100ms);
+	std::this_thread::sleep_for(50ms);
 	sender.close();
 
 	for(auto& th : clients_threads) {
