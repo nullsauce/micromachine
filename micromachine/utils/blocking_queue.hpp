@@ -106,9 +106,9 @@ public:
 				return interrupted;
 			}
 			write(value);
+			_not_empty_condition.notify_one();
 		}
 
-		_not_empty_condition.notify_one();
 		return success;
 	}
 
