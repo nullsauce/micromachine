@@ -9,36 +9,32 @@ and/or distributed without the express permission of Flavio Roth.
 
 #pragma once
 
-#include "elfio/elfio.hpp"
+#include <elfio/elfio.hpp>
 #include "memory/memory.hpp"
 
 namespace micromachine::system {
-class programmer {
+class loader {
 private:
 	// the byte used in lieu of zeroes when allocating segments
-	static constexpr uint8_t DEBUG_FILL_BYTE = 0xCD;
+	static constexpr uint8_t DEBUG_FILL_BYTE = 0xCC;
+
+	class segment_allocator;
 
 public:
 	class program {
-	private:
-		// memory will be filled with debug bytes
-		// if debug is enabled.
-		const bool _non_zero_fill;
-
+		friend class segment_allocator;
 	public:
 		using ptr = std::shared_ptr<program>;
 		using memory_segment = std::vector<uint8_t>;
 
-		program(bool non_zero_fill)
-			: _non_zero_fill(non_zero_fill) {}
+	private:
+		std::vector<memory_segment> _memory_segments;
+		uint32_t _entry_point = 0;
+		std::string _path;
 
-		memory_segment& allocate_segment(size_t size) {
-			_memory.emplace_back(size, _non_zero_fill ? DEBUG_FILL_BYTE : 0);
-			return _memory.at(_memory.size() - 1);
-		}
-
+	public:
 		bool is_null() const {
-			return _memory.empty();
+			return _memory_segments.empty();
 		}
 
 		uint32_t entry_point() const {
@@ -56,13 +52,26 @@ public:
 			_path = path;
 		}
 
-	private:
-		std::vector<memory_segment> _memory;
-		uint32_t _entry_point = 0;
-		std::string _path;
 	};
 
-	static program::ptr load_elf(const std::string& path, memory& mem, bool testing_enabled) {
+private:
+	class segment_allocator {
+	private:
+		// memory will be filled with debug bytes
+		// if debug is enabled.
+		const bool _non_zero_fill;
+
+	public:
+		segment_allocator(bool non_zero_fill)
+			: _non_zero_fill(non_zero_fill) {}
+
+		program::memory_segment& allocate_segment(program::ptr program, size_t size) {
+			return program->_memory_segments.emplace_back(size, _non_zero_fill ? DEBUG_FILL_BYTE : 0);
+		}
+	};
+
+public:
+	static program::ptr load_elf(const std::string& path, memory& mem, bool non_zero_fill) {
 
 		std::ifstream ifs(path, std::ios::binary);
 		if(!ifs) {
@@ -70,7 +79,8 @@ public:
 			return nullptr;
 		}
 
-		program::ptr prog = std::make_shared<program>(testing_enabled);
+		segment_allocator allocator(non_zero_fill);
+		program::ptr prog = std::make_shared<program>();
 		prog->set_path(path);
 
 		ELFIO::elfio elfReader;
@@ -92,12 +102,15 @@ public:
 		prog->set_entry_point(entryPoint);
 
 		/* Process each segment defined in the ELF file
-		 * and prepare the appropriate memory mappings for
+		 * and map them in the virtual memory in order for
 		 * the executable to run properly.
 		 *
-		 * The segments containing pre-initialized data
-		 * (also called progbits in this context) will have their
-		 * data loaded from the ELF file before being mapped.
+		 * The data of segments containing pre-initialized data
+		 * (referred as progbits in this context) is
+		 * loaded from the ELF file.
+		 *
+		 * The data of segments containing non-initialized data
+		 * are allocate don the fly.
 		 *
 		 * Relocations
 		 * A segment is considered relocatable if it has pre-initialized data
@@ -105,11 +118,12 @@ public:
 		 * address. It this case, the progbits of the segment are mapped at the
 		 * _physical_ address and an additional new segment of the appropriate
 		 * _memory size_ is created and mapped (without any data) at the _virtual_ address.
+		 * to allow proper relocation at runtime.
 		 *
 		 * Segments with different physical and virtual addresses who don't have
 		 * progbits are simply mapped at the virtual address.
 		 *
-		 * The runtime is responsible for relocating a segment at startup by coyping the
+		 * The runtime is responsible for relocating a segment at startup by copying the
 		 * progbits from the physical address to the memory address.
 		 */
 		for(const ELFIO::segment* elf_segment : elfReader.segments) {
@@ -134,7 +148,7 @@ public:
 					has_progbits ? "yes" : "no",
 					requires_relocation ? "yes" : "no ");
 
-			program::memory_segment& segment = prog->allocate_segment(memory_size);
+			program::memory_segment& segment = allocator.allocate_segment(prog, memory_size);
 
 			// load the progbits in this segment, if any.
 			if(has_progbits) {
@@ -161,7 +175,7 @@ public:
 						segment_name);
 
 				// Allocate a new empty segment
-				program::memory_segment& relocation_segment = prog->allocate_segment(memory_size);
+				program::memory_segment& relocation_segment = allocator.allocate_segment(prog, memory_size);
 
 				// Map it in the virtual address space
 				mem.map(relocation_segment.data(),

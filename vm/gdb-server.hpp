@@ -20,7 +20,7 @@ and/or distributed without the express permission of Flavio Roth.
 #include <cpu.hpp>
 #include <stdarg.h>
 
-#include "programmer.hpp"
+#include "loader.hpp"
 
 #define GDB_SERVER_MAX_PACKET_SIZE 2048
 
@@ -116,11 +116,11 @@ public:
 class gdb_server {
 private:
 	cpu& _cpu;
-	programmer::program::ptr _program;
+	loader::program::ptr _program;
 
 public:
 
-	gdb_server(cpu& cpu, programmer::program::ptr program)
+	gdb_server(cpu& cpu, loader::program::ptr program)
 		: _cpu(cpu)
 		, _program(program) {
 			// Creating socket file descriptor

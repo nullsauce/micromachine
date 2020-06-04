@@ -3,9 +3,9 @@
 
 #include "gdb-server.hpp"
 #include "io/stream_server.hpp"
+#include "loader.hpp"
 #include "mcu.hpp"
 #include "peripherals/iodev.hpp"
-#include "programmer.hpp"
 
 #include <chrono>
 #include <unistd.h>
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 	}
 
 	micromachine::system::mcu mcu;
-	micromachine::system::programmer::program::ptr program = micromachine::system::programmer::load_elf(executable_path.c_str(), mcu.get_memory(), testing_enabled);
+	micromachine::system::loader::program::ptr program = micromachine::system::loader::load_elf(executable_path.c_str(), mcu.get_memory(), testing_enabled);
 
 	if(program->is_null()) {
 		fprintf(stderr, "Error: Failed to load the given ELF file %s\n", argv[1]);
