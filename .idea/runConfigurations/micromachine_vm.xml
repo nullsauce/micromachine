@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="micromachine_vm" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="$CMakeCurrentGenerationDir$/sdk/test/arithmetic_test/arithmetic_test" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="micromachine" TARGET_NAME="micromachine_vm" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="micromachine" RUN_TARGET_NAME="micromachine_vm">
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>
