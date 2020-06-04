@@ -1,18 +1,7 @@
 
+include(elfio)
 
 set(SRCS
-	elfio/elf_types.hpp
-	elfio/elfio.hpp
-	elfio/elfio_dump.hpp
-	elfio/elfio_dynamic.hpp
-	elfio/elfio_header.hpp
-	elfio/elfio_note.hpp
-	elfio/elfio_relocation.hpp
-	elfio/elfio_section.hpp
-	elfio/elfio_segment.hpp
-	elfio/elfio_strings.hpp
-	elfio/elfio_symbols.hpp
-	elfio/elfio_utils.hpp
 	utils/blocking_queue.hpp
 	utils/signal.hpp
 	control_signals.hpp
@@ -92,5 +81,6 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
 endif ()
 
 target_include_directories(micromachine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(micromachine INTERFACE elfio)
 set_target_properties(micromachine PROPERTIES LINKER_LANGUAGE CXX)
 cotire(micromachine)
