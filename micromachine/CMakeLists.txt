@@ -59,7 +59,7 @@ set(SRCS
 	mcu.cpp
 	mcu.hpp
 	nvic.hpp
-	programmer.hpp
+	loader.hpp
 	systick.hpp
 	io/stream_server.hpp
 	io/stream_connection.hpp

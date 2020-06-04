@@ -9,8 +9,8 @@ and/or distributed without the express permission of Flavio Roth.
 
 #include <cppurses/cppurses_system.hpp>
 
+#include "loader.hpp"
 #include "mcu.hpp"
-#include "programmer.hpp"
 
 using namespace micromachine::system;
 
@@ -27,7 +27,7 @@ int main(int argc, const char** argv) {
 
 	micromachine::system::mcu mcu;
 
-	programmer::program::ptr program = programmer::load_elf(argv[1], mcu.get_memory(), false);
+	loader::program::ptr program = loader::load_elf(argv[1], mcu.get_memory(), false);
 
 	if(program->is_null()) {
 		fprintf(stderr, "Error: Failed to load the given ELF file %s\n", argv[0]);
