@@ -17,8 +17,9 @@ ${command_to_run} &
 vm_pid=$!
 
 # The application will terminate when sizeof("Welcome micromachinist!") is received
-sleep 0.1
+sleep 0.25
 socat FILE:${expected_stdout_file},ignoreeof\!\!OPEN:${actual_stdout_file},creat,trunc "UNIX-CLIENT:/tmp/micromachine/${vm_pid}/usart0"
+sleep 0.25
 
 if cmp --silent ${expected_stdout_file} ${actual_stdout_file}; then
     exit 0
