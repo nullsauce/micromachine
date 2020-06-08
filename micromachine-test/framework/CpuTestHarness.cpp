@@ -1,5 +1,4 @@
 
-
 #include "CpuTestHarness.hpp"
 #include "exception/exception.hpp"
 #include "helpers/binops.hpp"

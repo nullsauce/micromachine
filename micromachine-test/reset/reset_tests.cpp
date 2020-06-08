@@ -1,5 +1,4 @@
 
-
 #include "CpuTestFixture.hpp"
 #include "exception/exception.hpp"
 #include "registers/core_registers/core_registers.hpp"

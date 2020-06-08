@@ -1,5 +1,4 @@
 
-
 #include <benchmark/benchmark.h>
 
 static void BM_StringCreation(benchmark::State& state) {
