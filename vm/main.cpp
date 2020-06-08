@@ -104,21 +104,23 @@ int main(int argc, char** argv) {
 		usart_streamer.pathname(),
 		nullptr,
 		[](const uint8_t* buffer, size_t size, void*) -> void {
-			size_t index = 0;
-			while(index < size) {
-				if(0 == write(STDOUT_FILENO, &buffer[index], 1)) {
-					fprintf(stderr, "failed to write to stdout\n");
-				}
-				index++;
+			if(0 == write(STDOUT_FILENO, buffer, size)) {
+				fprintf(stderr, "failed to write to stdout\n");
 			}
 		},
-		nullptr);
+		nullptr
+	);
 
 	mcu.set_io_callback([](uint8_t data) {
 		if(0 == write(STDOUT_FILENO, &data, 1)) {
 			fprintf(stderr, "failed to write to stdout\n");
 		}
 	});
+
+	while(usart_streamer.client_count() == 0) {
+		std::this_thread::sleep_for(1ms);
+		fprintf(stderr, "waiting for the usart printer...\n");
+	}
 
 	mcu.reset(program->entry_point());
 
@@ -146,6 +148,8 @@ int main(int argc, char** argv) {
 
 	usart_streamer.close();
 	usart_printer.close();
+
+	fflush(stdout);
 
 	return EXIT_SUCCESS;
 }
