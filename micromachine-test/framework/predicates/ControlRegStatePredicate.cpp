@@ -1,5 +1,4 @@
 
-
 #include "ControlRegStatePredicate.hpp"
 #include "mcu.hpp"
 

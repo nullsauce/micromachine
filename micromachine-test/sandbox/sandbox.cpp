@@ -1,5 +1,4 @@
 
-
 #include "SystemTestFixture.hpp"
 
 #include "CodeGenerator.hpp"

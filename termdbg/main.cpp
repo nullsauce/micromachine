@@ -1,5 +1,4 @@
 
-
 #include <cppurses/cppurses_system.hpp>
 
 #include "loader.hpp"

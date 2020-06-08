@@ -1,5 +1,4 @@
 
-
 #include "CpuTestFixture.hpp"
 #include "exception/exception.hpp"
 #include "registers/system_control/aircr_reg.hpp"

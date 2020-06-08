@@ -1,7 +1,4 @@
 
-
-
-
 #include "IPSRStatePredicate.hpp"
 #include "mcu.hpp"
 

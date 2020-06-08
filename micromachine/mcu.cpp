@@ -1,7 +1,5 @@
 
-
 #include "mcu.hpp"
-#include "cpu.hpp"
 
 namespace micromachine::system {
 
