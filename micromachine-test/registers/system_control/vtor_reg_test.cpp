@@ -1,7 +1,3 @@
-//
-
-//
-
 
 #include "registers/system_control/vtor_reg.hpp"
 

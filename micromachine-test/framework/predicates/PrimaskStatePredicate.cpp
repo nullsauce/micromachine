@@ -1,8 +1,3 @@
-//
-
-//
-
-
 
 #include "PrimaskStatePredicate.hpp"
 #include "mcu.hpp"

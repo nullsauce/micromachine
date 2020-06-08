@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #include "ValueFormaters.hpp"
 
 namespace micromachine::testing {

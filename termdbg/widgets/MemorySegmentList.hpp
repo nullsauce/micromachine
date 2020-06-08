@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include <cppurses/painter/glyph_string.hpp>

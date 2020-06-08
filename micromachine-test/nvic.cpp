@@ -1,6 +1,3 @@
-//
-// Created by fla
-//
 
 #include "nvic.hpp"
 #include <gtest/gtest.h>

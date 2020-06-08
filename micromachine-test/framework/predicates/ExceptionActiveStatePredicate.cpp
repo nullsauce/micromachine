@@ -1,10 +1,3 @@
-//
-
-
-//
-
-
-
 #include "ExceptionActiveStatePredicate.hpp"
 #include "mcu.hpp"
 #include <gtest/gtest.h>

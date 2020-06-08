@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include <cppurses/widget/layouts/horizontal.hpp>

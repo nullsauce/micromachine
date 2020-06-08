@@ -1,8 +1,3 @@
-//
-
-//
-
-
 
 #include "RegisterEqualityPredicate.hpp"
 #include "ValueFormaters.hpp"

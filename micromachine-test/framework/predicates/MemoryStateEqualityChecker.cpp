@@ -1,11 +1,4 @@
 
-//
-
-
-//
-
-
-
 #include "MemoryStateEqualityChecker.hpp"
 #include "ValueFormaters.hpp"
 #include "mcu.hpp"

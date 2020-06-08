@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #include "TestMachine.hpp"
 
 #include "mcu.hpp"

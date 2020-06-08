@@ -1,10 +1,3 @@
-//
-
-
-//
-
-
-
 #include "ExceptionPriorityStatePredicate.hpp"
 #include "mcu.hpp"
 

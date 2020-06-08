@@ -1,10 +1,3 @@
-//
-
-
-//
-
-
-
 #include "RegistersPushedStatePredicate.hpp"
 #include "ValueFormaters.hpp"
 #include "mcu.hpp"

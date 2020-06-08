@@ -1,10 +1,3 @@
-//
-
-
-//
-
-
-
 #include "BankedStackPointerStatePredicate.hpp"
 #include "mcu.hpp"
 
