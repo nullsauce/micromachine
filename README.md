@@ -4,7 +4,13 @@
 </p>
 
 <p align="center">
-    <img src="https://github.com/flavioroth/micromachine/workflows/MicroMachine%20CI/badge.svg?branch=master" />
+    <img src="https://img.shields.io/github/workflow/status/flavioroth/micromachine/MicroMachine CI?style=for-the-badge" />
+</p>
+
+<p align="center">
+    <img src="https://img.shields.io/github/last-commit/flavioroth/micromachine?style=for-the-badge" />
+    <img src="https://img.shields.io/github/commit-activity/w/flavioroth/micromachine?style=for-the-badge" />
+    <img src="https://img.shields.io/github/contributors/flavioroth/micromachine?style=for-the-badge" />
 </p>
 
 <br/>
