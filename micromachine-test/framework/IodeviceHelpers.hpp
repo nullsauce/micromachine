@@ -1,5 +1,5 @@
 //
-// Created by joel on 13/05/2020.
+// Copyright (C) 2020 Joel Jungo, Flavio Roth - All Rights Reserved
 //
 
 #ifndef MICROMACHINE_IODEVICEHELPERS_HPP
