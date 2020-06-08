@@ -16,7 +16,6 @@ add_subdirectory(micromachine)
 add_subdirectory(vm)
 add_subdirectory(termdbg)
 add_subdirectory(micromachine-test)
-add_subdirectory(benchmark)
 
 ExternalProject_Add(micromachine_sdk_project
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/sdk
