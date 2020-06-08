@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #ifndef MICROMACHINE_PERIPHERALS_H
 #define MICROMACHINE_PERIPHERALS_H
 

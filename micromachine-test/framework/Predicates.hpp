@@ -1,9 +1,3 @@
-
-//
-
-
-//
-
 #pragma once
 
 #include "predicates/APSRFlagsStatePredicate.hpp"

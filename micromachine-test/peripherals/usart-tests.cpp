@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #include "mcu.hpp"
 #include "TestHelpers.hpp"
 #include <gtest/gtest.h>

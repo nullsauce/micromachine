@@ -1,9 +1,3 @@
-
-//
-
-
-//
-
 #pragma once
 
 #include "waitable_flag.hpp"

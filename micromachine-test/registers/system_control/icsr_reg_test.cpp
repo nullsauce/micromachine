@@ -1,7 +1,3 @@
-//
-
-//
-
 
 #include "registers/system_control/icsr_reg.hpp"
 #include "CpuTestFixture.hpp"

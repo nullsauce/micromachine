@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #include "APSRFlagsStatePredicate.hpp"
 #include "mcu.hpp"
 

@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "exception/exception_return_handler.hpp"

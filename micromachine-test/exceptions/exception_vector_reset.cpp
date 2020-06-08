@@ -1,6 +1,4 @@
-//
 
-//
 
 #include "CpuTestFixture.hpp"
 #include "exception/exception.hpp"

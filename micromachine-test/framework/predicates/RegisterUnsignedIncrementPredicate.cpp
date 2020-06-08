@@ -1,6 +1,4 @@
-//
 
-//
 
 #include "RegisterUnsignedIncrementPredicate.hpp"
 #include "ValueFormaters.hpp"
