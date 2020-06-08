@@ -17,7 +17,7 @@ function(add_micromachine_executable)
 	set_target_properties(${ARGV0} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 
 	# appends the boot and system objects to the target
-	target_sources(${ARGV0} PRIVATE $<TARGET_OBJECTS:boot> $<TARGET_OBJECTS:system>)
+	target_sources(${ARGV0} PRIVATE $<TARGET_OBJECTS:system>)
 
 endfunction()
 
@@ -41,7 +41,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-add_subdirectory(boot)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/system/include)
 include_directories(CMSIS/Core/Include)
 add_subdirectory(cmsis)

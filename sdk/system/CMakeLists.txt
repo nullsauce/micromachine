@@ -6,6 +6,11 @@ set(SRCS
 	io.c
 )
 
+set(ASM_SRCS
+	interrupt_vector.s
+)
+set_property(SOURCE ${ASM_SRCS} PROPERTY LANGUAGE C)
+
 set(HEADERS
 	include/startup.h
 	include/control_registers.h
@@ -13,5 +18,5 @@ set(HEADERS
 	include/interrupt_handlers.h
 	include/system.h
 )
-add_library(system OBJECT ${HEADERS} ${SRCS})
+add_library(system OBJECT ${HEADERS} ${ASM_SRCS} ${SRCS})
 target_link_libraries(system PUBLIC cmsis)
