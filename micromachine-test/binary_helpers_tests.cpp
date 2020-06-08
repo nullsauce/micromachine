@@ -1,5 +1,4 @@
 
-
 #include "framework/AssertHelpers.hpp"
 #include "types/bits.hpp"
 #include <gtest/gtest.h>

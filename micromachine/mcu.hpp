@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "control_signals.hpp"
