@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(cmsis-library)
+project(cmsis-header-library)
 
 set(HEADERS
 	Core/Include/cmsis_compiler.h
@@ -10,6 +10,6 @@ set(HEADERS
 	micromachine/micromachine.h
 )
 
-add_library(cmsis INTERFACE)
-target_include_directories(cmsis PUBLIC INTERFACE Core/Include)
-target_include_directories(cmsis PUBLIC INTERFACE micromachine)
+add_library(cmsis-headers INTERFACE)
+target_include_directories(cmsis-headers PUBLIC INTERFACE Core/Include)
+target_include_directories(cmsis-headers PUBLIC INTERFACE micromachine)

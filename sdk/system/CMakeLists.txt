@@ -20,4 +20,3 @@ set(HEADERS
 )
 
 add_library(system STATIC ${HEADERS} ${ASM_SRCS} ${SRCS})
-
