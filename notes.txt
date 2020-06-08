@@ -1,0 +1,21 @@
+add step counter to termdbg
+ -> can be set as a 'break point at counter=x'
+allow to step BACK the cpu
+* rename get_pc, get_lr etc..
+* cleanup get setters fro core registers
+* refactor enum class execution_mode into a class with methods
+* use bits ref in xpsr regs
+* create proper project header template
+* move the logic of exception::activate to the context switcher
+* push register predicates should have a check function with verbose error explanation and not rely only on memory check
+* ignore RAZ bits when writing to xpsr.
+* add syntax sugar for IPSRStatePredicate
+* add syntax sugar for ControlRegStatePredicate
+* remove sp_reg& sp_register() and pc_register()
+
+
+optims ideas
+ignore unimplemented exceptions
+use dynamic programming and do the hard work on register changes to maintain a fast to read exception state table that doesnt rely on virtual calls
+process asynchronous exceptions in a parallel thread ?
+remove virtual calls from exceptions vector
