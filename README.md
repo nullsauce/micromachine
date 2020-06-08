@@ -13,15 +13,16 @@
 Micromachine aims to offer a correct, clean and fast (in that order) cycle-<b>inaccurate</b> armv6-m emulator capable of running application initially targeting Cortex-M0 micro-controllers.
 </p>
 
-<br/>
-<br/>
+
+***
 
 
 ### Howto
 
-Check out [the wiki](https://github.com/flavioroth/micromachine/wiki)
+Check out [the wiki](https://github.com/flavioroth/micromachine/wiki).
 
 ### Acknowledgments
+* Thanks to [jjungo](https://github.com/jjungo) for his contribution!
 * [cotire](https://github.com/sakra/cotire) by Sascha Kratky
 * [CPPurses](https://github.com/a-n-t-h-o-n-y/CPPurses) by a-n-t-h-o-n-y
 * [ELFIO](https://github.com/serge1/ELFIO) by Serge Lamikhov
