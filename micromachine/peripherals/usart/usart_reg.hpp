@@ -1,5 +1,5 @@
 //
-// Created by joel on 15/04/2020.
+// Copyright (C) 2020 Joel Jungo, Flavio Roth - All Rights Reserved
 //
 
 #ifndef MICROMACHINE_USART_REG_HPP

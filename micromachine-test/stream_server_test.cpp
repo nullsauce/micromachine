@@ -1,5 +1,5 @@
 //
-// Created by joel on 01/05/2020.
+// Copyright (C) 2020 Joel Jungo, Flavio Roth - All Rights Reserved
 //
 
 #include "framework/IodeviceHelpers.hpp"

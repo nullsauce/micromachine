@@ -1,3 +1,7 @@
+//
+// Copyright (C) 2020 Joel Jungo, Flavio Roth - All Rights Reserved
+//
+
 #pragma once
 
 #include "peripherals/iodev.hpp"
