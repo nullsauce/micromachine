@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #include "MachineTestHarness.hpp"
 
 namespace micromachine::testing {

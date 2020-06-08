@@ -1,9 +1,3 @@
-
-//
-
-
-//
-
 #pragma once
 
 #include "mcu_foward_decl.hpp"

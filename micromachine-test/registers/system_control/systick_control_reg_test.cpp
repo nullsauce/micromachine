@@ -1,6 +1,3 @@
-//
-
-//
 
 #include "exception/exception.hpp"
 #include "exception/exception_vector_controller.hpp"

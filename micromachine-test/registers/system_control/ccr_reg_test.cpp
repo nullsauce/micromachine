@@ -1,7 +1,3 @@
-//
-
-//
-
 
 #include "registers/system_control/ccr_reg.hpp"
 

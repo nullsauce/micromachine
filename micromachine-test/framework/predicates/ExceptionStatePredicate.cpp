@@ -1,10 +1,3 @@
-//
-
-
-//
-
-
-
 #include "ExceptionStatePredicate.hpp"
 
 namespace micromachine::testing {

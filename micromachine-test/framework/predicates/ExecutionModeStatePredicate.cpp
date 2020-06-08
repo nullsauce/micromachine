@@ -1,11 +1,4 @@
 
-//
-
-
-//
-
-
-
 #include "ExecutionModeStatePredicate.hpp"
 #include "mcu.hpp"
 

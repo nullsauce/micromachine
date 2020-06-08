@@ -1,11 +1,4 @@
 
-//
-
-
-//
-
-
-
 #include "EPSRFlagsStatePredicate.hpp"
 #include "mcu.hpp"
 

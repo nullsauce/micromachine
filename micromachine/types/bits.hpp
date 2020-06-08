@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "helpers/binops.hpp"

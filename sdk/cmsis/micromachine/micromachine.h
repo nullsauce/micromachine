@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #ifndef MICROMACHINE_H
 #define MICROMACHINE_H
 

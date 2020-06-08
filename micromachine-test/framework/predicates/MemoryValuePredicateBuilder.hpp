@@ -1,7 +1,3 @@
-//
-
-//
-
 #pragma once
 
 #include "MemoryValue32Predicate.hpp"

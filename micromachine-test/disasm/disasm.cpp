@@ -1,6 +1,3 @@
-//
-// Created by fla
-//
 
 #include "helpers/disassembler.hpp"
 #include "nvic.hpp"

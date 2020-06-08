@@ -1,9 +1,4 @@
 
-//
-
-
-//
-
 #include "Predicates.hpp"
 
 namespace micromachine::testing {
