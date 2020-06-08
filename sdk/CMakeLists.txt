@@ -16,12 +16,13 @@ function(add_micromachine_executable)
 	set_target_properties(${ARGV0} PROPERTIES LINK_FLAGS "-T ${LINKER_SCRIPT}")
 	set_target_properties(${ARGV0} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 
-	# appends the boot and system objects to the target
-	#target_sources(${ARGV0} PRIVATE $<TARGET_OBJECTS:system>)
+	# Link with system library that provides implementation for the libc primitives and
+	# cmsis-headers which provides the include path for the CMSIS headers.
 	target_link_libraries(${ARGV0} PRIVATE
 		-Wl,--whole-archive
 		system
 		-Wl,--no-whole-archive
+		cmsis-headers
 	)
 
 endfunction()
