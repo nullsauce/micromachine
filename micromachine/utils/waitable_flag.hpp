@@ -1,7 +1,7 @@
 
 //
-// Created by fla on 04.05.20.
-// Copyright (c) 2020 The Micromachine Project. All rights reserved.
+
+
 //
 
 #pragma once
