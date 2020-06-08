@@ -1,7 +1,7 @@
 
 //
-// Created by fla on 30.04.20.
-// Copyright (c) 2020 The Micromachine Project. All rights reserved.
+
+
 //
 
 #include "mcu.hpp"
