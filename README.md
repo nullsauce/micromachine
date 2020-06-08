@@ -31,3 +31,7 @@ Check out [the wiki](https://github.com/flavioroth/micromachine/wiki)
 * [cxxopts](https://github.com/jarro2783/cxxopts) by Jarryd Beck
 
 
+### Copyright
+Copyright (C) 2017-2020 Flavio Roth - All Rights Reserved
+
+
