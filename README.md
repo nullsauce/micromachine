@@ -25,6 +25,8 @@ Micromachine aims to offer a correct, clean and fast (in that order) cycle-<b>in
 
 ### Howto
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/01a5411f1f3042029d564195cab98b28)](https://app.codacy.com/manual/flavioroth/micromachine?utm_source=github.com&utm_medium=referral&utm_content=flavioroth/micromachine&utm_campaign=Badge_Grade_Dashboard)
+
 Check out [the wiki](https://github.com/flavioroth/micromachine/wiki).
 
 ### Acknowledgments
