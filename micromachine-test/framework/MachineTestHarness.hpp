@@ -148,7 +148,7 @@ protected:
 
 	auto exceptionHandlerReachedWithContext(exception ex,
 											RegistersPushedStatePredicate::StackedValues contextValues) const {
-		return exceptionHandlerReachedAtAddressWithContext(ex, _machine.exceptionHandlerAddress(ex), contextValues);
+		return exceptionHandlerReachedAtAddressWithContext(ex, _machine.exceptionHandlerAddress(ex), std::move(contextValues));
 	}
 
 	auto exceptionHandlerReached(exception ex) {

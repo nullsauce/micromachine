@@ -128,7 +128,7 @@ namespace micromachine::testing {
 								  exceptionStateOf(ex).isActive(),
 								  exceptionStateOf(ex).isNotPending(),
 								  executionModeIsHandler(),
-								  RegistersPushedStatePredicate(contextValues),
+								  RegistersPushedStatePredicate(std::move(contextValues)),
 								  reg(registers::LR).equals(0xFFFFFFF9),
 								  IPSRStatePredicate(ex),
 								  StackGrowthOf(32),
