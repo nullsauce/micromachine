@@ -12,7 +12,6 @@ public:
 	static constexpr uint32_t GIO_IO = 0xE000EF90;
 
 protected:
-	uint32_t _word;
 	const callback_t& _callback;
 
 public:
