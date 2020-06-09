@@ -21,7 +21,7 @@ void task_loop(void* pvParameters) {
 	uint32_t a = 0;
 	printf("Enter %s\n", params->task_name);
 	for(;;) {
-		printf("Hello from %s. counter=%d\n", params->task_name, a++);
+		printf("Hello from %s. counter=%u\n", params->task_name, a++);
 		vTaskDelay(params->interval_ticks);
 	}
 }
