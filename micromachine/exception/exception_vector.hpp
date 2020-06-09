@@ -11,8 +11,10 @@
 #include <list>
 #include <memory>
 
-namespace micromachine::system {
+// Defining this enables exception processing optimizations
+#define MICROMACHINE_USE_EXCEPTION_LOOP_UNROLLING
 
+namespace micromachine::system {
 
 class internal_exception_state : public exception_state {
 private:
@@ -409,6 +411,8 @@ public:
 	}
 
 	exception_state* top_pending() const {
+
+#ifndef MICROMACHINE_USE_EXCEPTION_LOOP_UNROLLING
 		exception_state* top = nullptr;
 		// Find the pending exception with the lowest priority
 		for(exception_state& e : _indexed) {
@@ -432,33 +436,113 @@ public:
 				}
 			}
 		}
+
 		return top;
+#else
+		size_t top_pending_number = exception::INVALID;
+		exception::priority_t top_pending_priority = exception::MAX_PRIORITY;
+
+		#define sort_exception_priority(e) \
+		if(e.is_pending() && e.is_enabled()) { \
+			if(top_pending_number == exception::INVALID || e.priority() < top_pending_priority) { \
+				top_pending_number = e.kind().number(); \
+				top_pending_priority = e.priority(); \
+			} else if(e.priority() == top_pending_priority) { \
+				if(e.kind().number() < top_pending_number) { \
+					top_pending_number = e.kind().number(); \
+					top_pending_priority = e.priority(); \
+				} \
+			} \
+		}
+
+		sort_exception_priority(_reset);
+		sort_exception_priority(_nmi);
+		sort_exception_priority(_hard_fault);
+		sort_exception_priority(_svc);
+		sort_exception_priority(_pend_sv);
+		sort_exception_priority(_sys_tick);
+		sort_exception_priority(_ext_interrupt_0);
+		sort_exception_priority(_ext_interrupt_1);
+		sort_exception_priority(_ext_interrupt_2);
+		sort_exception_priority(_ext_interrupt_3);
+		sort_exception_priority(_ext_interrupt_4);
+		sort_exception_priority(_ext_interrupt_5);
+		sort_exception_priority(_ext_interrupt_6);
+		sort_exception_priority(_ext_interrupt_7);
+		sort_exception_priority(_ext_interrupt_8);
+		sort_exception_priority(_ext_interrupt_9);
+		sort_exception_priority(_ext_interrupt_10);
+		sort_exception_priority(_ext_interrupt_11);
+		sort_exception_priority(_ext_interrupt_12);
+		sort_exception_priority(_ext_interrupt_13);
+		sort_exception_priority(_ext_interrupt_14);
+		sort_exception_priority(_ext_interrupt_15);
+
+		#undef sort_exception_priority
+
+		if(top_pending_number == exception::INVALID) {
+			return nullptr;
+		} else {
+			return &_indexed[top_pending_number].get();
+		}
+#endif
 	}
 
 	exception::priority_t current_execution_priority(bool primask_pm) const {
 		exception::priority_t prio = exception::THREAD_MODE_PRIORITY;
-		exception::priority_t boosted_prio = exception::THREAD_MODE_PRIORITY;
 
-		for(size_t i = 2; i < 32; i++) {
-			const exception_state& e = _indexed.at(i);
-			if(!e.is_active())
-				continue;
-			if(e.priority() < prio) {
-				prio = e.priority();
-			}
-		}
-
+#ifndef MICROMACHINE_USE_EXCEPTION_LOOP_UNROLLING
 		// if primask is set, ignore all maskable exceptions by
 		// pretending the executing priority is now 0
 		if(primask_pm) {
 			prio = 0;
+		} else {
+			for(size_t i = 2; i < 32; i++) {
+				const exception_state& e = _indexed.at(i);
+				if(!e.is_active())
+					continue;
+				if(e.priority() < prio) {
+					prio = e.priority();
+				}
+			}
+		}
+#else
+		#define sort_max_priority(e) \
+		if (e.is_active() && (e.priority() < prio)) { \
+			prio = e.priority(); \
 		}
 
-		if(boosted_prio < prio) {
-			return boosted_prio;
+		if(primask_pm) {
+			prio = 0;
 		} else {
-			return prio;
+
+			// TODO: Could early exit the unrolled loop if prio >= THREAD_MODE_PRIORITY because
+			// subsequent iterations wont make a difference in the end. ?
+			sort_max_priority(_hard_fault);
+			sort_max_priority(_svc);
+			sort_max_priority(_pend_sv);
+			sort_max_priority(_sys_tick);
+			sort_max_priority(_ext_interrupt_0);
+			sort_max_priority(_ext_interrupt_1);
+			sort_max_priority(_ext_interrupt_2);
+			sort_max_priority(_ext_interrupt_3);
+			sort_max_priority(_ext_interrupt_4);
+			sort_max_priority(_ext_interrupt_5);
+			sort_max_priority(_ext_interrupt_6);
+			sort_max_priority(_ext_interrupt_7);
+			sort_max_priority(_ext_interrupt_8);
+			sort_max_priority(_ext_interrupt_9);
+			sort_max_priority(_ext_interrupt_10);
+			sort_max_priority(_ext_interrupt_11);
+			sort_max_priority(_ext_interrupt_12);
+			sort_max_priority(_ext_interrupt_13);
+			sort_max_priority(_ext_interrupt_14);
+			sort_max_priority(_ext_interrupt_15);
 		}
+
+		#undef sort_max_priority
+#endif
+		return std::min(exception::THREAD_MODE_PRIORITY, prio);
 	}
 
 	void reset() {
