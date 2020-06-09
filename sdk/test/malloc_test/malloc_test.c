@@ -17,6 +17,8 @@ void main() {
 	printf("%d\n", first_buffer == third_buffer);
 	memcpy(second_buffer, sentence, sizeof(sentence));
 	printf("sentence: '%s'\n", second_buffer);
+	free(second_buffer);
+	free(third_buffer);
 }
 
 
