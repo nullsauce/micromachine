@@ -8,7 +8,7 @@ using namespace micromachine::system;
 
 RegistersPushedStatePredicate::RegistersPushedStatePredicate(
 	RegistersPushedStatePredicate::StackedValues expectedValues)
-	: _expectedValues(expectedValues)
+	: _expectedValues(std::move(expectedValues))
 	, _savedFramePtr(0)
 {}
 void RegistersPushedStatePredicate::apply(mcu& expected) {

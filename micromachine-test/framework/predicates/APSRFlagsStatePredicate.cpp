@@ -13,7 +13,7 @@ APSRFlagsStatePredicate::APSRFlagsStatePredicate(const mcu& expected)
 				getOverflowFlagValueFrom(expected)) {}
 
 APSRFlagsStatePredicate::APSRFlagsStatePredicate(std::string flagStr)
-	: _expected(flagStr) {}
+	: _expected(std::move(flagStr)) {}
 
 void APSRFlagsStatePredicate::apply(mcu& expected) {
 	expected.get_cpu().special_regs().app_status_register().negative_flag() = _expected.negativeFlag;
