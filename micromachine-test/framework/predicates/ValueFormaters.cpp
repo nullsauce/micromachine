@@ -11,7 +11,7 @@ namespace micromachine::testing {
 
 	std::string uint32ToStr(uint32_t value) {
 		char buf[32] = {0};
-		snprintf(buf, sizeof(buf), "0x%08x (%d)", value, value);
+		snprintf(buf, sizeof(buf), "0x%08x (%u)", value, value);
 		return std::string(buf);
 	}
 

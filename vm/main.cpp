@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 
 	uint64_t instructions_executed = mcu.get_cpu().debug_instruction_counter();
 	double perf = instructions_executed / elapsed_secs;
-	fprintf(stderr, "run %ld instruction(s), %f i/s\n", instructions_executed, perf);
+	fprintf(stderr, "ran %lu instruction(s), %f i/s\n", instructions_executed, perf);
 
 	usart_streamer.close();
 	usart_printer.close();

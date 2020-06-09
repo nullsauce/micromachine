@@ -9,7 +9,7 @@
 
 void _isr_systick() {
 	static uint32_t counter = 0;
-	printf("Systick interrupt %d\n", counter++);
+	printf("Systick interrupt %u\n", counter++);
 	if(counter == 10) {
 		breakpoint(0xff);
 	}

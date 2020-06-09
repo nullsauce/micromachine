@@ -41,7 +41,7 @@ public:
 public:
 	void quack() {
 		_quack_count++;
-		printf("Duck %08x : Quack %d!\n", this, _quack_count);
+		printf("Duck %08x : Quack %u!\n", this, _quack_count);
 	}
 };
 
@@ -49,7 +49,7 @@ extern "C" int main()  {
 	printf("Singleton value = %i\n", Singleton::get().val());
 	std::vector<uint64_t>* vector = new std::vector<uint64_t>(10);
 	std::unique_ptr<std::array<uint32_t, 4>> ptr(new std::array<uint32_t, 4>());
-	printf("vector address = %08x\n", vector);
+	printf("vector address = %08x\n", (uint32_t)vector);
 	delete vector;
 	printf("ptr address = %08x\n", ptr.get());
 	std::unique_ptr<Duck> donald = std::unique_ptr<Duck>(new Duck());
