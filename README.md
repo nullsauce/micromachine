@@ -8,6 +8,9 @@
 </p>
 
 <p align="center">
+    <a href="https://app.codacy.com/manual/flavioroth/micromachine/dashboard">
+        <img src="https://img.shields.io/codacy/grade/74967d5e73e140819772183a722f96d0?style=for-the-badge" />
+    </a>
     <img src="https://img.shields.io/github/last-commit/flavioroth/micromachine?style=for-the-badge" />
     <img src="https://img.shields.io/github/commit-activity/w/flavioroth/micromachine?style=for-the-badge" />
     <img src="https://img.shields.io/github/contributors/flavioroth/micromachine?style=for-the-badge" />
